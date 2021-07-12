@@ -1,0 +1,1463 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_rvapi_vdc.c"
+  13              		.section	.text.R_RVAPI_InitializeVDC,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_RVAPI_InitializeVDC
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_RVAPI_InitializeVDC:
+  21              		@ args = 0, pretend = 0, frame = 24
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 002000E3 		movw	r2, #:lower16:full_screen
+  24 0004 000051E3 		cmp	r1, #0
+  25 0008 002040E3 		movt	r2, #:upper16:full_screen
+  26 000c 00C0A0E3 		mov	ip, #0
+  27 0010 B0C0C2E1 		strh	ip, [r2]	@ movhi
+  28 0014 B2C0C2E1 		strh	ip, [r2, #2]	@ movhi
+  29 0018 B4C0C2E1 		strh	ip, [r2, #4]	@ movhi
+  30 001c B6C0C2E1 		strh	ip, [r2, #6]	@ movhi
+  31 0020 2100000A 		beq	.L4
+  32 0024 042091E5 		ldr	r2, [r1, #4]
+  33 0028 F0402DE9 		push	{r4, r5, r6, r7, lr}
+  34 002c 1CD04DE2 		sub	sp, sp, #28
+  35 0030 00E0D1E5 		ldrb	lr, [r1]	@ zero_extendqisi2
+  36 0034 0C0052E1 		cmp	r2, ip
+  37 0038 0130D1E5 		ldrb	r3, [r1, #1]	@ zero_extendqisi2
+  38 003c 04E0CDE5 		strb	lr, [sp, #4]
+  39 0040 02E0A001 		moveq	lr, r2
+  40 0044 0530CDE5 		strb	r3, [sp, #5]
+  41 0048 0F00000A 		beq	.L3
+  42 004c 0130D2E5 		ldrb	r3, [r2, #1]	@ zero_extendqisi2
+  43 0050 0CE08DE2 		add	lr, sp, #12
+  44 0054 0070D2E5 		ldrb	r7, [r2]	@ zero_extendqisi2
+  45 0058 0460D2E5 		ldrb	r6, [r2, #4]	@ zero_extendqisi2
+  46 005c 0550D2E5 		ldrb	r5, [r2, #5]	@ zero_extendqisi2
+  47 0060 B640D2E1 		ldrh	r4, [r2, #6]
+  48 0064 0D30CDE5 		strb	r3, [sp, #13]
+  49 0068 0A10D2E5 		ldrb	r1, [r2, #10]	@ zero_extendqisi2
+  50 006c B830D2E1 		ldrh	r3, [r2, #8]
+  51 0070 0C70CDE5 		strb	r7, [sp, #12]
+  52 0074 BEC0CDE1 		strh	ip, [sp, #14]	@ movhi
+  53 0078 1060CDE5 		strb	r6, [sp, #16]
+  54 007c 1150CDE5 		strb	r5, [sp, #17]
+  55 0080 B241CDE1 		strh	r4, [sp, #18]	@ movhi
+  56 0084 1610CDE5 		strb	r1, [sp, #22]
+  57 0088 B431CDE1 		strh	r3, [sp, #20]	@ movhi
+  58              	.L3:
+  59 008c 002000E3 		movw	r2, #:lower16:R_VDC_OnInitialize
+  60 0090 0030A0E1 		mov	r3, r0
+  61 0094 002040E3 		movt	r2, #:upper16:R_VDC_OnInitialize
+  62 0098 04108DE2 		add	r1, sp, #4
+  63 009c 08E08DE5 		str	lr, [sp, #8]
+  64 00a0 FEFFFFEB 		bl	R_VDC_Initialize
+  65 00a4 1CD08DE2 		add	sp, sp, #28
+  66              		@ sp needed
+  67 00a8 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+  68              	.L4:
+  69 00ac 0500A0E3 		mov	r0, #5
+  70 00b0 1EFF2FE1 		bx	lr
+  72              		.section	.text.R_RVAPI_TerminateVDC,"ax",%progbits
+  73              		.align	2
+  74              		.global	R_RVAPI_TerminateVDC
+  75              		.syntax unified
+  76              		.arm
+  77              		.fpu neon
+  79              	R_RVAPI_TerminateVDC:
+  80              		@ args = 0, pretend = 0, frame = 0
+  81              		@ frame_needed = 0, uses_anonymous_args = 0
+  82              		@ link register save eliminated.
+  83 0000 001000E3 		movw	r1, #:lower16:R_VDC_OnFinalize
+  84 0004 0020A0E1 		mov	r2, r0
+  85 0008 001040E3 		movt	r1, #:upper16:R_VDC_OnFinalize
+  86 000c FEFFFFEA 		b	R_VDC_Terminate
+  88              		.section	.text.R_RVAPI_DispControlVDC,"ax",%progbits
+  89              		.align	2
+  90              		.global	R_RVAPI_DispControlVDC
+  91              		.syntax unified
+  92              		.arm
+  93              		.fpu neon
+  95              	R_RVAPI_DispControlVDC:
+  96              		@ args = 0, pretend = 0, frame = 128
+  97              		@ frame_needed = 0, uses_anonymous_args = 0
+  98 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  99 0004 004052E2 		subs	r4, r2, #0
+ 100 0008 80D04DE2 		sub	sp, sp, #128
+ 101 000c 0530A003 		moveq	r3, #5
+ 102 0010 6C00000A 		beq	.L13
+ 103 0014 B0C1D4E1 		ldrh	ip, [r4, #16]
+ 104 0018 0130A0E1 		mov	r3, r1
+ 105 001c B271D4E1 		ldrh	r7, [r4, #18]
+ 106 0020 0020A0E3 		mov	r2, #0
+ 107 0024 B460D4E1 		ldrh	r6, [r4, #4]
+ 108 0028 3C108DE2 		add	r1, sp, #60
+ 109 002c 3C30CDE5 		strb	r3, [sp, #60]
+ 110 0030 0050A0E1 		mov	r5, r0
+ 111 0034 BE30D4E1 		ldrh	r3, [r4, #14]
+ 112 0038 B6E0D4E1 		ldrh	lr, [r4, #6]
+ 113 003c BEC3CDE1 		strh	ip, [sp, #62]	@ movhi
+ 114 0040 BCC0D4E1 		ldrh	ip, [r4, #12]
+ 115 0044 BA34CDE1 		strh	r3, [sp, #74]	@ movhi
+ 116 0048 B074CDE1 		strh	r7, [sp, #64]	@ movhi
+ 117 004c B464CDE1 		strh	r6, [sp, #68]	@ movhi
+ 118 0050 B6E4CDE1 		strh	lr, [sp, #70]	@ movhi
+ 119 0054 B8C4CDE1 		strh	ip, [sp, #72]	@ movhi
+ 120 0058 3D20CDE5 		strb	r2, [sp, #61]
+ 121 005c B224CDE1 		strh	r2, [sp, #66]	@ movhi
+ 122 0060 4C208DE5 		str	r2, [sp, #76]
+ 123 0064 FEFFFFEB 		bl	R_VDC_SyncControl
+ 124 0068 003050E2 		subs	r3, r0, #0
+ 125 006c 5500001A 		bne	.L13
+ 126 0070 0500A0E1 		mov	r0, r5
+ 127 0074 B250D4E1 		ldrh	r5, [r4, #2]
+ 128 0078 B470D4E1 		ldrh	r7, [r4, #4]
+ 129 007c 002000E3 		movw	r2, #:lower16:full_screen
+ 130 0080 B660D4E1 		ldrh	r6, [r4, #6]
+ 131 0084 002040E3 		movt	r2, #:upper16:full_screen
+ 132 0088 BCE0D4E1 		ldrh	lr, [r4, #12]
+ 133 008c 0010E0E3 		mvn	r1, #0
+ 134 0090 BEC0D4E1 		ldrh	ip, [r4, #14]
+ 135 0094 B250CDE1 		strh	r5, [sp, #2]	@ movhi
+ 136 0098 1750D4E5 		ldrb	r5, [r4, #23]	@ zero_extendqisi2
+ 137 009c B080D4E1 		ldrh	r8, [r4]
+ 138 00a0 B070C2E1 		strh	r7, [r2]	@ movhi
+ 139 00a4 0650CDE5 		strb	r5, [sp, #6]
+ 140 00a8 B260C2E1 		strh	r6, [r2, #2]	@ movhi
+ 141 00ac B850D4E1 		ldrh	r5, [r4, #8]
+ 142 00b0 B4E0C2E1 		strh	lr, [r2, #4]	@ movhi
+ 143 00b4 B6C0C2E1 		strh	ip, [r2, #6]	@ movhi
+ 144 00b8 BA20D4E1 		ldrh	r2, [r4, #10]
+ 145 00bc B080CDE1 		strh	r8, [sp]	@ movhi
+ 146 00c0 BC50CDE1 		strh	r5, [sp, #12]	@ movhi
+ 147 00c4 1480D4E5 		ldrb	r8, [r4, #20]	@ zero_extendqisi2
+ 148 00c8 1850D4E5 		ldrb	r5, [r4, #24]	@ zero_extendqisi2
+ 149 00cc BE20CDE1 		strh	r2, [sp, #14]	@ movhi
+ 150 00d0 1520D4E5 		ldrb	r2, [r4, #21]	@ zero_extendqisi2
+ 151 00d4 0430CDE5 		strb	r3, [sp, #4]
+ 152 00d8 0530CDE5 		strb	r3, [sp, #5]
+ 153 00dc 0830CDE5 		strb	r3, [sp, #8]
+ 154 00e0 1030CDE5 		strb	r3, [sp, #16]
+ 155 00e4 1130CDE5 		strb	r3, [sp, #17]
+ 156 00e8 1430CDE5 		strb	r3, [sp, #20]
+ 157 00ec B033CDE1 		strh	r3, [sp, #48]	@ movhi
+ 158 00f0 B233CDE1 		strh	r3, [sp, #50]	@ movhi
+ 159 00f4 0780CDE5 		strb	r8, [sp, #7]
+ 160 00f8 18808DE2 		add	r8, sp, #24
+ 161 00fc 1250CDE5 		strb	r5, [sp, #18]
+ 162 0100 24508DE2 		add	r5, sp, #36
+ 163 0104 1320CDE5 		strb	r2, [sp, #19]
+ 164 0108 30208DE2 		add	r2, sp, #48
+ 165 010c 3430CDE5 		strb	r3, [sp, #52]
+ 166 0110 B6C2CDE1 		strh	ip, [sp, #38]	@ movhi
+ 167 0114 19C0D4E5 		ldrb	ip, [r4, #25]	@ zero_extendqisi2
+ 168 0118 1F10CDE5 		strb	r1, [sp, #31]
+ 169 011c 2B10CDE5 		strb	r1, [sp, #43]
+ 170 0120 36C0CDE5 		strb	ip, [sp, #54]
+ 171 0124 16C0D4E5 		ldrb	ip, [r4, #22]	@ zero_extendqisi2
+ 172 0128 BA11D4E1 		ldrh	r1, [r4, #26]
+ 173 012c B871CDE1 		strh	r7, [sp, #24]	@ movhi
+ 174 0130 0C708DE2 		add	r7, sp, #12
+ 175 0134 37C0CDE5 		strb	ip, [sp, #55]
+ 176 0138 BCC1D4E1 		ldrh	ip, [r4, #28]
+ 177 013c 3530CDE5 		strb	r3, [sp, #53]
+ 178 0140 3830CDE5 		strb	r3, [sp, #56]
+ 179 0144 1C30CDE5 		strb	r3, [sp, #28]
+ 180 0148 1D30CDE5 		strb	r3, [sp, #29]
+ 181 014c 1E30CDE5 		strb	r3, [sp, #30]
+ 182 0150 2030CDE5 		strb	r3, [sp, #32]
+ 183 0154 2830CDE5 		strb	r3, [sp, #40]
+ 184 0158 2930CDE5 		strb	r3, [sp, #41]
+ 185 015c 2A30CDE5 		strb	r3, [sp, #42]
+ 186 0160 2C30CDE5 		strb	r3, [sp, #44]
+ 187 0164 64308DE5 		str	r3, [sp, #100]
+ 188 0168 68308DE5 		str	r3, [sp, #104]
+ 189 016c 6C308DE5 		str	r3, [sp, #108]
+ 190 0170 B4E2CDE1 		strh	lr, [sp, #36]	@ movhi
+ 191 0174 B015CDE1 		strh	r1, [sp, #80]	@ movhi
+ 192 0178 50108DE2 		add	r1, sp, #80
+ 193 017c 70208DE5 		str	r2, [sp, #112]
+ 194 0180 BA61CDE1 		strh	r6, [sp, #26]	@ movhi
+ 195 0184 54D08DE5 		str	sp, [sp, #84]
+ 196 0188 B2C5CDE1 		strh	ip, [sp, #82]	@ movhi
+ 197 018c 58808DE5 		str	r8, [sp, #88]
+ 198 0190 5C708DE5 		str	r7, [sp, #92]
+ 199 0194 60508DE5 		str	r5, [sp, #96]
+ 200 0198 1EC0D4E5 		ldrb	ip, [r4, #30]	@ zero_extendqisi2
+ 201 019c 2120D4E5 		ldrb	r2, [r4, #33]	@ zero_extendqisi2
+ 202 01a0 7530CDE5 		strb	r3, [sp, #117]
+ 203 01a4 7630CDE5 		strb	r3, [sp, #118]
+ 204 01a8 7830CDE5 		strb	r3, [sp, #120]
+ 205 01ac 7930CDE5 		strb	r3, [sp, #121]
+ 206 01b0 7A30CDE5 		strb	r3, [sp, #122]
+ 207 01b4 7C308DE5 		str	r3, [sp, #124]
+ 208 01b8 74C0CDE5 		strb	ip, [sp, #116]
+ 209 01bc 7720CDE5 		strb	r2, [sp, #119]
+ 210 01c0 FEFFFFEB 		bl	R_VDC_DisplayOutput
+ 211 01c4 0030A0E1 		mov	r3, r0
+ 212              	.L13:
+ 213 01c8 0300A0E1 		mov	r0, r3
+ 214 01cc 80D08DE2 		add	sp, sp, #128
+ 215              		@ sp needed
+ 216 01d0 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 218              		.section	.text.R_RVAPI_DispControlConfigVDC,"ax",%progbits
+ 219              		.align	2
+ 220              		.global	R_RVAPI_DispControlConfigVDC
+ 221              		.syntax unified
+ 222              		.arm
+ 223              		.fpu neon
+ 225              	R_RVAPI_DispControlConfigVDC:
+ 226              		@ args = 0, pretend = 0, frame = 128
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 229 0004 004052E2 		subs	r4, r2, #0
+ 230 0008 80D04DE2 		sub	sp, sp, #128
+ 231 000c 0530A003 		moveq	r3, #5
+ 232 0010 6E00000A 		beq	.L17
+ 233 0014 B0C1D4E1 		ldrh	ip, [r4, #16]
+ 234 0018 0130A0E1 		mov	r3, r1
+ 235 001c B271D4E1 		ldrh	r7, [r4, #18]
+ 236 0020 0020A0E3 		mov	r2, #0
+ 237 0024 B460D4E1 		ldrh	r6, [r4, #4]
+ 238 0028 3C108DE2 		add	r1, sp, #60
+ 239 002c 3C30CDE5 		strb	r3, [sp, #60]
+ 240 0030 0050A0E1 		mov	r5, r0
+ 241 0034 BE30D4E1 		ldrh	r3, [r4, #14]
+ 242 0038 B6E0D4E1 		ldrh	lr, [r4, #6]
+ 243 003c BEC3CDE1 		strh	ip, [sp, #62]	@ movhi
+ 244 0040 BCC0D4E1 		ldrh	ip, [r4, #12]
+ 245 0044 BA34CDE1 		strh	r3, [sp, #74]	@ movhi
+ 246 0048 B074CDE1 		strh	r7, [sp, #64]	@ movhi
+ 247 004c B464CDE1 		strh	r6, [sp, #68]	@ movhi
+ 248 0050 B6E4CDE1 		strh	lr, [sp, #70]	@ movhi
+ 249 0054 B8C4CDE1 		strh	ip, [sp, #72]	@ movhi
+ 250 0058 3D20CDE5 		strb	r2, [sp, #61]
+ 251 005c B224CDE1 		strh	r2, [sp, #66]	@ movhi
+ 252 0060 4C208DE5 		str	r2, [sp, #76]
+ 253 0064 FEFFFFEB 		bl	R_VDC_SyncControl
+ 254 0068 003050E2 		subs	r3, r0, #0
+ 255 006c 5700001A 		bne	.L17
+ 256 0070 0500A0E1 		mov	r0, r5
+ 257 0074 B250D4E1 		ldrh	r5, [r4, #2]
+ 258 0078 B470D4E1 		ldrh	r7, [r4, #4]
+ 259 007c 002000E3 		movw	r2, #:lower16:full_screen
+ 260 0080 B660D4E1 		ldrh	r6, [r4, #6]
+ 261 0084 002040E3 		movt	r2, #:upper16:full_screen
+ 262 0088 BCE0D4E1 		ldrh	lr, [r4, #12]
+ 263 008c 0010E0E3 		mvn	r1, #0
+ 264 0090 BEC0D4E1 		ldrh	ip, [r4, #14]
+ 265 0094 B250CDE1 		strh	r5, [sp, #2]	@ movhi
+ 266 0098 1750D4E5 		ldrb	r5, [r4, #23]	@ zero_extendqisi2
+ 267 009c B080D4E1 		ldrh	r8, [r4]
+ 268 00a0 B070C2E1 		strh	r7, [r2]	@ movhi
+ 269 00a4 0650CDE5 		strb	r5, [sp, #6]
+ 270 00a8 B260C2E1 		strh	r6, [r2, #2]	@ movhi
+ 271 00ac B850D4E1 		ldrh	r5, [r4, #8]
+ 272 00b0 B4E0C2E1 		strh	lr, [r2, #4]	@ movhi
+ 273 00b4 B6C0C2E1 		strh	ip, [r2, #6]	@ movhi
+ 274 00b8 BA20D4E1 		ldrh	r2, [r4, #10]
+ 275 00bc B080CDE1 		strh	r8, [sp]	@ movhi
+ 276 00c0 BC50CDE1 		strh	r5, [sp, #12]	@ movhi
+ 277 00c4 1480D4E5 		ldrb	r8, [r4, #20]	@ zero_extendqisi2
+ 278 00c8 1850D4E5 		ldrb	r5, [r4, #24]	@ zero_extendqisi2
+ 279 00cc BE20CDE1 		strh	r2, [sp, #14]	@ movhi
+ 280 00d0 1520D4E5 		ldrb	r2, [r4, #21]	@ zero_extendqisi2
+ 281 00d4 0430CDE5 		strb	r3, [sp, #4]
+ 282 00d8 0530CDE5 		strb	r3, [sp, #5]
+ 283 00dc 0830CDE5 		strb	r3, [sp, #8]
+ 284 00e0 1030CDE5 		strb	r3, [sp, #16]
+ 285 00e4 1130CDE5 		strb	r3, [sp, #17]
+ 286 00e8 1430CDE5 		strb	r3, [sp, #20]
+ 287 00ec B033CDE1 		strh	r3, [sp, #48]	@ movhi
+ 288 00f0 B233CDE1 		strh	r3, [sp, #50]	@ movhi
+ 289 00f4 0780CDE5 		strb	r8, [sp, #7]
+ 290 00f8 18808DE2 		add	r8, sp, #24
+ 291 00fc 1250CDE5 		strb	r5, [sp, #18]
+ 292 0100 24508DE2 		add	r5, sp, #36
+ 293 0104 1320CDE5 		strb	r2, [sp, #19]
+ 294 0108 30208DE2 		add	r2, sp, #48
+ 295 010c 3430CDE5 		strb	r3, [sp, #52]
+ 296 0110 B6C2CDE1 		strh	ip, [sp, #38]	@ movhi
+ 297 0114 19C0D4E5 		ldrb	ip, [r4, #25]	@ zero_extendqisi2
+ 298 0118 1F10CDE5 		strb	r1, [sp, #31]
+ 299 011c 2B10CDE5 		strb	r1, [sp, #43]
+ 300 0120 36C0CDE5 		strb	ip, [sp, #54]
+ 301 0124 16C0D4E5 		ldrb	ip, [r4, #22]	@ zero_extendqisi2
+ 302 0128 BA11D4E1 		ldrh	r1, [r4, #26]
+ 303 012c B871CDE1 		strh	r7, [sp, #24]	@ movhi
+ 304 0130 0C708DE2 		add	r7, sp, #12
+ 305 0134 37C0CDE5 		strb	ip, [sp, #55]
+ 306 0138 BCC1D4E1 		ldrh	ip, [r4, #28]
+ 307 013c 3530CDE5 		strb	r3, [sp, #53]
+ 308 0140 3830CDE5 		strb	r3, [sp, #56]
+ 309 0144 1C30CDE5 		strb	r3, [sp, #28]
+ 310 0148 1D30CDE5 		strb	r3, [sp, #29]
+ 311 014c 1E30CDE5 		strb	r3, [sp, #30]
+ 312 0150 2030CDE5 		strb	r3, [sp, #32]
+ 313 0154 2830CDE5 		strb	r3, [sp, #40]
+ 314 0158 2930CDE5 		strb	r3, [sp, #41]
+ 315 015c 2A30CDE5 		strb	r3, [sp, #42]
+ 316 0160 2C30CDE5 		strb	r3, [sp, #44]
+ 317 0164 64308DE5 		str	r3, [sp, #100]
+ 318 0168 68308DE5 		str	r3, [sp, #104]
+ 319 016c 6C308DE5 		str	r3, [sp, #108]
+ 320 0170 B4E2CDE1 		strh	lr, [sp, #36]	@ movhi
+ 321 0174 B015CDE1 		strh	r1, [sp, #80]	@ movhi
+ 322 0178 50108DE2 		add	r1, sp, #80
+ 323 017c B2C5CDE1 		strh	ip, [sp, #82]	@ movhi
+ 324 0180 70208DE5 		str	r2, [sp, #112]
+ 325 0184 BA61CDE1 		strh	r6, [sp, #26]	@ movhi
+ 326 0188 54D08DE5 		str	sp, [sp, #84]
+ 327 018c 58808DE5 		str	r8, [sp, #88]
+ 328 0190 5C708DE5 		str	r7, [sp, #92]
+ 329 0194 60508DE5 		str	r5, [sp, #96]
+ 330 0198 1E50D4E5 		ldrb	r5, [r4, #30]	@ zero_extendqisi2
+ 331 019c 1FE0D4E5 		ldrb	lr, [r4, #31]	@ zero_extendqisi2
+ 332 01a0 20C0D4E5 		ldrb	ip, [r4, #32]	@ zero_extendqisi2
+ 333 01a4 2120D4E5 		ldrb	r2, [r4, #33]	@ zero_extendqisi2
+ 334 01a8 7830CDE5 		strb	r3, [sp, #120]
+ 335 01ac 7930CDE5 		strb	r3, [sp, #121]
+ 336 01b0 7A30CDE5 		strb	r3, [sp, #122]
+ 337 01b4 7C308DE5 		str	r3, [sp, #124]
+ 338 01b8 7450CDE5 		strb	r5, [sp, #116]
+ 339 01bc 75E0CDE5 		strb	lr, [sp, #117]
+ 340 01c0 76C0CDE5 		strb	ip, [sp, #118]
+ 341 01c4 7720CDE5 		strb	r2, [sp, #119]
+ 342 01c8 FEFFFFEB 		bl	R_VDC_DisplayOutput
+ 343 01cc 0030A0E1 		mov	r3, r0
+ 344              	.L17:
+ 345 01d0 0300A0E1 		mov	r0, r3
+ 346 01d4 80D08DE2 		add	sp, sp, #128
+ 347              		@ sp needed
+ 348 01d8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 350              		.section	.text.R_RVAPI_GraphCreateSurfaceVDC,"ax",%progbits
+ 351              		.align	2
+ 352              		.global	R_RVAPI_GraphCreateSurfaceVDC
+ 353              		.syntax unified
+ 354              		.arm
+ 355              		.fpu neon
+ 357              	R_RVAPI_GraphCreateSurfaceVDC:
+ 358              		@ args = 0, pretend = 0, frame = 40
+ 359              		@ frame_needed = 0, uses_anonymous_args = 0
+ 360 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 361 0004 004051E2 		subs	r4, r1, #0
+ 362 0008 2CD04DE2 		sub	sp, sp, #44
+ 363 000c 0500A003 		moveq	r0, #5
+ 364 0010 4200000A 		beq	.L31
+ 365 0014 002000E3 		movw	r2, #:lower16:full_screen
+ 366 0018 B270D4E1 		ldrh	r7, [r4, #2]
+ 367 001c 002040E3 		movt	r2, #:upper16:full_screen
+ 368 0020 B660D4E1 		ldrh	r6, [r4, #6]
+ 369 0024 B0C0D2E1 		ldrh	ip, [r2]
+ 370 0028 0030A0E3 		mov	r3, #0
+ 371 002c B410D2E1 		ldrh	r1, [r2, #4]
+ 372 0030 01E0A0E3 		mov	lr, #1
+ 373 0034 0C30CDE5 		strb	r3, [sp, #12]
+ 374 0038 0050A0E1 		mov	r5, r0
+ 375 003c 07208CE0 		add	r2, ip, r7
+ 376 0040 0CC094E5 		ldr	ip, [r4, #12]
+ 377 0044 061081E0 		add	r1, r1, r6
+ 378 0048 106094E5 		ldr	r6, [r4, #16]
+ 379 004c B412CDE1 		strh	r1, [sp, #36]	@ movhi
+ 380 0050 1410D4E5 		ldrb	r1, [r4, #20]	@ zero_extendqisi2
+ 381 0054 10C08DE5 		str	ip, [sp, #16]
+ 382 0058 1CC0D4E5 		ldrb	ip, [r4, #28]	@ zero_extendqisi2
+ 383 005c 1D10CDE5 		strb	r1, [sp, #29]
+ 384 0060 B410D4E1 		ldrh	r1, [r4, #4]
+ 385 0064 14608DE5 		str	r6, [sp, #20]
+ 386 0068 1EC0CDE5 		strb	ip, [sp, #30]
+ 387 006c 1D60D4E5 		ldrb	r6, [r4, #29]	@ zero_extendqisi2
+ 388 0070 B8C0D4E1 		ldrh	ip, [r4, #8]
+ 389 0074 B022CDE1 		strh	r2, [sp, #32]	@ movhi
+ 390 0078 0C208DE2 		add	r2, sp, #12
+ 391 007c B212CDE1 		strh	r1, [sp, #34]	@ movhi
+ 392 0080 D010D4E1 		ldrsb	r1, [r4]
+ 393 0084 0E30CDE5 		strb	r3, [sp, #14]
+ 394 0088 0F30CDE5 		strb	r3, [sp, #15]
+ 395 008c 18308DE5 		str	r3, [sp, #24]
+ 396 0090 1F60CDE5 		strb	r6, [sp, #31]
+ 397 0094 B6C2CDE1 		strh	ip, [sp, #38]	@ movhi
+ 398 0098 0DE0CDE5 		strb	lr, [sp, #13]
+ 399 009c 1CE0CDE5 		strb	lr, [sp, #28]
+ 400 00a0 FEFFFFEB 		bl	R_VDC_ReadDataControl
+ 401 00a4 1430D4E5 		ldrb	r3, [r4, #20]	@ zero_extendqisi2
+ 402 00a8 052043E2 		sub	r2, r3, #5
+ 403 00ac 020052E3 		cmp	r2, #2
+ 404 00b0 1000008A 		bhi	.L22
+ 405 00b4 050053E3 		cmp	r3, #5
+ 406 00b8 1A00000A 		beq	.L33
+ 407 00bc 060053E3 		cmp	r3, #6
+ 408 00c0 183094E5 		ldr	r3, [r4, #24]
+ 409 00c4 2000000A 		beq	.L34
+ 410 00c8 000053E3 		cmp	r3, #0
+ 411 00cc 0220A0E3 		mov	r2, #2
+ 412 00d0 00300003 		movweq	r3, #:lower16:.LANCHOR2
+ 413 00d4 04208DE5 		str	r2, [sp, #4]
+ 414 00d8 00304003 		movteq	r3, #:upper16:.LANCHOR2
+ 415 00dc 08308D05 		streq	r3, [sp, #8]
+ 416 00e0 0000000A 		beq	.L25
+ 417              	.L28:
+ 418 00e4 08308DE5 		str	r3, [sp, #8]
+ 419              	.L25:
+ 420 00e8 04208DE2 		add	r2, sp, #4
+ 421 00ec D010D4E1 		ldrsb	r1, [r4]
+ 422 00f0 0500A0E1 		mov	r0, r5
+ 423 00f4 FEFFFFEB 		bl	R_VDC_CLUT
+ 424              	.L22:
+ 425 00f8 000050E3 		cmp	r0, #0
+ 426 00fc 0700001A 		bne	.L31
+ 427 0100 1EC0D4E5 		ldrb	ip, [r4, #30]	@ zero_extendqisi2
+ 428 0104 28308DE2 		add	r3, sp, #40
+ 429 0108 0320A0E1 		mov	r2, r3
+ 430 010c 0500A0E1 		mov	r0, r5
+ 431 0110 D010D4E1 		ldrsb	r1, [r4]
+ 432 0114 25C063E5 		strb	ip, [r3, #-37]!
+ 433 0118 243022E5 		str	r3, [r2, #-36]!
+ 434 011c FEFFFFEB 		bl	R_VDC_StartProcess
+ 435              	.L31:
+ 436 0120 2CD08DE2 		add	sp, sp, #44
+ 437              		@ sp needed
+ 438 0124 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 439              	.L33:
+ 440 0128 183094E5 		ldr	r3, [r4, #24]
+ 441 012c 012CA0E3 		mov	r2, #256
+ 442 0130 04208DE5 		str	r2, [sp, #4]
+ 443 0134 000053E3 		cmp	r3, #0
+ 444 0138 00300003 		movweq	r3, #:lower16:.LANCHOR0
+ 445 013c 00304003 		movteq	r3, #:upper16:.LANCHOR0
+ 446 0140 08308D05 		streq	r3, [sp, #8]
+ 447 0144 E6FFFF1A 		bne	.L28
+ 448 0148 E6FFFFEA 		b	.L25
+ 449              	.L34:
+ 450 014c 000053E3 		cmp	r3, #0
+ 451 0150 1020A0E3 		mov	r2, #16
+ 452 0154 00300003 		movweq	r3, #:lower16:.LANCHOR1
+ 453 0158 04208DE5 		str	r2, [sp, #4]
+ 454 015c 00304003 		movteq	r3, #:upper16:.LANCHOR1
+ 455 0160 08308D05 		streq	r3, [sp, #8]
+ 456 0164 DEFFFF1A 		bne	.L28
+ 457 0168 DEFFFFEA 		b	.L25
+ 459              		.section	.text.R_RVAPI_GraphChangeSurfaceVDC,"ax",%progbits
+ 460              		.align	2
+ 461              		.global	R_RVAPI_GraphChangeSurfaceVDC
+ 462              		.syntax unified
+ 463              		.arm
+ 464              		.fpu neon
+ 466              	R_RVAPI_GraphChangeSurfaceVDC:
+ 467              		@ args = 0, pretend = 0, frame = 16
+ 468              		@ frame_needed = 0, uses_anonymous_args = 0
+ 469 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 470 0004 14D04DE2 		sub	sp, sp, #20
+ 471 0008 0030A0E3 		mov	r3, #0
+ 472 000c 00208DE5 		str	r2, [sp]
+ 473 0010 0D20A0E1 		mov	r2, sp
+ 474 0014 0C308DE5 		str	r3, [sp, #12]
+ 475 0018 08308DE5 		str	r3, [sp, #8]
+ 476 001c 04308DE5 		str	r3, [sp, #4]
+ 477 0020 FEFFFFEB 		bl	R_VDC_ChangeReadProcess
+ 478 0024 14D08DE2 		add	sp, sp, #20
+ 479              		@ sp needed
+ 480 0028 04F09DE4 		ldr	pc, [sp], #4
+ 482              		.section	.text.R_RVAPI_GraphChangeSurfaceConfigVDC,"ax",%progbits
+ 483              		.align	2
+ 484              		.global	R_RVAPI_GraphChangeSurfaceConfigVDC
+ 485              		.syntax unified
+ 486              		.arm
+ 487              		.fpu neon
+ 489              	R_RVAPI_GraphChangeSurfaceConfigVDC:
+ 490              		@ args = 8, pretend = 0, frame = 40
+ 491              		@ frame_needed = 0, uses_anonymous_args = 0
+ 492 0000 000053E3 		cmp	r3, #0
+ 493 0004 F0432DE9 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 494 0008 2CD04DE2 		sub	sp, sp, #44
+ 495 000c 48509DE5 		ldr	r5, [sp, #72]
+ 496 0010 4C409DE5 		ldr	r4, [sp, #76]
+ 497 0014 0E00000A 		beq	.L38
+ 498 0018 00C000E3 		movw	ip, #:lower16:full_screen
+ 499 001c B080D3E1 		ldrh	r8, [r3]
+ 500 0020 00C040E3 		movt	ip, #:upper16:full_screen
+ 501 0024 B490D3E1 		ldrh	r9, [r3, #4]
+ 502 0028 B4E0DCE1 		ldrh	lr, [ip, #4]
+ 503 002c B0C0DCE1 		ldrh	ip, [ip]
+ 504 0030 B670D3E1 		ldrh	r7, [r3, #6]
+ 505 0034 B260D3E1 		ldrh	r6, [r3, #2]
+ 506 0038 09E08EE0 		add	lr, lr, r9
+ 507 003c 08308CE0 		add	r3, ip, r8
+ 508 0040 B4E1CDE1 		strh	lr, [sp, #20]	@ movhi
+ 509 0044 B031CDE1 		strh	r3, [sp, #16]	@ movhi
+ 510 0048 10308DE2 		add	r3, sp, #16
+ 511 004c B671CDE1 		strh	r7, [sp, #22]	@ movhi
+ 512 0050 B261CDE1 		strh	r6, [sp, #18]	@ movhi
+ 513              	.L38:
+ 514 0054 00208DE5 		str	r2, [sp]
+ 515 0058 28208DE2 		add	r2, sp, #40
+ 516 005c 04508DE5 		str	r5, [sp, #4]
+ 517 0060 08308DE5 		str	r3, [sp, #8]
+ 518 0064 0C408DE5 		str	r4, [sp, #12]
+ 519 0068 DF0A6DF4 		vld1.64	{d16-d17}, [sp:64]
+ 520 006c 040B62ED 		vstmdb	r2!, {d16-d17}
+ 521 0070 FEFFFFEB 		bl	R_VDC_ChangeReadProcess
+ 522 0074 2CD08DE2 		add	sp, sp, #44
+ 523              		@ sp needed
+ 524 0078 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 526              		.section	.text.R_RVAPI_GraphDestroySurfaceVDC,"ax",%progbits
+ 527              		.align	2
+ 528              		.global	R_RVAPI_GraphDestroySurfaceVDC
+ 529              		.syntax unified
+ 530              		.arm
+ 531              		.fpu neon
+ 533              	R_RVAPI_GraphDestroySurfaceVDC:
+ 534              		@ args = 0, pretend = 0, frame = 0
+ 535              		@ frame_needed = 0, uses_anonymous_args = 0
+ 536 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 537 0004 0040A0E1 		mov	r4, r0
+ 538 0008 0150A0E1 		mov	r5, r1
+ 539 000c FEFFFFEB 		bl	R_VDC_StopProcess
+ 540 0010 000050E3 		cmp	r0, #0
+ 541 0014 7080BD18 		popne	{r4, r5, r6, pc}
+ 542 0018 0510A0E1 		mov	r1, r5
+ 543 001c 0400A0E1 		mov	r0, r4
+ 544 0020 7040BDE8 		pop	{r4, r5, r6, lr}
+ 545 0024 FEFFFFEA 		b	R_VDC_ReleaseDataControl
+ 547              		.section	.text.R_RVAPI_DispPortSettingVDC,"ax",%progbits
+ 548              		.align	2
+ 549              		.global	R_RVAPI_DispPortSettingVDC
+ 550              		.syntax unified
+ 551              		.arm
+ 552              		.fpu neon
+ 554              	R_RVAPI_DispPortSettingVDC:
+ 555              		@ args = 0, pretend = 0, frame = 0
+ 556              		@ frame_needed = 0, uses_anonymous_args = 0
+ 557              		@ link register save eliminated.
+ 558 0000 000051E3 		cmp	r1, #0
+ 559 0004 1EFF2F01 		bxeq	lr
+ 560 0008 11FF2FE1 		bx	r1	@ indirect register sibling call
+ 562              		.section	.text.R_RVAPI_VideoControlVDC,"ax",%progbits
+ 563              		.align	2
+ 564              		.global	R_RVAPI_VideoControlVDC
+ 565              		.syntax unified
+ 566              		.arm
+ 567              		.fpu neon
+ 569              	R_RVAPI_VideoControlVDC:
+ 570              		@ args = 0, pretend = 0, frame = 32
+ 571              		@ frame_needed = 0, uses_anonymous_args = 0
+ 572 0000 003051E2 		subs	r3, r1, #0
+ 573 0004 2300000A 		beq	.L48
+ 574 0008 70402DE9 		push	{r4, r5, r6, lr}
+ 575 000c 0150A0E3 		mov	r5, #1
+ 576 0010 0360D3E5 		ldrb	r6, [r3, #3]	@ zero_extendqisi2
+ 577 0014 20D04DE2 		sub	sp, sp, #32
+ 578 0018 ADE100E3 		movw	lr, #429
+ 579 001c 5A4300E3 		movw	r4, #858
+ 580 0020 1050CDE5 		strb	r5, [sp, #16]
+ 581 0024 0960CDE5 		strb	r6, [sp, #9]
+ 582 0028 0550D3E5 		ldrb	r5, [r3, #5]	@ zero_extendqisi2
+ 583 002c 0460D3E5 		ldrb	r6, [r3, #4]	@ zero_extendqisi2
+ 584 0030 0020D3E5 		ldrb	r2, [r3]	@ zero_extendqisi2
+ 585 0034 01C0D3E5 		ldrb	ip, [r3, #1]	@ zero_extendqisi2
+ 586 0038 0210D3E5 		ldrb	r1, [r3, #2]	@ zero_extendqisi2
+ 587 003c 0A60CDE5 		strb	r6, [sp, #10]
+ 588 0040 0B50CDE5 		strb	r5, [sp, #11]
+ 589 0044 0660D3E5 		ldrb	r6, [r3, #6]	@ zero_extendqisi2
+ 590 0048 0750D3E5 		ldrb	r5, [r3, #7]	@ zero_extendqisi2
+ 591 004c 0830D3E5 		ldrb	r3, [r3, #8]	@ zero_extendqisi2
+ 592 0050 0420CDE5 		strb	r2, [sp, #4]
+ 593 0054 0020A0E3 		mov	r2, #0
+ 594 0058 05C0CDE5 		strb	ip, [sp, #5]
+ 595 005c 04C08DE2 		add	ip, sp, #4
+ 596 0060 0810CDE5 		strb	r1, [sp, #8]
+ 597 0064 10108DE2 		add	r1, sp, #16
+ 598 0068 0C60CDE5 		strb	r6, [sp, #12]
+ 599 006c 0D50CDE5 		strb	r5, [sp, #13]
+ 600 0070 0E30CDE5 		strb	r3, [sp, #14]
+ 601 0074 B241CDE1 		strh	r4, [sp, #18]	@ movhi
+ 602 0078 B4E1CDE1 		strh	lr, [sp, #20]	@ movhi
+ 603 007c 18208DE5 		str	r2, [sp, #24]
+ 604 0080 0620CDE5 		strb	r2, [sp, #6]
+ 605 0084 0720CDE5 		strb	r2, [sp, #7]
+ 606 0088 1CC08DE5 		str	ip, [sp, #28]
+ 607 008c FEFFFFEB 		bl	R_VDC_VideoInput
+ 608 0090 20D08DE2 		add	sp, sp, #32
+ 609              		@ sp needed
+ 610 0094 7080BDE8 		pop	{r4, r5, r6, pc}
+ 611              	.L48:
+ 612 0098 0B00A0E3 		mov	r0, #11
+ 613 009c 1EFF2FE1 		bx	lr
+ 615              		.section	.text.R_RVAPI_VideoCreateSurfaceVDC,"ax",%progbits
+ 616              		.align	2
+ 617              		.global	R_RVAPI_VideoCreateSurfaceVDC
+ 618              		.syntax unified
+ 619              		.arm
+ 620              		.fpu neon
+ 622              	R_RVAPI_VideoCreateSurfaceVDC:
+ 623              		@ args = 0, pretend = 0, frame = 88
+ 624              		@ frame_needed = 0, uses_anonymous_args = 0
+ 625 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 626 0004 004051E2 		subs	r4, r1, #0
+ 627 0008 5CD04DE2 		sub	sp, sp, #92
+ 628 000c 08E0A0E3 		mov	lr, #8
+ 629 0010 0030A0E3 		mov	r3, #0
+ 630 0014 0160A0E3 		mov	r6, #1
+ 631 0018 09C0A0E3 		mov	ip, #9
+ 632 001c 04E0CDE5 		strb	lr, [sp, #4]
+ 633 0020 0530CDE5 		strb	r3, [sp, #5]
+ 634 0024 0300A003 		moveq	r0, #3
+ 635 0028 0660CDE5 		strb	r6, [sp, #6]
+ 636 002c 07C0CDE5 		strb	ip, [sp, #7]
+ 637 0030 6800000A 		beq	.L54
+ 638 0034 B2C0D4E1 		ldrh	ip, [r4, #2]
+ 639 0038 0250A0E1 		mov	r5, r2
+ 640 003c 181094E5 		ldr	r1, [r4, #24]
+ 641 0040 2C208DE2 		add	r2, sp, #44
+ 642 0044 B4E0D4E1 		ldrh	lr, [r4, #4]
+ 643 0048 0070A0E1 		mov	r7, r0
+ 644 004c 01C04CE2 		sub	ip, ip, #1
+ 645 0050 3E30CDE5 		strb	r3, [sp, #62]
+ 646 0054 011041E2 		sub	r1, r1, #1
+ 647 0058 BCC2CDE1 		strh	ip, [sp, #44]	@ movhi
+ 648 005c 4C108DE5 		str	r1, [sp, #76]
+ 649 0060 B6C0D4E1 		ldrh	ip, [r4, #6]
+ 650 0064 B810D4E1 		ldrh	r1, [r4, #8]
+ 651 0068 4030CDE5 		strb	r3, [sp, #64]
+ 652 006c B0C3CDE1 		strh	ip, [sp, #48]	@ movhi
+ 653 0070 B213CDE1 		strh	r1, [sp, #50]	@ movhi
+ 654 0074 BEC1D4E1 		ldrh	ip, [r4, #30]
+ 655 0078 B012D4E1 		ldrh	r1, [r4, #32]
+ 656 007c 4130CDE5 		strb	r3, [sp, #65]
+ 657 0080 B6C3CDE1 		strh	ip, [sp, #54]	@ movhi
+ 658 0084 B813CDE1 		strh	r1, [sp, #56]	@ movhi
+ 659 0088 24C0D4E5 		ldrb	ip, [r4, #36]	@ zero_extendqisi2
+ 660 008c 2210D4E5 		ldrb	r1, [r4, #34]	@ zero_extendqisi2
+ 661 0090 BEE2CDE1 		strh	lr, [sp, #46]	@ movhi
+ 662 0094 3BC0CDE5 		strb	ip, [sp, #59]
+ 663 0098 3C10CDE5 		strb	r1, [sp, #60]
+ 664 009c 1CC0D4E5 		ldrb	ip, [r4, #28]	@ zero_extendqisi2
+ 665 00a0 2310D4E5 		ldrb	r1, [r4, #35]	@ zero_extendqisi2
+ 666 00a4 3460CDE5 		strb	r6, [sp, #52]
+ 667 00a8 3DC0CDE5 		strb	ip, [sp, #61]
+ 668 00ac 3F10CDE5 		strb	r1, [sp, #63]
+ 669 00b0 0CC094E5 		ldr	ip, [r4, #12]
+ 670 00b4 101094E5 		ldr	r1, [r4, #16]
+ 671 00b8 3A60CDE5 		strb	r6, [sp, #58]
+ 672 00bc 4260CDE5 		strb	r6, [sp, #66]
+ 673 00c0 48108DE5 		str	r1, [sp, #72]
+ 674 00c4 44C08DE5 		str	ip, [sp, #68]
+ 675 00c8 14C094E5 		ldr	ip, [r4, #20]
+ 676 00cc D010D4E1 		ldrsb	r1, [r4]
+ 677 00d0 54308DE5 		str	r3, [sp, #84]
+ 678 00d4 50C08DE5 		str	ip, [sp, #80]
+ 679 00d8 FEFFFFEB 		bl	R_VDC_WriteDataControl
+ 680 00dc 000050E3 		cmp	r0, #0
+ 681 00e0 3E00000A 		beq	.L66
+ 682 00e4 000055E3 		cmp	r5, #0
+ 683 00e8 3A00000A 		beq	.L54
+ 684              	.L68:
+ 685 00ec D030D4E1 		ldrsb	r3, [r4]
+ 686 00f0 000053E3 		cmp	r3, #0
+ 687 00f4 0200A013 		movne	r0, #2
+ 688 00f8 3600001A 		bne	.L54
+ 689 00fc 000050E3 		cmp	r0, #0
+ 690 0100 3400001A 		bne	.L54
+ 691 0104 2430D4E5 		ldrb	r3, [r4, #36]	@ zero_extendqisi2
+ 692 0108 0310A0E3 		mov	r1, #3
+ 693 010c 0CC094E5 		ldr	ip, [r4, #12]
+ 694 0110 0120A0E3 		mov	r2, #1
+ 695 0114 1000CDE5 		strb	r0, [sp, #16]
+ 696 0118 023043E2 		sub	r3, r3, #2
+ 697 011c 1200CDE5 		strb	r0, [sp, #18]
+ 698 0120 FD0013E3 		tst	r3, #253
+ 699 0124 103094E5 		ldr	r3, [r4, #16]
+ 700 0128 1300CDE5 		strb	r0, [sp, #19]
+ 701 012c 1C008DE5 		str	r0, [sp, #28]
+ 702 0130 14C08DE5 		str	ip, [sp, #20]
+ 703 0134 18308DE5 		str	r3, [sp, #24]
+ 704 0138 1110CDE5 		strb	r1, [sp, #17]
+ 705 013c 2020CDE5 		strb	r2, [sp, #32]
+ 706 0140 0500001A 		bne	.L56
+ 707 0144 B012D4E1 		ldrh	r1, [r4, #32]
+ 708 0148 58308DE2 		add	r3, sp, #88
+ 709 014c BE21D4E1 		ldrh	r2, [r4, #30]
+ 710 0150 B01563E1 		strh	r1, [r3, #-80]!	@ movhi
+ 711 0154 BA20CDE1 		strh	r2, [sp, #10]	@ movhi
+ 712 0158 1C308DE5 		str	r3, [sp, #28]
+ 713              	.L56:
+ 714 015c 1C30D4E5 		ldrb	r3, [r4, #28]	@ zero_extendqisi2
+ 715 0160 0110A0E3 		mov	r1, #1
+ 716 0164 B0E0D5E1 		ldrh	lr, [r5]
+ 717 0168 B4C0D5E1 		ldrh	ip, [r5, #4]
+ 718 016c 030053E3 		cmp	r3, #3
+ 719 0170 0860D5E5 		ldrb	r6, [r5, #8]	@ zero_extendqisi2
+ 720 0174 58208DD2 		addle	r2, sp, #88
+ 721 0178 0C40A0C3 		movgt	r4, #12
+ 722 017c 033082D0 		addle	r3, r2, r3
+ 723 0180 10208DE2 		add	r2, sp, #16
+ 724 0184 544053D5 		ldrble	r4, [r3, #-84]	@ zero_extendqisi2
+ 725 0188 003000E3 		movw	r3, #:lower16:full_screen
+ 726 018c 003040E3 		movt	r3, #:upper16:full_screen
+ 727 0190 2260CDE5 		strb	r6, [sp, #34]
+ 728 0194 B000D3E1 		ldrh	r0, [r3]
+ 729 0198 B430D3E1 		ldrh	r3, [r3, #4]
+ 730 019c 2140CDE5 		strb	r4, [sp, #33]
+ 731 01a0 0E0080E0 		add	r0, r0, lr
+ 732 01a4 0940D5E5 		ldrb	r4, [r5, #9]	@ zero_extendqisi2
+ 733 01a8 0C3083E0 		add	r3, r3, ip
+ 734 01ac B2E0D5E1 		ldrh	lr, [r5, #2]
+ 735 01b0 B6C0D5E1 		ldrh	ip, [r5, #6]
+ 736 01b4 B402CDE1 		strh	r0, [sp, #36]	@ movhi
+ 737 01b8 0700A0E1 		mov	r0, r7
+ 738 01bc B832CDE1 		strh	r3, [sp, #40]	@ movhi
+ 739 01c0 2340CDE5 		strb	r4, [sp, #35]
+ 740 01c4 B6E2CDE1 		strh	lr, [sp, #38]	@ movhi
+ 741 01c8 BAC2CDE1 		strh	ip, [sp, #42]	@ movhi
+ 742 01cc FEFFFFEB 		bl	R_VDC_ReadDataControl
+ 743 01d0 000050E3 		cmp	r0, #0
+ 744 01d4 0B00000A 		beq	.L67
+ 745              	.L54:
+ 746 01d8 5CD08DE2 		add	sp, sp, #92
+ 747              		@ sp needed
+ 748 01dc F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 749              	.L66:
+ 750 01e0 58308DE2 		add	r3, sp, #88
+ 751 01e4 0700A0E1 		mov	r0, r7
+ 752 01e8 0320A0E1 		mov	r2, r3
+ 753 01ec D010D4E1 		ldrsb	r1, [r4]
+ 754 01f0 4C6063E5 		strb	r6, [r3, #-76]!
+ 755 01f4 483022E5 		str	r3, [r2, #-72]!
+ 756 01f8 FEFFFFEB 		bl	R_VDC_StartProcess
+ 757 01fc 000055E3 		cmp	r5, #0
+ 758 0200 B9FFFF1A 		bne	.L68
+ 759 0204 F3FFFFEA 		b	.L54
+ 760              	.L67:
+ 761 0208 58308DE2 		add	r3, sp, #88
+ 762 020c 0110A0E3 		mov	r1, #1
+ 763 0210 0320A0E1 		mov	r2, r3
+ 764 0214 0700A0E1 		mov	r0, r7
+ 765 0218 551063E5 		strb	r1, [r3, #-85]!
+ 766 021c 4C3022E5 		str	r3, [r2, #-76]!
+ 767 0220 FEFFFFEB 		bl	R_VDC_StartProcess
+ 768 0224 EBFFFFEA 		b	.L54
+ 770              		.section	.text.R_RVAPI_VideoDestroySurfaceVDC,"ax",%progbits
+ 771              		.align	2
+ 772              		.global	R_RVAPI_VideoDestroySurfaceVDC
+ 773              		.syntax unified
+ 774              		.arm
+ 775              		.fpu neon
+ 777              	R_RVAPI_VideoDestroySurfaceVDC:
+ 778              		@ args = 0, pretend = 0, frame = 0
+ 779              		@ frame_needed = 0, uses_anonymous_args = 0
+ 780 0000 000051E3 		cmp	r1, #0
+ 781 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 782 0008 0240A013 		movne	r4, #2
+ 783 000c 0100000A 		beq	.L73
+ 784              	.L70:
+ 785 0010 0400A0E1 		mov	r0, r4
+ 786 0014 7080BDE8 		pop	{r4, r5, r6, pc}
+ 787              	.L73:
+ 788 0018 0050A0E1 		mov	r5, r0
+ 789 001c FEFFFFEB 		bl	R_VDC_StopProcess
+ 790 0020 004050E2 		subs	r4, r0, #0
+ 791 0024 F9FFFF1A 		bne	.L70
+ 792 0028 0410A0E1 		mov	r1, r4
+ 793 002c 0500A0E1 		mov	r0, r5
+ 794 0030 FEFFFFEB 		bl	R_VDC_ReleaseDataControl
+ 795 0034 0110A0E3 		mov	r1, #1
+ 796 0038 0500A0E1 		mov	r0, r5
+ 797 003c FEFFFFEB 		bl	R_VDC_StopProcess
+ 798 0040 0500A0E1 		mov	r0, r5
+ 799 0044 0110A0E3 		mov	r1, #1
+ 800 0048 FEFFFFEB 		bl	R_VDC_ReleaseDataControl
+ 801 004c EFFFFFEA 		b	.L70
+ 803              		.section	.text.R_RVAPI_VideoPortSettingVDC,"ax",%progbits
+ 804              		.align	2
+ 805              		.global	R_RVAPI_VideoPortSettingVDC
+ 806              		.syntax unified
+ 807              		.arm
+ 808              		.fpu neon
+ 810              	R_RVAPI_VideoPortSettingVDC:
+ 811              		@ args = 0, pretend = 0, frame = 0
+ 812              		@ frame_needed = 0, uses_anonymous_args = 0
+ 813              		@ link register save eliminated.
+ 814 0000 000051E3 		cmp	r1, #0
+ 815 0004 1EFF2F01 		bxeq	lr
+ 816 0008 11FF2FE1 		bx	r1	@ indirect register sibling call
+ 818              		.section	.text.R_RVAPI_InterruptEnableVDC,"ax",%progbits
+ 819              		.align	2
+ 820              		.global	R_RVAPI_InterruptEnableVDC
+ 821              		.syntax unified
+ 822              		.arm
+ 823              		.fpu neon
+ 825              	R_RVAPI_InterruptEnableVDC:
+ 826              		@ args = 0, pretend = 0, frame = 16
+ 827              		@ frame_needed = 0, uses_anonymous_args = 0
+ 828 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 829 0004 14D04DE2 		sub	sp, sp, #20
+ 830 0008 0410CDE5 		strb	r1, [sp, #4]
+ 831 000c 04108DE2 		add	r1, sp, #4
+ 832 0010 BC20CDE1 		strh	r2, [sp, #12]	@ movhi
+ 833 0014 08308DE5 		str	r3, [sp, #8]
+ 834 0018 FEFFFFEB 		bl	R_VDC_CallbackISR
+ 835 001c 14D08DE2 		add	sp, sp, #20
+ 836              		@ sp needed
+ 837 0020 04F09DE4 		ldr	pc, [sp], #4
+ 839              		.section	.text.R_RVAPI_InterruptDisableVDC,"ax",%progbits
+ 840              		.align	2
+ 841              		.global	R_RVAPI_InterruptDisableVDC
+ 842              		.syntax unified
+ 843              		.arm
+ 844              		.fpu neon
+ 846              	R_RVAPI_InterruptDisableVDC:
+ 847              		@ args = 0, pretend = 0, frame = 16
+ 848              		@ frame_needed = 0, uses_anonymous_args = 0
+ 849 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 850 0004 14D04DE2 		sub	sp, sp, #20
+ 851 0008 0030A0E3 		mov	r3, #0
+ 852 000c 0410CDE5 		strb	r1, [sp, #4]
+ 853 0010 04108DE2 		add	r1, sp, #4
+ 854 0014 08308DE5 		str	r3, [sp, #8]
+ 855 0018 BC30CDE1 		strh	r3, [sp, #12]	@ movhi
+ 856 001c FEFFFFEB 		bl	R_VDC_CallbackISR
+ 857 0020 14D08DE2 		add	sp, sp, #20
+ 858              		@ sp needed
+ 859 0024 04F09DE4 		ldr	pc, [sp], #4
+ 861              		.section	.text.R_RVAPI_AlphablendingRectVDC,"ax",%progbits
+ 862              		.align	2
+ 863              		.global	R_RVAPI_AlphablendingRectVDC
+ 864              		.syntax unified
+ 865              		.arm
+ 866              		.fpu neon
+ 868              	R_RVAPI_AlphablendingRectVDC:
+ 869              		@ args = 4, pretend = 0, frame = 24
+ 870              		@ frame_needed = 0, uses_anonymous_args = 0
+ 871 0000 10402DE9 		push	{r4, lr}
+ 872 0004 18D04DE2 		sub	sp, sp, #24
+ 873 0008 2040DDE5 		ldrb	r4, [sp, #32]	@ zero_extendqisi2
+ 874 000c 00C0A0E3 		mov	ip, #0
+ 875 0010 04E08DE2 		add	lr, sp, #4
+ 876 0014 0C308DE5 		str	r3, [sp, #12]
+ 877 0018 0C308DE2 		add	r3, sp, #12
+ 878 001c B4C0CDE1 		strh	ip, [sp, #4]	@ movhi
+ 879 0020 0740CDE5 		strb	r4, [sp, #7]
+ 880 0024 08C0CDE5 		strb	ip, [sp, #8]
+ 881 0028 06C0CDE5 		strb	ip, [sp, #6]
+ 882 002c 14C08DE5 		str	ip, [sp, #20]
+ 883 0030 10E08DE5 		str	lr, [sp, #16]
+ 884 0034 FEFFFFEB 		bl	R_VDC_AlphaBlendingRect
+ 885 0038 18D08DE2 		add	sp, sp, #24
+ 886              		@ sp needed
+ 887 003c 1080BDE8 		pop	{r4, pc}
+ 889              		.section	.text.R_RVAPI_AlphablendingVDC,"ax",%progbits
+ 890              		.align	2
+ 891              		.global	R_RVAPI_AlphablendingVDC
+ 892              		.syntax unified
+ 893              		.arm
+ 894              		.fpu neon
+ 896              	R_RVAPI_AlphablendingVDC:
+ 897              		@ args = 0, pretend = 0, frame = 16
+ 898              		@ frame_needed = 0, uses_anonymous_args = 0
+ 899 0000 10402DE9 		push	{r4, lr}
+ 900 0004 10D04DE2 		sub	sp, sp, #16
+ 901 0008 10C08DE2 		add	ip, sp, #16
+ 902 000c 0420CDE5 		strb	r2, [sp, #4]
+ 903 0010 04E08DE2 		add	lr, sp, #4
+ 904 0014 0040A0E3 		mov	r4, #0
+ 905 0018 08208DE2 		add	r2, sp, #8
+ 906 001c 10406CE5 		strb	r4, [ip, #-16]!
+ 907 0020 0530CDE5 		strb	r3, [sp, #5]
+ 908 0024 08E08DE5 		str	lr, [sp, #8]
+ 909 0028 0CC08DE5 		str	ip, [sp, #12]
+ 910 002c FEFFFFEB 		bl	R_VDC_AlphaBlending
+ 911 0030 10D08DE2 		add	sp, sp, #16
+ 912              		@ sp needed
+ 913 0034 1080BDE8 		pop	{r4, pc}
+ 915              		.section	.text.R_RVAPI_ChromakeyVDC,"ax",%progbits
+ 916              		.align	2
+ 917              		.global	R_RVAPI_ChromakeyVDC
+ 918              		.syntax unified
+ 919              		.arm
+ 920              		.fpu neon
+ 922              	R_RVAPI_ChromakeyVDC:
+ 923              		@ args = 4, pretend = 0, frame = 16
+ 924              		@ frame_needed = 0, uses_anonymous_args = 0
+ 925 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 926 0004 14D04DE2 		sub	sp, sp, #20
+ 927 0008 18E0DDE5 		ldrb	lr, [sp, #24]	@ zero_extendqisi2
+ 928 000c 03C0A0E1 		mov	ip, r3
+ 929 0010 04308DE2 		add	r3, sp, #4
+ 930 0014 04C08DE5 		str	ip, [sp, #4]
+ 931 0018 08C08DE5 		str	ip, [sp, #8]
+ 932 001c 0CE0CDE5 		strb	lr, [sp, #12]
+ 933 0020 FEFFFFEB 		bl	R_VDC_Chromakey
+ 934 0024 14D08DE2 		add	sp, sp, #20
+ 935              		@ sp needed
+ 936 0028 04F09DE4 		ldr	pc, [sp], #4
+ 938              		.section	.text.R_RVAPI_DispCalibrationVDC,"ax",%progbits
+ 939              		.align	2
+ 940              		.global	R_RVAPI_DispCalibrationVDC
+ 941              		.syntax unified
+ 942              		.arm
+ 943              		.fpu neon
+ 945              	R_RVAPI_DispCalibrationVDC:
+ 946              		@ args = 4, pretend = 0, frame = 16
+ 947              		@ frame_needed = 0, uses_anonymous_args = 0
+ 948 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 949 0004 14D04DE2 		sub	sp, sp, #20
+ 950 0008 18C09DE5 		ldr	ip, [sp, #24]
+ 951 000c 0010CDE5 		strb	r1, [sp]
+ 952 0010 0D10A0E1 		mov	r1, sp
+ 953 0014 0C108DE9 		stmib	sp, {r2, r3, ip}
+ 954 0018 FEFFFFEB 		bl	R_VDC_DisplayCalibration
+ 955 001c 14D08DE2 		add	sp, sp, #20
+ 956              		@ sp needed
+ 957 0020 04F09DE4 		ldr	pc, [sp], #4
+ 959              		.section	.text.R_RVAPI_DispGammaVDC,"ax",%progbits
+ 960              		.align	2
+ 961              		.global	R_RVAPI_DispGammaVDC
+ 962              		.syntax unified
+ 963              		.arm
+ 964              		.fpu neon
+ 966              	R_RVAPI_DispGammaVDC:
+ 967              		@ args = 16, pretend = 0, frame = 48
+ 968              		@ frame_needed = 0, uses_anonymous_args = 0
+ 969 0000 30402DE9 		push	{r4, r5, lr}
+ 970 0004 34D04DE2 		sub	sp, sp, #52
+ 971 0008 40509DE5 		ldr	r5, [sp, #64]
+ 972 000c 44409DE5 		ldr	r4, [sp, #68]
+ 973 0010 48E09DE5 		ldr	lr, [sp, #72]
+ 974 0014 4CC09DE5 		ldr	ip, [sp, #76]
+ 975 0018 00208DE5 		str	r2, [sp]
+ 976 001c 18208DE2 		add	r2, sp, #24
+ 977 0020 04308DE5 		str	r3, [sp, #4]
+ 978 0024 10508DE5 		str	r5, [sp, #16]
+ 979 0028 14408DE5 		str	r4, [sp, #20]
+ 980 002c 08E08DE5 		str	lr, [sp, #8]
+ 981 0030 0CC08DE5 		str	ip, [sp, #12]
+ 982 0034 042BDDED 		vldr	d18, [sp, #16]
+ 983 0038 021BDDED 		vldr	d17, [sp, #8]
+ 984 003c 000BDDED 		vldr	d16, [sp]
+ 985 0040 062BCDED 		vstr	d18, [sp, #24]
+ 986 0044 081BCDED 		vstr	d17, [sp, #32]
+ 987 0048 0A0BCDED 		vstr	d16, [sp, #40]
+ 988 004c FEFFFFEB 		bl	R_VDC_GammaCorrection
+ 989 0050 34D08DE2 		add	sp, sp, #52
+ 990              		@ sp needed
+ 991 0054 3080BDE8 		pop	{r4, r5, pc}
+ 993              		.section	.text.R_RVAPI_VideoCalibrationVDC,"ax",%progbits
+ 994              		.align	2
+ 995              		.global	R_RVAPI_VideoCalibrationVDC
+ 996              		.syntax unified
+ 997              		.arm
+ 998              		.fpu neon
+ 1000              	R_RVAPI_VideoCalibrationVDC:
+ 1001              		@ args = 0, pretend = 0, frame = 0
+ 1002              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1003              		@ link register save eliminated.
+ 1004 0000 FEFFFFEA 		b	R_VDC_ImageColorMatrix
+ 1006              		.section	.text.R_RVAPI_VideoSharpnessLtiVDC,"ax",%progbits
+ 1007              		.align	2
+ 1008              		.global	R_RVAPI_VideoSharpnessLtiVDC
+ 1009              		.syntax unified
+ 1010              		.arm
+ 1011              		.fpu neon
+ 1013              	R_RVAPI_VideoSharpnessLtiVDC:
+ 1014              		@ args = 12, pretend = 0, frame = 0
+ 1015              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1016 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 1017 0004 04E0DDE5 		ldrb	lr, [sp, #4]	@ zero_extendqisi2
+ 1018 0008 04E08DE5 		str	lr, [sp, #4]
+ 1019 000c 04E09DE4 		ldr	lr, [sp], #4
+ 1020 0010 FEFFFFEA 		b	R_VDC_ImageEnhancement
+ 1022              		.section	.text.R_RVAPI_VideoCreateSurfaceIMRL2,"ax",%progbits
+ 1023              		.align	2
+ 1024              		.global	R_RVAPI_VideoCreateSurfaceIMRL2
+ 1025              		.syntax unified
+ 1026              		.arm
+ 1027              		.fpu neon
+ 1029              	R_RVAPI_VideoCreateSurfaceIMRL2:
+ 1030              		@ args = 0, pretend = 0, frame = 88
+ 1031              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1032 0000 F0432DE9 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 1033 0004 004051E2 		subs	r4, r1, #0
+ 1034 0008 5CD04DE2 		sub	sp, sp, #92
+ 1035 000c 0300A003 		moveq	r0, #3
+ 1036 0010 6100000A 		beq	.L94
+ 1037 0014 0250A0E1 		mov	r5, r2
+ 1038 0018 B4C0D4E1 		ldrh	ip, [r4, #4]
+ 1039 001c BE11D4E1 		ldrh	r1, [r4, #30]
+ 1040 0020 0030A0E3 		mov	r3, #0
+ 1041 0024 182094E5 		ldr	r2, [r4, #24]
+ 1042 0028 0160A0E3 		mov	r6, #1
+ 1043 002c B2E0D4E1 		ldrh	lr, [r4, #2]
+ 1044 0030 04C08CE2 		add	ip, ip, #4
+ 1045 0034 041081E2 		add	r1, r1, #4
+ 1046 0038 BEC2CDE1 		strh	ip, [sp, #46]	@ movhi
+ 1047 003c 012042E2 		sub	r2, r2, #1
+ 1048 0040 B8C0D4E1 		ldrh	ip, [r4, #8]
+ 1049 0044 B613CDE1 		strh	r1, [sp, #54]	@ movhi
+ 1050 0048 01E04EE2 		sub	lr, lr, #1
+ 1051 004c 2310D4E5 		ldrb	r1, [r4, #35]	@ zero_extendqisi2
+ 1052 0050 0070A0E1 		mov	r7, r0
+ 1053 0054 4C208DE5 		str	r2, [sp, #76]
+ 1054 0058 B022D4E1 		ldrh	r2, [r4, #32]
+ 1055 005c BCE2CDE1 		strh	lr, [sp, #44]	@ movhi
+ 1056 0060 B2C3CDE1 		strh	ip, [sp, #50]	@ movhi
+ 1057 0064 B6E0D4E1 		ldrh	lr, [r4, #6]
+ 1058 0068 0CC094E5 		ldr	ip, [r4, #12]
+ 1059 006c B823CDE1 		strh	r2, [sp, #56]	@ movhi
+ 1060 0070 3F10CDE5 		strb	r1, [sp, #63]
+ 1061 0074 102094E5 		ldr	r2, [r4, #16]
+ 1062 0078 141094E5 		ldr	r1, [r4, #20]
+ 1063 007c B0E3CDE1 		strh	lr, [sp, #48]	@ movhi
+ 1064 0080 44C08DE5 		str	ip, [sp, #68]
+ 1065 0084 48208DE5 		str	r2, [sp, #72]
+ 1066 0088 2C208DE2 		add	r2, sp, #44
+ 1067 008c 3B30CDE5 		strb	r3, [sp, #59]
+ 1068 0090 3C30CDE5 		strb	r3, [sp, #60]
+ 1069 0094 3D30CDE5 		strb	r3, [sp, #61]
+ 1070 0098 3E30CDE5 		strb	r3, [sp, #62]
+ 1071 009c 4030CDE5 		strb	r3, [sp, #64]
+ 1072 00a0 4130CDE5 		strb	r3, [sp, #65]
+ 1073 00a4 54308DE5 		str	r3, [sp, #84]
+ 1074 00a8 50108DE5 		str	r1, [sp, #80]
+ 1075 00ac 3460CDE5 		strb	r6, [sp, #52]
+ 1076 00b0 3A60CDE5 		strb	r6, [sp, #58]
+ 1077 00b4 4260CDE5 		strb	r6, [sp, #66]
+ 1078 00b8 D010D4E1 		ldrsb	r1, [r4]
+ 1079 00bc FEFFFFEB 		bl	R_VDC_WriteDataControl
+ 1080 00c0 000055E3 		cmp	r5, #0
+ 1081 00c4 3400000A 		beq	.L94
+ 1082 00c8 D030D4E1 		ldrsb	r3, [r4]
+ 1083 00cc 000053E3 		cmp	r3, #0
+ 1084 00d0 0200A013 		movne	r0, #2
+ 1085 00d4 3000001A 		bne	.L94
+ 1086 00d8 000050E3 		cmp	r0, #0
+ 1087 00dc 2E00001A 		bne	.L94
+ 1088 00e0 003000E3 		movw	r3, #:lower16:full_screen
+ 1089 00e4 B0C0D5E1 		ldrh	ip, [r5]
+ 1090 00e8 003040E3 		movt	r3, #:upper16:full_screen
+ 1091 00ec 0C8094E5 		ldr	r8, [r4, #12]
+ 1092 00f0 B010D3E1 		ldrh	r1, [r3]
+ 1093 00f4 0290A0E3 		mov	r9, #2
+ 1094 00f8 104094E5 		ldr	r4, [r4, #16]
+ 1095 00fc B4E0D5E1 		ldrh	lr, [r5, #4]
+ 1096 0100 0C1081E0 		add	r1, r1, ip
+ 1097 0104 B2C0D5E1 		ldrh	ip, [r5, #2]
+ 1098 0108 B420D3E1 		ldrh	r2, [r3, #4]
+ 1099 010c 58308DE2 		add	r3, sp, #88
+ 1100 0110 18408DE5 		str	r4, [sp, #24]
+ 1101 0114 B0C563E1 		strh	ip, [r3, #-80]!	@ movhi
+ 1102 0118 B6C2CDE1 		strh	ip, [sp, #38]	@ movhi
+ 1103 011c 0E2082E0 		add	r2, r2, lr
+ 1104 0120 1C308DE5 		str	r3, [sp, #28]
+ 1105 0124 08E0A0E3 		mov	lr, #8
+ 1106 0128 B630D5E1 		ldrh	r3, [r5, #6]
+ 1107 012c 0840D5E5 		ldrb	r4, [r5, #8]	@ zero_extendqisi2
+ 1108 0130 09C0D5E5 		ldrb	ip, [r5, #9]	@ zero_extendqisi2
+ 1109 0134 1000CDE5 		strb	r0, [sp, #16]
+ 1110 0138 1300CDE5 		strb	r0, [sp, #19]
+ 1111 013c 0700A0E1 		mov	r0, r7
+ 1112 0140 B412CDE1 		strh	r1, [sp, #36]	@ movhi
+ 1113 0144 0610A0E1 		mov	r1, r6
+ 1114 0148 B822CDE1 		strh	r2, [sp, #40]	@ movhi
+ 1115 014c 10208DE2 		add	r2, sp, #16
+ 1116 0150 1260CDE5 		strb	r6, [sp, #18]
+ 1117 0154 2060CDE5 		strb	r6, [sp, #32]
+ 1118 0158 14808DE5 		str	r8, [sp, #20]
+ 1119 015c 1190CDE5 		strb	r9, [sp, #17]
+ 1120 0160 BA30CDE1 		strh	r3, [sp, #10]	@ movhi
+ 1121 0164 BA32CDE1 		strh	r3, [sp, #42]	@ movhi
+ 1122 0168 2240CDE5 		strb	r4, [sp, #34]
+ 1123 016c 23C0CDE5 		strb	ip, [sp, #35]
+ 1124 0170 21E0CDE5 		strb	lr, [sp, #33]
+ 1125 0174 FEFFFFEB 		bl	R_VDC_ReadDataControl
+ 1126 0178 000050E3 		cmp	r0, #0
+ 1127 017c 0600001A 		bne	.L94
+ 1128 0180 58308DE2 		add	r3, sp, #88
+ 1129 0184 0700A0E1 		mov	r0, r7
+ 1130 0188 0320A0E1 		mov	r2, r3
+ 1131 018c 0610A0E1 		mov	r1, r6
+ 1132 0190 516063E5 		strb	r6, [r3, #-81]!
+ 1133 0194 4C3022E5 		str	r3, [r2, #-76]!
+ 1134 0198 FEFFFFEB 		bl	R_VDC_StartProcess
+ 1135              	.L94:
+ 1136 019c 5CD08DE2 		add	sp, sp, #92
+ 1137              		@ sp needed
+ 1138 01a0 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 1140              		.comm	full_screen,8,4
+ 1141              		.section	.rodata.color_table16,"a",%progbits
+ 1142              		.align	3
+ 1143              		.set	.LANCHOR1,. + 0
+ 1146              	color_table16:
+ 1147 0000 000000FF 		.word	-16777216
+ 1148 0004 0000FFFF 		.word	-65536
+ 1149 0008 00FF00FF 		.word	-16711936
+ 1150 000c FFFF00FF 		.word	-16711681
+ 1151 0010 FF0000FF 		.word	-16776961
+ 1152 0014 FF00FFFF 		.word	-65281
+ 1153 0018 000080FF 		.word	-8388608
+ 1154 001c 008080FF 		.word	-8355840
+ 1155 0020 808000FF 		.word	-16744320
+ 1156 0024 800000FF 		.word	-16777088
+ 1157 0028 800080FF 		.word	-8388480
+ 1158 002c 808080FF 		.word	-8355712
+ 1159 0030 C0C0C0FF 		.word	-4144960
+ 1160 0034 00A5FFFF 		.word	-23296
+ 1161 0038 FFFFFFFF 		.word	-1
+ 1162 003c FFFFFF00 		.word	16777215
+ 1163              		.section	.rodata.color_table2,"a",%progbits
+ 1164              		.align	3
+ 1165              		.set	.LANCHOR2,. + 0
+ 1168              	color_table2:
+ 1169 0000 000000FF 		.word	-16777216
+ 1170 0004 FFFFFFFF 		.word	-1
+ 1171              		.section	.rodata.color_table256,"a",%progbits
+ 1172              		.align	3
+ 1173              		.set	.LANCHOR0,. + 0
+ 1176              	color_table256:
+ 1177 0000 000000FF 		.word	-16777216
+ 1178 0004 010101FF 		.word	-16711423
+ 1179 0008 020202FF 		.word	-16645630
+ 1180 000c 030303FF 		.word	-16579837
+ 1181 0010 040404FF 		.word	-16514044
+ 1182 0014 050505FF 		.word	-16448251
+ 1183 0018 060606FF 		.word	-16382458
+ 1184 001c 070707FF 		.word	-16316665
+ 1185 0020 080808FF 		.word	-16250872
+ 1186 0024 090909FF 		.word	-16185079
+ 1187 0028 0A0A0AFF 		.word	-16119286
+ 1188 002c 0B0B0BFF 		.word	-16053493
+ 1189 0030 0C0C0CFF 		.word	-15987700
+ 1190 0034 0D0D0DFF 		.word	-15921907
+ 1191 0038 0E0E0EFF 		.word	-15856114
+ 1192 003c 0F0F0FFF 		.word	-15790321
+ 1193 0040 101010FF 		.word	-15724528
+ 1194 0044 111111FF 		.word	-15658735
+ 1195 0048 121212FF 		.word	-15592942
+ 1196 004c 131313FF 		.word	-15527149
+ 1197 0050 141414FF 		.word	-15461356
+ 1198 0054 151515FF 		.word	-15395563
+ 1199 0058 161616FF 		.word	-15329770
+ 1200 005c 171717FF 		.word	-15263977
+ 1201 0060 181818FF 		.word	-15198184
+ 1202 0064 191919FF 		.word	-15132391
+ 1203 0068 1A1A1AFF 		.word	-15066598
+ 1204 006c 1B1B1BFF 		.word	-15000805
+ 1205 0070 1C1C1CFF 		.word	-14935012
+ 1206 0074 1E1E1EFF 		.word	-14803426
+ 1207 0078 1E1E1EFF 		.word	-14803426
+ 1208 007c 1F1F1FFF 		.word	-14737633
+ 1209 0080 202020FF 		.word	-14671840
+ 1210 0084 212121FF 		.word	-14606047
+ 1211 0088 222222FF 		.word	-14540254
+ 1212 008c 232323FF 		.word	-14474461
+ 1213 0090 242424FF 		.word	-14408668
+ 1214 0094 252525FF 		.word	-14342875
+ 1215 0098 262626FF 		.word	-14277082
+ 1216 009c 272727FF 		.word	-14211289
+ 1217 00a0 282828FF 		.word	-14145496
+ 1218 00a4 292929FF 		.word	-14079703
+ 1219 00a8 2A2A2AFF 		.word	-14013910
+ 1220 00ac 2B2B2BFF 		.word	-13948117
+ 1221 00b0 2C2C2CFF 		.word	-13882324
+ 1222 00b4 2E2E2EFF 		.word	-13750738
+ 1223 00b8 2E2E2EFF 		.word	-13750738
+ 1224 00bc 2F2F2FFF 		.word	-13684945
+ 1225 00c0 303030FF 		.word	-13619152
+ 1226 00c4 313131FF 		.word	-13553359
+ 1227 00c8 323232FF 		.word	-13487566
+ 1228 00cc 333333FF 		.word	-13421773
+ 1229 00d0 343434FF 		.word	-13355980
+ 1230 00d4 353535FF 		.word	-13290187
+ 1231 00d8 363636FF 		.word	-13224394
+ 1232 00dc 373737FF 		.word	-13158601
+ 1233 00e0 383838FF 		.word	-13092808
+ 1234 00e4 393939FF 		.word	-13027015
+ 1235 00e8 3A3A3AFF 		.word	-12961222
+ 1236 00ec 3B3B3BFF 		.word	-12895429
+ 1237 00f0 3C3C3CFF 		.word	-12829636
+ 1238 00f4 3E3E3EFF 		.word	-12698050
+ 1239 00f8 3E3E3EFF 		.word	-12698050
+ 1240 00fc 3F3F3FFF 		.word	-12632257
+ 1241 0100 404040FF 		.word	-12566464
+ 1242 0104 414141FF 		.word	-12500671
+ 1243 0108 424242FF 		.word	-12434878
+ 1244 010c 434343FF 		.word	-12369085
+ 1245 0110 444444FF 		.word	-12303292
+ 1246 0114 454545FF 		.word	-12237499
+ 1247 0118 464646FF 		.word	-12171706
+ 1248 011c 474747FF 		.word	-12105913
+ 1249 0120 484848FF 		.word	-12040120
+ 1250 0124 494949FF 		.word	-11974327
+ 1251 0128 4A4A4AFF 		.word	-11908534
+ 1252 012c 4B4B4BFF 		.word	-11842741
+ 1253 0130 4C4C4CFF 		.word	-11776948
+ 1254 0134 4E4E4EFF 		.word	-11645362
+ 1255 0138 4E4E4EFF 		.word	-11645362
+ 1256 013c 4F4F4FFF 		.word	-11579569
+ 1257 0140 505050FF 		.word	-11513776
+ 1258 0144 515151FF 		.word	-11447983
+ 1259 0148 525252FF 		.word	-11382190
+ 1260 014c 535353FF 		.word	-11316397
+ 1261 0150 545454FF 		.word	-11250604
+ 1262 0154 555555FF 		.word	-11184811
+ 1263 0158 565656FF 		.word	-11119018
+ 1264 015c 575757FF 		.word	-11053225
+ 1265 0160 585858FF 		.word	-10987432
+ 1266 0164 595959FF 		.word	-10921639
+ 1267 0168 5A5A5AFF 		.word	-10855846
+ 1268 016c 5B5B5BFF 		.word	-10790053
+ 1269 0170 5C5C5CFF 		.word	-10724260
+ 1270 0174 5E5E5EFF 		.word	-10592674
+ 1271 0178 5E5E5EFF 		.word	-10592674
+ 1272 017c 5F5F5FFF 		.word	-10526881
+ 1273 0180 606060FF 		.word	-10461088
+ 1274 0184 616161FF 		.word	-10395295
+ 1275 0188 626262FF 		.word	-10329502
+ 1276 018c 636363FF 		.word	-10263709
+ 1277 0190 646464FF 		.word	-10197916
+ 1278 0194 656565FF 		.word	-10132123
+ 1279 0198 666666FF 		.word	-10066330
+ 1280 019c 676767FF 		.word	-10000537
+ 1281 01a0 686868FF 		.word	-9934744
+ 1282 01a4 696969FF 		.word	-9868951
+ 1283 01a8 6A6A6AFF 		.word	-9803158
+ 1284 01ac 6B6B6BFF 		.word	-9737365
+ 1285 01b0 6C6C6CFF 		.word	-9671572
+ 1286 01b4 6E6E6EFF 		.word	-9539986
+ 1287 01b8 6E6E6EFF 		.word	-9539986
+ 1288 01bc 6F6F6FFF 		.word	-9474193
+ 1289 01c0 707070FF 		.word	-9408400
+ 1290 01c4 717171FF 		.word	-9342607
+ 1291 01c8 727272FF 		.word	-9276814
+ 1292 01cc 737373FF 		.word	-9211021
+ 1293 01d0 747474FF 		.word	-9145228
+ 1294 01d4 757575FF 		.word	-9079435
+ 1295 01d8 767676FF 		.word	-9013642
+ 1296 01dc 777777FF 		.word	-8947849
+ 1297 01e0 787878FF 		.word	-8882056
+ 1298 01e4 797979FF 		.word	-8816263
+ 1299 01e8 7A7A7AFF 		.word	-8750470
+ 1300 01ec 7B7B7BFF 		.word	-8684677
+ 1301 01f0 7C7C7CFF 		.word	-8618884
+ 1302 01f4 7E7E7EFF 		.word	-8487298
+ 1303 01f8 7E7E7EFF 		.word	-8487298
+ 1304 01fc 7F7F7FFF 		.word	-8421505
+ 1305 0200 808080FF 		.word	-8355712
+ 1306 0204 818181FF 		.word	-8289919
+ 1307 0208 828282FF 		.word	-8224126
+ 1308 020c 838383FF 		.word	-8158333
+ 1309 0210 848484FF 		.word	-8092540
+ 1310 0214 858585FF 		.word	-8026747
+ 1311 0218 868686FF 		.word	-7960954
+ 1312 021c 878787FF 		.word	-7895161
+ 1313 0220 888888FF 		.word	-7829368
+ 1314 0224 898989FF 		.word	-7763575
+ 1315 0228 8A8A8AFF 		.word	-7697782
+ 1316 022c 8B8B8BFF 		.word	-7631989
+ 1317 0230 8C8C8CFF 		.word	-7566196
+ 1318 0234 8E8E8EFF 		.word	-7434610
+ 1319 0238 8E8E8EFF 		.word	-7434610
+ 1320 023c 8F8F8FFF 		.word	-7368817
+ 1321 0240 909090FF 		.word	-7303024
+ 1322 0244 919191FF 		.word	-7237231
+ 1323 0248 929292FF 		.word	-7171438
+ 1324 024c 939393FF 		.word	-7105645
+ 1325 0250 949494FF 		.word	-7039852
+ 1326 0254 959595FF 		.word	-6974059
+ 1327 0258 969696FF 		.word	-6908266
+ 1328 025c 979797FF 		.word	-6842473
+ 1329 0260 989898FF 		.word	-6776680
+ 1330 0264 999999FF 		.word	-6710887
+ 1331 0268 9A9A9AFF 		.word	-6645094
+ 1332 026c 9B9B9BFF 		.word	-6579301
+ 1333 0270 9C9C9CFF 		.word	-6513508
+ 1334 0274 9E9E9EFF 		.word	-6381922
+ 1335 0278 9E9E9EFF 		.word	-6381922
+ 1336 027c 9F9F9FFF 		.word	-6316129
+ 1337 0280 A0A0A0FF 		.word	-6250336
+ 1338 0284 A1A1A1FF 		.word	-6184543
+ 1339 0288 A2A2A2FF 		.word	-6118750
+ 1340 028c A3A3A3FF 		.word	-6052957
+ 1341 0290 A4A4A4FF 		.word	-5987164
+ 1342 0294 A5A5A5FF 		.word	-5921371
+ 1343 0298 A6A6A6FF 		.word	-5855578
+ 1344 029c A7A7A7FF 		.word	-5789785
+ 1345 02a0 A8A8A8FF 		.word	-5723992
+ 1346 02a4 A9A9A9FF 		.word	-5658199
+ 1347 02a8 AAAAAAFF 		.word	-5592406
+ 1348 02ac ABABABFF 		.word	-5526613
+ 1349 02b0 ACACACFF 		.word	-5460820
+ 1350 02b4 AEAEAEFF 		.word	-5329234
+ 1351 02b8 AEAEAEFF 		.word	-5329234
+ 1352 02bc AFAFAFFF 		.word	-5263441
+ 1353 02c0 B0B0B0FF 		.word	-5197648
+ 1354 02c4 B1B1B1FF 		.word	-5131855
+ 1355 02c8 B2B2B2FF 		.word	-5066062
+ 1356 02cc B3B3B3FF 		.word	-5000269
+ 1357 02d0 B4B4B4FF 		.word	-4934476
+ 1358 02d4 B5B5B5FF 		.word	-4868683
+ 1359 02d8 B6B6B6FF 		.word	-4802890
+ 1360 02dc B7B7B7FF 		.word	-4737097
+ 1361 02e0 B8B8B8FF 		.word	-4671304
+ 1362 02e4 B9B9B9FF 		.word	-4605511
+ 1363 02e8 BABABAFF 		.word	-4539718
+ 1364 02ec BBBBBBFF 		.word	-4473925
+ 1365 02f0 BCBCBCFF 		.word	-4408132
+ 1366 02f4 BEBEBEFF 		.word	-4276546
+ 1367 02f8 BEBEBEFF 		.word	-4276546
+ 1368 02fc BFBFBFFF 		.word	-4210753
+ 1369 0300 C0C0C0FF 		.word	-4144960
+ 1370 0304 C1C1C1FF 		.word	-4079167
+ 1371 0308 C2C2C2FF 		.word	-4013374
+ 1372 030c C3C3C3FF 		.word	-3947581
+ 1373 0310 C4C4C4FF 		.word	-3881788
+ 1374 0314 C5C5C5FF 		.word	-3815995
+ 1375 0318 C6C6C6FF 		.word	-3750202
+ 1376 031c C7C7C7FF 		.word	-3684409
+ 1377 0320 C8C8C8FF 		.word	-3618616
+ 1378 0324 C9C9C9FF 		.word	-3552823
+ 1379 0328 CACACAFF 		.word	-3487030
+ 1380 032c CBCBCBFF 		.word	-3421237
+ 1381 0330 CCCCCCFF 		.word	-3355444
+ 1382 0334 CECECEFF 		.word	-3223858
+ 1383 0338 CECECEFF 		.word	-3223858
+ 1384 033c CFCFCFFF 		.word	-3158065
+ 1385 0340 D0D0D0FF 		.word	-3092272
+ 1386 0344 D1D1D1FF 		.word	-3026479
+ 1387 0348 D2D2D2FF 		.word	-2960686
+ 1388 034c D3D3D3FF 		.word	-2894893
+ 1389 0350 D4D4D4FF 		.word	-2829100
+ 1390 0354 D5D5D5FF 		.word	-2763307
+ 1391 0358 D6D6D6FF 		.word	-2697514
+ 1392 035c D7D7D7FF 		.word	-2631721
+ 1393 0360 D8D8D8FF 		.word	-2565928
+ 1394 0364 D9D9D9FF 		.word	-2500135
+ 1395 0368 DADADAFF 		.word	-2434342
+ 1396 036c DBDBDBFF 		.word	-2368549
+ 1397 0370 DCDCDCFF 		.word	-2302756
+ 1398 0374 DEDEDEFF 		.word	-2171170
+ 1399 0378 DEDEDEFF 		.word	-2171170
+ 1400 037c DFDFDFFF 		.word	-2105377
+ 1401 0380 E0E0E0FF 		.word	-2039584
+ 1402 0384 E1E1E1FF 		.word	-1973791
+ 1403 0388 E2E2E2FF 		.word	-1907998
+ 1404 038c E3E3E3FF 		.word	-1842205
+ 1405 0390 E4E4E4FF 		.word	-1776412
+ 1406 0394 E5E5E5FF 		.word	-1710619
+ 1407 0398 E6E6E6FF 		.word	-1644826
+ 1408 039c E7E7E7FF 		.word	-1579033
+ 1409 03a0 E8E8E8FF 		.word	-1513240
+ 1410 03a4 E9E9E9FF 		.word	-1447447
+ 1411 03a8 EAEAEAFF 		.word	-1381654
+ 1412 03ac EBEBEBFF 		.word	-1315861
+ 1413 03b0 ECECECFF 		.word	-1250068
+ 1414 03b4 EEEEEEFF 		.word	-1118482
+ 1415 03b8 EEEEEEFF 		.word	-1118482
+ 1416 03bc EFEFEFFF 		.word	-1052689
+ 1417 03c0 F0F0F0FF 		.word	-986896
+ 1418 03c4 F1F1F1FF 		.word	-921103
+ 1419 03c8 F2F2F2FF 		.word	-855310
+ 1420 03cc F3F3F3FF 		.word	-789517
+ 1421 03d0 F4F4F4FF 		.word	-723724
+ 1422 03d4 F5F5F5FF 		.word	-657931
+ 1423 03d8 F6F6F6FF 		.word	-592138
+ 1424 03dc F7F7F7FF 		.word	-526345
+ 1425 03e0 F8F8F8FF 		.word	-460552
+ 1426 03e4 F9F9F9FF 		.word	-394759
+ 1427 03e8 FAFAFAFF 		.word	-328966
+ 1428 03ec FBFBFBFF 		.word	-263173
+ 1429 03f0 FCFCFCFF 		.word	-197380
+ 1430 03f4 FEFEFEFF 		.word	-65794
+ 1431 03f8 FEFEFEFF 		.word	-65794
+ 1432 03fc FFFFFFFF 		.word	-1
+ 1433              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_rvapi_vdc.c
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:14     .text.R_RVAPI_InitializeVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:20     .text.R_RVAPI_InitializeVDC:00000000 R_RVAPI_InitializeVDC
+                            *COM*:00000008 full_screen
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:73     .text.R_RVAPI_TerminateVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:79     .text.R_RVAPI_TerminateVDC:00000000 R_RVAPI_TerminateVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:89     .text.R_RVAPI_DispControlVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:95     .text.R_RVAPI_DispControlVDC:00000000 R_RVAPI_DispControlVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:219    .text.R_RVAPI_DispControlConfigVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:225    .text.R_RVAPI_DispControlConfigVDC:00000000 R_RVAPI_DispControlConfigVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:351    .text.R_RVAPI_GraphCreateSurfaceVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:357    .text.R_RVAPI_GraphCreateSurfaceVDC:00000000 R_RVAPI_GraphCreateSurfaceVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1165   .rodata.color_table2:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1173   .rodata.color_table256:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1143   .rodata.color_table16:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:460    .text.R_RVAPI_GraphChangeSurfaceVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:466    .text.R_RVAPI_GraphChangeSurfaceVDC:00000000 R_RVAPI_GraphChangeSurfaceVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:483    .text.R_RVAPI_GraphChangeSurfaceConfigVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:489    .text.R_RVAPI_GraphChangeSurfaceConfigVDC:00000000 R_RVAPI_GraphChangeSurfaceConfigVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:527    .text.R_RVAPI_GraphDestroySurfaceVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:533    .text.R_RVAPI_GraphDestroySurfaceVDC:00000000 R_RVAPI_GraphDestroySurfaceVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:548    .text.R_RVAPI_DispPortSettingVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:554    .text.R_RVAPI_DispPortSettingVDC:00000000 R_RVAPI_DispPortSettingVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:563    .text.R_RVAPI_VideoControlVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:569    .text.R_RVAPI_VideoControlVDC:00000000 R_RVAPI_VideoControlVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:616    .text.R_RVAPI_VideoCreateSurfaceVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:622    .text.R_RVAPI_VideoCreateSurfaceVDC:00000000 R_RVAPI_VideoCreateSurfaceVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:771    .text.R_RVAPI_VideoDestroySurfaceVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:777    .text.R_RVAPI_VideoDestroySurfaceVDC:00000000 R_RVAPI_VideoDestroySurfaceVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:804    .text.R_RVAPI_VideoPortSettingVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:810    .text.R_RVAPI_VideoPortSettingVDC:00000000 R_RVAPI_VideoPortSettingVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:819    .text.R_RVAPI_InterruptEnableVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:825    .text.R_RVAPI_InterruptEnableVDC:00000000 R_RVAPI_InterruptEnableVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:840    .text.R_RVAPI_InterruptDisableVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:846    .text.R_RVAPI_InterruptDisableVDC:00000000 R_RVAPI_InterruptDisableVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:862    .text.R_RVAPI_AlphablendingRectVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:868    .text.R_RVAPI_AlphablendingRectVDC:00000000 R_RVAPI_AlphablendingRectVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:890    .text.R_RVAPI_AlphablendingVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:896    .text.R_RVAPI_AlphablendingVDC:00000000 R_RVAPI_AlphablendingVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:916    .text.R_RVAPI_ChromakeyVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:922    .text.R_RVAPI_ChromakeyVDC:00000000 R_RVAPI_ChromakeyVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:939    .text.R_RVAPI_DispCalibrationVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:945    .text.R_RVAPI_DispCalibrationVDC:00000000 R_RVAPI_DispCalibrationVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:960    .text.R_RVAPI_DispGammaVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:966    .text.R_RVAPI_DispGammaVDC:00000000 R_RVAPI_DispGammaVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:994    .text.R_RVAPI_VideoCalibrationVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1000   .text.R_RVAPI_VideoCalibrationVDC:00000000 R_RVAPI_VideoCalibrationVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1007   .text.R_RVAPI_VideoSharpnessLtiVDC:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1013   .text.R_RVAPI_VideoSharpnessLtiVDC:00000000 R_RVAPI_VideoSharpnessLtiVDC
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1023   .text.R_RVAPI_VideoCreateSurfaceIMRL2:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1029   .text.R_RVAPI_VideoCreateSurfaceIMRL2:00000000 R_RVAPI_VideoCreateSurfaceIMRL2
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1142   .rodata.color_table16:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1146   .rodata.color_table16:00000000 color_table16
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1164   .rodata.color_table2:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1168   .rodata.color_table2:00000000 color_table2
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1172   .rodata.color_table256:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cciQoQYn.s:1176   .rodata.color_table256:00000000 color_table256
+
+UNDEFINED SYMBOLS
+R_VDC_OnInitialize
+R_VDC_Initialize
+R_VDC_OnFinalize
+R_VDC_Terminate
+R_VDC_SyncControl
+R_VDC_DisplayOutput
+R_VDC_ReadDataControl
+R_VDC_CLUT
+R_VDC_StartProcess
+R_VDC_ChangeReadProcess
+R_VDC_StopProcess
+R_VDC_ReleaseDataControl
+R_VDC_VideoInput
+R_VDC_WriteDataControl
+R_VDC_CallbackISR
+R_VDC_AlphaBlendingRect
+R_VDC_AlphaBlending
+R_VDC_Chromakey
+R_VDC_DisplayCalibration
+R_VDC_GammaCorrection
+R_VDC_ImageColorMatrix
+R_VDC_ImageEnhancement

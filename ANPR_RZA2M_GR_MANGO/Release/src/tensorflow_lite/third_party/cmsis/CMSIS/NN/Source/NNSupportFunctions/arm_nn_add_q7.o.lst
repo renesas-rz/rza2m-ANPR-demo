@@ -1,0 +1,85 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_add_q7.c"
+  13              		.section	.text.arm_nn_add_q7,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_nn_add_q7
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_nn_add_q7:
+  21              		@ args = 0, pretend = 0, frame = 8
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F0432DE9 		push	{r4, r5, r6, r7, r8, r9, lr}
+  24 0004 2291B0E1 		lsrs	r9, r2, #2
+  25 0008 0CD04DE2 		sub	sp, sp, #12
+  26 000c 0270A0E1 		mov	r7, r2
+  27 0010 0040A0E1 		mov	r4, r0
+  28 0014 0180A0E1 		mov	r8, r1
+  29 0018 1D00000A 		beq	.L6
+  30 001c 0160A0E3 		mov	r6, #1
+  31 0020 095180E0 		add	r5, r0, r9, lsl #2
+  32 0024 016040E3 		movt	r6, 1
+  33 0028 0090A0E3 		mov	r9, #0
+  34              	.L3:
+  35 002c 0420A0E3 		mov	r2, #4
+  36 0030 0410A0E1 		mov	r1, r4
+  37 0034 02008DE0 		add	r0, sp, r2
+  38 0038 024084E0 		add	r4, r4, r2
+  39 003c FEFFFFEB 		bl	memcpy
+  40 0040 04309DE5 		ldr	r3, [sp, #4]
+  41              		.syntax divided
+  42              	@ 1983 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+  43 0044 73208FE6 		sxtb16 r2, r3
+  44              	@ 0 "" 2
+  45              		.arm
+  46              		.syntax unified
+  47 0048 6334A0E1 		ror	r3, r3, #8
+  48              		.syntax divided
+  49              	@ 2002 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+  50 004c 733082E6 		sxtab16 r3, r2, r3
+  51              	@ 0 "" 2
+  52              	@ 2038 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+  53 0050 139609E7 		smlad r9, r3, r6, r9
+  54              	@ 0 "" 2
+  55              		.arm
+  56              		.syntax unified
+  57 0054 050054E1 		cmp	r4, r5
+  58 0058 F3FFFF1A 		bne	.L3
+  59              	.L2:
+  60 005c 037017E2 		ands	r7, r7, #3
+  61 0060 0800000A 		beq	.L4
+  62 0064 D030D5E1 		ldrsb	r3, [r5]
+  63 0068 010057E3 		cmp	r7, #1
+  64 006c 039089E0 		add	r9, r9, r3
+  65 0070 0400000A 		beq	.L4
+  66 0074 D130D5E1 		ldrsb	r3, [r5, #1]
+  67 0078 020057E3 		cmp	r7, #2
+  68 007c 039089E0 		add	r9, r9, r3
+  69 0080 D230D511 		ldrsbne	r3, [r5, #2]
+  70 0084 03908910 		addne	r9, r9, r3
+  71              	.L4:
+  72 0088 009088E5 		str	r9, [r8]
+  73 008c 0CD08DE2 		add	sp, sp, #12
+  74              		@ sp needed
+  75 0090 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+  76              	.L6:
+  77 0094 0050A0E1 		mov	r5, r0
+  78 0098 EFFFFFEA 		b	.L2
+  80              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_add_q7.c
+C:\Users\a5050395\AppData\Local\Temp\ccrUnZww.s:14     .text.arm_nn_add_q7:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrUnZww.s:20     .text.arm_nn_add_q7:00000000 arm_nn_add_q7
+
+UNDEFINED SYMBOLS
+memcpy

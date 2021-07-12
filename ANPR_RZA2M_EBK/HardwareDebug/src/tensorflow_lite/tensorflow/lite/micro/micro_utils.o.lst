@@ -1,0 +1,941 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"micro_utils.cc"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite12ElementCountERK14TfLiteIntArray,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite12ElementCountERK14TfLiteIntArray
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite12ElementCountERK14TfLiteIntArray:
+  24              		.fnstart
+  25              	.LFB1032:
+  26              		.file 1 "../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc"
+   1:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** /* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+   3:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+   7:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+   9:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** limitations under the License.
+  14:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** ==============================================================================*/
+  15:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  16:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include "tensorflow/lite/micro/micro_utils.h"
+  17:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  18:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include <cmath>
+  19:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include <cstdint>
+  20:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include <limits>
+  21:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  22:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include "tensorflow/lite/c/common.h"
+  23:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** #include "tensorflow/lite/kernels/op_macros.h"
+  24:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  25:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** namespace tflite {
+  26:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  27:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** int ElementCount(const TfLiteIntArray& dims) {
+  27              		.loc 1 27 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  32              	.LBB11:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int result = 1;
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   for (int i = 0; i < dims.size; ++i) {
+  33              		.loc 1 29 0
+  34 0000 00C090E5 		ldr	ip, [r0]
+  35 0004 00005CE3 		cmp	ip, #0
+  36 0008 5C0000DA 		ble	.L13
+  37 000c 043080E2 		add	r3, r0, #4
+  38              	.LBE11:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int result = 1;
+  39              		.loc 1 27 0
+  40 0010 70402DE9 		push	{r4, r5, r6, lr}
+  41              		.cfi_def_cfa_offset 16
+  42              		.cfi_offset 4, -16
+  43              		.cfi_offset 5, -12
+  44              		.cfi_offset 6, -8
+  45              		.cfi_offset 14, -4
+  46 0014 5331A0E7 		sbfx	r3, r3, #2, #1
+  47 0018 033003E2 		and	r3, r3, #3
+  48 001c 0C0053E1 		cmp	r3, ip
+  49 0020 0C30A021 		movcs	r3, ip
+  50 0024 08005CE3 		cmp	ip, #8
+  51              	.LBB12:
+  52              		.loc 1 29 0
+  53 0028 0C30A0D1 		movle	r3, ip
+  54 002c 4E0000CA 		bgt	.L29
+  55              	.L3:
+  56 0030 010053E3 		cmp	r3, #1
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+  57              		.loc 1 30 0
+  58 0034 041090E5 		ldr	r1, [r0, #4]
+  59              	.LVL1:
+  60 0038 4900000A 		beq	.L22
+  61 003c 082090E5 		ldr	r2, [r0, #8]
+  62 0040 020053E3 		cmp	r3, #2
+  63 0044 920101E0 		mul	r1, r2, r1
+  64              	.LVL2:
+  65 0048 4500000A 		beq	.L22
+  66 004c 0C2090E5 		ldr	r2, [r0, #12]
+  67 0050 030053E3 		cmp	r3, #3
+  68 0054 920101E0 		mul	r1, r2, r1
+  69              	.LVL3:
+  70 0058 4100000A 		beq	.L22
+  71 005c 102090E5 		ldr	r2, [r0, #16]
+  72 0060 040053E3 		cmp	r3, #4
+  73 0064 920101E0 		mul	r1, r2, r1
+  74              	.LVL4:
+  75 0068 3D00000A 		beq	.L22
+  76 006c 142090E5 		ldr	r2, [r0, #20]
+  77 0070 050053E3 		cmp	r3, #5
+  78 0074 920101E0 		mul	r1, r2, r1
+  79              	.LVL5:
+  80 0078 3900000A 		beq	.L22
+  81 007c 182090E5 		ldr	r2, [r0, #24]
+  82 0080 060053E3 		cmp	r3, #6
+  83 0084 920101E0 		mul	r1, r2, r1
+  84              	.LVL6:
+  85 0088 3500000A 		beq	.L22
+  86 008c 1C2090E5 		ldr	r2, [r0, #28]
+  87 0090 070053E3 		cmp	r3, #7
+  88 0094 920101E0 		mul	r1, r2, r1
+  89              	.LVL7:
+  90 0098 3100000A 		beq	.L22
+  91 009c 202090E5 		ldr	r2, [r0, #32]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+  92              		.loc 1 29 0
+  93 00a0 08E0A0E3 		mov	lr, #8
+  94              		.loc 1 30 0
+  95 00a4 920101E0 		mul	r1, r2, r1
+  96              	.LVL8:
+  97              	.L5:
+  98 00a8 03005CE1 		cmp	ip, r3
+  99 00ac 2A00000A 		beq	.L1
+ 100              	.LVL9:
+ 101              	.L4:
+ 102 00b0 03504CE0 		sub	r5, ip, r3
+ 103 00b4 01404CE2 		sub	r4, ip, #1
+ 104 00b8 042045E2 		sub	r2, r5, #4
+ 105 00bc 034044E0 		sub	r4, r4, r3
+ 106 00c0 2221A0E1 		lsr	r2, r2, #2
+ 107 00c4 020054E3 		cmp	r4, #2
+ 108 00c8 012082E2 		add	r2, r2, #1
+ 109 00cc 0261A0E1 		lsl	r6, r2, #2
+ 110 00d0 1300009A 		bls	.L7
+ 111 00d4 013083E2 		add	r3, r3, #1
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 112              		.loc 1 29 0
+ 113 00d8 5100C0F2 		vmov.i32	q8, #1  @ v4si
+ 114 00dc 033180E0 		add	r3, r0, r3, lsl #2
+ 115 00e0 0040A0E3 		mov	r4, #0
+ 116              	.L9:
+ 117 00e4 014084E2 		add	r4, r4, #1
+ 118              		.loc 1 30 0 discriminator 2
+ 119 00e8 DF2A63F4 		vld1.64	{d18-d19}, [r3:64]
+ 120 00ec 040052E1 		cmp	r2, r4
+ 121 00f0 103083E2 		add	r3, r3, #16
+ 122 00f4 F20960F2 		vmul.i32	q8, q8, q9
+ 123 00f8 F9FFFF8A 		bhi	.L9
+ 124 00fc 060055E1 		cmp	r5, r6
+ 125 0100 06E08EE0 		add	lr, lr, r6
+ 126 0104 5020C0F2 		vmov.i32	q9, #0  @ v4si
+ 127 0108 E248F0F2 		vext.32	q10, q8, q9, #2
+ 128 010c F40960F2 		vmul.i32	q8, q8, q10
+ 129 0110 E224F0F2 		vext.32	q9, q8, q9, #1
+ 130 0114 F20960F2 		vmul.i32	q8, q8, q9
+ 131 0118 902B10EE 		vmov.32	r2, d16[0]
+ 132 011c 920101E0 		mul	r1, r2, r1
+ 133 0120 0D00000A 		beq	.L1
+ 134              	.L7:
+ 135              	.LVL10:
+ 136              		.loc 1 30 0 is_stmt 0
+ 137 0124 0E2180E0 		add	r2, r0, lr, lsl #2
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 138              		.loc 1 29 0 is_stmt 1
+ 139 0128 01308EE2 		add	r3, lr, #1
+ 140              		.loc 1 30 0
+ 141 012c 042092E5 		ldr	r2, [r2, #4]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 142              		.loc 1 29 0
+ 143 0130 0C0053E1 		cmp	r3, ip
+ 144              		.loc 1 30 0
+ 145 0134 920101E0 		mul	r1, r2, r1
+ 146              	.LVL11:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 147              		.loc 1 29 0
+ 148 0138 070000AA 		bge	.L1
+ 149              		.loc 1 30 0
+ 150 013c 032180E0 		add	r2, r0, r3, lsl #2
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 151              		.loc 1 29 0
+ 152 0140 02308EE2 		add	r3, lr, #2
+ 153              	.LVL12:
+ 154              		.loc 1 30 0
+ 155 0144 042092E5 		ldr	r2, [r2, #4]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 156              		.loc 1 29 0
+ 157 0148 03005CE1 		cmp	ip, r3
+ 158              		.loc 1 30 0
+ 159 014c 920101E0 		mul	r1, r2, r1
+ 160              	.LVL13:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 161              		.loc 1 29 0
+ 162              		.loc 1 30 0
+ 163 0150 033180C0 		addgt	r3, r0, r3, lsl #2
+ 164 0154 043093C5 		ldrgt	r3, [r3, #4]
+ 165 0158 930101C0 		mulgt	r1, r3, r1
+ 166              	.LVL14:
+ 167              	.L1:
+ 168              	.LBE12:
+  31:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+  32:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   return result;
+  33:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** }
+ 169              		.loc 1 33 0
+ 170 015c 0100A0E1 		mov	r0, r1
+ 171              	.LVL15:
+ 172 0160 7080BDE8 		pop	{r4, r5, r6, pc}
+ 173              	.LVL16:
+ 174              	.L22:
+ 175              	.LBB13:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 176              		.loc 1 29 0
+ 177 0164 03E0A0E1 		mov	lr, r3
+ 178 0168 CEFFFFEA 		b	.L5
+ 179              	.LVL17:
+ 180              	.L29:
+ 181 016c 000053E3 		cmp	r3, #0
+ 182 0170 03E0A001 		moveq	lr, r3
+ 183 0174 0110A003 		moveq	r1, #1
+ 184 0178 CCFFFF0A 		beq	.L4
+ 185 017c ABFFFFEA 		b	.L3
+ 186              	.L13:
+ 187              		.cfi_def_cfa_offset 0
+ 188              		.cfi_restore 4
+ 189              		.cfi_restore 5
+ 190              		.cfi_restore 6
+ 191              		.cfi_restore 14
+ 192              	.LBE13:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   for (int i = 0; i < dims.size; ++i) {
+ 193              		.loc 1 28 0
+ 194 0180 0110A0E3 		mov	r1, #1
+ 195              		.loc 1 33 0
+ 196 0184 0100A0E1 		mov	r0, r1
+ 197              	.LVL18:
+ 198 0188 1EFF2FE1 		bx	lr
+ 199              		.cfi_endproc
+ 200              	.LFE1032:
+ 201              		.cantunwind
+ 202              		.fnend
+ 204              		.global	__aeabi_idiv
+ 205              		.section	.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf,"ax",%progb
+ 206              		.align	2
+ 207              		.global	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+ 208              		.syntax unified
+ 209              		.arm
+ 210              		.fpu neon
+ 212              	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:
+ 213              		.fnstart
+ 214              	.LFB1033:
+  34:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  35:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** void SignedSymmetricPerChannelQuantize(const float* values,
+  36:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****                                        TfLiteIntArray* dims,
+  37:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****                                        int quantized_dimension,
+  38:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****                                        int8_t* quantized_values,
+  39:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****                                        float* scaling_factors) {
+ 215              		.loc 1 39 0
+ 216              		.cfi_startproc
+ 217              		@ args = 4, pretend = 0, frame = 40
+ 218              		@ frame_needed = 0, uses_anonymous_args = 0
+ 219              	.LVL19:
+ 220 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 221              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 222              		.cfi_def_cfa_offset 36
+ 223              		.cfi_offset 4, -36
+ 224              		.cfi_offset 5, -32
+ 225              		.cfi_offset 6, -28
+ 226              		.cfi_offset 7, -24
+ 227              		.cfi_offset 8, -20
+ 228              		.cfi_offset 9, -16
+ 229              		.cfi_offset 10, -12
+ 230              		.cfi_offset 11, -8
+ 231              		.cfi_offset 14, -4
+ 232 0004 0040A0E1 		mov	r4, r0
+ 233              	.LBB14:
+ 234              	.LBB15:
+ 235              	.LBB16:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 236              		.loc 1 29 0
+ 237 0008 00E091E5 		ldr	lr, [r1]
+ 238              	.LBE16:
+ 239              	.LBE15:
+ 240              	.LBE14:
+ 241              		.loc 1 39 0
+ 242 000c 0260A0E1 		mov	r6, r2
+ 243 0010 0350A0E1 		mov	r5, r3
+ 244 0014 068B2DED 		vpush.64	{d8, d9, d10}
+ 245              		.vsave {d8, d9, d10}
+ 246              		.cfi_def_cfa_offset 60
+ 247              		.cfi_offset 80, -60
+ 248              		.cfi_offset 81, -56
+ 249              		.cfi_offset 82, -52
+ 250              		.cfi_offset 83, -48
+ 251              		.cfi_offset 84, -44
+ 252              		.cfi_offset 85, -40
+ 253              		.pad #44
+ 254 0018 2CD04DE2 		sub	sp, sp, #44
+ 255              		.cfi_def_cfa_offset 104
+ 256              	.LBB23:
+ 257              	.LBB20:
+ 258              	.LBB17:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 259              		.loc 1 29 0
+ 260 001c 00005EE3 		cmp	lr, #0
+ 261 0020 C90000DA 		ble	.L52
+ 262 0024 04C081E2 		add	ip, r1, #4
+ 263 0028 5CC1A0E7 		sbfx	ip, ip, #2, #1
+ 264 002c 03C00CE2 		and	ip, ip, #3
+ 265 0030 0E005CE1 		cmp	ip, lr
+ 266 0034 0EC0A021 		movcs	ip, lr
+ 267 0038 08005EE3 		cmp	lr, #8
+ 268 003c 0EC0A0D1 		movle	ip, lr
+ 269 0040 BC0000CA 		bgt	.L67
+ 270              	.LVL20:
+ 271              	.L32:
+ 272 0044 01005CE3 		cmp	ip, #1
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 273              		.loc 1 30 0
+ 274 0048 040091E5 		ldr	r0, [r1, #4]
+ 275              	.LVL21:
+ 276 004c B300000A 		beq	.L61
+ 277 0050 083091E5 		ldr	r3, [r1, #8]
+ 278              	.LVL22:
+ 279 0054 02005CE3 		cmp	ip, #2
+ 280 0058 930000E0 		mul	r0, r3, r0
+ 281              	.LVL23:
+ 282 005c AF00000A 		beq	.L61
+ 283 0060 0C3091E5 		ldr	r3, [r1, #12]
+ 284 0064 03005CE3 		cmp	ip, #3
+ 285 0068 930000E0 		mul	r0, r3, r0
+ 286              	.LVL24:
+ 287 006c AB00000A 		beq	.L61
+ 288 0070 103091E5 		ldr	r3, [r1, #16]
+ 289 0074 04005CE3 		cmp	ip, #4
+ 290 0078 930000E0 		mul	r0, r3, r0
+ 291              	.LVL25:
+ 292 007c A700000A 		beq	.L61
+ 293 0080 143091E5 		ldr	r3, [r1, #20]
+ 294 0084 05005CE3 		cmp	ip, #5
+ 295 0088 930000E0 		mul	r0, r3, r0
+ 296              	.LVL26:
+ 297 008c A300000A 		beq	.L61
+ 298 0090 183091E5 		ldr	r3, [r1, #24]
+ 299 0094 06005CE3 		cmp	ip, #6
+ 300 0098 930000E0 		mul	r0, r3, r0
+ 301              	.LVL27:
+ 302 009c 9F00000A 		beq	.L61
+ 303 00a0 1C3091E5 		ldr	r3, [r1, #28]
+ 304 00a4 07005CE3 		cmp	ip, #7
+ 305 00a8 930000E0 		mul	r0, r3, r0
+ 306              	.LVL28:
+ 307 00ac 9B00000A 		beq	.L61
+ 308 00b0 203091E5 		ldr	r3, [r1, #32]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 309              		.loc 1 29 0
+ 310 00b4 0820A0E3 		mov	r2, #8
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 311              		.loc 1 30 0
+ 312 00b8 930000E0 		mul	r0, r3, r0
+ 313              	.LVL29:
+ 314              	.L34:
+ 315 00bc 0C005EE1 		cmp	lr, ip
+ 316 00c0 2A00000A 		beq	.L31
+ 317              	.LVL30:
+ 318              	.L33:
+ 319 00c4 0C804EE0 		sub	r8, lr, ip
+ 320 00c8 01304EE2 		sub	r3, lr, #1
+ 321 00cc 047048E2 		sub	r7, r8, #4
+ 322 00d0 0C3043E0 		sub	r3, r3, ip
+ 323 00d4 2771A0E1 		lsr	r7, r7, #2
+ 324 00d8 020053E3 		cmp	r3, #2
+ 325 00dc 017087E2 		add	r7, r7, #1
+ 326 00e0 0791A0E1 		lsl	r9, r7, #2
+ 327 00e4 1300009A 		bls	.L36
+ 328 00e8 01308CE2 		add	r3, ip, #1
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 329              		.loc 1 29 0
+ 330 00ec 5100C0F2 		vmov.i32	q8, #1  @ v4si
+ 331 00f0 033181E0 		add	r3, r1, r3, lsl #2
+ 332 00f4 00C0A0E3 		mov	ip, #0
+ 333              	.L38:
+ 334 00f8 01C08CE2 		add	ip, ip, #1
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 335              		.loc 1 30 0
+ 336 00fc DF2A63F4 		vld1.64	{d18-d19}, [r3:64]
+ 337 0100 0C0057E1 		cmp	r7, ip
+ 338 0104 103083E2 		add	r3, r3, #16
+ 339 0108 F20960F2 		vmul.i32	q8, q8, q9
+ 340 010c F9FFFF8A 		bhi	.L38
+ 341 0110 080059E1 		cmp	r9, r8
+ 342 0114 092082E0 		add	r2, r2, r9
+ 343 0118 5020C0F2 		vmov.i32	q9, #0  @ v4si
+ 344 011c E248F0F2 		vext.32	q10, q8, q9, #2
+ 345 0120 F40960F2 		vmul.i32	q8, q8, q10
+ 346 0124 E224F0F2 		vext.32	q9, q8, q9, #1
+ 347 0128 F20960F2 		vmul.i32	q8, q8, q9
+ 348 012c 903B10EE 		vmov.32	r3, d16[0]
+ 349 0130 930000E0 		mul	r0, r3, r0
+ 350 0134 0D00000A 		beq	.L31
+ 351              	.L36:
+ 352              	.LVL31:
+ 353 0138 02C181E0 		add	ip, r1, r2, lsl #2
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 354              		.loc 1 29 0
+ 355 013c 013082E2 		add	r3, r2, #1
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 356              		.loc 1 30 0
+ 357 0140 04C09CE5 		ldr	ip, [ip, #4]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 358              		.loc 1 29 0
+ 359 0144 03005EE1 		cmp	lr, r3
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 360              		.loc 1 30 0
+ 361 0148 9C0000E0 		mul	r0, ip, r0
+ 362              	.LVL32:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 363              		.loc 1 29 0
+ 364 014c 070000DA 		ble	.L31
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 365              		.loc 1 30 0
+ 366 0150 033181E0 		add	r3, r1, r3, lsl #2
+ 367              	.LVL33:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 368              		.loc 1 29 0
+ 369 0154 022082E2 		add	r2, r2, #2
+ 370              	.LVL34:
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 371              		.loc 1 30 0
+ 372 0158 043093E5 		ldr	r3, [r3, #4]
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 373              		.loc 1 29 0
+ 374 015c 0E0052E1 		cmp	r2, lr
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 375              		.loc 1 30 0
+ 376 0160 930000E0 		mul	r0, r3, r0
+ 377              	.LVL35:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 378              		.loc 1 29 0
+  30:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 379              		.loc 1 30 0
+ 380 0164 022181B0 		addlt	r2, r1, r2, lsl #2
+ 381              	.LVL36:
+ 382 0168 043092B5 		ldrlt	r3, [r2, #4]
+ 383 016c 930000B0 		mullt	r0, r3, r0
+ 384              	.LVL37:
+ 385              	.L31:
+ 386              	.LBE17:
+ 387              	.LBE20:
+ 388              	.LBE23:
+  40:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int input_size = ElementCount(*dims);
+  41:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int channel_count = dims->data[quantized_dimension];
+ 389              		.loc 1 41 0
+ 390 0170 063181E0 		add	r3, r1, r6, lsl #2
+ 391 0174 043093E5 		ldr	r3, [r3, #4]
+  42:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int per_channel_size = input_size / channel_count;
+ 392              		.loc 1 42 0
+ 393 0178 0310A0E1 		mov	r1, r3
+ 394              	.LVL38:
+  41:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int per_channel_size = input_size / channel_count;
+ 395              		.loc 1 41 0
+ 396 017c 14308DE5 		str	r3, [sp, #20]
+ 397              	.LVL39:
+ 398              		.loc 1 42 0
+ 399 0180 FEFFFFEB 		bl	__aeabi_idiv
+ 400              	.LVL40:
+  43:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  44:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int stride;
+  45:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int channel_stride;
+  46:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   if (quantized_dimension == 0) {
+ 401              		.loc 1 46 0
+ 402 0184 000056E3 		cmp	r6, #0
+  42:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+ 403              		.loc 1 42 0
+ 404 0188 0080A0E1 		mov	r8, r0
+ 405              	.LVL41:
+ 406              		.loc 1 46 0
+ 407 018c 6500000A 		beq	.L62
+  47:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     stride = 1;
+  48:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     channel_stride = per_channel_size;
+  49:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   } else if (quantized_dimension == 3) {
+ 408              		.loc 1 49 0
+ 409 0190 030056E3 		cmp	r6, #3
+ 410 0194 6E00001A 		bne	.L68
+  41:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   int per_channel_size = input_size / channel_count;
+ 411              		.loc 1 41 0
+ 412 0198 14B09DE5 		ldr	fp, [sp, #20]
+  50:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     stride = channel_count;
+  51:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     channel_stride = 1;
+ 413              		.loc 1 51 0
+ 414 019c 0130A0E3 		mov	r3, #1
+ 415 01a0 18308DE5 		str	r3, [sp, #24]
+ 416 01a4 0B30A0E1 		mov	r3, fp
+ 417              	.L42:
+ 418              	.LVL42:
+ 419              	.LBB24:
+  52:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   } else {
+  53:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     TF_LITE_FATAL("quantized dimension must be 0 or 3");
+  54:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+  55:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  56:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   // Calculate scales for each channel.
+  57:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   for (int channel = 0; channel < channel_count; channel++) {
+ 420              		.loc 1 57 0
+ 421 01a8 000053E3 		cmp	r3, #0
+ 422 01ac 550000DA 		ble	.L30
+ 423 01b0 18309DE5 		ldr	r3, [sp, #24]
+ 424 01b4 8B908BE0 		add	r9, fp, fp, lsl #1
+ 425              	.LBB25:
+  58:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     float min = 0;
+  59:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     float max = 0;
+  60:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     for (int i = 0; i < per_channel_size; i++) {
+  62:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+  63:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       min = fminf(min, values[idx]);
+  64:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       max = fmaxf(max, values[idx]);
+  65:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     }
+  66:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     scaling_factors[channel] =
+  67:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****         fmaxf(fabs(min), fabs(max)) / std::numeric_limits<int8_t>::max();
+ 426              		.loc 1 67 0 discriminator 3
+ 427 01b8 769ADFED 		vldr.32	s19, .L69
+ 428 01bc 0B61A0E1 		lsl	r6, fp, #2
+ 429              	.LVL43:
+ 430              	.LBB26:
+ 431              	.LBB27:
+  68:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     for (int i = 0; i < per_channel_size; i++) {
+  69:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+  70:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       const int32_t quantized_value =
+  71:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****           static_cast<int32_t>(roundf(values[idx] / scaling_factors[channel]));
+  72:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       // Clamp: just in case some odd numeric offset.
+  73:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       quantized_values[idx] =
+  74:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****           fminf(std::numeric_limits<int8_t>::max(),
+ 432              		.loc 1 74 0 discriminator 3
+ 433 01c0 75AA9FED 		vldr.32	s20, .L69+4
+ 434 01c4 68709DE5 		ldr	r7, [sp, #104]
+ 435 01c8 0331A0E1 		lsl	r3, r3, #2
+ 436 01cc 30008DE9 		stmib	sp, {r4, r5}
+ 437 01d0 1C308DE5 		str	r3, [sp, #28]
+ 438 01d4 8931A0E1 		lsl	r3, r9, #3
+ 439 01d8 24308DE5 		str	r3, [sp, #36]
+ 440 01dc 0B32A0E1 		lsl	r3, fp, #4
+ 441 01e0 20308DE5 		str	r3, [sp, #32]
+ 442              	.LBE27:
+ 443              	.LBE26:
+ 444              	.LBE25:
+  57:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     float min = 0;
+ 445              		.loc 1 57 0 discriminator 3
+ 446 01e4 0030A0E3 		mov	r3, #0
+ 447 01e8 0C308DE5 		str	r3, [sp, #12]
+ 448              	.LVL44:
+ 449              	.L49:
+ 450              	.LBB36:
+ 451              	.LBB31:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 452              		.loc 1 61 0 discriminator 3
+ 453 01ec 000058E3 		cmp	r8, #0
+ 454 01f0 470000DA 		ble	.L44
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 455              		.loc 1 61 0 is_stmt 0
+ 456 01f4 699A9FED 		vldr.32	s18, .L69+8
+ 457 01f8 0040A0E3 		mov	r4, #0
+ 458 01fc 04509DE5 		ldr	r5, [sp, #4]
+ 459 0200 24909DE5 		ldr	r9, [sp, #36]
+ 460 0204 498AF0EE 		vmov.f32	s17, s18
+ 461              	.LVL45:
+ 462              	.L46:
+ 463              	.LBB32:
+  63:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       max = fmaxf(max, values[idx]);
+ 464              		.loc 1 63 0 is_stmt 1 discriminator 2
+ 465 0208 008A95ED 		vldr.32	s16, [r5]
+ 466              	.LBE32:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 467              		.loc 1 61 0 discriminator 2
+ 468 020c 014084E2 		add	r4, r4, #1
+ 469              	.LVL46:
+ 470              	.LBB33:
+  63:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       max = fmaxf(max, values[idx]);
+ 471              		.loc 1 63 0 discriminator 2
+ 472 0210 680AB0EE 		vmov.f32	s0, s17
+ 473 0214 05F0D9F7 		pld	[r9, r5]
+ 474 0218 065085E0 		add	r5, r5, r6
+ 475 021c 480AF0EE 		vmov.f32	s1, s16
+ 476 0220 FEFFFFEB 		bl	fminf
+ 477              	.LVL47:
+ 478 0224 408AF0EE 		vmov.f32	s17, s0
+ 479              	.LVL48:
+  64:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     }
+ 480              		.loc 1 64 0 discriminator 2
+ 481 0228 480AF0EE 		vmov.f32	s1, s16
+ 482 022c 490AB0EE 		vmov.f32	s0, s18
+ 483              	.LVL49:
+ 484 0230 FEFFFFEB 		bl	fmaxf
+ 485              	.LVL50:
+ 486              	.LBE33:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 487              		.loc 1 61 0 discriminator 2
+ 488 0234 040058E1 		cmp	r8, r4
+ 489              	.LBB34:
+  64:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     }
+ 490              		.loc 1 64 0 discriminator 2
+ 491 0238 409AB0EE 		vmov.f32	s18, s0
+ 492              	.LVL51:
+ 493              	.LBE34:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 494              		.loc 1 61 0 discriminator 2
+ 495 023c F1FFFF1A 		bne	.L46
+ 496              	.LBE31:
+  67:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     for (int i = 0; i < per_channel_size; i++) {
+ 497              		.loc 1 67 0
+ 498 0240 C00AF0EE 		vabs.f32	s1, s0
+  66:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****         fmaxf(fabs(min), fabs(max)) / std::numeric_limits<int8_t>::max();
+ 499              		.loc 1 66 0
+ 500 0244 0090A0E3 		mov	r9, #0
+  67:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     for (int i = 0; i < per_channel_size; i++) {
+ 501              		.loc 1 67 0
+ 502 0248 E80AB0EE 		vabs.f32	s0, s17
+ 503              	.LVL52:
+ 504 024c FEFFFFEB 		bl	fmaxf
+ 505              	.LVL53:
+ 506 0250 290A80EE 		vdiv.f32	s0, s0, s19
+ 507 0254 10808DE5 		str	r8, [sp, #16]
+ 508 0258 0780A0E1 		mov	r8, r7
+  66:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****         fmaxf(fabs(min), fabs(max)) / std::numeric_limits<int8_t>::max();
+ 509              		.loc 1 66 0
+ 510 025c 08509DE5 		ldr	r5, [sp, #8]
+ 511 0260 04A09DE5 		ldr	r10, [sp, #4]
+ 512 0264 000A87ED 		vstr.32	s0, [r7]
+ 513              	.LVL54:
+ 514 0268 0670A0E1 		mov	r7, r6
+ 515 026c 20609DE5 		ldr	r6, [sp, #32]
+ 516 0270 000000EA 		b	.L50
+ 517              	.LVL55:
+ 518              	.L47:
+ 519 0274 000A98ED 		vldr.32	s0, [r8]
+ 520              	.LVL56:
+ 521              	.L50:
+ 522              	.LBB35:
+ 523              	.LBB28:
+  71:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       // Clamp: just in case some odd numeric offset.
+ 524              		.loc 1 71 0 discriminator 2
+ 525 0278 007ADAED 		vldr.32	s15, [r10]
+ 526              	.LBE28:
+  68:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 527              		.loc 1 68 0 discriminator 2
+ 528 027c 019089E2 		add	r9, r9, #1
+ 529              	.LVL57:
+ 530 0280 0AF0D6F7 		pld	[r6, r10]
+ 531 0284 07A08AE0 		add	r10, r10, r7
+ 532              	.LBB29:
+  71:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       // Clamp: just in case some odd numeric offset.
+ 533              		.loc 1 71 0 discriminator 2
+ 534 0288 800A87EE 		vdiv.f32	s0, s15, s0
+ 535 028c FEFFFFEB 		bl	roundf
+ 536              	.LVL58:
+ 537 0290 C00AFDEE 		vcvt.s32.f32	s1, s0
+ 538              		.loc 1 74 0 discriminator 2
+ 539 0294 4A0AB0EE 		vmov.f32	s0, s20
+ 540              	.LVL59:
+ 541 0298 E00AF8EE 		vcvt.f32.s32	s1, s1
+ 542 029c FEFFFFEB 		bl	fmaxf
+ 543              	.LVL60:
+ 544 02a0 400AF0EE 		vmov.f32	s1, s0
+ 545 02a4 690AB0EE 		vmov.f32	s0, s19
+ 546 02a8 FEFFFFEB 		bl	fminf
+ 547              	.LVL61:
+  75:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****                 fmaxf(std::numeric_limits<int8_t>::min() + 1, quantized_value));
+ 548              		.loc 1 75 0 discriminator 2
+ 549 02ac C07AFDEE 		vcvt.s32.f32	s15, s0
+ 550              	.LBE29:
+  68:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 551              		.loc 1 68 0 discriminator 2
+ 552 02b0 090054E1 		cmp	r4, r9
+ 553              	.LBB30:
+ 554              		.loc 1 75 0 discriminator 2
+ 555 02b4 903A17EE 		vmov	r3, s15	@ int
+ 556 02b8 0B30C5E6 		strb	r3, [r5], fp
+ 557              	.LBE30:
+  68:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****       int idx = channel * channel_stride + i * stride;
+ 558              		.loc 1 68 0 discriminator 2
+ 559 02bc ECFFFF1A 		bne	.L47
+ 560 02c0 0760A0E1 		mov	r6, r7
+ 561 02c4 0870A0E1 		mov	r7, r8
+ 562 02c8 10809DE5 		ldr	r8, [sp, #16]
+ 563              	.LVL62:
+ 564              	.L51:
+ 565 02cc 04209DE5 		ldr	r2, [sp, #4]
+ 566 02d0 047087E2 		add	r7, r7, #4
+ 567 02d4 1C109DE5 		ldr	r1, [sp, #28]
+ 568              	.LBE35:
+ 569              	.LBE36:
+  57:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     float min = 0;
+ 570              		.loc 1 57 0 discriminator 2
+ 571 02d8 0C309DE5 		ldr	r3, [sp, #12]
+ 572 02dc 012082E0 		add	r2, r2, r1
+ 573 02e0 04208DE5 		str	r2, [sp, #4]
+ 574 02e4 013083E2 		add	r3, r3, #1
+ 575 02e8 14209DE5 		ldr	r2, [sp, #20]
+ 576 02ec 0C308DE5 		str	r3, [sp, #12]
+ 577              	.LVL63:
+ 578 02f0 030052E1 		cmp	r2, r3
+ 579 02f4 08309DE5 		ldr	r3, [sp, #8]
+ 580              	.LVL64:
+ 581 02f8 18209DE5 		ldr	r2, [sp, #24]
+ 582 02fc 023083E0 		add	r3, r3, r2
+ 583 0300 08308DE5 		str	r3, [sp, #8]
+ 584 0304 B8FFFF1A 		bne	.L49
+ 585              	.LVL65:
+ 586              	.L30:
+ 587              	.LBE24:
+  76:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     }
+  77:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+  78:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** }
+ 588              		.loc 1 78 0
+ 589 0308 2CD08DE2 		add	sp, sp, #44
+ 590              		.cfi_remember_state
+ 591              		.cfi_def_cfa_offset 60
+ 592              		@ sp needed
+ 593 030c 068BBDEC 		vldm	sp!, {d8-d10}
+ 594              		.cfi_restore 84
+ 595              		.cfi_restore 85
+ 596              		.cfi_restore 82
+ 597              		.cfi_restore 83
+ 598              		.cfi_restore 80
+ 599              		.cfi_restore 81
+ 600              		.cfi_def_cfa_offset 36
+ 601 0310 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 602              	.LVL66:
+ 603              	.L44:
+ 604              		.cfi_restore_state
+ 605              	.LBB38:
+ 606              	.LBB37:
+  66:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****         fmaxf(fabs(min), fabs(max)) / std::numeric_limits<int8_t>::max();
+ 607              		.loc 1 66 0
+ 608 0314 217ADFED 		vldr.32	s15, .L69+8
+ 609 0318 007AC7ED 		vstr.32	s15, [r7]
+ 610              	.LVL67:
+ 611 031c EAFFFFEA 		b	.L51
+ 612              	.LVL68:
+ 613              	.L61:
+ 614              	.LBE37:
+ 615              	.LBE38:
+ 616              	.LBB39:
+ 617              	.LBB21:
+ 618              	.LBB18:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 619              		.loc 1 29 0
+ 620 0320 0C20A0E1 		mov	r2, ip
+ 621 0324 64FFFFEA 		b	.L34
+ 622              	.LVL69:
+ 623              	.L62:
+ 624              	.LBE18:
+ 625              	.LBE21:
+ 626              	.LBE39:
+  42:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc **** 
+ 627              		.loc 1 42 0
+ 628 0328 18008DE5 		str	r0, [sp, #24]
+  47:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     channel_stride = per_channel_size;
+ 629              		.loc 1 47 0
+ 630 032c 01B0A0E3 		mov	fp, #1
+ 631 0330 14309DE5 		ldr	r3, [sp, #20]
+ 632 0334 9BFFFFEA 		b	.L42
+ 633              	.LVL70:
+ 634              	.L67:
+ 635 0338 00005CE3 		cmp	ip, #0
+ 636              	.LBB40:
+ 637              	.LBB22:
+ 638              	.LBB19:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****     result *= dims.data[i];
+ 639              		.loc 1 29 0
+ 640 033c 0100A003 		moveq	r0, #1
+ 641              	.LVL71:
+ 642 0340 0C20A001 		moveq	r2, ip
+ 643              	.LVL72:
+ 644 0344 5EFFFF0A 		beq	.L33
+ 645 0348 3DFFFFEA 		b	.L32
+ 646              	.LVL73:
+ 647              	.L52:
+ 648              	.LBE19:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   for (int i = 0; i < dims.size; ++i) {
+ 649              		.loc 1 28 0
+ 650 034c 0100A0E3 		mov	r0, #1
+ 651              	.LVL74:
+ 652 0350 86FFFFEA 		b	.L31
+ 653              	.LVL75:
+ 654              	.L68:
+ 655              	.LBE22:
+ 656              	.LBE40:
+  53:../src/tensorflow_lite/tensorflow/lite/micro/micro_utils.cc ****   }
+ 657              		.loc 1 53 0
+ 658 0354 004000E3 		movw	r4, #:lower16:_impure_ptr
+ 659              	.LVL76:
+ 660 0358 000000E3 		movw	r0, #:lower16:.LC0
+ 661              	.LVL77:
+ 662 035c 004040E3 		movt	r4, #:upper16:_impure_ptr
+ 663 0360 2220A0E3 		mov	r2, #34
+ 664 0364 003094E5 		ldr	r3, [r4]
+ 665 0368 0110A0E3 		mov	r1, #1
+ 666 036c 000040E3 		movt	r0, #:upper16:.LC0
+ 667 0370 0C3093E5 		ldr	r3, [r3, #12]
+ 668 0374 FEFFFFEB 		bl	fwrite
+ 669              	.LVL78:
+ 670 0378 003094E5 		ldr	r3, [r4]
+ 671 037c 000000E3 		movw	r0, #:lower16:.LC1
+ 672 0380 0720A0E3 		mov	r2, #7
+ 673 0384 0110A0E3 		mov	r1, #1
+ 674 0388 000040E3 		movt	r0, #:upper16:.LC1
+ 675 038c 0C3093E5 		ldr	r3, [r3, #12]
+ 676 0390 FEFFFFEB 		bl	fwrite
+ 677              	.LVL79:
+ 678 0394 FEFFFFEB 		bl	abort
+ 679              	.LVL80:
+ 680              	.L70:
+ 681              		.align	2
+ 682              	.L69:
+ 683 0398 0000FE42 		.word	1123942400
+ 684 039c 0000FEC2 		.word	-1023541248
+ 685 03a0 00000000 		.word	0
+ 686              		.cfi_endproc
+ 687              	.LFE1033:
+ 688              		.fnend
+ 690              		.section	.rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4,"a
+ 691              		.align	2
+ 692              	.LC0:
+ 693 0000 7175616E 		.ascii	"quantized dimension must be 0 or 3\000"
+ 693      74697A65 
+ 693      64206469 
+ 693      6D656E73 
+ 693      696F6E20 
+ 694 0023 00       		.space	1
+ 695              	.LC1:
+ 696 0024 0A464154 		.ascii	"\012FATAL\012\000"
+ 696      414C0A00 
+ 697              		.text
+ 698              	.Letext0:
+ 699              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 700              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 701              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 702              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 703              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 704              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 705              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 706              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 707              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 708              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 709              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 710              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 711              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 712              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 713              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 714              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 715              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 716              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 717              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 718              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 719              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 720              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 721              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 722              		.file 25 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 723              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 724              		.file 27 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 725              		.file 28 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 micro_utils.cc
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:17     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:23     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 _ZN6tflite12ElementCountERK14TfLiteIntArray
+.ARM.exidx.text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:206    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:212    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 _ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:692    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:695    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000024 .LC1
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:683    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000398 $d
+.ARM.extab.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+.ARM.exidx.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc1xSx0L.s:691    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.37852b648068a281464730a5a4cc748e
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stddef.h.187.e3ca1cb00044c044f8b956a6107cebb6
+                           .group:00000000 wm4.stddef.h.39.60c5e3eb202f4a8f413509aeb6ad39fb
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cmath.44.b3bcbb5fe53ec6617dec8aa8eb7b03cc
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+
+UNDEFINED SYMBOLS
+__aeabi_idiv
+fminf
+fmaxf
+roundf
+_impure_ptr
+fwrite
+abort
+__aeabi_unwind_cpp_pr1

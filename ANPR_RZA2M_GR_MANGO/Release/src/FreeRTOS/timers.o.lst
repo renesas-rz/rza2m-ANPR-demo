@@ -1,0 +1,952 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"timers.c"
+  13              		.section	.text.prvSwitchTimerLists,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	prvSwitchTimerLists:
+  20              		@ args = 0, pretend = 0, frame = 16
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  23 0004 006000E3 		movw	r6, #:lower16:.LANCHOR0
+  24 0008 007000E3 		movw	r7, #:lower16:.LANCHOR1
+  25 000c 008000E3 		movw	r8, #:lower16:.LC0
+  26 0010 10D04DE2 		sub	sp, sp, #16
+  27 0014 006040E3 		movt	r6, #:upper16:.LANCHOR0
+  28 0018 007040E3 		movt	r7, #:upper16:.LANCHOR1
+  29 001c 008040E3 		movt	r8, #:upper16:.LC0
+  30 0020 0B0000EA 		b	.L3
+  31              	.L6:
+  32 0024 0C3093E5 		ldr	r3, [r3, #12]
+  33 0028 0C4093E5 		ldr	r4, [r3, #12]
+  34 002c 009093E5 		ldr	r9, [r3]
+  35 0030 045084E2 		add	r5, r4, #4
+  36 0034 0500A0E1 		mov	r0, r5
+  37 0038 FEFFFFEB 		bl	uxListRemove
+  38 003c 243094E5 		ldr	r3, [r4, #36]
+  39 0040 0400A0E1 		mov	r0, r4
+  40 0044 33FF2FE1 		blx	r3
+  41 0048 1C3094E5 		ldr	r3, [r4, #28]
+  42 004c 010053E3 		cmp	r3, #1
+  43 0050 0A00000A 		beq	.L14
+  44              	.L3:
+  45 0054 003096E5 		ldr	r3, [r6]
+  46 0058 002093E5 		ldr	r2, [r3]
+  47 005c 000052E3 		cmp	r2, #0
+  48 0060 EFFFFF1A 		bne	.L6
+  49 0064 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  50 0068 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  51 006c 001092E5 		ldr	r1, [r2]
+  52 0070 003082E5 		str	r3, [r2]
+  53 0074 001086E5 		str	r1, [r6]
+  54 0078 10D08DE2 		add	sp, sp, #16
+  55              		@ sp needed
+  56 007c F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+  57              	.L14:
+  58 0080 182094E5 		ldr	r2, [r4, #24]
+  59 0084 00A0A0E3 		mov	r10, #0
+  60 0088 0510A0E1 		mov	r1, r5
+  61 008c 022089E0 		add	r2, r9, r2
+  62 0090 020059E1 		cmp	r9, r2
+  63 0094 1100003A 		bcc	.L15
+  64 0098 003097E5 		ldr	r3, [r7]
+  65 009c 000053E3 		cmp	r3, #0
+  66 00a0 0A00000A 		beq	.L7
+  67 00a4 00A08DE5 		str	r10, [sp]
+  68 00a8 04908DE5 		str	r9, [sp, #4]
+  69 00ac 08408DE5 		str	r4, [sp, #8]
+  70 00b0 FEFFFFEB 		bl	xTaskGetSchedulerState
+  71 00b4 0A30A0E1 		mov	r3, r10
+  72 00b8 0A20A0E1 		mov	r2, r10
+  73 00bc 0D10A0E1 		mov	r1, sp
+  74 00c0 000097E5 		ldr	r0, [r7]
+  75 00c4 FEFFFFEB 		bl	xQueueGenericSend
+  76 00c8 000050E3 		cmp	r0, #0
+  77 00cc E0FFFF1A 		bne	.L3
+  78              	.L7:
+  79 00d0 6E1300E3 		movw	r1, #878
+  80 00d4 0800A0E1 		mov	r0, r8
+  81 00d8 FEFFFFEB 		bl	R_OS_AssertCalled
+  82 00dc DCFFFFEA 		b	.L3
+  83              	.L15:
+  84 00e0 042084E5 		str	r2, [r4, #4]
+  85 00e4 104084E5 		str	r4, [r4, #16]
+  86 00e8 000096E5 		ldr	r0, [r6]
+  87 00ec FEFFFFEB 		bl	vListInsert
+  88 00f0 D7FFFFEA 		b	.L3
+  90              		.section	.text.prvTimerTask,"ax",%progbits
+  91              		.align	2
+  92              		.syntax unified
+  93              		.arm
+  94              		.fpu neon
+  96              	prvTimerTask:
+  97              		@ args = 0, pretend = 0, frame = 40
+  98              		@ frame_needed = 0, uses_anonymous_args = 0
+  99 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 100 0004 007000E3 		movw	r7, #:lower16:.LANCHOR0
+ 101 0008 006000E3 		movw	r6, #:lower16:.LANCHOR3
+ 102 000c 008000E3 		movw	r8, #:lower16:.LANCHOR2
+ 103 0010 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 104 0014 003000E3 		movw	r3, #:lower16:.LC0
+ 105 0018 007040E3 		movt	r7, #:upper16:.LANCHOR0
+ 106 001c 006040E3 		movt	r6, #:upper16:.LANCHOR3
+ 107 0020 008040E3 		movt	r8, #:upper16:.LANCHOR2
+ 108 0024 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 109 0028 2CD04DE2 		sub	sp, sp, #44
+ 110 002c 003040E3 		movt	r3, #:upper16:.LC0
+ 111 0030 04308DE5 		str	r3, [sp, #4]
+ 112              	.L48:
+ 113 0034 003097E5 		ldr	r3, [r7]
+ 114 0038 00B093E5 		ldr	fp, [r3]
+ 115 003c 00005BE3 		cmp	fp, #0
+ 116 0040 7300000A 		beq	.L17
+ 117 0044 0C3093E5 		ldr	r3, [r3, #12]
+ 118 0048 00A093E5 		ldr	r10, [r3]
+ 119 004c FEFFFFEB 		bl	vTaskSuspendAll
+ 120 0050 FEFFFFEB 		bl	xTaskGetTickCount
+ 121 0054 003096E5 		ldr	r3, [r6]
+ 122 0058 0040A0E1 		mov	r4, r0
+ 123 005c 030050E1 		cmp	r0, r3
+ 124 0060 7800003A 		bcc	.L52
+ 125 0064 00005AE1 		cmp	r10, r0
+ 126 0068 000086E5 		str	r0, [r6]
+ 127 006c 0020A083 		movhi	r2, #0
+ 128 0070 7A00009A 		bls	.L68
+ 129              	.L50:
+ 130 0074 04104AE0 		sub	r1, r10, r4
+ 131 0078 000095E5 		ldr	r0, [r5]
+ 132 007c FEFFFFEB 		bl	vQueueWaitForMessageRestricted
+ 133 0080 FEFFFFEB 		bl	xTaskResumeAll
+ 134 0084 000050E3 		cmp	r0, #0
+ 135 0088 0000001A 		bne	.L32
+ 136              		.syntax divided
+ 137              	@ 582 "../src/FreeRTOS/timers.c" 1
+ 138 008c 000000EF 		SWI 0
+ 139              	@ 0 "" 2
+ 140              		.arm
+ 141              		.syntax unified
+ 142              	.L32:
+ 143 0090 0020A0E3 		mov	r2, #0
+ 144 0094 08108DE2 		add	r1, sp, #8
+ 145 0098 000095E5 		ldr	r0, [r5]
+ 146 009c FEFFFFEB 		bl	xQueueReceive
+ 147 00a0 000050E3 		cmp	r0, #0
+ 148 00a4 E2FFFF0A 		beq	.L48
+ 149 00a8 08309DE5 		ldr	r3, [sp, #8]
+ 150 00ac 000053E3 		cmp	r3, #0
+ 151 00b0 4F0000BA 		blt	.L28
+ 152              	.L31:
+ 153 00b4 10409DE5 		ldr	r4, [sp, #16]
+ 154 00b8 143094E5 		ldr	r3, [r4, #20]
+ 155 00bc 000053E3 		cmp	r3, #0
+ 156 00c0 0100000A 		beq	.L30
+ 157 00c4 040084E2 		add	r0, r4, #4
+ 158 00c8 FEFFFFEB 		bl	uxListRemove
+ 159              	.L30:
+ 160 00cc FEFFFFEB 		bl	xTaskGetTickCount
+ 161 00d0 003096E5 		ldr	r3, [r6]
+ 162 00d4 00B0A0E1 		mov	fp, r0
+ 163 00d8 030050E1 		cmp	r0, r3
+ 164 00dc 5D00003A 		bcc	.L69
+ 165              	.L33:
+ 166 00e0 08309DE5 		ldr	r3, [sp, #8]
+ 167 00e4 00B086E5 		str	fp, [r6]
+ 168 00e8 090053E3 		cmp	r3, #9
+ 169 00ec 03F19F97 		ldrls	pc, [pc, r3, asl #2]
+ 170 00f0 E6FFFFEA 		b	.L32
+ 171              	.L36:
+ 172 00f4 50010000 		.word	.L35
+ 173 00f8 50010000 		.word	.L35
+ 174 00fc 50010000 		.word	.L35
+ 175 0100 90000000 		.word	.L32
+ 176 0104 1C010000 		.word	.L37
+ 177 0108 E8010000 		.word	.L38
+ 178 010c 50010000 		.word	.L35
+ 179 0110 50010000 		.word	.L35
+ 180 0114 90000000 		.word	.L32
+ 181 0118 1C010000 		.word	.L37
+ 182              	.L37:
+ 183 011c 0C309DE5 		ldr	r3, [sp, #12]
+ 184 0120 000053E3 		cmp	r3, #0
+ 185 0124 183084E5 		str	r3, [r4, #24]
+ 186 0128 6200000A 		beq	.L70
+ 187 012c 0B3083E0 		add	r3, r3, fp
+ 188 0130 104084E5 		str	r4, [r4, #16]
+ 189 0134 03005BE1 		cmp	fp, r3
+ 190 0138 043084E5 		str	r3, [r4, #4]
+ 191 013c 6800002A 		bcs	.L54
+ 192              	.L45:
+ 193 0140 041084E2 		add	r1, r4, #4
+ 194 0144 000097E5 		ldr	r0, [r7]
+ 195 0148 FEFFFFEB 		bl	vListInsert
+ 196 014c CFFFFFEA 		b	.L32
+ 197              	.L35:
+ 198 0150 0C309DE5 		ldr	r3, [sp, #12]
+ 199 0154 181094E5 		ldr	r1, [r4, #24]
+ 200 0158 104084E5 		str	r4, [r4, #16]
+ 201 015c 012083E0 		add	r2, r3, r1
+ 202 0160 0B0052E1 		cmp	r2, fp
+ 203 0164 042084E5 		str	r2, [r4, #4]
+ 204 0168 4A00008A 		bhi	.L39
+ 205 016c 03304BE0 		sub	r3, fp, r3
+ 206 0170 030051E1 		cmp	r1, r3
+ 207 0174 5A00008A 		bhi	.L54
+ 208              	.L40:
+ 209 0178 243094E5 		ldr	r3, [r4, #36]
+ 210 017c 0400A0E1 		mov	r0, r4
+ 211 0180 33FF2FE1 		blx	r3
+ 212 0184 1C3094E5 		ldr	r3, [r4, #28]
+ 213 0188 010053E3 		cmp	r3, #1
+ 214 018c BFFFFF1A 		bne	.L32
+ 215 0190 001095E5 		ldr	r1, [r5]
+ 216 0194 0C309DE5 		ldr	r3, [sp, #12]
+ 217 0198 182094E5 		ldr	r2, [r4, #24]
+ 218 019c 000051E3 		cmp	r1, #0
+ 219 01a0 023083E0 		add	r3, r3, r2
+ 220 01a4 0B00000A 		beq	.L43
+ 221 01a8 0020A0E3 		mov	r2, #0
+ 222 01ac 1C308DE5 		str	r3, [sp, #28]
+ 223 01b0 18208DE5 		str	r2, [sp, #24]
+ 224 01b4 20408DE5 		str	r4, [sp, #32]
+ 225 01b8 FEFFFFEB 		bl	xTaskGetSchedulerState
+ 226 01bc 0030A0E3 		mov	r3, #0
+ 227 01c0 18108DE2 		add	r1, sp, #24
+ 228 01c4 0320A0E1 		mov	r2, r3
+ 229 01c8 000095E5 		ldr	r0, [r5]
+ 230 01cc FEFFFFEB 		bl	xQueueGenericSend
+ 231 01d0 000050E3 		cmp	r0, #0
+ 232 01d4 ADFFFF1A 		bne	.L32
+ 233              	.L43:
+ 234 01d8 FD1200E3 		movw	r1, #765
+ 235 01dc 04009DE5 		ldr	r0, [sp, #4]
+ 236 01e0 FEFFFFEB 		bl	R_OS_AssertCalled
+ 237 01e4 A9FFFFEA 		b	.L32
+ 238              	.L38:
+ 239 01e8 0400A0E1 		mov	r0, r4
+ 240 01ec FEFFFFEB 		bl	vPortFree
+ 241 01f0 A6FFFFEA 		b	.L32
+ 242              	.L28:
+ 243 01f4 0C309DE5 		ldr	r3, [sp, #12]
+ 244 01f8 14109DE5 		ldr	r1, [sp, #20]
+ 245 01fc 10009DE5 		ldr	r0, [sp, #16]
+ 246 0200 33FF2FE1 		blx	r3
+ 247 0204 08309DE5 		ldr	r3, [sp, #8]
+ 248 0208 000053E3 		cmp	r3, #0
+ 249 020c 9FFFFFBA 		blt	.L32
+ 250 0210 A7FFFFEA 		b	.L31
+ 251              	.L17:
+ 252 0214 FEFFFFEB 		bl	vTaskSuspendAll
+ 253 0218 FEFFFFEB 		bl	xTaskGetTickCount
+ 254 021c 003096E5 		ldr	r3, [r6]
+ 255 0220 0040A0E1 		mov	r4, r0
+ 256 0224 000053E1 		cmp	r3, r0
+ 257 0228 0600008A 		bhi	.L52
+ 258 022c 003098E5 		ldr	r3, [r8]
+ 259 0230 0BA0A0E1 		mov	r10, fp
+ 260 0234 004086E5 		str	r4, [r6]
+ 261 0238 002093E5 		ldr	r2, [r3]
+ 262 023c 122F6FE1 		clz	r2, r2
+ 263 0240 A222A0E1 		lsr	r2, r2, #5
+ 264 0244 8AFFFFEA 		b	.L50
+ 265              	.L52:
+ 266 0248 FEFFFFEB 		bl	prvSwitchTimerLists
+ 267 024c 004086E5 		str	r4, [r6]
+ 268 0250 FEFFFFEB 		bl	xTaskResumeAll
+ 269 0254 8DFFFFEA 		b	.L32
+ 270              	.L69:
+ 271 0258 FEFFFFEB 		bl	prvSwitchTimerLists
+ 272 025c 9FFFFFEA 		b	.L33
+ 273              	.L68:
+ 274 0260 FEFFFFEB 		bl	xTaskResumeAll
+ 275 0264 003097E5 		ldr	r3, [r7]
+ 276 0268 0C3093E5 		ldr	r3, [r3, #12]
+ 277 026c 0CB093E5 		ldr	fp, [r3, #12]
+ 278 0270 04908BE2 		add	r9, fp, #4
+ 279 0274 0900A0E1 		mov	r0, r9
+ 280 0278 FEFFFFEB 		bl	uxListRemove
+ 281 027c 1C209BE5 		ldr	r2, [fp, #28]
+ 282 0280 010052E3 		cmp	r2, #1
+ 283 0284 1A00000A 		beq	.L71
+ 284              	.L21:
+ 285 0288 24309BE5 		ldr	r3, [fp, #36]
+ 286 028c 0B00A0E1 		mov	r0, fp
+ 287 0290 33FF2FE1 		blx	r3
+ 288 0294 7DFFFFEA 		b	.L32
+ 289              	.L39:
+ 290 0298 0B0053E1 		cmp	r3, fp
+ 291 029c 01B0A083 		movhi	fp, #1
+ 292 02a0 00B0A093 		movls	fp, #0
+ 293 02a4 020053E1 		cmp	r3, r2
+ 294 02a8 00B0A083 		movhi	fp, #0
+ 295 02ac 00005BE3 		cmp	fp, #0
+ 296 02b0 B0FFFF1A 		bne	.L40
+ 297 02b4 A1FFFFEA 		b	.L45
+ 298              	.L70:
+ 299 02b8 C51FA0E3 		mov	r1, #788
+ 300 02bc 04009DE5 		ldr	r0, [sp, #4]
+ 301 02c0 FEFFFFEB 		bl	R_OS_AssertCalled
+ 302 02c4 183094E5 		ldr	r3, [r4, #24]
+ 303 02c8 104084E5 		str	r4, [r4, #16]
+ 304 02cc 0B2083E0 		add	r2, r3, fp
+ 305 02d0 0B0052E1 		cmp	r2, fp
+ 306 02d4 042084E5 		str	r2, [r4, #4]
+ 307 02d8 98FFFF8A 		bhi	.L45
+ 308 02dc 000053E3 		cmp	r3, #0
+ 309 02e0 6AFFFF0A 		beq	.L32
+ 310              	.L54:
+ 311 02e4 041084E2 		add	r1, r4, #4
+ 312 02e8 000098E5 		ldr	r0, [r8]
+ 313 02ec FEFFFFEB 		bl	vListInsert
+ 314 02f0 66FFFFEA 		b	.L32
+ 315              	.L71:
+ 316 02f4 18209BE5 		ldr	r2, [fp, #24]
+ 317 02f8 10B08BE5 		str	fp, [fp, #16]
+ 318 02fc 02008AE0 		add	r0, r10, r2
+ 319 0300 000054E1 		cmp	r4, r0
+ 320 0304 04008BE5 		str	r0, [fp, #4]
+ 321 0308 1500003A 		bcc	.L22
+ 322 030c 0A4044E0 		sub	r4, r4, r10
+ 323 0310 040052E1 		cmp	r2, r4
+ 324 0314 1600008A 		bhi	.L72
+ 325 0318 003095E5 		ldr	r3, [r5]
+ 326 031c 000053E3 		cmp	r3, #0
+ 327 0320 0B00000A 		beq	.L25
+ 328 0324 0030A0E3 		mov	r3, #0
+ 329 0328 1CA08DE5 		str	r10, [sp, #28]
+ 330 032c 18308DE5 		str	r3, [sp, #24]
+ 331 0330 20B08DE5 		str	fp, [sp, #32]
+ 332 0334 FEFFFFEB 		bl	xTaskGetSchedulerState
+ 333 0338 0030A0E3 		mov	r3, #0
+ 334 033c 18108DE2 		add	r1, sp, #24
+ 335 0340 0320A0E1 		mov	r2, r3
+ 336 0344 000095E5 		ldr	r0, [r5]
+ 337 0348 FEFFFFEB 		bl	xQueueGenericSend
+ 338 034c 000050E3 		cmp	r0, #0
+ 339 0350 CCFFFF1A 		bne	.L21
+ 340              	.L25:
+ 341 0354 791FA0E3 		mov	r1, #484
+ 342 0358 04009DE5 		ldr	r0, [sp, #4]
+ 343 035c FEFFFFEB 		bl	R_OS_AssertCalled
+ 344 0360 C8FFFFEA 		b	.L21
+ 345              	.L22:
+ 346 0364 0910A0E1 		mov	r1, r9
+ 347 0368 000097E5 		ldr	r0, [r7]
+ 348 036c FEFFFFEB 		bl	vListInsert
+ 349 0370 C4FFFFEA 		b	.L21
+ 350              	.L72:
+ 351 0374 0910A0E1 		mov	r1, r9
+ 352 0378 000098E5 		ldr	r0, [r8]
+ 353 037c FEFFFFEB 		bl	vListInsert
+ 354 0380 C0FFFFEA 		b	.L21
+ 356              		.section	.text.xTimerCreateTimerTask,"ax",%progbits
+ 357              		.align	2
+ 358              		.global	xTimerCreateTimerTask
+ 359              		.syntax unified
+ 360              		.arm
+ 361              		.fpu neon
+ 363              	xTimerCreateTimerTask:
+ 364              		@ args = 0, pretend = 0, frame = 0
+ 365              		@ frame_needed = 0, uses_anonymous_args = 0
+ 366 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 367 0004 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 368 0008 0CD04DE2 		sub	sp, sp, #12
+ 369 000c 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 370 0010 FEFFFFEB 		bl	vPortEnterCritical
+ 371 0014 005094E5 		ldr	r5, [r4]
+ 372 0018 000055E3 		cmp	r5, #0
+ 373 001c 1900000A 		beq	.L87
+ 374              	.L75:
+ 375 0020 FEFFFFEB 		bl	vPortExitCritical
+ 376 0024 003094E5 		ldr	r3, [r4]
+ 377 0028 000053E3 		cmp	r3, #0
+ 378 002c 0E00000A 		beq	.L79
+ 379 0030 003000E3 		movw	r3, #:lower16:.LANCHOR6
+ 380 0034 1320A0E3 		mov	r2, #19
+ 381 0038 003040E3 		movt	r3, #:upper16:.LANCHOR6
+ 382 003c 001000E3 		movw	r1, #:lower16:.LC2
+ 383 0040 000000E3 		movw	r0, #:lower16:prvTimerTask
+ 384 0044 0C008DE8 		stm	sp, {r2, r3}
+ 385 0048 001040E3 		movt	r1, #:upper16:.LC2
+ 386 004c 000040E3 		movt	r0, #:upper16:prvTimerTask
+ 387 0050 0030A0E3 		mov	r3, #0
+ 388 0054 052DA0E3 		mov	r2, #320
+ 389 0058 FEFFFFEB 		bl	xTaskCreate
+ 390 005c 000050E3 		cmp	r0, #0
+ 391 0060 0100000A 		beq	.L79
+ 392 0064 0CD08DE2 		add	sp, sp, #12
+ 393              		@ sp needed
+ 394 0068 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 395              	.L79:
+ 396 006c 000000E3 		movw	r0, #:lower16:.LC0
+ 397 0070 0F1100E3 		movw	r1, #271
+ 398 0074 000040E3 		movt	r0, #:upper16:.LC0
+ 399 0078 FEFFFFEB 		bl	R_OS_AssertCalled
+ 400 007c 0000A0E3 		mov	r0, #0
+ 401 0080 0CD08DE2 		add	sp, sp, #12
+ 402              		@ sp needed
+ 403 0084 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 404              	.L87:
+ 405 0088 007000E3 		movw	r7, #:lower16:.LANCHOR4
+ 406 008c 006000E3 		movw	r6, #:lower16:.LANCHOR5
+ 407 0090 007040E3 		movt	r7, #:upper16:.LANCHOR4
+ 408 0094 006040E3 		movt	r6, #:upper16:.LANCHOR5
+ 409 0098 0700A0E1 		mov	r0, r7
+ 410 009c FEFFFFEB 		bl	vListInitialise
+ 411 00a0 0600A0E1 		mov	r0, r6
+ 412 00a4 FEFFFFEB 		bl	vListInitialise
+ 413 00a8 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 414 00ac 003000E3 		movw	r3, #:lower16:.LANCHOR2
+ 415 00b0 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 416 00b4 003040E3 		movt	r3, #:upper16:.LANCHOR2
+ 417 00b8 0520A0E1 		mov	r2, r5
+ 418 00bc 1010A0E3 		mov	r1, #16
+ 419 00c0 0500A0E3 		mov	r0, #5
+ 420 00c4 00708CE5 		str	r7, [ip]
+ 421 00c8 006083E5 		str	r6, [r3]
+ 422 00cc FEFFFFEB 		bl	xQueueGenericCreate
+ 423 00d0 000050E3 		cmp	r0, #0
+ 424 00d4 000084E5 		str	r0, [r4]
+ 425 00d8 D0FFFF0A 		beq	.L75
+ 426 00dc 001000E3 		movw	r1, #:lower16:.LC1
+ 427 00e0 001040E3 		movt	r1, #:upper16:.LC1
+ 428 00e4 FEFFFFEB 		bl	vQueueAddToRegistry
+ 429 00e8 CCFFFFEA 		b	.L75
+ 431              		.section	.text.xTimerCreate,"ax",%progbits
+ 432              		.align	2
+ 433              		.global	xTimerCreate
+ 434              		.syntax unified
+ 435              		.arm
+ 436              		.fpu neon
+ 438              	xTimerCreate:
+ 439              		@ args = 4, pretend = 0, frame = 8
+ 440              		@ frame_needed = 0, uses_anonymous_args = 0
+ 441 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 442 0004 00A0A0E1 		mov	r10, r0
+ 443 0008 0CD04DE2 		sub	sp, sp, #12
+ 444 000c 2C00A0E3 		mov	r0, #44
+ 445 0010 0160A0E1 		mov	r6, r1
+ 446 0014 0290A0E1 		mov	r9, r2
+ 447 0018 0380A0E1 		mov	r8, r3
+ 448 001c FEFFFFEB 		bl	pvPortMalloc
+ 449 0020 004050E2 		subs	r4, r0, #0
+ 450 0024 1000000A 		beq	.L89
+ 451 0028 000056E3 		cmp	r6, #0
+ 452 002c 1100000A 		beq	.L101
+ 453              	.L90:
+ 454 0030 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 455 0034 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 456 0038 FEFFFFEB 		bl	vPortEnterCritical
+ 457 003c 007095E5 		ldr	r7, [r5]
+ 458 0040 000057E3 		cmp	r7, #0
+ 459 0044 1000000A 		beq	.L102
+ 460              	.L92:
+ 461 0048 FEFFFFEB 		bl	vPortExitCritical
+ 462 004c 30309DE5 		ldr	r3, [sp, #48]
+ 463 0050 040084E2 		add	r0, r4, #4
+ 464 0054 00A084E5 		str	r10, [r4]
+ 465 0058 186084E5 		str	r6, [r4, #24]
+ 466 005c 1C9084E5 		str	r9, [r4, #28]
+ 467 0060 208084E5 		str	r8, [r4, #32]
+ 468 0064 243084E5 		str	r3, [r4, #36]
+ 469 0068 FEFFFFEB 		bl	vListInitialiseItem
+ 470              	.L89:
+ 471 006c 0400A0E1 		mov	r0, r4
+ 472 0070 0CD08DE2 		add	sp, sp, #12
+ 473              		@ sp needed
+ 474 0074 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 475              	.L101:
+ 476 0078 000000E3 		movw	r0, #:lower16:.LC0
+ 477 007c 5A1FA0E3 		mov	r1, #360
+ 478 0080 000040E3 		movt	r0, #:upper16:.LC0
+ 479 0084 FEFFFFEB 		bl	R_OS_AssertCalled
+ 480 0088 E8FFFFEA 		b	.L90
+ 481              	.L102:
+ 482 008c 003000E3 		movw	r3, #:lower16:.LANCHOR4
+ 483 0090 00B000E3 		movw	fp, #:lower16:.LANCHOR5
+ 484 0094 003040E3 		movt	r3, #:upper16:.LANCHOR4
+ 485 0098 00B040E3 		movt	fp, #:upper16:.LANCHOR5
+ 486 009c 0300A0E1 		mov	r0, r3
+ 487 00a0 04308DE5 		str	r3, [sp, #4]
+ 488 00a4 FEFFFFEB 		bl	vListInitialise
+ 489 00a8 0B00A0E1 		mov	r0, fp
+ 490 00ac FEFFFFEB 		bl	vListInitialise
+ 491 00b0 04309DE5 		ldr	r3, [sp, #4]
+ 492 00b4 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 493 00b8 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 494 00bc 00C000E3 		movw	ip, #:lower16:.LANCHOR2
+ 495 00c0 00C040E3 		movt	ip, #:upper16:.LANCHOR2
+ 496 00c4 0720A0E1 		mov	r2, r7
+ 497 00c8 003081E5 		str	r3, [r1]
+ 498 00cc 0500A0E3 		mov	r0, #5
+ 499 00d0 1010A0E3 		mov	r1, #16
+ 500 00d4 00B08CE5 		str	fp, [ip]
+ 501 00d8 FEFFFFEB 		bl	xQueueGenericCreate
+ 502 00dc 000050E3 		cmp	r0, #0
+ 503 00e0 000085E5 		str	r0, [r5]
+ 504 00e4 D7FFFF0A 		beq	.L92
+ 505 00e8 001000E3 		movw	r1, #:lower16:.LC1
+ 506 00ec 001040E3 		movt	r1, #:upper16:.LC1
+ 507 00f0 FEFFFFEB 		bl	vQueueAddToRegistry
+ 508 00f4 D3FFFFEA 		b	.L92
+ 510              		.section	.text.xTimerGenericCommand,"ax",%progbits
+ 511              		.align	2
+ 512              		.global	xTimerGenericCommand
+ 513              		.syntax unified
+ 514              		.arm
+ 515              		.fpu neon
+ 517              	xTimerGenericCommand:
+ 518              		@ args = 4, pretend = 0, frame = 24
+ 519              		@ frame_needed = 0, uses_anonymous_args = 0
+ 520 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 521 0004 006050E2 		subs	r6, r0, #0
+ 522 0008 18D04DE2 		sub	sp, sp, #24
+ 523 000c 0150A0E1 		mov	r5, r1
+ 524 0010 1B00000A 		beq	.L110
+ 525              	.L104:
+ 526 0014 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 527 0018 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 528 001c 000094E5 		ldr	r0, [r4]
+ 529 0020 000050E3 		cmp	r0, #0
+ 530 0024 0E00000A 		beq	.L103
+ 531 0028 050055E3 		cmp	r5, #5
+ 532 002c 08508DE5 		str	r5, [sp, #8]
+ 533 0030 0C208DE5 		str	r2, [sp, #12]
+ 534 0034 10608DE5 		str	r6, [sp, #16]
+ 535 0038 0B0000CA 		bgt	.L106
+ 536 003c FEFFFFEB 		bl	xTaskGetSchedulerState
+ 537 0040 020050E3 		cmp	r0, #2
+ 538 0044 08108DE2 		add	r1, sp, #8
+ 539 0048 0030A013 		movne	r3, #0
+ 540 004c 00009405 		ldreq	r0, [r4]
+ 541 0050 0030A003 		moveq	r3, #0
+ 542 0054 28209D05 		ldreq	r2, [sp, #40]
+ 543 0058 00009415 		ldrne	r0, [r4]
+ 544 005c 0320A011 		movne	r2, r3
+ 545 0060 FEFFFFEB 		bl	xQueueGenericSend
+ 546              	.L103:
+ 547 0064 18D08DE2 		add	sp, sp, #24
+ 548              		@ sp needed
+ 549 0068 7080BDE8 		pop	{r4, r5, r6, pc}
+ 550              	.L106:
+ 551 006c 0320A0E1 		mov	r2, r3
+ 552 0070 08108DE2 		add	r1, sp, #8
+ 553 0074 0030A0E3 		mov	r3, #0
+ 554 0078 FEFFFFEB 		bl	xQueueGenericSendFromISR
+ 555 007c 18D08DE2 		add	sp, sp, #24
+ 556              		@ sp needed
+ 557 0080 7080BDE8 		pop	{r4, r5, r6, pc}
+ 558              	.L110:
+ 559 0084 000000E3 		movw	r0, #:lower16:.LC0
+ 560 0088 821100E3 		movw	r1, #386
+ 561 008c 000040E3 		movt	r0, #:upper16:.LC0
+ 562 0090 0C008DE8 		stm	sp, {r2, r3}
+ 563 0094 FEFFFFEB 		bl	R_OS_AssertCalled
+ 564 0098 0C009DE8 		ldm	sp, {r2, r3}
+ 565 009c DCFFFFEA 		b	.L104
+ 567              		.section	.text.xTimerGetTimerDaemonTaskHandle,"ax",%progbits
+ 568              		.align	2
+ 569              		.global	xTimerGetTimerDaemonTaskHandle
+ 570              		.syntax unified
+ 571              		.arm
+ 572              		.fpu neon
+ 574              	xTimerGetTimerDaemonTaskHandle:
+ 575              		@ args = 0, pretend = 0, frame = 0
+ 576              		@ frame_needed = 0, uses_anonymous_args = 0
+ 577 0000 10402DE9 		push	{r4, lr}
+ 578 0004 004000E3 		movw	r4, #:lower16:.LANCHOR6
+ 579 0008 004040E3 		movt	r4, #:upper16:.LANCHOR6
+ 580 000c 000094E5 		ldr	r0, [r4]
+ 581 0010 000050E3 		cmp	r0, #0
+ 582 0014 1080BD18 		popne	{r4, pc}
+ 583 0018 000000E3 		movw	r0, #:lower16:.LC0
+ 584 001c 6B1FA0E3 		mov	r1, #428
+ 585 0020 000040E3 		movt	r0, #:upper16:.LC0
+ 586 0024 FEFFFFEB 		bl	R_OS_AssertCalled
+ 587 0028 000094E5 		ldr	r0, [r4]
+ 588 002c 1080BDE8 		pop	{r4, pc}
+ 590              		.section	.text.xTimerGetPeriod,"ax",%progbits
+ 591              		.align	2
+ 592              		.global	xTimerGetPeriod
+ 593              		.syntax unified
+ 594              		.arm
+ 595              		.fpu neon
+ 597              	xTimerGetPeriod:
+ 598              		@ args = 0, pretend = 0, frame = 0
+ 599              		@ frame_needed = 0, uses_anonymous_args = 0
+ 600 0000 10402DE9 		push	{r4, lr}
+ 601 0004 004050E2 		subs	r4, r0, #0
+ 602 0008 0100000A 		beq	.L117
+ 603 000c 180094E5 		ldr	r0, [r4, #24]
+ 604 0010 1080BDE8 		pop	{r4, pc}
+ 605              	.L117:
+ 606 0014 000000E3 		movw	r0, #:lower16:.LC0
+ 607 0018 B51100E3 		movw	r1, #437
+ 608 001c 000040E3 		movt	r0, #:upper16:.LC0
+ 609 0020 FEFFFFEB 		bl	R_OS_AssertCalled
+ 610 0024 180094E5 		ldr	r0, [r4, #24]
+ 611 0028 1080BDE8 		pop	{r4, pc}
+ 613              		.section	.text.xTimerGetExpiryTime,"ax",%progbits
+ 614              		.align	2
+ 615              		.global	xTimerGetExpiryTime
+ 616              		.syntax unified
+ 617              		.arm
+ 618              		.fpu neon
+ 620              	xTimerGetExpiryTime:
+ 621              		@ args = 0, pretend = 0, frame = 0
+ 622              		@ frame_needed = 0, uses_anonymous_args = 0
+ 623 0000 10402DE9 		push	{r4, lr}
+ 624 0004 004050E2 		subs	r4, r0, #0
+ 625 0008 0100000A 		beq	.L121
+ 626 000c 040094E5 		ldr	r0, [r4, #4]
+ 627 0010 1080BDE8 		pop	{r4, pc}
+ 628              	.L121:
+ 629 0014 000000E3 		movw	r0, #:lower16:.LC0
+ 630 0018 BF1100E3 		movw	r1, #447
+ 631 001c 000040E3 		movt	r0, #:upper16:.LC0
+ 632 0020 FEFFFFEB 		bl	R_OS_AssertCalled
+ 633 0024 040094E5 		ldr	r0, [r4, #4]
+ 634 0028 1080BDE8 		pop	{r4, pc}
+ 636              		.section	.text.pcTimerGetName,"ax",%progbits
+ 637              		.align	2
+ 638              		.global	pcTimerGetName
+ 639              		.syntax unified
+ 640              		.arm
+ 641              		.fpu neon
+ 643              	pcTimerGetName:
+ 644              		@ args = 0, pretend = 0, frame = 0
+ 645              		@ frame_needed = 0, uses_anonymous_args = 0
+ 646 0000 10402DE9 		push	{r4, lr}
+ 647 0004 004050E2 		subs	r4, r0, #0
+ 648 0008 0100000A 		beq	.L125
+ 649 000c 000094E5 		ldr	r0, [r4]
+ 650 0010 1080BDE8 		pop	{r4, pc}
+ 651              	.L125:
+ 652 0014 000000E3 		movw	r0, #:lower16:.LC0
+ 653 0018 C91100E3 		movw	r1, #457
+ 654 001c 000040E3 		movt	r0, #:upper16:.LC0
+ 655 0020 FEFFFFEB 		bl	R_OS_AssertCalled
+ 656 0024 000094E5 		ldr	r0, [r4]
+ 657 0028 1080BDE8 		pop	{r4, pc}
+ 659              		.section	.text.xTimerIsTimerActive,"ax",%progbits
+ 660              		.align	2
+ 661              		.global	xTimerIsTimerActive
+ 662              		.syntax unified
+ 663              		.arm
+ 664              		.fpu neon
+ 666              	xTimerIsTimerActive:
+ 667              		@ args = 0, pretend = 0, frame = 0
+ 668              		@ frame_needed = 0, uses_anonymous_args = 0
+ 669 0000 10402DE9 		push	{r4, lr}
+ 670 0004 004050E2 		subs	r4, r0, #0
+ 671 0008 0600000A 		beq	.L129
+ 672              	.L127:
+ 673 000c FEFFFFEB 		bl	vPortEnterCritical
+ 674 0010 144094E5 		ldr	r4, [r4, #20]
+ 675 0014 004094E2 		adds	r4, r4, #0
+ 676 0018 0140A013 		movne	r4, #1
+ 677 001c FEFFFFEB 		bl	vPortExitCritical
+ 678 0020 0400A0E1 		mov	r0, r4
+ 679 0024 1080BDE8 		pop	{r4, pc}
+ 680              	.L129:
+ 681 0028 000000E3 		movw	r0, #:lower16:.LC0
+ 682 002c B61300E3 		movw	r1, #950
+ 683 0030 000040E3 		movt	r0, #:upper16:.LC0
+ 684 0034 FEFFFFEB 		bl	R_OS_AssertCalled
+ 685 0038 F3FFFFEA 		b	.L127
+ 687              		.section	.text.pvTimerGetTimerID,"ax",%progbits
+ 688              		.align	2
+ 689              		.global	pvTimerGetTimerID
+ 690              		.syntax unified
+ 691              		.arm
+ 692              		.fpu neon
+ 694              	pvTimerGetTimerID:
+ 695              		@ args = 0, pretend = 0, frame = 0
+ 696              		@ frame_needed = 0, uses_anonymous_args = 0
+ 697 0000 10402DE9 		push	{r4, lr}
+ 698 0004 004050E2 		subs	r4, r0, #0
+ 699 0008 0400000A 		beq	.L133
+ 700              	.L131:
+ 701 000c FEFFFFEB 		bl	vPortEnterCritical
+ 702 0010 204094E5 		ldr	r4, [r4, #32]
+ 703 0014 FEFFFFEB 		bl	vPortExitCritical
+ 704 0018 0400A0E1 		mov	r0, r4
+ 705 001c 1080BDE8 		pop	{r4, pc}
+ 706              	.L133:
+ 707 0020 000000E3 		movw	r0, #:lower16:.LC0
+ 708 0024 CB1300E3 		movw	r1, #971
+ 709 0028 000040E3 		movt	r0, #:upper16:.LC0
+ 710 002c FEFFFFEB 		bl	R_OS_AssertCalled
+ 711 0030 F5FFFFEA 		b	.L131
+ 713              		.section	.text.vTimerSetTimerID,"ax",%progbits
+ 714              		.align	2
+ 715              		.global	vTimerSetTimerID
+ 716              		.syntax unified
+ 717              		.arm
+ 718              		.fpu neon
+ 720              	vTimerSetTimerID:
+ 721              		@ args = 0, pretend = 0, frame = 0
+ 722              		@ frame_needed = 0, uses_anonymous_args = 0
+ 723 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 724 0004 004050E2 		subs	r4, r0, #0
+ 725 0008 0150A0E1 		mov	r5, r1
+ 726 000c 0300000A 		beq	.L137
+ 727 0010 FEFFFFEB 		bl	vPortEnterCritical
+ 728 0014 205084E5 		str	r5, [r4, #32]
+ 729 0018 7040BDE8 		pop	{r4, r5, r6, lr}
+ 730 001c FEFFFFEA 		b	vPortExitCritical
+ 731              	.L137:
+ 732 0020 000000E3 		movw	r0, #:lower16:.LC0
+ 733 0024 DB1300E3 		movw	r1, #987
+ 734 0028 000040E3 		movt	r0, #:upper16:.LC0
+ 735 002c FEFFFFEB 		bl	R_OS_AssertCalled
+ 736 0030 FEFFFFEB 		bl	vPortEnterCritical
+ 737 0034 205084E5 		str	r5, [r4, #32]
+ 738 0038 7040BDE8 		pop	{r4, r5, r6, lr}
+ 739 003c FEFFFFEA 		b	vPortExitCritical
+ 741              		.section	.text.xTimerPendFunctionCallFromISR,"ax",%progbits
+ 742              		.align	2
+ 743              		.global	xTimerPendFunctionCallFromISR
+ 744              		.syntax unified
+ 745              		.arm
+ 746              		.fpu neon
+ 748              	xTimerPendFunctionCallFromISR:
+ 749              		@ args = 0, pretend = 0, frame = 16
+ 750              		@ frame_needed = 0, uses_anonymous_args = 0
+ 751 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR1
+ 752 0004 10402DE9 		push	{r4, lr}
+ 753 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR1
+ 754 000c 10D04DE2 		sub	sp, sp, #16
+ 755 0010 0340A0E1 		mov	r4, r3
+ 756 0014 01E0E0E3 		mvn	lr, #1
+ 757 0018 03008DE9 		stmib	sp, {r0, r1}
+ 758 001c 0030A0E3 		mov	r3, #0
+ 759 0020 0C208DE5 		str	r2, [sp, #12]
+ 760 0024 0D10A0E1 		mov	r1, sp
+ 761 0028 0420A0E1 		mov	r2, r4
+ 762 002c 00009CE5 		ldr	r0, [ip]
+ 763 0030 00E08DE5 		str	lr, [sp]
+ 764 0034 FEFFFFEB 		bl	xQueueGenericSendFromISR
+ 765 0038 10D08DE2 		add	sp, sp, #16
+ 766              		@ sp needed
+ 767 003c 1080BDE8 		pop	{r4, pc}
+ 769              		.section	.text.xTimerPendFunctionCall,"ax",%progbits
+ 770              		.align	2
+ 771              		.global	xTimerPendFunctionCall
+ 772              		.syntax unified
+ 773              		.arm
+ 774              		.fpu neon
+ 776              	xTimerPendFunctionCall:
+ 777              		@ args = 0, pretend = 0, frame = 24
+ 778              		@ frame_needed = 0, uses_anonymous_args = 0
+ 779 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 780 0004 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 781 0008 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 782 000c 0070A0E1 		mov	r7, r0
+ 783 0010 1CD04DE2 		sub	sp, sp, #28
+ 784 0014 0160A0E1 		mov	r6, r1
+ 785 0018 000094E5 		ldr	r0, [r4]
+ 786 001c 0250A0E1 		mov	r5, r2
+ 787 0020 000050E3 		cmp	r0, #0
+ 788 0024 0A00000A 		beq	.L143
+ 789              	.L141:
+ 790 0028 0320A0E1 		mov	r2, r3
+ 791 002c 00C0E0E3 		mvn	ip, #0
+ 792 0030 0030A0E3 		mov	r3, #0
+ 793 0034 08108DE2 		add	r1, sp, #8
+ 794 0038 0C708DE5 		str	r7, [sp, #12]
+ 795 003c 10608DE5 		str	r6, [sp, #16]
+ 796 0040 14508DE5 		str	r5, [sp, #20]
+ 797 0044 08C08DE5 		str	ip, [sp, #8]
+ 798 0048 FEFFFFEB 		bl	xQueueGenericSend
+ 799 004c 1CD08DE2 		add	sp, sp, #28
+ 800              		@ sp needed
+ 801 0050 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 802              	.L143:
+ 803 0054 000000E3 		movw	r0, #:lower16:.LC0
+ 804 0058 071400E3 		movw	r1, #1031
+ 805 005c 000040E3 		movt	r0, #:upper16:.LC0
+ 806 0060 04308DE5 		str	r3, [sp, #4]
+ 807 0064 FEFFFFEB 		bl	R_OS_AssertCalled
+ 808 0068 000094E5 		ldr	r0, [r4]
+ 809 006c 04309DE5 		ldr	r3, [sp, #4]
+ 810 0070 ECFFFFEA 		b	.L141
+ 812              		.section	.text.uxTimerGetTimerNumber,"ax",%progbits
+ 813              		.align	2
+ 814              		.global	uxTimerGetTimerNumber
+ 815              		.syntax unified
+ 816              		.arm
+ 817              		.fpu neon
+ 819              	uxTimerGetTimerNumber:
+ 820              		@ args = 0, pretend = 0, frame = 0
+ 821              		@ frame_needed = 0, uses_anonymous_args = 0
+ 822              		@ link register save eliminated.
+ 823 0000 280090E5 		ldr	r0, [r0, #40]
+ 824 0004 1EFF2FE1 		bx	lr
+ 826              		.section	.text.vTimerSetTimerNumber,"ax",%progbits
+ 827              		.align	2
+ 828              		.global	vTimerSetTimerNumber
+ 829              		.syntax unified
+ 830              		.arm
+ 831              		.fpu neon
+ 833              	vTimerSetTimerNumber:
+ 834              		@ args = 0, pretend = 0, frame = 0
+ 835              		@ frame_needed = 0, uses_anonymous_args = 0
+ 836              		@ link register save eliminated.
+ 837 0000 281080E5 		str	r1, [r0, #40]
+ 838 0004 1EFF2FE1 		bx	lr
+ 840              		.section	.bss.pxCurrentTimerList,"aw",%nobits
+ 841              		.align	2
+ 842              		.set	.LANCHOR0,. + 0
+ 845              	pxCurrentTimerList:
+ 846 0000 00000000 		.space	4
+ 847              		.section	.bss.pxOverflowTimerList,"aw",%nobits
+ 848              		.align	2
+ 849              		.set	.LANCHOR2,. + 0
+ 852              	pxOverflowTimerList:
+ 853 0000 00000000 		.space	4
+ 854              		.section	.bss.xActiveTimerList1,"aw",%nobits
+ 855              		.align	2
+ 856              		.set	.LANCHOR4,. + 0
+ 859              	xActiveTimerList1:
+ 860 0000 00000000 		.space	20
+ 860      00000000 
+ 860      00000000 
+ 860      00000000 
+ 860      00000000 
+ 861              		.section	.bss.xActiveTimerList2,"aw",%nobits
+ 862              		.align	2
+ 863              		.set	.LANCHOR5,. + 0
+ 866              	xActiveTimerList2:
+ 867 0000 00000000 		.space	20
+ 867      00000000 
+ 867      00000000 
+ 867      00000000 
+ 867      00000000 
+ 868              		.section	.bss.xLastTime.7084,"aw",%nobits
+ 869              		.align	2
+ 870              		.set	.LANCHOR3,. + 0
+ 873              	xLastTime.7084:
+ 874 0000 00000000 		.space	4
+ 875              		.section	.bss.xTimerQueue,"aw",%nobits
+ 876              		.align	2
+ 877              		.set	.LANCHOR1,. + 0
+ 880              	xTimerQueue:
+ 881 0000 00000000 		.space	4
+ 882              		.section	.bss.xTimerTaskHandle,"aw",%nobits
+ 883              		.align	2
+ 884              		.set	.LANCHOR6,. + 0
+ 887              	xTimerTaskHandle:
+ 888 0000 00000000 		.space	4
+ 889              		.section	.rodata.prvSwitchTimerLists.str1.4,"aMS",%progbits,1
+ 890              		.align	2
+ 891              	.LC0:
+ 892 0000 2E2E2F73 		.ascii	"../src/FreeRTOS/timers.c\000"
+ 892      72632F46 
+ 892      72656552 
+ 892      544F532F 
+ 892      74696D65 
+ 893              		.section	.rodata.xTimerCreateTimerTask.str1.4,"aMS",%progbits,1
+ 894              		.align	2
+ 895              	.LC1:
+ 896 0000 546D7251 		.ascii	"TmrQ\000"
+ 896      00
+ 897 0005 000000   		.space	3
+ 898              	.LC2:
+ 899 0008 546D7220 		.ascii	"Tmr Svc\000"
+ 899      53766300 
+ 900              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 timers.c
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:14     .text.prvSwitchTimerLists:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:19     .text.prvSwitchTimerLists:00000000 prvSwitchTimerLists
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:842    .bss.pxCurrentTimerList:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:877    .bss.xTimerQueue:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:891    .rodata.prvSwitchTimerLists.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:849    .bss.pxOverflowTimerList:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:91     .text.prvTimerTask:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:96     .text.prvTimerTask:00000000 prvTimerTask
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:870    .bss.xLastTime.7084:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:172    .text.prvTimerTask:000000f4 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:183    .text.prvTimerTask:0000011c $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:357    .text.xTimerCreateTimerTask:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:363    .text.xTimerCreateTimerTask:00000000 xTimerCreateTimerTask
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:884    .bss.xTimerTaskHandle:00000000 .LANCHOR6
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:898    .rodata.xTimerCreateTimerTask.str1.4:00000008 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:856    .bss.xActiveTimerList1:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:863    .bss.xActiveTimerList2:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:895    .rodata.xTimerCreateTimerTask.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:432    .text.xTimerCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:438    .text.xTimerCreate:00000000 xTimerCreate
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:511    .text.xTimerGenericCommand:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:517    .text.xTimerGenericCommand:00000000 xTimerGenericCommand
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:568    .text.xTimerGetTimerDaemonTaskHandle:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:574    .text.xTimerGetTimerDaemonTaskHandle:00000000 xTimerGetTimerDaemonTaskHandle
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:591    .text.xTimerGetPeriod:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:597    .text.xTimerGetPeriod:00000000 xTimerGetPeriod
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:614    .text.xTimerGetExpiryTime:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:620    .text.xTimerGetExpiryTime:00000000 xTimerGetExpiryTime
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:637    .text.pcTimerGetName:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:643    .text.pcTimerGetName:00000000 pcTimerGetName
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:660    .text.xTimerIsTimerActive:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:666    .text.xTimerIsTimerActive:00000000 xTimerIsTimerActive
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:688    .text.pvTimerGetTimerID:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:694    .text.pvTimerGetTimerID:00000000 pvTimerGetTimerID
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:714    .text.vTimerSetTimerID:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:720    .text.vTimerSetTimerID:00000000 vTimerSetTimerID
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:742    .text.xTimerPendFunctionCallFromISR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:748    .text.xTimerPendFunctionCallFromISR:00000000 xTimerPendFunctionCallFromISR
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:770    .text.xTimerPendFunctionCall:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:776    .text.xTimerPendFunctionCall:00000000 xTimerPendFunctionCall
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:813    .text.uxTimerGetTimerNumber:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:819    .text.uxTimerGetTimerNumber:00000000 uxTimerGetTimerNumber
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:827    .text.vTimerSetTimerNumber:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:833    .text.vTimerSetTimerNumber:00000000 vTimerSetTimerNumber
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:841    .bss.pxCurrentTimerList:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:845    .bss.pxCurrentTimerList:00000000 pxCurrentTimerList
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:848    .bss.pxOverflowTimerList:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:852    .bss.pxOverflowTimerList:00000000 pxOverflowTimerList
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:855    .bss.xActiveTimerList1:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:859    .bss.xActiveTimerList1:00000000 xActiveTimerList1
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:862    .bss.xActiveTimerList2:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:866    .bss.xActiveTimerList2:00000000 xActiveTimerList2
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:869    .bss.xLastTime.7084:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:873    .bss.xLastTime.7084:00000000 xLastTime.7084
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:876    .bss.xTimerQueue:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:880    .bss.xTimerQueue:00000000 xTimerQueue
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:883    .bss.xTimerTaskHandle:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:887    .bss.xTimerTaskHandle:00000000 xTimerTaskHandle
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:890    .rodata.prvSwitchTimerLists.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccZKIgZJ.s:894    .rodata.xTimerCreateTimerTask.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+uxListRemove
+xTaskGetSchedulerState
+xQueueGenericSend
+R_OS_AssertCalled
+vListInsert
+vTaskSuspendAll
+xTaskGetTickCount
+vQueueWaitForMessageRestricted
+xTaskResumeAll
+xQueueReceive
+vPortFree
+vPortEnterCritical
+vPortExitCritical
+xTaskCreate
+vListInitialise
+xQueueGenericCreate
+vQueueAddToRegistry
+pvPortMalloc
+vListInitialiseItem
+xQueueGenericSendFromISR

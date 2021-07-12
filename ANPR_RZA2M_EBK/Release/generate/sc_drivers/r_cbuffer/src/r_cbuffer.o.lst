@@ -1,0 +1,529 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_cbuffer.c"
+  13              		.section	.text.cbCreate,"ax",%progbits
+  14              		.align	2
+  15              		.global	cbCreate
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	cbCreate:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 004050E2 		subs	r4, r0, #0
+  25 0008 0B0000DA 		ble	.L3
+  26 000c 0010A0E3 		mov	r1, #0
+  27 0010 150084E2 		add	r0, r4, #21
+  28 0014 FEFFFFEB 		bl	R_OS_Malloc
+  29 0018 000050E3 		cmp	r0, #0
+  30 001c 1080BD08 		popeq	{r4, pc}
+  31 0020 0030A0E3 		mov	r3, #0
+  32 0024 014084E2 		add	r4, r4, #1
+  33 0028 102080E2 		add	r2, r0, #16
+  34 002c 0C4080E5 		str	r4, [r0, #12]
+  35 0030 0C0080E8 		stm	r0, {r2, r3}
+  36 0034 083080E5 		str	r3, [r0, #8]
+  37 0038 1080BDE8 		pop	{r4, pc}
+  38              	.L3:
+  39 003c 0000A0E3 		mov	r0, #0
+  40 0040 1080BDE8 		pop	{r4, pc}
+  42              		.section	.text.cbDestroy,"ax",%progbits
+  43              		.align	2
+  44              		.global	cbDestroy
+  45              		.syntax unified
+  46              		.arm
+  47              		.fpu neon
+  49              	cbDestroy:
+  50              		@ args = 0, pretend = 0, frame = 8
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52 0000 000050E3 		cmp	r0, #0
+  53 0004 04E02DE5 		str	lr, [sp, #-4]!
+  54 0008 0CD04DE2 		sub	sp, sp, #12
+  55 000c 04008DE5 		str	r0, [sp, #4]
+  56 0010 0400000A 		beq	.L11
+  57 0014 04008DE2 		add	r0, sp, #4
+  58 0018 FEFFFFEB 		bl	R_OS_Free
+  59 001c 0000A0E3 		mov	r0, #0
+  60              	.L9:
+  61 0020 0CD08DE2 		add	sp, sp, #12
+  62              		@ sp needed
+  63 0024 04F09DE4 		ldr	pc, [sp], #4
+  64              	.L11:
+  65 0028 0000E0E3 		mvn	r0, #0
+  66 002c FBFFFFEA 		b	.L9
+  68              		.section	.text.cbPut,"ax",%progbits
+  69              		.align	2
+  70              		.global	cbPut
+  71              		.syntax unified
+  72              		.arm
+  73              		.fpu neon
+  75              	cbPut:
+  76              		@ args = 0, pretend = 0, frame = 0
+  77              		@ frame_needed = 0, uses_anonymous_args = 0
+  78 0000 002050E2 		subs	r2, r0, #0
+  79 0004 0F00000A 		beq	.L16
+  80 0008 04C092E5 		ldr	ip, [r2, #4]
+  81 000c 04E02DE5 		str	lr, [sp, #-4]!
+  82 0010 0CE092E5 		ldr	lr, [r2, #12]
+  83 0014 01308CE2 		add	r3, ip, #1
+  84 0018 080092E5 		ldr	r0, [r2, #8]
+  85 001c 0E0053E1 		cmp	r3, lr
+  86 0020 0030A023 		movcs	r3, #0
+  87 0024 000053E1 		cmp	r3, r0
+  88 0028 0400000A 		beq	.L17
+  89 002c 00E092E5 		ldr	lr, [r2]
+  90 0030 0100A0E3 		mov	r0, #1
+  91 0034 0C10CEE7 		strb	r1, [lr, ip]
+  92 0038 043082E5 		str	r3, [r2, #4]
+  93 003c 04F09DE4 		ldr	pc, [sp], #4
+  94              	.L17:
+  95 0040 0000A0E3 		mov	r0, #0
+  96 0044 04F09DE4 		ldr	pc, [sp], #4
+  97              	.L16:
+  98 0048 0000E0E3 		mvn	r0, #0
+  99 004c 1EFF2FE1 		bx	lr
+ 101              		.section	.text.cbGet,"ax",%progbits
+ 102              		.align	2
+ 103              		.global	cbGet
+ 104              		.syntax unified
+ 105              		.arm
+ 106              		.fpu neon
+ 108              	cbGet:
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111 0000 003050E2 		subs	r3, r0, #0
+ 112 0004 0F00000A 		beq	.L25
+ 113 0008 041093E9 		ldmib	r3, {r2, ip}
+ 114 000c 0C0052E1 		cmp	r2, ip
+ 115 0010 0A00000A 		beq	.L26
+ 116 0014 04E02DE5 		str	lr, [sp, #-4]!
+ 117 0018 01208CE2 		add	r2, ip, #1
+ 118 001c 00E093E5 		ldr	lr, [r3]
+ 119 0020 0100A0E3 		mov	r0, #1
+ 120 0024 0CC0DEE7 		ldrb	ip, [lr, ip]	@ zero_extendqisi2
+ 121 0028 00C0C1E5 		strb	ip, [r1]
+ 122 002c 0C1093E5 		ldr	r1, [r3, #12]
+ 123 0030 010052E1 		cmp	r2, r1
+ 124 0034 0020A023 		movcs	r2, #0
+ 125 0038 082083E5 		str	r2, [r3, #8]
+ 126 003c 04F09DE4 		ldr	pc, [sp], #4
+ 127              	.L26:
+ 128 0040 0000A0E3 		mov	r0, #0
+ 129 0044 1EFF2FE1 		bx	lr
+ 130              	.L25:
+ 131 0048 0000E0E3 		mvn	r0, #0
+ 132 004c 1EFF2FE1 		bx	lr
+ 134              		.section	.text.cbUsed,"ax",%progbits
+ 135              		.align	2
+ 136              		.global	cbUsed
+ 137              		.syntax unified
+ 138              		.arm
+ 139              		.fpu neon
+ 141              	cbUsed:
+ 142              		@ args = 0, pretend = 0, frame = 0
+ 143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 144              		@ link register save eliminated.
+ 145 0000 002050E2 		subs	r2, r0, #0
+ 146 0004 0500000A 		beq	.L35
+ 147 0008 090092E9 		ldmib	r2, {r0, r3}
+ 148 000c 030050E1 		cmp	r0, r3
+ 149 0010 0C209235 		ldrcc	r2, [r2, #12]
+ 150 0014 02008030 		addcc	r0, r0, r2
+ 151 0018 030040E0 		sub	r0, r0, r3
+ 152 001c 1EFF2FE1 		bx	lr
+ 153              	.L35:
+ 154 0020 0000E0E3 		mvn	r0, #0
+ 155 0024 1EFF2FE1 		bx	lr
+ 157              		.section	.text.cbFree,"ax",%progbits
+ 158              		.align	2
+ 159              		.global	cbFree
+ 160              		.syntax unified
+ 161              		.arm
+ 162              		.fpu neon
+ 164              	cbFree:
+ 165              		@ args = 0, pretend = 0, frame = 0
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167              		@ link register save eliminated.
+ 168 0000 000050E3 		cmp	r0, #0
+ 169 0004 0700000A 		beq	.L40
+ 170 0008 0E0090E9 		ldmib	r0, {r1, r2, r3}
+ 171 000c 020051E1 		cmp	r1, r2
+ 172 0010 01008330 		addcc	r0, r3, r1
+ 173 0014 02004120 		subcs	r0, r1, r2
+ 174 0018 02004030 		subcc	r0, r0, r2
+ 175 001c 013043E2 		sub	r3, r3, #1
+ 176 0020 000043E0 		sub	r0, r3, r0
+ 177 0024 1EFF2FE1 		bx	lr
+ 178              	.L40:
+ 179 0028 0000E0E3 		mvn	r0, #0
+ 180 002c 1EFF2FE1 		bx	lr
+ 182              		.section	.text.cbFull,"ax",%progbits
+ 183              		.align	2
+ 184              		.global	cbFull
+ 185              		.syntax unified
+ 186              		.arm
+ 187              		.fpu neon
+ 189              	cbFull:
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+ 192              		@ link register save eliminated.
+ 193 0000 000050E3 		cmp	r0, #0
+ 194 0004 0900000A 		beq	.L44
+ 195 0008 043090E5 		ldr	r3, [r0, #4]
+ 196 000c 0C1090E5 		ldr	r1, [r0, #12]
+ 197 0010 082090E5 		ldr	r2, [r0, #8]
+ 198 0014 010083E2 		add	r0, r3, #1
+ 199 0018 010050E1 		cmp	r0, r1
+ 200 001c 0000A023 		movcs	r0, #0
+ 201 0020 000042E0 		sub	r0, r2, r0
+ 202 0024 100F6FE1 		clz	r0, r0
+ 203 0028 A002A0E1 		lsr	r0, r0, #5
+ 204 002c 1EFF2FE1 		bx	lr
+ 205              	.L44:
+ 206 0030 0000E0E3 		mvn	r0, #0
+ 207 0034 1EFF2FE1 		bx	lr
+ 209              		.section	.text.cbClear,"ax",%progbits
+ 210              		.align	2
+ 211              		.global	cbClear
+ 212              		.syntax unified
+ 213              		.arm
+ 214              		.fpu neon
+ 216              	cbClear:
+ 217              		@ args = 0, pretend = 0, frame = 0
+ 218              		@ frame_needed = 0, uses_anonymous_args = 0
+ 219              		@ link register save eliminated.
+ 220 0000 002050E2 		subs	r2, r0, #0
+ 221 0004 0030A013 		movne	r3, #0
+ 222 0008 0300A011 		movne	r0, r3
+ 223 000c 08308215 		strne	r3, [r2, #8]
+ 224 0010 04308215 		strne	r3, [r2, #4]
+ 225 0014 0000E003 		mvneq	r0, #0
+ 226 0018 1EFF2FE1 		bx	lr
+ 228              		.section	.text.cbGetPacket,"ax",%progbits
+ 229              		.align	2
+ 230              		.global	cbGetPacket
+ 231              		.syntax unified
+ 232              		.arm
+ 233              		.fpu neon
+ 235              	cbGetPacket:
+ 236              		@ args = 0, pretend = 0, frame = 0
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 239 0004 005050E2 		subs	r5, r0, #0
+ 240 0008 1900000A 		beq	.L53
+ 241 000c 110095E9 		ldmib	r5, {r0, r4}
+ 242 0010 0160A0E1 		mov	r6, r1
+ 243 0014 001095E5 		ldr	r1, [r5]
+ 244 0018 000054E1 		cmp	r4, r0
+ 245 001c 041081E0 		add	r1, r1, r4
+ 246 0020 0040A003 		moveq	r4, #0
+ 247 0024 0100000A 		beq	.L50
+ 248 0028 0C009585 		ldrhi	r0, [r5, #12]
+ 249 002c 044040E0 		sub	r4, r0, r4
+ 250              	.L50:
+ 251 0030 040056E1 		cmp	r6, r4
+ 252 0034 0270A0E1 		mov	r7, r2
+ 253 0038 0800009A 		bls	.L56
+ 254 003c 0420A0E1 		mov	r2, r4
+ 255 0040 0700A0E1 		mov	r0, r7
+ 256 0044 FEFFFFEB 		bl	memcpy
+ 257 0048 042046E0 		sub	r2, r6, r4
+ 258 004c 001095E5 		ldr	r1, [r5]
+ 259 0050 040087E0 		add	r0, r7, r4
+ 260 0054 FEFFFFEB 		bl	memcpy
+ 261 0058 0000A0E3 		mov	r0, #0
+ 262 005c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 263              	.L56:
+ 264 0060 0620A0E1 		mov	r2, r6
+ 265 0064 0700A0E1 		mov	r0, r7
+ 266 0068 FEFFFFEB 		bl	memcpy
+ 267 006c 0000A0E3 		mov	r0, #0
+ 268 0070 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 269              	.L53:
+ 270 0074 0000E0E3 		mvn	r0, #0
+ 271 0078 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 273              		.section	.text.cbCheckOut,"ax",%progbits
+ 274              		.align	2
+ 275              		.global	cbCheckOut
+ 276              		.syntax unified
+ 277              		.arm
+ 278              		.fpu neon
+ 280              	cbCheckOut:
+ 281              		@ args = 0, pretend = 0, frame = 0
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+ 283              		@ link register save eliminated.
+ 284 0000 000050E3 		cmp	r0, #0
+ 285 0004 1200000A 		beq	.L66
+ 286 0008 0C1090E9 		ldmib	r0, {r2, r3, ip}
+ 287 000c 030052E1 		cmp	r2, r3
+ 288 0010 0020A003 		moveq	r2, #0
+ 289 0014 0100000A 		beq	.L60
+ 290 0018 03204C30 		subcc	r2, ip, r3
+ 291 001c 03204220 		subcs	r2, r2, r3
+ 292              	.L60:
+ 293 0020 020051E1 		cmp	r1, r2
+ 294 0024 0500008A 		bhi	.L70
+ 295              	.L69:
+ 296 0028 031081E0 		add	r1, r1, r3
+ 297 002c 0C0051E1 		cmp	r1, ip
+ 298 0030 0C104120 		subcs	r1, r1, ip
+ 299 0034 081080E5 		str	r1, [r0, #8]
+ 300 0038 0000A0E3 		mov	r0, #0
+ 301 003c 1EFF2FE1 		bx	lr
+ 302              	.L70:
+ 303 0040 023083E0 		add	r3, r3, r2
+ 304 0044 021041E0 		sub	r1, r1, r2
+ 305 0048 0C0053E1 		cmp	r3, ip
+ 306 004c 0C304320 		subcs	r3, r3, ip
+ 307 0050 F4FFFFEA 		b	.L69
+ 308              	.L66:
+ 309 0054 0000E0E3 		mvn	r0, #0
+ 310 0058 1EFF2FE1 		bx	lr
+ 312              		.section	.text.cbPutPacket,"ax",%progbits
+ 313              		.align	2
+ 314              		.global	cbPutPacket
+ 315              		.syntax unified
+ 316              		.arm
+ 317              		.fpu neon
+ 319              	cbPutPacket:
+ 320              		@ args = 0, pretend = 0, frame = 0
+ 321              		@ frame_needed = 0, uses_anonymous_args = 0
+ 322 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 323 0004 004050E2 		subs	r4, r0, #0
+ 324 0008 2500000A 		beq	.L80
+ 325 000c 04C094E5 		ldr	ip, [r4, #4]
+ 326 0010 0C5094E5 		ldr	r5, [r4, #12]
+ 327 0014 08E094E5 		ldr	lr, [r4, #8]
+ 328 0018 01308CE2 		add	r3, ip, #1
+ 329 001c 050053E1 		cmp	r3, r5
+ 330 0020 0030A023 		movcs	r3, #0
+ 331 0024 03005EE1 		cmp	lr, r3
+ 332 0028 1B00000A 		beq	.L89
+ 333 002c 0E005CE1 		cmp	ip, lr
+ 334 0030 1100003A 		bcc	.L90
+ 335 0034 00005EE3 		cmp	lr, #0
+ 336 0038 01504502 		subeq	r5, r5, #1
+ 337 003c 0C5045E0 		sub	r5, r5, ip
+ 338              	.L74:
+ 339 0040 000094E5 		ldr	r0, [r4]
+ 340 0044 050051E1 		cmp	r1, r5
+ 341 0048 0270A0E1 		mov	r7, r2
+ 342 004c 0160A0E1 		mov	r6, r1
+ 343 0050 0C0080E0 		add	r0, r0, ip
+ 344 0054 0B00009A 		bls	.L91
+ 345 0058 0520A0E1 		mov	r2, r5
+ 346 005c 0710A0E1 		mov	r1, r7
+ 347 0060 FEFFFFEB 		bl	memcpy
+ 348 0064 052046E0 		sub	r2, r6, r5
+ 349 0068 051087E0 		add	r1, r7, r5
+ 350 006c 000094E5 		ldr	r0, [r4]
+ 351 0070 FEFFFFEB 		bl	memcpy
+ 352 0074 0000A0E3 		mov	r0, #0
+ 353 0078 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 354              	.L90:
+ 355 007c 01504EE2 		sub	r5, lr, #1
+ 356 0080 0C5045E0 		sub	r5, r5, ip
+ 357 0084 EDFFFFEA 		b	.L74
+ 358              	.L91:
+ 359 0088 0120A0E1 		mov	r2, r1
+ 360 008c 0710A0E1 		mov	r1, r7
+ 361 0090 FEFFFFEB 		bl	memcpy
+ 362 0094 0000A0E3 		mov	r0, #0
+ 363 0098 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 364              	.L89:
+ 365 009c 0050A0E3 		mov	r5, #0
+ 366 00a0 E6FFFFEA 		b	.L74
+ 367              	.L80:
+ 368 00a4 0000E0E3 		mvn	r0, #0
+ 369 00a8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 371              		.section	.text.cbCheckIn,"ax",%progbits
+ 372              		.align	2
+ 373              		.global	cbCheckIn
+ 374              		.syntax unified
+ 375              		.arm
+ 376              		.fpu neon
+ 378              	cbCheckIn:
+ 379              		@ args = 0, pretend = 0, frame = 0
+ 380              		@ frame_needed = 0, uses_anonymous_args = 0
+ 381 0000 000050E3 		cmp	r0, #0
+ 382 0004 1D00000A 		beq	.L104
+ 383 0008 04E02DE5 		str	lr, [sp, #-4]!
+ 384 000c 0C4090E9 		ldmib	r0, {r2, r3, lr}
+ 385 0010 01C082E2 		add	ip, r2, #1
+ 386 0014 0E005CE1 		cmp	ip, lr
+ 387 0018 00C0A023 		movcs	ip, #0
+ 388 001c 0C0053E1 		cmp	r3, ip
+ 389 0020 1400000A 		beq	.L118
+ 390 0024 030052E1 		cmp	r2, r3
+ 391 0028 0F00003A 		bcc	.L119
+ 392 002c 000053E3 		cmp	r3, #0
+ 393 0030 01304E02 		subeq	r3, lr, #1
+ 394 0034 02304E10 		subne	r3, lr, r2
+ 395 0038 02304300 		subeq	r3, r3, r2
+ 396              	.L95:
+ 397 003c 030051E1 		cmp	r1, r3
+ 398 0040 0300009A 		bls	.L115
+ 399 0044 032082E0 		add	r2, r2, r3
+ 400 0048 031041E0 		sub	r1, r1, r3
+ 401 004c 0E0052E1 		cmp	r2, lr
+ 402 0050 0E204220 		subcs	r2, r2, lr
+ 403              	.L115:
+ 404 0054 021081E0 		add	r1, r1, r2
+ 405 0058 0E0051E1 		cmp	r1, lr
+ 406 005c 0E104120 		subcs	r1, r1, lr
+ 407 0060 041080E5 		str	r1, [r0, #4]
+ 408 0064 0000A0E3 		mov	r0, #0
+ 409 0068 04F09DE4 		ldr	pc, [sp], #4
+ 410              	.L119:
+ 411 006c 013043E2 		sub	r3, r3, #1
+ 412 0070 023043E0 		sub	r3, r3, r2
+ 413 0074 F0FFFFEA 		b	.L95
+ 414              	.L118:
+ 415 0078 0030A0E3 		mov	r3, #0
+ 416 007c EEFFFFEA 		b	.L95
+ 417              	.L104:
+ 418 0080 0000E0E3 		mvn	r0, #0
+ 419 0084 1EFF2FE1 		bx	lr
+ 421              		.section	.text.cbLinOut,"ax",%progbits
+ 422              		.align	2
+ 423              		.global	cbLinOut
+ 424              		.syntax unified
+ 425              		.arm
+ 426              		.fpu neon
+ 428              	cbLinOut:
+ 429              		@ args = 0, pretend = 0, frame = 0
+ 430              		@ frame_needed = 0, uses_anonymous_args = 0
+ 431              		@ link register save eliminated.
+ 432 0000 000050E3 		cmp	r0, #0
+ 433 0004 0800000A 		beq	.L123
+ 434 0008 0C0090E9 		ldmib	r0, {r2, r3}
+ 435 000c 030052E1 		cmp	r2, r3
+ 436 0010 0300000A 		beq	.L124
+ 437 0014 0C009035 		ldrcc	r0, [r0, #12]
+ 438 0018 03004030 		subcc	r0, r0, r3
+ 439 001c 03004220 		subcs	r0, r2, r3
+ 440 0020 1EFF2FE1 		bx	lr
+ 441              	.L124:
+ 442 0024 0000A0E3 		mov	r0, #0
+ 443 0028 1EFF2FE1 		bx	lr
+ 444              	.L123:
+ 445 002c 0000E0E3 		mvn	r0, #0
+ 446 0030 1EFF2FE1 		bx	lr
+ 448              		.section	.text.cbLinIn,"ax",%progbits
+ 449              		.align	2
+ 450              		.global	cbLinIn
+ 451              		.syntax unified
+ 452              		.arm
+ 453              		.fpu neon
+ 455              	cbLinIn:
+ 456              		@ args = 0, pretend = 0, frame = 0
+ 457              		@ frame_needed = 0, uses_anonymous_args = 0
+ 458              		@ link register save eliminated.
+ 459 0000 000050E3 		cmp	r0, #0
+ 460 0004 1300000A 		beq	.L132
+ 461 0008 043090E5 		ldr	r3, [r0, #4]
+ 462 000c 0CC090E5 		ldr	ip, [r0, #12]
+ 463 0010 081090E5 		ldr	r1, [r0, #8]
+ 464 0014 012083E2 		add	r2, r3, #1
+ 465 0018 0C0052E1 		cmp	r2, ip
+ 466 001c 0020A023 		movcs	r2, #0
+ 467 0020 020051E1 		cmp	r1, r2
+ 468 0024 0900000A 		beq	.L138
+ 469 0028 010053E1 		cmp	r3, r1
+ 470 002c 0400003A 		bcc	.L139
+ 471 0030 000051E3 		cmp	r1, #0
+ 472 0034 03004C10 		subne	r0, ip, r3
+ 473 0038 01004C02 		subeq	r0, ip, #1
+ 474 003c 03004000 		subeq	r0, r0, r3
+ 475 0040 1EFF2FE1 		bx	lr
+ 476              	.L139:
+ 477 0044 010041E2 		sub	r0, r1, #1
+ 478 0048 030040E0 		sub	r0, r0, r3
+ 479 004c 1EFF2FE1 		bx	lr
+ 480              	.L138:
+ 481 0050 0000A0E3 		mov	r0, #0
+ 482 0054 1EFF2FE1 		bx	lr
+ 483              	.L132:
+ 484 0058 0000E0E3 		mvn	r0, #0
+ 485 005c 1EFF2FE1 		bx	lr
+ 487              		.section	.text.cbInPointer,"ax",%progbits
+ 488              		.align	2
+ 489              		.global	cbInPointer
+ 490              		.syntax unified
+ 491              		.arm
+ 492              		.fpu neon
+ 494              	cbInPointer:
+ 495              		@ args = 0, pretend = 0, frame = 0
+ 496              		@ frame_needed = 0, uses_anonymous_args = 0
+ 497              		@ link register save eliminated.
+ 498 0000 003050E2 		subs	r3, r0, #0
+ 499 0004 09009318 		ldmne	r3, {r0, r3}
+ 500 0008 03008010 		addne	r0, r0, r3
+ 501 000c 0300A001 		moveq	r0, r3
+ 502 0010 1EFF2FE1 		bx	lr
+ 504              		.section	.text.cbOutPointer,"ax",%progbits
+ 505              		.align	2
+ 506              		.global	cbOutPointer
+ 507              		.syntax unified
+ 508              		.arm
+ 509              		.fpu neon
+ 511              	cbOutPointer:
+ 512              		@ args = 0, pretend = 0, frame = 0
+ 513              		@ frame_needed = 0, uses_anonymous_args = 0
+ 514              		@ link register save eliminated.
+ 515 0000 003050E2 		subs	r3, r0, #0
+ 516 0004 00009315 		ldrne	r0, [r3]
+ 517 0008 08309315 		ldrne	r3, [r3, #8]
+ 518 000c 03008010 		addne	r0, r0, r3
+ 519 0010 0300A001 		moveq	r0, r3
+ 520 0014 1EFF2FE1 		bx	lr
+ 522              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_cbuffer.c
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:14     .text.cbCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:20     .text.cbCreate:00000000 cbCreate
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:43     .text.cbDestroy:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:49     .text.cbDestroy:00000000 cbDestroy
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:69     .text.cbPut:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:75     .text.cbPut:00000000 cbPut
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:102    .text.cbGet:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:108    .text.cbGet:00000000 cbGet
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:135    .text.cbUsed:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:141    .text.cbUsed:00000000 cbUsed
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:158    .text.cbFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:164    .text.cbFree:00000000 cbFree
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:183    .text.cbFull:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:189    .text.cbFull:00000000 cbFull
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:210    .text.cbClear:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:216    .text.cbClear:00000000 cbClear
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:229    .text.cbGetPacket:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:235    .text.cbGetPacket:00000000 cbGetPacket
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:274    .text.cbCheckOut:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:280    .text.cbCheckOut:00000000 cbCheckOut
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:313    .text.cbPutPacket:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:319    .text.cbPutPacket:00000000 cbPutPacket
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:372    .text.cbCheckIn:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:378    .text.cbCheckIn:00000000 cbCheckIn
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:422    .text.cbLinOut:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:428    .text.cbLinOut:00000000 cbLinOut
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:449    .text.cbLinIn:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:455    .text.cbLinIn:00000000 cbLinIn
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:488    .text.cbInPointer:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:494    .text.cbInPointer:00000000 cbInPointer
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:505    .text.cbOutPointer:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccWpi7oB.s:511    .text.cbOutPointer:00000000 cbOutPointer
+
+UNDEFINED SYMBOLS
+R_OS_Malloc
+R_OS_Free
+memcpy

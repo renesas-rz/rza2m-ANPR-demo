@@ -1,0 +1,758 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"port.c"
+  13              		.section	.text.prvTaskExitError,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	prvTaskExitError:
+  20              		@ Volatile: function does not return.
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  24 0004 10402DE9 		push	{r4, lr}
+  25 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  26 000c 003093E5 		ldr	r3, [r3]
+  27 0010 010073E3 		cmn	r3, #1
+  28 0014 0300000A 		beq	.L2
+  29 0018 000000E3 		movw	r0, #:lower16:.LC0
+  30 001c 451100E3 		movw	r1, #325
+  31 0020 000040E3 		movt	r0, #:upper16:.LC0
+  32 0024 FEFFFFEB 		bl	R_OS_AssertCalled
+  33              	.L2:
+  34              		.syntax divided
+  35              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  36 0028 80000CF1 		CPSID i
+  37              	@ 0 "" 2
+  38              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  39 002c 4FF07FF5 		DSB
+  40              	@ 0 "" 2
+  41              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  42 0030 6FF07FF5 		ISB
+  43              	@ 0 "" 2
+  44              		.arm
+  45              		.syntax unified
+  46 0034 023AA0E3 		mov	r3, #8192
+  47 0038 22384EE3 		movt	r3, 59426
+  48 003c 042093E5 		ldr	r2, [r3, #4]
+  49 0040 C80052E3 		cmp	r2, #200
+  50 0044 0300000A 		beq	.L3
+  51 0048 C820A0E3 		mov	r2, #200
+  52 004c 042083E5 		str	r2, [r3, #4]
+  53              		.syntax divided
+  54              	@ 536 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  55 0050 4FF07FF5 		dsb		
+  56 0054 6FF07FF5 	isb		
+  57              	
+  58              	@ 0 "" 2
+  59              		.arm
+  60              		.syntax unified
+  61              	.L3:
+  62              		.syntax divided
+  63              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  64 0058 800008F1 		CPSIE i
+  65              	@ 0 "" 2
+  66              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  67 005c 4FF07FF5 		DSB
+  68              	@ 0 "" 2
+  69              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+  70 0060 6FF07FF5 		ISB
+  71              	@ 0 "" 2
+  72              		.arm
+  73              		.syntax unified
+  74              	.L4:
+  75 0064 FEFFFFEA 		b	.L4
+  77              		.section	.text.pxPortInitialiseStack,"ax",%progbits
+  78              		.align	2
+  79              		.global	pxPortInitialiseStack
+  80              		.syntax unified
+  81              		.arm
+  82              		.fpu neon
+  84              	pxPortInitialiseStack:
+  85              		@ args = 0, pretend = 0, frame = 0
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87 0000 0030A0E1 		mov	r3, r0
+  88 0004 010011E3 		tst	r1, #1
+  89 0008 70402DE9 		push	{r4, r5, r6, lr}
+  90 000c 09C900E3 		movw	ip, #2313
+  91 0010 482003E5 		str	r2, [r3, #-72]
+  92 0014 125201E3 		movw	r5, #4626
+  93 0018 1F20A003 		moveq	r2, #31
+  94 001c 3F20A013 		movne	r2, #63
+  95 0020 101003E5 		str	r1, [r3, #-16]
+  96 0024 114101E3 		movw	r4, #4369
+  97 0028 10E001E3 		movw	lr, #4112
+  98 002c 081800E3 		movw	r1, #2056
+  99 0030 0C2003E5 		str	r2, [r3, #-12]
+ 100 0034 125241E3 		movt	r5, 4626
+ 101 0038 114141E3 		movt	r4, 4369
+ 102 003c 10E041E3 		movt	lr, 4112
+ 103 0040 09C940E3 		movt	ip, 2313
+ 104 0044 081840E3 		movt	r1, 2056
+ 105 0048 000000E3 		movw	r0, #:lower16:prvTaskExitError
+ 106 004c 062600E3 		movw	r2, #1542
+ 107 0050 185003E5 		str	r5, [r3, #-24]
+ 108 0054 000040E3 		movt	r0, #:upper16:prvTaskExitError
+ 109 0058 1C4003E5 		str	r4, [r3, #-28]
+ 110 005c 062640E3 		movt	r2, 1542
+ 111 0060 20E003E5 		str	lr, [r3, #-32]
+ 112 0064 076700E3 		movw	r6, #1799
+ 113 0068 24C003E5 		str	ip, [r3, #-36]
+ 114 006c 055500E3 		movw	r5, #1285
+ 115 0070 281003E5 		str	r1, [r3, #-40]
+ 116 0074 044400E3 		movw	r4, #1028
+ 117 0078 03E300E3 		movw	lr, #771
+ 118 007c 02C200E3 		movw	ip, #514
+ 119 0080 011100E3 		movw	r1, #257
+ 120 0084 140003E5 		str	r0, [r3, #-20]
+ 121 0088 302003E5 		str	r2, [r3, #-48]
+ 122 008c 076740E3 		movt	r6, 1799
+ 123 0090 0020A0E3 		mov	r2, #0
+ 124 0094 055540E3 		movt	r5, 1285
+ 125 0098 044440E3 		movt	r4, 1028
+ 126 009c 03E340E3 		movt	lr, 771
+ 127 00a0 02C240E3 		movt	ip, 514
+ 128 00a4 011140E3 		movt	r1, 257
+ 129 00a8 0300A0E1 		mov	r0, r3
+ 130 00ac 2C6003E5 		str	r6, [r3, #-44]
+ 131 00b0 345003E5 		str	r5, [r3, #-52]
+ 132 00b4 384003E5 		str	r4, [r3, #-56]
+ 133 00b8 3CE003E5 		str	lr, [r3, #-60]
+ 134 00bc 40C003E5 		str	ip, [r3, #-64]
+ 135 00c0 441003E5 		str	r1, [r3, #-68]
+ 136 00c4 002083E5 		str	r2, [r3]
+ 137 00c8 042003E5 		str	r2, [r3, #-4]
+ 138 00cc 082003E5 		str	r2, [r3, #-8]
+ 139 00d0 4C2003E5 		str	r2, [r3, #-76]
+ 140 00d4 502020E5 		str	r2, [r0, #-80]!
+ 141 00d8 7080BDE8 		pop	{r4, r5, r6, pc}
+ 143              		.section	.text.xPortStartScheduler,"ax",%progbits
+ 144              		.align	2
+ 145              		.global	xPortStartScheduler
+ 146              		.syntax unified
+ 147              		.arm
+ 148              		.fpu neon
+ 150              	xPortStartScheduler:
+ 151              		@ args = 0, pretend = 0, frame = 8
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153 0000 053BA0E3 		mov	r3, #5120
+ 154 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 155 0008 22384EE3 		movt	r3, 59426
+ 156 000c 0CD04DE2 		sub	sp, sp, #12
+ 157 0010 0010E0E3 		mvn	r1, #0
+ 158 0014 0020D3E5 		ldrb	r2, [r3]	@ zero_extendqisi2
+ 159 0018 7220EFE6 		uxtb	r2, r2
+ 160 001c 04208DE5 		str	r2, [sp, #4]
+ 161 0020 0010C3E5 		strb	r1, [r3]
+ 162 0024 0030D3E5 		ldrb	r3, [r3]	@ zero_extendqisi2
+ 163 0028 7330EFE6 		uxtb	r3, r3
+ 164 002c 0330CDE5 		strb	r3, [sp, #3]
+ 165 0030 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 166 0034 010013E3 		tst	r3, #1
+ 167 0038 0500001A 		bne	.L21
+ 168              	.L18:
+ 169 003c 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 170 0040 A330A0E1 		lsr	r3, r3, #1
+ 171 0044 0330CDE5 		strb	r3, [sp, #3]
+ 172 0048 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 173 004c 010013E3 		tst	r3, #1
+ 174 0050 F9FFFF0A 		beq	.L18
+ 175              	.L21:
+ 176 0054 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 177 0058 1F0053E3 		cmp	r3, #31
+ 178 005c 0300000A 		beq	.L20
+ 179 0060 000000E3 		movw	r0, #:lower16:.LC0
+ 180 0064 691100E3 		movw	r1, #361
+ 181 0068 000040E3 		movt	r0, #:upper16:.LC0
+ 182 006c FEFFFFEB 		bl	R_OS_AssertCalled
+ 183              	.L20:
+ 184 0070 04309DE5 		ldr	r3, [sp, #4]
+ 185 0074 052BA0E3 		mov	r2, #5120
+ 186 0078 22284EE3 		movt	r2, 59426
+ 187 007c 7330EFE6 		uxtb	r3, r3
+ 188 0080 0030C2E5 		strb	r3, [r2]
+ 189 0084 FEFFFFEB 		bl	get_apsr
+ 190 0088 1F0000E2 		and	r0, r0, #31
+ 191 008c 100050E3 		cmp	r0, #16
+ 192 0090 1B00000A 		beq	.L33
+ 193 0094 023AA0E3 		mov	r3, #8192
+ 194 0098 22384EE3 		movt	r3, 59426
+ 195 009c 083093E5 		ldr	r3, [r3, #8]
+ 196 00a0 033003E2 		and	r3, r3, #3
+ 197 00a4 030053E3 		cmp	r3, #3
+ 198 00a8 1000000A 		beq	.L34
+ 199              	.L24:
+ 200 00ac 023AA0E3 		mov	r3, #8192
+ 201 00b0 22384EE3 		movt	r3, 59426
+ 202 00b4 083093E5 		ldr	r3, [r3, #8]
+ 203 00b8 033003E2 		and	r3, r3, #3
+ 204 00bc 030053E3 		cmp	r3, #3
+ 205 00c0 0200001A 		bne	.L35
+ 206 00c4 0000A0E3 		mov	r0, #0
+ 207 00c8 0CD08DE2 		add	sp, sp, #12
+ 208              		@ sp needed
+ 209 00cc 04F09DE4 		ldr	pc, [sp], #4
+ 210              	.L35:
+ 211              		.syntax divided
+ 212              	@ 394 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 213 00d0 80000CF1 		CPSID i
+ 214              	@ 0 "" 2
+ 215              	@ 394 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 216 00d4 4FF07FF5 		DSB
+ 217              	@ 0 "" 2
+ 218              	@ 394 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 219 00d8 6FF07FF5 		ISB
+ 220              	@ 0 "" 2
+ 221              		.arm
+ 222              		.syntax unified
+ 223 00dc FEFFFFEB 		bl	vConfigureTickInterrupt
+ 224 00e0 FEFFFFEB 		bl	vPortRestoreTaskContext
+ 225 00e4 0000A0E3 		mov	r0, #0
+ 226 00e8 0CD08DE2 		add	sp, sp, #12
+ 227              		@ sp needed
+ 228 00ec 04F09DE4 		ldr	pc, [sp], #4
+ 229              	.L34:
+ 230 00f0 000000E3 		movw	r0, #:lower16:.LC0
+ 231 00f4 821100E3 		movw	r1, #386
+ 232 00f8 000040E3 		movt	r0, #:upper16:.LC0
+ 233 00fc FEFFFFEB 		bl	R_OS_AssertCalled
+ 234 0100 E9FFFFEA 		b	.L24
+ 235              	.L33:
+ 236 0104 000000E3 		movw	r0, #:lower16:.LC0
+ 237 0108 7B1100E3 		movw	r1, #379
+ 238 010c 000040E3 		movt	r0, #:upper16:.LC0
+ 239 0110 FEFFFFEB 		bl	R_OS_AssertCalled
+ 240 0114 0000A0E3 		mov	r0, #0
+ 241 0118 0CD08DE2 		add	sp, sp, #12
+ 242              		@ sp needed
+ 243 011c 04F09DE4 		ldr	pc, [sp], #4
+ 245              		.section	.text.vPortEndScheduler,"ax",%progbits
+ 246              		.align	2
+ 247              		.global	vPortEndScheduler
+ 248              		.syntax unified
+ 249              		.arm
+ 250              		.fpu neon
+ 252              	vPortEndScheduler:
+ 253              		@ args = 0, pretend = 0, frame = 0
+ 254              		@ frame_needed = 0, uses_anonymous_args = 0
+ 255              		@ link register save eliminated.
+ 256 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 257 0004 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 258 0008 003093E5 		ldr	r3, [r3]
+ 259 000c FA0F53E3 		cmp	r3, #1000
+ 260 0010 1EFF2F01 		bxeq	lr
+ 261 0014 000000E3 		movw	r0, #:lower16:.LC0
+ 262 0018 A21100E3 		movw	r1, #418
+ 263 001c 000040E3 		movt	r0, #:upper16:.LC0
+ 264 0020 FEFFFFEA 		b	R_OS_AssertCalled
+ 266              		.section	.text.vPortEnterCritical,"ax",%progbits
+ 267              		.align	2
+ 268              		.global	vPortEnterCritical
+ 269              		.syntax unified
+ 270              		.arm
+ 271              		.fpu neon
+ 273              	vPortEnterCritical:
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 0, uses_anonymous_args = 0
+ 276              		@ link register save eliminated.
+ 277              		.syntax divided
+ 278              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 279 0000 80000CF1 		CPSID i
+ 280              	@ 0 "" 2
+ 281              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 282 0004 4FF07FF5 		DSB
+ 283              	@ 0 "" 2
+ 284              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 285 0008 6FF07FF5 		ISB
+ 286              	@ 0 "" 2
+ 287              		.arm
+ 288              		.syntax unified
+ 289 000c 023AA0E3 		mov	r3, #8192
+ 290 0010 22384EE3 		movt	r3, 59426
+ 291 0014 042093E5 		ldr	r2, [r3, #4]
+ 292 0018 C80052E3 		cmp	r2, #200
+ 293 001c 0300000A 		beq	.L39
+ 294 0020 C820A0E3 		mov	r2, #200
+ 295 0024 042083E5 		str	r2, [r3, #4]
+ 296              		.syntax divided
+ 297              	@ 536 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 298 0028 4FF07FF5 		dsb		
+ 299 002c 6FF07FF5 	isb		
+ 300              	
+ 301              	@ 0 "" 2
+ 302              		.arm
+ 303              		.syntax unified
+ 304              	.L39:
+ 305              		.syntax divided
+ 306              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 307 0030 800008F1 		CPSIE i
+ 308              	@ 0 "" 2
+ 309              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 310 0034 4FF07FF5 		DSB
+ 311              	@ 0 "" 2
+ 312              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 313 0038 6FF07FF5 		ISB
+ 314              	@ 0 "" 2
+ 315              		.arm
+ 316              		.syntax unified
+ 317 003c 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 318 0040 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 319 0044 002093E5 		ldr	r2, [r3]
+ 320 0048 012082E2 		add	r2, r2, #1
+ 321 004c 002083E5 		str	r2, [r3]
+ 322 0050 003093E5 		ldr	r3, [r3]
+ 323 0054 010053E3 		cmp	r3, #1
+ 324 0058 1EFF2F11 		bxne	lr
+ 325 005c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 326 0060 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 327 0064 003093E5 		ldr	r3, [r3]
+ 328 0068 000053E3 		cmp	r3, #0
+ 329 006c 1EFF2F01 		bxeq	lr
+ 330 0070 000000E3 		movw	r0, #:lower16:.LC0
+ 331 0074 B71100E3 		movw	r1, #439
+ 332 0078 000040E3 		movt	r0, #:upper16:.LC0
+ 333 007c FEFFFFEA 		b	R_OS_AssertCalled
+ 335              		.section	.text.vPortExitCritical,"ax",%progbits
+ 336              		.align	2
+ 337              		.global	vPortExitCritical
+ 338              		.syntax unified
+ 339              		.arm
+ 340              		.fpu neon
+ 342              	vPortExitCritical:
+ 343              		@ args = 0, pretend = 0, frame = 0
+ 344              		@ frame_needed = 0, uses_anonymous_args = 0
+ 345              		@ link register save eliminated.
+ 346 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 347 0004 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 348 0008 002093E5 		ldr	r2, [r3]
+ 349 000c 000052E3 		cmp	r2, #0
+ 350 0010 1EFF2F01 		bxeq	lr
+ 351 0014 002093E5 		ldr	r2, [r3]
+ 352 0018 012042E2 		sub	r2, r2, #1
+ 353 001c 002083E5 		str	r2, [r3]
+ 354 0020 003093E5 		ldr	r3, [r3]
+ 355 0024 000053E3 		cmp	r3, #0
+ 356 0028 1EFF2F11 		bxne	lr
+ 357              		.syntax divided
+ 358              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 359 002c 80000CF1 		CPSID i
+ 360              	@ 0 "" 2
+ 361              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 362 0030 4FF07FF5 		DSB
+ 363              	@ 0 "" 2
+ 364              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 365 0034 6FF07FF5 		ISB
+ 366              	@ 0 "" 2
+ 367              		.arm
+ 368              		.syntax unified
+ 369 0038 023AA0E3 		mov	r3, #8192
+ 370 003c FF20A0E3 		mov	r2, #255
+ 371 0040 22384EE3 		movt	r3, 59426
+ 372 0044 042083E5 		str	r2, [r3, #4]
+ 373              		.syntax divided
+ 374              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 375 0048 4FF07FF5 		DSB		
+ 376 004c 6FF07FF5 	ISB		
+ 377              	
+ 378              	@ 0 "" 2
+ 379              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 380 0050 800008F1 		CPSIE i
+ 381              	@ 0 "" 2
+ 382              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 383 0054 4FF07FF5 		DSB
+ 384              	@ 0 "" 2
+ 385              	@ 458 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 386 0058 6FF07FF5 		ISB
+ 387              	@ 0 "" 2
+ 388              		.arm
+ 389              		.syntax unified
+ 390 005c 1EFF2FE1 		bx	lr
+ 392              		.section	.text.FreeRTOS_Tick_Handler,"ax",%progbits
+ 393              		.align	2
+ 394              		.global	FreeRTOS_Tick_Handler
+ 395              		.syntax unified
+ 396              		.arm
+ 397              		.fpu neon
+ 399              	FreeRTOS_Tick_Handler:
+ 400              		@ args = 0, pretend = 0, frame = 0
+ 401              		@ frame_needed = 0, uses_anonymous_args = 0
+ 402 0000 10402DE9 		push	{r4, lr}
+ 403              		.syntax divided
+ 404              	@ 471 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 405 0004 80000CF1 		CPSID i
+ 406              	@ 0 "" 2
+ 407              	@ 471 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 408 0008 4FF07FF5 		DSB
+ 409              	@ 0 "" 2
+ 410              	@ 471 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 411 000c 6FF07FF5 		ISB
+ 412              	@ 0 "" 2
+ 413              		.arm
+ 414              		.syntax unified
+ 415 0010 023AA0E3 		mov	r3, #8192
+ 416 0014 C820A0E3 		mov	r2, #200
+ 417 0018 22384EE3 		movt	r3, 59426
+ 418 001c 042083E5 		str	r2, [r3, #4]
+ 419              		.syntax divided
+ 420              	@ 473 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 421 0020 4FF07FF5 		dsb		
+ 422 0024 6FF07FF5 	isb		
+ 423              	
+ 424              	@ 0 "" 2
+ 425              	@ 475 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 426 0028 800008F1 		CPSIE i
+ 427              	@ 0 "" 2
+ 428              	@ 475 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 429 002c 4FF07FF5 		DSB
+ 430              	@ 0 "" 2
+ 431              	@ 475 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 432 0030 6FF07FF5 		ISB
+ 433              	@ 0 "" 2
+ 434              		.arm
+ 435              		.syntax unified
+ 436 0034 FEFFFFEB 		bl	xTaskIncrementTick
+ 437 0038 000050E3 		cmp	r0, #0
+ 438 003c 00300013 		movwne	r3, #:lower16:.LANCHOR2
+ 439 0040 0120A013 		movne	r2, #1
+ 440 0044 00304013 		movtne	r3, #:upper16:.LANCHOR2
+ 441 0048 00208315 		strne	r2, [r3]
+ 442              		.syntax divided
+ 443              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 444 004c 80000CF1 		CPSID i
+ 445              	@ 0 "" 2
+ 446              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 447 0050 4FF07FF5 		DSB
+ 448              	@ 0 "" 2
+ 449              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 450 0054 6FF07FF5 		ISB
+ 451              	@ 0 "" 2
+ 452              		.arm
+ 453              		.syntax unified
+ 454 0058 023AA0E3 		mov	r3, #8192
+ 455 005c FF20A0E3 		mov	r2, #255
+ 456 0060 22384EE3 		movt	r3, 59426
+ 457 0064 042083E5 		str	r2, [r3, #4]
+ 458              		.syntax divided
+ 459              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 460 0068 4FF07FF5 		DSB		
+ 461 006c 6FF07FF5 	ISB		
+ 462              	
+ 463              	@ 0 "" 2
+ 464              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 465 0070 800008F1 		CPSIE i
+ 466              	@ 0 "" 2
+ 467              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 468 0074 4FF07FF5 		DSB
+ 469              	@ 0 "" 2
+ 470              	@ 484 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 471 0078 6FF07FF5 		ISB
+ 472              	@ 0 "" 2
+ 473              		.arm
+ 474              		.syntax unified
+ 475 007c 1080BDE8 		pop	{r4, pc}
+ 477              		.section	.text.vPortTaskUsesFPU,"ax",%progbits
+ 478              		.align	2
+ 479              		.global	vPortTaskUsesFPU
+ 480              		.syntax unified
+ 481              		.arm
+ 482              		.fpu neon
+ 484              	vPortTaskUsesFPU:
+ 485              		@ args = 0, pretend = 0, frame = 0
+ 486              		@ frame_needed = 0, uses_anonymous_args = 0
+ 487              		@ link register save eliminated.
+ 488 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 489 0004 0120A0E3 		mov	r2, #1
+ 490 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 491 000c 0000A0E3 		mov	r0, #0
+ 492 0010 002083E5 		str	r2, [r3]
+ 493 0014 FEFFFFEA 		b	set_fpscr
+ 495              		.section	.text.vPortClearInterruptMask,"ax",%progbits
+ 496              		.align	2
+ 497              		.global	vPortClearInterruptMask
+ 498              		.syntax unified
+ 499              		.arm
+ 500              		.fpu neon
+ 502              	vPortClearInterruptMask:
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504              		@ frame_needed = 0, uses_anonymous_args = 0
+ 505              		@ link register save eliminated.
+ 506 0000 000050E3 		cmp	r0, #0
+ 507 0004 1EFF2F11 		bxne	lr
+ 508              		.syntax divided
+ 509              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 510 0008 80000CF1 		CPSID i
+ 511              	@ 0 "" 2
+ 512              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 513 000c 4FF07FF5 		DSB
+ 514              	@ 0 "" 2
+ 515              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 516 0010 6FF07FF5 		ISB
+ 517              	@ 0 "" 2
+ 518              		.arm
+ 519              		.syntax unified
+ 520 0014 023AA0E3 		mov	r3, #8192
+ 521 0018 FF20A0E3 		mov	r2, #255
+ 522 001c 22384EE3 		movt	r3, 59426
+ 523 0020 042083E5 		str	r2, [r3, #4]
+ 524              		.syntax divided
+ 525              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 526 0024 4FF07FF5 		DSB		
+ 527 0028 6FF07FF5 	ISB		
+ 528              	
+ 529              	@ 0 "" 2
+ 530              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 531 002c 800008F1 		CPSIE i
+ 532              	@ 0 "" 2
+ 533              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 534 0030 4FF07FF5 		DSB
+ 535              	@ 0 "" 2
+ 536              	@ 515 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 537 0034 6FF07FF5 		ISB
+ 538              	@ 0 "" 2
+ 539              		.arm
+ 540              		.syntax unified
+ 541 0038 1EFF2FE1 		bx	lr
+ 543              		.section	.text.ulPortSetInterruptMask,"ax",%progbits
+ 544              		.align	2
+ 545              		.global	ulPortSetInterruptMask
+ 546              		.syntax unified
+ 547              		.arm
+ 548              		.fpu neon
+ 550              	ulPortSetInterruptMask:
+ 551              		@ args = 0, pretend = 0, frame = 0
+ 552              		@ frame_needed = 0, uses_anonymous_args = 0
+ 553              		@ link register save eliminated.
+ 554              		.syntax divided
+ 555              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 556 0000 80000CF1 		CPSID i
+ 557              	@ 0 "" 2
+ 558              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 559 0004 4FF07FF5 		DSB
+ 560              	@ 0 "" 2
+ 561              	@ 526 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 562 0008 6FF07FF5 		ISB
+ 563              	@ 0 "" 2
+ 564              		.arm
+ 565              		.syntax unified
+ 566 000c 023AA0E3 		mov	r3, #8192
+ 567 0010 22384EE3 		movt	r3, 59426
+ 568 0014 042093E5 		ldr	r2, [r3, #4]
+ 569 0018 C80052E3 		cmp	r2, #200
+ 570 001c 0100A003 		moveq	r0, #1
+ 571 0020 0400000A 		beq	.L61
+ 572 0024 C820A0E3 		mov	r2, #200
+ 573 0028 042083E5 		str	r2, [r3, #4]
+ 574              		.syntax divided
+ 575              	@ 536 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 576 002c 4FF07FF5 		dsb		
+ 577 0030 6FF07FF5 	isb		
+ 578              	
+ 579              	@ 0 "" 2
+ 580              		.arm
+ 581              		.syntax unified
+ 582 0034 0000A0E3 		mov	r0, #0
+ 583              	.L61:
+ 584              		.syntax divided
+ 585              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 586 0038 800008F1 		CPSIE i
+ 587              	@ 0 "" 2
+ 588              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 589 003c 4FF07FF5 		DSB
+ 590              	@ 0 "" 2
+ 591              	@ 539 "../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c" 1
+ 592 0040 6FF07FF5 		ISB
+ 593              	@ 0 "" 2
+ 594              		.arm
+ 595              		.syntax unified
+ 596 0044 1EFF2FE1 		bx	lr
+ 598              		.section	.text.vPortValidateInterruptPriority,"ax",%progbits
+ 599              		.align	2
+ 600              		.global	vPortValidateInterruptPriority
+ 601              		.syntax unified
+ 602              		.arm
+ 603              		.fpu neon
+ 605              	vPortValidateInterruptPriority:
+ 606              		@ args = 0, pretend = 0, frame = 0
+ 607              		@ frame_needed = 0, uses_anonymous_args = 0
+ 608 0000 023AA0E3 		mov	r3, #8192
+ 609 0004 10402DE9 		push	{r4, lr}
+ 610 0008 22384EE3 		movt	r3, 59426
+ 611 000c 143093E5 		ldr	r3, [r3, #20]
+ 612 0010 C70053E3 		cmp	r3, #199
+ 613 0014 0A00009A 		bls	.L67
+ 614              	.L64:
+ 615 0018 023AA0E3 		mov	r3, #8192
+ 616 001c 22384EE3 		movt	r3, 59426
+ 617 0020 083093E5 		ldr	r3, [r3, #8]
+ 618 0024 033003E2 		and	r3, r3, #3
+ 619 0028 030053E3 		cmp	r3, #3
+ 620 002c 1080BD18 		popne	{r4, pc}
+ 621 0030 000000E3 		movw	r0, #:lower16:.LC0
+ 622 0034 3F1200E3 		movw	r1, #575
+ 623 0038 000040E3 		movt	r0, #:upper16:.LC0
+ 624 003c 1040BDE8 		pop	{r4, lr}
+ 625 0040 FEFFFFEA 		b	R_OS_AssertCalled
+ 626              	.L67:
+ 627 0044 000000E3 		movw	r0, #:lower16:.LC0
+ 628 0048 331200E3 		movw	r1, #563
+ 629 004c 000040E3 		movt	r0, #:upper16:.LC0
+ 630 0050 FEFFFFEB 		bl	R_OS_AssertCalled
+ 631 0054 EFFFFFEA 		b	.L64
+ 633              		.section	.text.vApplicationFPUSafeIRQHandler,"ax",%progbits
+ 634              		.align	2
+ 635              		.weak	vApplicationFPUSafeIRQHandler
+ 636              		.syntax unified
+ 637              		.arm
+ 638              		.fpu neon
+ 640              	vApplicationFPUSafeIRQHandler:
+ 641              		@ args = 0, pretend = 0, frame = 0
+ 642              		@ frame_needed = 0, uses_anonymous_args = 0
+ 643              		@ link register save eliminated.
+ 644 0000 000000E3 		movw	r0, #:lower16:.LC0
+ 645 0004 921FA0E3 		mov	r1, #584
+ 646 0008 000040E3 		movt	r0, #:upper16:.LC0
+ 647 000c FEFFFFEA 		b	R_OS_AssertCalled
+ 649              		.section	.text.vApplicationIRQHandler,"ax",%progbits
+ 650              		.align	2
+ 651              		.global	vApplicationIRQHandler
+ 652              		.syntax unified
+ 653              		.arm
+ 654              		.fpu neon
+ 656              	vApplicationIRQHandler:
+ 657              		@ args = 0, pretend = 0, frame = 0
+ 658              		@ frame_needed = 0, uses_anonymous_args = 0
+ 659 0000 10402DE9 		push	{r4, lr}
+ 660 0004 0040A0E1 		mov	r4, r0
+ 661 0008 FEFFFFEB 		bl	__enable_irq
+ 662 000c 5430E9E7 		ubfx	r3, r4, #0, #10
+ 663 0010 020C53E3 		cmp	r3, #512
+ 664 0014 1080BD28 		popcs	{r4, pc}
+ 665 0018 002000E3 		movw	r2, #:lower16:g_intc_func_table
+ 666 001c 0000A0E3 		mov	r0, #0
+ 667 0020 002040E3 		movt	r2, #:upper16:g_intc_func_table
+ 668 0024 1040BDE8 		pop	{r4, lr}
+ 669 0028 033192E7 		ldr	r3, [r2, r3, lsl #2]
+ 670 002c 13FF2FE1 		bx	r3	@ indirect register sibling call
+ 672              		.global	ulMaxAPIPriorityMask
+ 673              		.global	ulICCPMR
+ 674              		.global	ulICCEOIR
+ 675              		.global	ulICCIAR
+ 676              		.global	ulPortInterruptNesting
+ 677              		.global	ulPortYieldRequired
+ 678              		.global	ulPortTaskHasFPUContext
+ 679              		.global	ulCriticalNesting
+ 680              		.section	.bss.ulPortInterruptNesting,"aw",%nobits
+ 681              		.align	2
+ 682              		.set	.LANCHOR0,. + 0
+ 685              	ulPortInterruptNesting:
+ 686 0000 00000000 		.space	4
+ 687              		.section	.bss.ulPortTaskHasFPUContext,"aw",%nobits
+ 688              		.align	2
+ 689              		.set	.LANCHOR3,. + 0
+ 692              	ulPortTaskHasFPUContext:
+ 693 0000 00000000 		.space	4
+ 694              		.section	.bss.ulPortYieldRequired,"aw",%nobits
+ 695              		.align	2
+ 696              		.set	.LANCHOR2,. + 0
+ 699              	ulPortYieldRequired:
+ 700 0000 00000000 		.space	4
+ 701              		.section	.data.ulCriticalNesting,"aw",%progbits
+ 702              		.align	2
+ 703              		.set	.LANCHOR1,. + 0
+ 706              	ulCriticalNesting:
+ 707 0000 0F270000 		.word	9999
+ 708              		.section	.rodata.prvTaskExitError.str1.4,"aMS",%progbits,1
+ 709              		.align	2
+ 710              	.LC0:
+ 711 0000 2E2E2F73 		.ascii	"../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/port.c\000"
+ 711      72632F46 
+ 711      72656552 
+ 711      544F532F 
+ 711      706F7274 
+ 712              		.section	.rodata.ulICCEOIR,"a",%progbits
+ 713              		.align	2
+ 716              	ulICCEOIR:
+ 717 0000 102022E8 		.word	-400416752
+ 718              		.section	.rodata.ulICCIAR,"a",%progbits
+ 719              		.align	2
+ 722              	ulICCIAR:
+ 723 0000 0C2022E8 		.word	-400416756
+ 724              		.section	.rodata.ulICCPMR,"a",%progbits
+ 725              		.align	2
+ 728              	ulICCPMR:
+ 729 0000 042022E8 		.word	-400416764
+ 730              		.section	.rodata.ulMaxAPIPriorityMask,"a",%progbits
+ 731              		.align	2
+ 734              	ulMaxAPIPriorityMask:
+ 735 0000 C8000000 		.word	200
+ 736              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 port.c
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:14     .text.prvTaskExitError:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:19     .text.prvTaskExitError:00000000 prvTaskExitError
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:682    .bss.ulPortInterruptNesting:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:710    .rodata.prvTaskExitError.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:78     .text.pxPortInitialiseStack:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:84     .text.pxPortInitialiseStack:00000000 pxPortInitialiseStack
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:144    .text.xPortStartScheduler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:150    .text.xPortStartScheduler:00000000 xPortStartScheduler
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:246    .text.vPortEndScheduler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:252    .text.vPortEndScheduler:00000000 vPortEndScheduler
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:703    .data.ulCriticalNesting:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:267    .text.vPortEnterCritical:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:273    .text.vPortEnterCritical:00000000 vPortEnterCritical
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:336    .text.vPortExitCritical:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:342    .text.vPortExitCritical:00000000 vPortExitCritical
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:393    .text.FreeRTOS_Tick_Handler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:399    .text.FreeRTOS_Tick_Handler:00000000 FreeRTOS_Tick_Handler
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:696    .bss.ulPortYieldRequired:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:478    .text.vPortTaskUsesFPU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:484    .text.vPortTaskUsesFPU:00000000 vPortTaskUsesFPU
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:689    .bss.ulPortTaskHasFPUContext:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:496    .text.vPortClearInterruptMask:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:502    .text.vPortClearInterruptMask:00000000 vPortClearInterruptMask
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:544    .text.ulPortSetInterruptMask:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:550    .text.ulPortSetInterruptMask:00000000 ulPortSetInterruptMask
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:599    .text.vPortValidateInterruptPriority:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:605    .text.vPortValidateInterruptPriority:00000000 vPortValidateInterruptPriority
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:634    .text.vApplicationFPUSafeIRQHandler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:640    .text.vApplicationFPUSafeIRQHandler:00000000 vApplicationFPUSafeIRQHandler
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:650    .text.vApplicationIRQHandler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:656    .text.vApplicationIRQHandler:00000000 vApplicationIRQHandler
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:734    .rodata.ulMaxAPIPriorityMask:00000000 ulMaxAPIPriorityMask
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:728    .rodata.ulICCPMR:00000000 ulICCPMR
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:716    .rodata.ulICCEOIR:00000000 ulICCEOIR
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:722    .rodata.ulICCIAR:00000000 ulICCIAR
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:685    .bss.ulPortInterruptNesting:00000000 ulPortInterruptNesting
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:699    .bss.ulPortYieldRequired:00000000 ulPortYieldRequired
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:692    .bss.ulPortTaskHasFPUContext:00000000 ulPortTaskHasFPUContext
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:706    .data.ulCriticalNesting:00000000 ulCriticalNesting
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:681    .bss.ulPortInterruptNesting:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:688    .bss.ulPortTaskHasFPUContext:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:695    .bss.ulPortYieldRequired:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:702    .data.ulCriticalNesting:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:709    .rodata.prvTaskExitError.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:713    .rodata.ulICCEOIR:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:719    .rodata.ulICCIAR:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:725    .rodata.ulICCPMR:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc2SKRLp.s:731    .rodata.ulMaxAPIPriorityMask:00000000 $d
+
+UNDEFINED SYMBOLS
+R_OS_AssertCalled
+get_apsr
+vConfigureTickInterrupt
+vPortRestoreTaskContext
+xTaskIncrementTick
+set_fpscr
+__enable_irq
+g_intc_func_table

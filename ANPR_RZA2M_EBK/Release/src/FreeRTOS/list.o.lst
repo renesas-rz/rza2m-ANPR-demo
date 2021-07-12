@@ -1,0 +1,142 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"list.c"
+  13              		.section	.text.vListInitialise,"ax",%progbits
+  14              		.align	2
+  15              		.global	vListInitialise
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	vListInitialise:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23              		@ link register save eliminated.
+  24 0000 083080E2 		add	r3, r0, #8
+  25 0004 0010E0E3 		mvn	r1, #0
+  26 0008 0020A0E3 		mov	r2, #0
+  27 000c 081080E5 		str	r1, [r0, #8]
+  28 0010 002080E5 		str	r2, [r0]
+  29 0014 043080E5 		str	r3, [r0, #4]
+  30 0018 0C3080E5 		str	r3, [r0, #12]
+  31 001c 103080E5 		str	r3, [r0, #16]
+  32 0020 1EFF2FE1 		bx	lr
+  34              		.section	.text.vListInitialiseItem,"ax",%progbits
+  35              		.align	2
+  36              		.global	vListInitialiseItem
+  37              		.syntax unified
+  38              		.arm
+  39              		.fpu neon
+  41              	vListInitialiseItem:
+  42              		@ args = 0, pretend = 0, frame = 0
+  43              		@ frame_needed = 0, uses_anonymous_args = 0
+  44              		@ link register save eliminated.
+  45 0000 0030A0E3 		mov	r3, #0
+  46 0004 103080E5 		str	r3, [r0, #16]
+  47 0008 1EFF2FE1 		bx	lr
+  49              		.section	.text.vListInsertEnd,"ax",%progbits
+  50              		.align	2
+  51              		.global	vListInsertEnd
+  52              		.syntax unified
+  53              		.arm
+  54              		.fpu neon
+  56              	vListInsertEnd:
+  57              		@ args = 0, pretend = 0, frame = 0
+  58              		@ frame_needed = 0, uses_anonymous_args = 0
+  59              		@ link register save eliminated.
+  60 0000 043090E5 		ldr	r3, [r0, #4]
+  61 0004 002090E5 		ldr	r2, [r0]
+  62 0008 08C093E5 		ldr	ip, [r3, #8]
+  63 000c 012082E2 		add	r2, r2, #1
+  64 0010 081081E9 		stmib	r1, {r3, ip}
+  65 0014 08C093E5 		ldr	ip, [r3, #8]
+  66 0018 04108CE5 		str	r1, [ip, #4]
+  67 001c 081083E5 		str	r1, [r3, #8]
+  68 0020 100081E5 		str	r0, [r1, #16]
+  69 0024 002080E5 		str	r2, [r0]
+  70 0028 1EFF2FE1 		bx	lr
+  72              		.section	.text.vListInsert,"ax",%progbits
+  73              		.align	2
+  74              		.global	vListInsert
+  75              		.syntax unified
+  76              		.arm
+  77              		.fpu neon
+  79              	vListInsert:
+  80              		@ args = 0, pretend = 0, frame = 0
+  81              		@ frame_needed = 0, uses_anonymous_args = 0
+  82 0000 04E02DE5 		str	lr, [sp, #-4]!
+  83 0004 00E091E5 		ldr	lr, [r1]
+  84 0008 01007EE3 		cmn	lr, #1
+  85 000c 08208012 		addne	r2, r0, #8
+  86 0010 0100001A 		bne	.L7
+  87 0014 0D0000EA 		b	.L11
+  88              	.L8:
+  89 0018 0320A0E1 		mov	r2, r3
+  90              	.L7:
+  91 001c 043092E5 		ldr	r3, [r2, #4]
+  92 0020 00C093E5 		ldr	ip, [r3]
+  93 0024 0C005EE1 		cmp	lr, ip
+  94 0028 FAFFFF2A 		bcs	.L8
+  95              	.L6:
+  96 002c 00C090E5 		ldr	ip, [r0]
+  97 0030 043081E5 		str	r3, [r1, #4]
+  98 0034 081083E5 		str	r1, [r3, #8]
+  99 0038 01308CE2 		add	r3, ip, #1
+ 100 003c 082081E5 		str	r2, [r1, #8]
+ 101 0040 041082E5 		str	r1, [r2, #4]
+ 102 0044 100081E5 		str	r0, [r1, #16]
+ 103 0048 003080E5 		str	r3, [r0]
+ 104 004c 04F09DE4 		ldr	pc, [sp], #4
+ 105              	.L11:
+ 106 0050 102090E5 		ldr	r2, [r0, #16]
+ 107 0054 043092E5 		ldr	r3, [r2, #4]
+ 108 0058 F3FFFFEA 		b	.L6
+ 110              		.section	.text.uxListRemove,"ax",%progbits
+ 111              		.align	2
+ 112              		.global	uxListRemove
+ 113              		.syntax unified
+ 114              		.arm
+ 115              		.fpu neon
+ 117              	uxListRemove:
+ 118              		@ args = 0, pretend = 0, frame = 0
+ 119              		@ frame_needed = 0, uses_anonymous_args = 0
+ 120              		@ link register save eliminated.
+ 121 0000 103090E5 		ldr	r3, [r0, #16]
+ 122 0004 042090E5 		ldr	r2, [r0, #4]
+ 123 0008 081090E5 		ldr	r1, [r0, #8]
+ 124 000c 04C093E5 		ldr	ip, [r3, #4]
+ 125 0010 081082E5 		str	r1, [r2, #8]
+ 126 0014 081090E5 		ldr	r1, [r0, #8]
+ 127 0018 0C0050E1 		cmp	r0, ip
+ 128 001c 042081E5 		str	r2, [r1, #4]
+ 129 0020 002093E5 		ldr	r2, [r3]
+ 130 0024 04108305 		streq	r1, [r3, #4]
+ 131 0028 0010A0E3 		mov	r1, #0
+ 132 002c 101080E5 		str	r1, [r0, #16]
+ 133 0030 012042E2 		sub	r2, r2, #1
+ 134 0034 002083E5 		str	r2, [r3]
+ 135 0038 000093E5 		ldr	r0, [r3]
+ 136 003c 1EFF2FE1 		bx	lr
+ 138              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 list.c
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:14     .text.vListInitialise:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:20     .text.vListInitialise:00000000 vListInitialise
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:35     .text.vListInitialiseItem:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:41     .text.vListInitialiseItem:00000000 vListInitialiseItem
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:50     .text.vListInsertEnd:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:56     .text.vListInsertEnd:00000000 vListInsertEnd
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:73     .text.vListInsert:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:79     .text.vListInsert:00000000 vListInsert
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:111    .text.uxListRemove:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRa3lp6.s:117    .text.uxListRemove:00000000 uxListRemove
+
+NO UNDEFINED SYMBOLS

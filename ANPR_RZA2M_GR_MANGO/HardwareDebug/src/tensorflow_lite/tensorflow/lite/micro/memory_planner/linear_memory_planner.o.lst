@@ -1,0 +1,495 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"linear_memory_planner.cc"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite19LinearMemoryPlannerD2Ev,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite19LinearMemoryPlannerD2Ev
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite19LinearMemoryPlannerD2Ev:
+  24              		.fnstart
+  25              	.LFB15:
+  26              		.file 1 "../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc"
+   1:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** /* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+   3:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+   7:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+   9:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** limitations under the License.
+  14:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** ==============================================================================*/
+  15:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  16:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** #include "tensorflow/lite/micro/memory_planner/linear_memory_planner.h"
+  17:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  18:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** namespace tflite {
+  19:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  20:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** LinearMemoryPlanner::LinearMemoryPlanner()
+  21:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     : current_buffer_count_(0), next_free_offset_(0) {}
+  22:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** LinearMemoryPlanner::~LinearMemoryPlanner() {}
+  27              		.loc 1 22 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+  33              		.loc 1 22 0
+  34 0000 1EFF2FE1 		bx	lr
+  35              		.cfi_endproc
+  36              	.LFE15:
+  37              		.cantunwind
+  38              		.fnend
+  40              		.global	_ZN6tflite19LinearMemoryPlannerD1Ev
+  41              		.set	_ZN6tflite19LinearMemoryPlannerD1Ev,_ZN6tflite19LinearMemoryPlannerD2Ev
+  42              		.section	.text._ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv,"ax",%progbits
+  43              		.align	2
+  44              		.global	_ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv
+  45              		.syntax unified
+  46              		.arm
+  47              		.fpu neon
+  49              	_ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv:
+  50              		.fnstart
+  51              	.LFB19:
+  23:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  24:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** TfLiteStatus LinearMemoryPlanner::AddBuffer(
+  25:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     tflite::ErrorReporter* error_reporter, int size, int first_time_used,
+  26:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     int last_time_used) {
+  27:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   if (current_buffer_count_ >= kMaxBufferCount) {
+  28:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     TF_LITE_REPORT_ERROR(error_reporter, "Too many buffers (max is %d)",
+  29:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****                          kMaxBufferCount);
+  30:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     return kTfLiteError;
+  31:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   }
+  32:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   buffer_offsets_[current_buffer_count_] = next_free_offset_;
+  33:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   next_free_offset_ += size;
+  34:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   ++current_buffer_count_;
+  35:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   return kTfLiteOk;
+  36:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** }
+  37:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  38:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** size_t LinearMemoryPlanner::GetMaximumMemorySize() { return next_free_offset_; }
+  52              		.loc 1 38 0
+  53              		.cfi_startproc
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+  57              	.LVL1:
+  58              		.loc 1 38 0
+  59 0000 010A80E2 		add	r0, r0, #4096
+  60              	.LVL2:
+  61 0004 080090E5 		ldr	r0, [r0, #8]
+  62              	.LVL3:
+  63 0008 1EFF2FE1 		bx	lr
+  64              		.cfi_endproc
+  65              	.LFE19:
+  66              		.cantunwind
+  67              		.fnend
+  69              		.section	.text._ZN6tflite19LinearMemoryPlanner14GetBufferCountEv,"ax",%progbits
+  70              		.align	2
+  71              		.global	_ZN6tflite19LinearMemoryPlanner14GetBufferCountEv
+  72              		.syntax unified
+  73              		.arm
+  74              		.fpu neon
+  76              	_ZN6tflite19LinearMemoryPlanner14GetBufferCountEv:
+  77              		.fnstart
+  78              	.LFB20:
+  39:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  40:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** int LinearMemoryPlanner::GetBufferCount() { return current_buffer_count_; }
+  79              		.loc 1 40 0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 0
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83              		@ link register save eliminated.
+  84              	.LVL4:
+  85              		.loc 1 40 0
+  86 0000 010A80E2 		add	r0, r0, #4096
+  87              	.LVL5:
+  88 0004 040090E5 		ldr	r0, [r0, #4]
+  89              	.LVL6:
+  90 0008 1EFF2FE1 		bx	lr
+  91              		.cfi_endproc
+  92              	.LFE20:
+  93              		.cantunwind
+  94              		.fnend
+  96              		.section	.text._ZN6tflite19LinearMemoryPlannerD0Ev,"ax",%progbits
+  97              		.align	2
+  98              		.global	_ZN6tflite19LinearMemoryPlannerD0Ev
+  99              		.syntax unified
+ 100              		.arm
+ 101              		.fpu neon
+ 103              	_ZN6tflite19LinearMemoryPlannerD0Ev:
+ 104              		.fnstart
+ 105              	.LFB17:
+  22:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+ 106              		.loc 1 22 0
+ 107              		.cfi_startproc
+ 108              		@ args = 0, pretend = 0, frame = 0
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110              	.LVL7:
+ 111 0000 10402DE9 		push	{r4, lr}
+ 112              		.cfi_def_cfa_offset 8
+ 113              		.cfi_offset 4, -8
+ 114              		.cfi_offset 14, -4
+  22:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+ 115              		.loc 1 22 0
+ 116 0004 0040A0E1 		mov	r4, r0
+ 117 0008 FEFFFFEB 		bl	_ZdlPv
+ 118              	.LVL8:
+ 119 000c 0400A0E1 		mov	r0, r4
+ 120 0010 1080BDE8 		pop	{r4, pc}
+ 121              		.cfi_endproc
+ 122              	.LFE17:
+ 123              		.cantunwind
+ 124              		.fnend
+ 126              		.section	.text._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii,"ax",%progbits
+ 127              		.align	2
+ 128              		.global	_ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii
+ 129              		.syntax unified
+ 130              		.arm
+ 131              		.fpu neon
+ 133              	_ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii:
+ 134              		.fnstart
+ 135              	.LFB18:
+  26:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   if (current_buffer_count_ >= kMaxBufferCount) {
+ 136              		.loc 1 26 0
+ 137              		.cfi_startproc
+ 138              		@ args = 4, pretend = 0, frame = 0
+ 139              		@ frame_needed = 0, uses_anonymous_args = 0
+ 140              	.LVL9:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     TF_LITE_REPORT_ERROR(error_reporter, "Too many buffers (max is %d)",
+ 141              		.loc 1 27 0
+ 142 0000 01CA80E2 		add	ip, r0, #4096
+  26:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   if (current_buffer_count_ >= kMaxBufferCount) {
+ 143              		.loc 1 26 0
+ 144 0004 10402DE9 		push	{r4, lr}
+ 145              		.save {r4, lr}
+ 146              		.cfi_def_cfa_offset 8
+ 147              		.cfi_offset 4, -8
+ 148              		.cfi_offset 14, -4
+  27:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     TF_LITE_REPORT_ERROR(error_reporter, "Too many buffers (max is %d)",
+ 149              		.loc 1 27 0
+ 150 0008 04309CE5 		ldr	r3, [ip, #4]
+ 151              	.LVL10:
+ 152 000c 010B53E3 		cmp	r3, #1024
+ 153 0010 080000AA 		bge	.L11
+  32:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   next_free_offset_ += size;
+ 154              		.loc 1 32 0
+ 155 0014 08E09CE5 		ldr	lr, [ip, #8]
+ 156 0018 031180E0 		add	r1, r0, r3, lsl #2
+ 157              	.LVL11:
+  34:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   return kTfLiteOk;
+ 158              		.loc 1 34 0
+ 159 001c 013083E2 		add	r3, r3, #1
+  35:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** }
+ 160              		.loc 1 35 0
+ 161 0020 0000A0E3 		mov	r0, #0
+ 162              	.LVL12:
+  33:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   ++current_buffer_count_;
+ 163              		.loc 1 33 0
+ 164 0024 0E2082E0 		add	r2, r2, lr
+ 165              	.LVL13:
+  32:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   next_free_offset_ += size;
+ 166              		.loc 1 32 0
+ 167 0028 04E081E5 		str	lr, [r1, #4]
+  33:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   ++current_buffer_count_;
+ 168              		.loc 1 33 0
+ 169 002c 08208CE5 		str	r2, [ip, #8]
+  34:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   return kTfLiteOk;
+ 170              		.loc 1 34 0
+ 171 0030 04308CE5 		str	r3, [ip, #4]
+  36:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+ 172              		.loc 1 36 0
+ 173 0034 1080BDE8 		pop	{r4, pc}
+ 174              	.LVL14:
+ 175              	.L11:
+ 176 0038 0100A0E1 		mov	r0, r1
+ 177              	.LVL15:
+ 178              	.LBB19:
+ 179              	.LBB20:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****                          kMaxBufferCount);
+ 180              		.loc 1 28 0
+ 181 003c 001000E3 		movw	r1, #:lower16:.LC0
+ 182              	.LVL16:
+ 183 0040 001040E3 		movt	r1, #:upper16:.LC0
+ 184 0044 012BA0E3 		mov	r2, #1024
+ 185              	.LVL17:
+ 186 0048 FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 187              	.LVL18:
+ 188 004c 0100A0E3 		mov	r0, #1
+ 189 0050 1080BDE8 		pop	{r4, pc}
+ 190              	.LBE20:
+ 191              	.LBE19:
+ 192              		.cfi_endproc
+ 193              	.LFE18:
+ 194              		.fnend
+ 196              		.section	.text._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi,"ax",%p
+ 197              		.align	2
+ 198              		.global	_ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi
+ 199              		.syntax unified
+ 200              		.arm
+ 201              		.fpu neon
+ 203              	_ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi:
+ 204              		.fnstart
+ 205              	.LFB21:
+  41:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** 
+  42:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** TfLiteStatus LinearMemoryPlanner::GetOffsetForBuffer(
+  43:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     tflite::ErrorReporter* error_reporter, int buffer_index, int* offset) {
+ 206              		.loc 1 43 0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210              	.LVL19:
+  44:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   if ((buffer_index < 0) || (buffer_index >= current_buffer_count_)) {
+ 211              		.loc 1 44 0
+ 212 0000 000052E3 		cmp	r2, #0
+ 213 0004 013A80B2 		addlt	r3, r0, #4096
+ 214              	.LVL20:
+ 215 0008 04C093B5 		ldrlt	ip, [r3, #4]
+ 216 000c 080000BA 		blt	.L14
+ 217              		.loc 1 44 0 is_stmt 0 discriminator 1
+ 218 0010 01CA80E2 		add	ip, r0, #4096
+ 219 0014 04C09CE5 		ldr	ip, [ip, #4]
+ 220 0018 0C0052E1 		cmp	r2, ip
+ 221 001c 040000AA 		bge	.L14
+  45:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     TF_LITE_REPORT_ERROR(error_reporter,
+  46:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****                          "buffer index %d is outside range 0 to %d",
+  47:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****                          buffer_index, current_buffer_count_);
+  48:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     return kTfLiteError;
+  49:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   }
+  50:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   *offset = buffer_offsets_[buffer_index];
+ 222              		.loc 1 50 0 is_stmt 1
+ 223 0020 022180E0 		add	r2, r0, r2, lsl #2
+ 224              	.LVL21:
+  51:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   return kTfLiteOk;
+ 225              		.loc 1 51 0
+ 226 0024 0000A0E3 		mov	r0, #0
+ 227              	.LVL22:
+  50:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   return kTfLiteOk;
+ 228              		.loc 1 50 0
+ 229 0028 042092E5 		ldr	r2, [r2, #4]
+ 230 002c 002083E5 		str	r2, [r3]
+ 231              		.loc 1 51 0
+ 232 0030 1EFF2FE1 		bx	lr
+ 233              	.LVL23:
+ 234              	.L14:
+ 235 0034 0100A0E1 		mov	r0, r1
+ 236              	.LVL24:
+ 237              	.LBB23:
+ 238              	.LBB24:
+  45:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     TF_LITE_REPORT_ERROR(error_reporter,
+ 239              		.loc 1 45 0
+ 240 0038 001000E3 		movw	r1, #:lower16:.LC1
+ 241              	.LVL25:
+ 242              	.LBE24:
+ 243              	.LBE23:
+  43:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****   if ((buffer_index < 0) || (buffer_index >= current_buffer_count_)) {
+ 244              		.loc 1 43 0
+ 245 003c 10402DE9 		push	{r4, lr}
+ 246              		.save {r4, lr}
+ 247              		.cfi_def_cfa_offset 8
+ 248              		.cfi_offset 4, -8
+ 249              		.cfi_offset 14, -4
+ 250              	.LBB26:
+ 251              	.LBB25:
+  45:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****                          "buffer index %d is outside range 0 to %d",
+ 252              		.loc 1 45 0
+ 253 0040 0C30A0E1 		mov	r3, ip
+ 254 0044 001040E3 		movt	r1, #:upper16:.LC1
+ 255 0048 FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 256              	.LVL26:
+ 257 004c 0100A0E3 		mov	r0, #1
+ 258 0050 1080BDE8 		pop	{r4, pc}
+ 259              	.LBE25:
+ 260              	.LBE26:
+ 261              		.cfi_endproc
+ 262              	.LFE21:
+ 263              		.fnend
+ 265              		.section	.text._ZN6tflite19LinearMemoryPlannerC2Ev,"ax",%progbits
+ 266              		.align	2
+ 267              		.global	_ZN6tflite19LinearMemoryPlannerC2Ev
+ 268              		.syntax unified
+ 269              		.arm
+ 270              		.fpu neon
+ 272              	_ZN6tflite19LinearMemoryPlannerC2Ev:
+ 273              		.fnstart
+ 274              	.LFB12:
+  20:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc ****     : current_buffer_count_(0), next_free_offset_(0) {}
+ 275              		.loc 1 20 0
+ 276              		.cfi_startproc
+ 277              		@ args = 0, pretend = 0, frame = 0
+ 278              		@ frame_needed = 0, uses_anonymous_args = 0
+ 279              		@ link register save eliminated.
+ 280              	.LVL27:
+ 281              	.LBB27:
+  21:../src/tensorflow_lite/tensorflow/lite/micro/memory_planner/linear_memory_planner.cc **** LinearMemoryPlanner::~LinearMemoryPlanner() {}
+ 282              		.loc 1 21 0
+ 283 0000 14C09FE5 		ldr	ip, .L21
+ 284 0004 013A80E2 		add	r3, r0, #4096
+ 285 0008 0020A0E3 		mov	r2, #0
+ 286 000c 00C080E5 		str	ip, [r0]
+ 287 0010 042083E5 		str	r2, [r3, #4]
+ 288 0014 082083E5 		str	r2, [r3, #8]
+ 289              	.LBE27:
+ 290 0018 1EFF2FE1 		bx	lr
+ 291              	.L22:
+ 292              		.align	2
+ 293              	.L21:
+ 294 001c 08000000 		.word	.LANCHOR0+8
+ 295              		.cfi_endproc
+ 296              	.LFE12:
+ 297              		.cantunwind
+ 298              		.fnend
+ 300              		.global	_ZN6tflite19LinearMemoryPlannerC1Ev
+ 301              		.set	_ZN6tflite19LinearMemoryPlannerC1Ev,_ZN6tflite19LinearMemoryPlannerC2Ev
+ 302              		.weak	_ZTSN6tflite13MemoryPlannerE
+ 303              		.section	.rodata._ZTSN6tflite13MemoryPlannerE,"aG",%progbits,_ZTSN6tflite13MemoryPlannerE,comdat
+ 304              		.align	2
+ 307              	_ZTSN6tflite13MemoryPlannerE:
+ 308 0000 4E367466 		.ascii	"N6tflite13MemoryPlannerE\000"
+ 308      6C697465 
+ 308      31334D65 
+ 308      6D6F7279 
+ 308      506C616E 
+ 309              		.weak	_ZTIN6tflite13MemoryPlannerE
+ 310              		.section	.rodata._ZTIN6tflite13MemoryPlannerE,"aG",%progbits,_ZTIN6tflite13MemoryPlannerE,comdat
+ 311              		.align	2
+ 314              	_ZTIN6tflite13MemoryPlannerE:
+ 315 0000 08000000 		.word	_ZTVN10__cxxabiv117__class_type_infoE+8
+ 316 0004 00000000 		.word	_ZTSN6tflite13MemoryPlannerE
+ 317              		.global	_ZTSN6tflite19LinearMemoryPlannerE
+ 318              		.global	_ZTIN6tflite19LinearMemoryPlannerE
+ 319              		.global	_ZTVN6tflite19LinearMemoryPlannerE
+ 320              		.section	.rodata._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi.str1.
+ 321              		.align	2
+ 322              	.LC1:
+ 323 0000 62756666 		.ascii	"buffer index %d is outside range 0 to %d\000"
+ 323      65722069 
+ 323      6E646578 
+ 323      20256420 
+ 323      6973206F 
+ 324              		.section	.rodata._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii.str1.4,"aMS",%p
+ 325              		.align	2
+ 326              	.LC0:
+ 327 0000 546F6F20 		.ascii	"Too many buffers (max is %d)\000"
+ 327      6D616E79 
+ 327      20627566 
+ 327      66657273 
+ 327      20286D61 
+ 328              		.section	.rodata._ZTIN6tflite19LinearMemoryPlannerE,"a",%progbits
+ 329              		.align	2
+ 332              	_ZTIN6tflite19LinearMemoryPlannerE:
+ 333 0000 08000000 		.word	_ZTVN10__cxxabiv120__si_class_type_infoE+8
+ 334 0004 00000000 		.word	_ZTSN6tflite19LinearMemoryPlannerE
+ 335 0008 00000000 		.word	_ZTIN6tflite13MemoryPlannerE
+ 336              		.section	.rodata._ZTSN6tflite19LinearMemoryPlannerE,"a",%progbits
+ 337              		.align	3
+ 340              	_ZTSN6tflite19LinearMemoryPlannerE:
+ 341 0000 4E367466 		.ascii	"N6tflite19LinearMemoryPlannerE\000"
+ 341      6C697465 
+ 341      31394C69 
+ 341      6E656172 
+ 341      4D656D6F 
+ 342              		.section	.rodata._ZTVN6tflite19LinearMemoryPlannerE,"a",%progbits
+ 343              		.align	3
+ 344              		.set	.LANCHOR0,. + 0
+ 347              	_ZTVN6tflite19LinearMemoryPlannerE:
+ 348 0000 00000000 		.word	0
+ 349 0004 00000000 		.word	_ZTIN6tflite19LinearMemoryPlannerE
+ 350 0008 00000000 		.word	_ZN6tflite19LinearMemoryPlannerD1Ev
+ 351 000c 00000000 		.word	_ZN6tflite19LinearMemoryPlannerD0Ev
+ 352 0010 00000000 		.word	_ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii
+ 353 0014 00000000 		.word	_ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv
+ 354 0018 00000000 		.word	_ZN6tflite19LinearMemoryPlanner14GetBufferCountEv
+ 355 001c 00000000 		.word	_ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi
+ 356              		.text
+ 357              	.Letext0:
+ 358              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 359              		.file 3 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 360              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 361              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 362              		.file 6 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 363              		.file 7 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 364              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 365              		.file 9 "<built-in>"
+ 366              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 linear_memory_planner.cc
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:17     .text._ZN6tflite19LinearMemoryPlannerD2Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:23     .text._ZN6tflite19LinearMemoryPlannerD2Ev:00000000 _ZN6tflite19LinearMemoryPlannerD2Ev
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlannerD2Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:23     .text._ZN6tflite19LinearMemoryPlannerD2Ev:00000000 _ZN6tflite19LinearMemoryPlannerD1Ev
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:43     .text._ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:49     .text._ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv:00000000 _ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlanner20GetMaximumMemorySizeEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:70     .text._ZN6tflite19LinearMemoryPlanner14GetBufferCountEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:76     .text._ZN6tflite19LinearMemoryPlanner14GetBufferCountEv:00000000 _ZN6tflite19LinearMemoryPlanner14GetBufferCountEv
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlanner14GetBufferCountEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:97     .text._ZN6tflite19LinearMemoryPlannerD0Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:103    .text._ZN6tflite19LinearMemoryPlannerD0Ev:00000000 _ZN6tflite19LinearMemoryPlannerD0Ev
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlannerD0Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:127    .text._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:133    .text._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii:00000000 _ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:326    .rodata._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii.str1.4:00000000 .LC0
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:197    .text._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:203    .text._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi:00000000 _ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:322    .rodata._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi.str1.4:00000000 .LC1
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:266    .text._ZN6tflite19LinearMemoryPlannerC2Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:272    .text._ZN6tflite19LinearMemoryPlannerC2Ev:00000000 _ZN6tflite19LinearMemoryPlannerC2Ev
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:294    .text._ZN6tflite19LinearMemoryPlannerC2Ev:0000001c $d
+.ARM.exidx.text._ZN6tflite19LinearMemoryPlannerC2Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:272    .text._ZN6tflite19LinearMemoryPlannerC2Ev:00000000 _ZN6tflite19LinearMemoryPlannerC1Ev
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:307    .rodata._ZTSN6tflite13MemoryPlannerE:00000000 _ZTSN6tflite13MemoryPlannerE
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:304    .rodata._ZTSN6tflite13MemoryPlannerE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:314    .rodata._ZTIN6tflite13MemoryPlannerE:00000000 _ZTIN6tflite13MemoryPlannerE
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:311    .rodata._ZTIN6tflite13MemoryPlannerE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:340    .rodata._ZTSN6tflite19LinearMemoryPlannerE:00000000 _ZTSN6tflite19LinearMemoryPlannerE
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:332    .rodata._ZTIN6tflite19LinearMemoryPlannerE:00000000 _ZTIN6tflite19LinearMemoryPlannerE
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:347    .rodata._ZTVN6tflite19LinearMemoryPlannerE:00000000 _ZTVN6tflite19LinearMemoryPlannerE
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:321    .rodata._ZN6tflite19LinearMemoryPlanner18GetOffsetForBufferEPNS_13ErrorReporterEiPi.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:325    .rodata._ZN6tflite19LinearMemoryPlanner9AddBufferEPNS_13ErrorReporterEiii.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:329    .rodata._ZTIN6tflite19LinearMemoryPlannerE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:337    .rodata._ZTSN6tflite19LinearMemoryPlannerE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch0rsWR.s:343    .rodata._ZTVN6tflite19LinearMemoryPlannerE:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.compatibility.h.16.1ceb35d63d4a0463dcdc2ac3bcdc6b08
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.stdarg.h.31.b55da1089056868966f25de5dbfc7d3c
+
+UNDEFINED SYMBOLS
+_ZdlPv
+_ZN6tflite13ErrorReporter6ReportEPKcz
+__aeabi_unwind_cpp_pr0
+_ZTVN10__cxxabiv117__class_type_infoE
+_ZTVN10__cxxabiv120__si_class_type_infoE

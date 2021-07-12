@@ -1,0 +1,1360 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"simple_memory_allocator.cc"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite21SimpleMemoryAllocatorD2Ev,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite21SimpleMemoryAllocatorD2Ev
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite21SimpleMemoryAllocatorD2Ev:
+  24              		.fnstart
+  25              	.LFB6513:
+  26              		.file 1 "../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc"
+   1:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+   3:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+   7:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+   9:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** limitations under the License.
+  14:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** ==============================================================================*/
+  15:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  16:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include "tensorflow/lite/micro/simple_memory_allocator.h"
+  17:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  18:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include <cstddef>
+  19:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include <cstdint>
+  20:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include <new>
+  21:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  22:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include "tensorflow/lite/c/common.h"
+  23:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include "tensorflow/lite/core/api/error_reporter.h"
+  24:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include "tensorflow/lite/kernels/internal/compatibility.h"
+  25:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #include "tensorflow/lite/micro/memory_helpers.h"
+  26:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  27:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** namespace tflite {
+  28:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  29:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** SimpleMemoryAllocator::SimpleMemoryAllocator(ErrorReporter* error_reporter,
+  30:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              uint8_t* buffer_head,
+  31:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              uint8_t* buffer_tail)
+  32:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     : error_reporter_(error_reporter),
+  33:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       buffer_head_(buffer_head),
+  34:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       buffer_tail_(buffer_tail),
+  35:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       head_(buffer_head),
+  36:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       tail_(buffer_tail),
+  37:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       temp_(buffer_head_) {}
+  38:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  39:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** SimpleMemoryAllocator::SimpleMemoryAllocator(ErrorReporter* error_reporter,
+  40:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              uint8_t* buffer,
+  41:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              size_t buffer_size)
+  42:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     : SimpleMemoryAllocator(error_reporter, buffer, buffer + buffer_size) {}
+  43:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  44:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** /* static */
+  45:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** SimpleMemoryAllocator* SimpleMemoryAllocator::Create(
+  46:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     ErrorReporter* error_reporter, uint8_t* buffer_head, size_t buffer_size) {
+  47:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(error_reporter != nullptr);
+  48:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(buffer_head != nullptr);
+  49:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   SimpleMemoryAllocator tmp =
+  50:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       SimpleMemoryAllocator(error_reporter, buffer_head, buffer_size);
+  51:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  52:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   // Allocate enough bytes from the buffer to create a SimpleMemoryAllocator.
+  53:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   // The new instance will use the current adjusted tail buffer from the tmp
+  54:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   // allocator instance.
+  55:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* allocator_buffer = tmp.AllocateFromTail(
+  56:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****       sizeof(SimpleMemoryAllocator), alignof(SimpleMemoryAllocator));
+  57:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   // Use the default copy constructor to populate internal states.
+  58:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return new (allocator_buffer) SimpleMemoryAllocator(tmp);
+  59:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+  60:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  61:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** SimpleMemoryAllocator::~SimpleMemoryAllocator() {}
+  27              		.loc 1 61 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+  33              		.loc 1 61 0
+  34 0000 1EFF2FE1 		bx	lr
+  35              		.cfi_endproc
+  36              	.LFE6513:
+  37              		.cantunwind
+  38              		.fnend
+  40              		.global	_ZN6tflite21SimpleMemoryAllocatorD1Ev
+  41              		.set	_ZN6tflite21SimpleMemoryAllocatorD1Ev,_ZN6tflite21SimpleMemoryAllocatorD2Ev
+  42              		.section	.text._ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv,"ax",%progbits
+  43              		.align	2
+  44              		.global	_ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv
+  45              		.syntax unified
+  46              		.arm
+  47              		.fpu neon
+  49              	_ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv:
+  50              		.fnstart
+  51              	.LFB6519:
+  62:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  63:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** TfLiteStatus SimpleMemoryAllocator::SetHeadBufferSize(size_t size,
+  64:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                                       size_t alignment) {
+  65:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (head_ != temp_) {
+  66:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(
+  67:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         error_reporter_,
+  68:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         "Internal error: SetHeadBufferSize() needs to be called "
+  69:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         "after ResetTempAllocations().");
+  70:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     return kTfLiteError;
+  71:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+  72:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  73:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerUp(buffer_head_, alignment);
+  74:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   const size_t available_memory = tail_ - aligned_result;
+  75:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (available_memory < size) {
+  76:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(
+  77:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         error_reporter_,
+  78:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         "Failed to set head size. Requested: %u, available %u, missing: %u",
+  79:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         size, available_memory, size - available_memory);
+  80:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     return kTfLiteError;
+  81:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+  82:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   head_ = aligned_result + size;
+  83:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   temp_ = head_;
+  84:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  85:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return kTfLiteOk;
+  86:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+  87:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  88:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** uint8_t* SimpleMemoryAllocator::AllocateFromTail(size_t size,
+  89:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                                  size_t alignment) {
+  90:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerDown(tail_ - size, alignment);
+  91:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (aligned_result < head_) {
+  92:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+  93:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     const size_t missing_memory = head_ - aligned_result;
+  94:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+  95:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "Failed to allocate tail memory. Requested: %u, "
+  96:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "available %u, missing: %u",
+  97:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          size, size - missing_memory, missing_memory);
+  98:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #endif
+  99:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     return nullptr;
+ 100:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 101:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   tail_ = aligned_result;
+ 102:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return aligned_result;
+ 103:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 104:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 105:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** uint8_t* SimpleMemoryAllocator::AllocateTemp(size_t size, size_t alignment) {
+ 106:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerUp(temp_, alignment);
+ 107:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   const size_t available_memory = tail_ - aligned_result;
+ 108:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (available_memory < size) {
+ 109:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+ 110:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "Failed to allocate temp memory. Requested: %u, "
+ 111:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "available %u, missing: %u",
+ 112:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          size, available_memory, size - available_memory);
+ 113:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     return nullptr;
+ 114:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 115:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   temp_ = aligned_result + size;
+ 116:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return aligned_result;
+ 117:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 118:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 119:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** void SimpleMemoryAllocator::ResetTempAllocations() { temp_ = head_; }
+  52              		.loc 1 119 0
+  53              		.cfi_startproc
+  54              		@ args = 0, pretend = 0, frame = 0
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56              		@ link register save eliminated.
+  57              	.LVL1:
+  58              		.loc 1 119 0
+  59 0000 103090E5 		ldr	r3, [r0, #16]
+  60 0004 183080E5 		str	r3, [r0, #24]
+  61 0008 1EFF2FE1 		bx	lr
+  62              		.cfi_endproc
+  63              	.LFE6519:
+  64              		.cantunwind
+  65              		.fnend
+  67              		.section	.text._ZN6tflite21SimpleMemoryAllocatorD0Ev,"ax",%progbits
+  68              		.align	2
+  69              		.global	_ZN6tflite21SimpleMemoryAllocatorD0Ev
+  70              		.syntax unified
+  71              		.arm
+  72              		.fpu neon
+  74              	_ZN6tflite21SimpleMemoryAllocatorD0Ev:
+  75              		.fnstart
+  76              	.LFB6515:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  77              		.loc 1 61 0
+  78              		.cfi_startproc
+  79              		@ args = 0, pretend = 0, frame = 0
+  80              		@ frame_needed = 0, uses_anonymous_args = 0
+  81              	.LVL2:
+  82 0000 10402DE9 		push	{r4, lr}
+  83              		.cfi_def_cfa_offset 8
+  84              		.cfi_offset 4, -8
+  85              		.cfi_offset 14, -4
+  61:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+  86              		.loc 1 61 0
+  87 0004 0040A0E1 		mov	r4, r0
+  88 0008 FEFFFFEB 		bl	_ZdlPv
+  89              	.LVL3:
+  90 000c 0400A0E1 		mov	r0, r4
+  91 0010 1080BDE8 		pop	{r4, pc}
+  92              		.cfi_endproc
+  93              	.LFE6515:
+  94              		.cantunwind
+  95              		.fnend
+  97              		.section	.text._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj,"ax",%progbits
+  98              		.align	2
+  99              		.global	_ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj
+ 100              		.syntax unified
+ 101              		.arm
+ 102              		.fpu neon
+ 104              	_ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj:
+ 105              		.fnstart
+ 106              	.LFB6518:
+ 105:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerUp(temp_, alignment);
+ 107              		.loc 1 105 0
+ 108              		.cfi_startproc
+ 109              		@ args = 0, pretend = 0, frame = 0
+ 110              		@ frame_needed = 0, uses_anonymous_args = 0
+ 111              	.LVL4:
+ 112 0000 30402DE9 		push	{r4, r5, lr}
+ 113              		.save {r4, r5, lr}
+ 114              		.cfi_def_cfa_offset 12
+ 115              		.cfi_offset 4, -12
+ 116              		.cfi_offset 5, -8
+ 117              		.cfi_offset 14, -4
+ 118 0004 0040A0E1 		mov	r4, r0
+ 119 0008 0150A0E1 		mov	r5, r1
+ 120              		.pad #12
+ 121 000c 0CD04DE2 		sub	sp, sp, #12
+ 122              		.cfi_def_cfa_offset 24
+ 106:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   const size_t available_memory = tail_ - aligned_result;
+ 123              		.loc 1 106 0
+ 124 0010 0210A0E1 		mov	r1, r2
+ 125              	.LVL5:
+ 126 0014 180090E5 		ldr	r0, [r0, #24]
+ 127              	.LVL6:
+ 128 0018 FEFFFFEB 		bl	_ZN6tflite14AlignPointerUpEPhj
+ 129              	.LVL7:
+ 107:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (available_memory < size) {
+ 130              		.loc 1 107 0
+ 131 001c 143094E5 		ldr	r3, [r4, #20]
+ 132 0020 003043E0 		sub	r3, r3, r0
+ 133              	.LVL8:
+ 108:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+ 134              		.loc 1 108 0
+ 135 0024 050053E1 		cmp	r3, r5
+ 136 0028 0020A021 		movcs	r2, r0
+ 116:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 137              		.loc 1 116 0
+ 138 002c 0200A021 		movcs	r0, r2
+ 139              	.LVL9:
+ 115:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return aligned_result;
+ 140              		.loc 1 115 0
+ 141 0030 05208220 		addcs	r2, r2, r5
+ 142 0034 18208425 		strcs	r2, [r4, #24]
+ 108:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+ 143              		.loc 1 108 0
+ 144 0038 0100003A 		bcc	.L10
+ 145              	.LVL10:
+ 146              	.L5:
+ 117:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 147              		.loc 1 117 0
+ 148 003c 0CD08DE2 		add	sp, sp, #12
+ 149              		.cfi_remember_state
+ 150              		.cfi_def_cfa_offset 12
+ 151              		@ sp needed
+ 152 0040 3080BDE8 		pop	{r4, r5, pc}
+ 153              	.LVL11:
+ 154              	.L10:
+ 155              		.cfi_restore_state
+ 109:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "Failed to allocate temp memory. Requested: %u, "
+ 156              		.loc 1 109 0
+ 157 0044 032045E0 		sub	r2, r5, r3
+ 158 0048 001000E3 		movw	r1, #:lower16:.LC0
+ 159 004c 040094E5 		ldr	r0, [r4, #4]
+ 160 0050 001040E3 		movt	r1, #:upper16:.LC0
+ 161 0054 00208DE5 		str	r2, [sp]
+ 162 0058 0520A0E1 		mov	r2, r5
+ 163 005c FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 164              	.LVL12:
+ 113:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 165              		.loc 1 113 0
+ 166 0060 0000A0E3 		mov	r0, #0
+ 167 0064 F4FFFFEA 		b	.L5
+ 168              		.cfi_endproc
+ 169              	.LFE6518:
+ 170              		.fnend
+ 172              		.section	.text._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj,"ax",%progbits
+ 173              		.align	2
+ 174              		.global	_ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj
+ 175              		.syntax unified
+ 176              		.arm
+ 177              		.fpu neon
+ 179              	_ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj:
+ 180              		.fnstart
+ 181              	.LFB6517:
+  89:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerDown(tail_ - size, alignment);
+ 182              		.loc 1 89 0
+ 183              		.cfi_startproc
+ 184              		@ args = 0, pretend = 0, frame = 0
+ 185              		@ frame_needed = 0, uses_anonymous_args = 0
+ 186              	.LVL13:
+ 187 0000 30402DE9 		push	{r4, r5, lr}
+ 188              		.save {r4, r5, lr}
+ 189              		.cfi_def_cfa_offset 12
+ 190              		.cfi_offset 4, -12
+ 191              		.cfi_offset 5, -8
+ 192              		.cfi_offset 14, -4
+ 193 0004 0040A0E1 		mov	r4, r0
+  90:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (aligned_result < head_) {
+ 194              		.loc 1 90 0
+ 195 0008 140090E5 		ldr	r0, [r0, #20]
+ 196              	.LVL14:
+  89:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_result = AlignPointerDown(tail_ - size, alignment);
+ 197              		.loc 1 89 0
+ 198 000c 0150A0E1 		mov	r5, r1
+ 199              		.pad #12
+ 200 0010 0CD04DE2 		sub	sp, sp, #12
+ 201              		.cfi_def_cfa_offset 24
+  90:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (aligned_result < head_) {
+ 202              		.loc 1 90 0
+ 203 0014 0210A0E1 		mov	r1, r2
+ 204              	.LVL15:
+ 205 0018 050040E0 		sub	r0, r0, r5
+ 206 001c FEFFFFEB 		bl	_ZN6tflite16AlignPointerDownEPhj
+ 207              	.LVL16:
+ 208              	.LBB30:
+  91:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+ 209              		.loc 1 91 0
+ 210 0020 102094E5 		ldr	r2, [r4, #16]
+ 211              	.LBE30:
+  90:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (aligned_result < head_) {
+ 212              		.loc 1 90 0
+ 213 0024 0030A0E1 		mov	r3, r0
+ 214              	.LVL17:
+ 215              	.LBB32:
+  91:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+ 216              		.loc 1 91 0
+ 217 0028 020050E1 		cmp	r0, r2
+ 218              	.LBE32:
+ 101:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return aligned_result;
+ 219              		.loc 1 101 0
+ 220 002c 14308425 		strcs	r3, [r4, #20]
+ 221              	.LBB33:
+  91:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+ 222              		.loc 1 91 0
+ 223 0030 0100003A 		bcc	.L15
+ 224              	.LVL18:
+ 225              	.L11:
+ 226              	.LBE33:
+ 103:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 227              		.loc 1 103 0
+ 228 0034 0CD08DE2 		add	sp, sp, #12
+ 229              		.cfi_remember_state
+ 230              		.cfi_def_cfa_offset 12
+ 231              		@ sp needed
+ 232 0038 3080BDE8 		pop	{r4, r5, pc}
+ 233              	.LVL19:
+ 234              	.L15:
+ 235              		.cfi_restore_state
+ 236              	.LBB34:
+ 237              	.LBB31:
+  93:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+ 238              		.loc 1 93 0
+ 239 003c 033042E0 		sub	r3, r2, r3
+ 240              	.LVL20:
+  94:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "Failed to allocate tail memory. Requested: %u, "
+ 241              		.loc 1 94 0
+ 242 0040 001000E3 		movw	r1, #:lower16:.LC1
+ 243 0044 040094E5 		ldr	r0, [r4, #4]
+ 244              	.LVL21:
+ 245 0048 0520A0E1 		mov	r2, r5
+ 246 004c 00308DE5 		str	r3, [sp]
+ 247 0050 001040E3 		movt	r1, #:upper16:.LC1
+ 248 0054 033045E0 		sub	r3, r5, r3
+ 249              	.LVL22:
+ 250 0058 FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 251              	.LVL23:
+  99:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 252              		.loc 1 99 0
+ 253 005c 0000A0E3 		mov	r0, #0
+ 254 0060 F3FFFFEA 		b	.L11
+ 255              	.LBE31:
+ 256              	.LBE34:
+ 257              		.cfi_endproc
+ 258              	.LFE6517:
+ 259              		.fnend
+ 261              		.section	.text._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj,"ax",%progbits
+ 262              		.align	2
+ 263              		.global	_ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj
+ 264              		.syntax unified
+ 265              		.arm
+ 266              		.fpu neon
+ 268              	_ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj:
+ 269              		.fnstart
+ 270              	.LFB6516:
+  64:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (head_ != temp_) {
+ 271              		.loc 1 64 0
+ 272              		.cfi_startproc
+ 273              		@ args = 0, pretend = 0, frame = 0
+ 274              		@ frame_needed = 0, uses_anonymous_args = 0
+ 275              	.LVL24:
+ 276 0000 30402DE9 		push	{r4, r5, lr}
+ 277              		.save {r4, r5, lr}
+ 278              		.cfi_def_cfa_offset 12
+ 279              		.cfi_offset 4, -12
+ 280              		.cfi_offset 5, -8
+ 281              		.cfi_offset 14, -4
+ 282 0004 0040A0E1 		mov	r4, r0
+  65:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(
+ 283              		.loc 1 65 0
+ 284 0008 183094E5 		ldr	r3, [r4, #24]
+  64:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (head_ != temp_) {
+ 285              		.loc 1 64 0
+ 286              		.pad #12
+ 287 000c 0CD04DE2 		sub	sp, sp, #12
+ 288              		.cfi_def_cfa_offset 24
+  65:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(
+ 289              		.loc 1 65 0
+ 290 0010 100090E5 		ldr	r0, [r0, #16]
+ 291              	.LVL25:
+ 292 0014 030050E1 		cmp	r0, r3
+ 293 0018 0600000A 		beq	.L17
+  66:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         error_reporter_,
+ 294              		.loc 1 66 0
+ 295 001c 001000E3 		movw	r1, #:lower16:.LC2
+ 296              	.LVL26:
+ 297 0020 040094E5 		ldr	r0, [r4, #4]
+ 298 0024 001040E3 		movt	r1, #:upper16:.LC2
+ 299 0028 FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 300              	.LVL27:
+  70:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 301              		.loc 1 70 0
+ 302 002c 0100A0E3 		mov	r0, #1
+ 303              	.L18:
+  86:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 304              		.loc 1 86 0
+ 305 0030 0CD08DE2 		add	sp, sp, #12
+ 306              		.cfi_remember_state
+ 307              		.cfi_def_cfa_offset 12
+ 308              		@ sp needed
+ 309 0034 3080BDE8 		pop	{r4, r5, pc}
+ 310              	.LVL28:
+ 311              	.L17:
+ 312              		.cfi_restore_state
+ 313 0038 0150A0E1 		mov	r5, r1
+ 314              	.LVL29:
+ 315              	.LBB37:
+ 316              	.LBB38:
+  73:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   const size_t available_memory = tail_ - aligned_result;
+ 317              		.loc 1 73 0
+ 318 003c 080094E5 		ldr	r0, [r4, #8]
+ 319 0040 0210A0E1 		mov	r1, r2
+ 320              	.LVL30:
+ 321 0044 FEFFFFEB 		bl	_ZN6tflite14AlignPointerUpEPhj
+ 322              	.LVL31:
+  74:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (available_memory < size) {
+ 323              		.loc 1 74 0
+ 324 0048 143094E5 		ldr	r3, [r4, #20]
+  73:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   const size_t available_memory = tail_ - aligned_result;
+ 325              		.loc 1 73 0
+ 326 004c 0020A0E1 		mov	r2, r0
+ 327              	.LVL32:
+  74:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (available_memory < size) {
+ 328              		.loc 1 74 0
+ 329 0050 003043E0 		sub	r3, r3, r0
+ 330              	.LVL33:
+  75:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(
+ 331              		.loc 1 75 0
+ 332 0054 030055E1 		cmp	r5, r3
+ 333 0058 0500008A 		bhi	.L21
+  82:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   temp_ = head_;
+ 334              		.loc 1 82 0
+ 335 005c 055082E0 		add	r5, r2, r5
+ 336              	.LVL34:
+  85:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 337              		.loc 1 85 0
+ 338 0060 0000A0E3 		mov	r0, #0
+ 339              	.LVL35:
+  82:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   temp_ = head_;
+ 340              		.loc 1 82 0
+ 341 0064 105084E5 		str	r5, [r4, #16]
+  83:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 342              		.loc 1 83 0
+ 343 0068 185084E5 		str	r5, [r4, #24]
+ 344              	.LBE38:
+ 345              	.LBE37:
+  86:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 346              		.loc 1 86 0
+ 347 006c 0CD08DE2 		add	sp, sp, #12
+ 348              		.cfi_remember_state
+ 349              		.cfi_def_cfa_offset 12
+ 350              		@ sp needed
+ 351 0070 3080BDE8 		pop	{r4, r5, pc}
+ 352              	.LVL36:
+ 353              	.L21:
+ 354              		.cfi_restore_state
+ 355              	.LBB40:
+ 356              	.LBB39:
+  76:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****         error_reporter_,
+ 357              		.loc 1 76 0
+ 358 0074 032045E0 		sub	r2, r5, r3
+ 359 0078 001000E3 		movw	r1, #:lower16:.LC3
+ 360 007c 040094E5 		ldr	r0, [r4, #4]
+ 361              	.LVL37:
+ 362 0080 001040E3 		movt	r1, #:upper16:.LC3
+ 363 0084 00208DE5 		str	r2, [sp]
+ 364 0088 0520A0E1 		mov	r2, r5
+ 365 008c FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 366              	.LVL38:
+  80:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 367              		.loc 1 80 0
+ 368 0090 0100A0E3 		mov	r0, #1
+ 369 0094 E5FFFFEA 		b	.L18
+ 370              	.LBE39:
+ 371              	.LBE40:
+ 372              		.cfi_endproc
+ 373              	.LFE6516:
+ 374              		.fnend
+ 376              		.section	.text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_,"ax",%progbits
+ 377              		.align	2
+ 378              		.global	_ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_
+ 379              		.syntax unified
+ 380              		.arm
+ 381              		.fpu neon
+ 383              	_ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:
+ 384              		.fnstart
+ 385              	.LFB6503:
+  29:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              uint8_t* buffer_head,
+ 386              		.loc 1 29 0
+ 387              		.cfi_startproc
+ 388              		@ args = 0, pretend = 0, frame = 0
+ 389              		@ frame_needed = 0, uses_anonymous_args = 0
+ 390              	.LVL39:
+ 391 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 392              		.cfi_def_cfa_offset 4
+ 393              		.cfi_offset 14, -4
+ 394              	.LBB41:
+  37:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 395              		.loc 1 37 0
+ 396 0004 14E09FE5 		ldr	lr, .L24
+ 397 0008 0E0080E9 		stmib	r0, {r1, r2, r3}
+ 398 000c 102080E5 		str	r2, [r0, #16]
+ 399 0010 143080E5 		str	r3, [r0, #20]
+ 400 0014 182080E5 		str	r2, [r0, #24]
+ 401 0018 00E080E5 		str	lr, [r0]
+ 402              	.LBE41:
+ 403 001c 04F09DE4 		ldr	pc, [sp], #4
+ 404              	.L25:
+ 405              		.align	2
+ 406              	.L24:
+ 407 0020 08000000 		.word	.LANCHOR0+8
+ 408              		.cfi_endproc
+ 409              	.LFE6503:
+ 410              		.cantunwind
+ 411              		.fnend
+ 413              		.global	_ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhS3_
+ 414              		.set	_ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhS3_,_ZN6tflite21SimpleMemoryAllocat
+ 415              		.section	.text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj,"ax",%progbits
+ 416              		.align	2
+ 417              		.global	_ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj
+ 418              		.syntax unified
+ 419              		.arm
+ 420              		.fpu neon
+ 422              	_ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:
+ 423              		.fnstart
+ 424              	.LFB6506:
+  39:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                                              uint8_t* buffer,
+ 425              		.loc 1 39 0
+ 426              		.cfi_startproc
+ 427              		@ args = 0, pretend = 0, frame = 0
+ 428              		@ frame_needed = 0, uses_anonymous_args = 0
+ 429              	.LVL40:
+ 430 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 431              		.cfi_def_cfa_offset 4
+ 432              		.cfi_offset 14, -4
+ 433              	.LBB42:
+  42:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 434              		.loc 1 42 0
+ 435 0004 033082E0 		add	r3, r2, r3
+ 436              	.LVL41:
+ 437              	.LBB43:
+ 438              	.LBB44:
+  37:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 439              		.loc 1 37 0
+ 440 0008 18E09FE5 		ldr	lr, .L28
+ 441 000c 0C3080E5 		str	r3, [r0, #12]
+ 442 0010 143080E5 		str	r3, [r0, #20]
+ 443 0014 060080E9 		stmib	r0, {r1, r2}
+ 444 0018 102080E5 		str	r2, [r0, #16]
+ 445 001c 182080E5 		str	r2, [r0, #24]
+ 446              	.LVL42:
+ 447 0020 00E080E5 		str	lr, [r0]
+ 448              	.LBE44:
+ 449              	.LBE43:
+ 450              	.LBE42:
+  42:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 451              		.loc 1 42 0
+ 452 0024 04F09DE4 		ldr	pc, [sp], #4
+ 453              	.L29:
+ 454              		.align	2
+ 455              	.L28:
+ 456 0028 08000000 		.word	.LANCHOR0+8
+ 457              		.cfi_endproc
+ 458              	.LFE6506:
+ 459              		.cantunwind
+ 460              		.fnend
+ 462              		.global	_ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhj
+ 463              		.set	_ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhj,_ZN6tflite21SimpleMemoryAllocator
+ 464              		.section	.text._ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj,"ax",%progbits
+ 465              		.align	2
+ 466              		.global	_ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj
+ 467              		.syntax unified
+ 468              		.arm
+ 469              		.fpu neon
+ 471              	_ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj:
+ 472              		.fnstart
+ 473              	.LFB6508:
+  46:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(error_reporter != nullptr);
+ 474              		.loc 1 46 0
+ 475              		.cfi_startproc
+ 476              		@ args = 0, pretend = 0, frame = 0
+ 477              		@ frame_needed = 0, uses_anonymous_args = 0
+ 478              	.LVL43:
+ 479 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 480              		.save {r4, r5, r6, lr}
+ 481              		.cfi_def_cfa_offset 16
+ 482              		.cfi_offset 4, -16
+ 483              		.cfi_offset 5, -12
+ 484              		.cfi_offset 6, -8
+ 485              		.cfi_offset 14, -4
+  47:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(buffer_head != nullptr);
+ 486              		.loc 1 47 0
+ 487 0004 006050E2 		subs	r6, r0, #0
+  46:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(error_reporter != nullptr);
+ 488              		.loc 1 46 0
+ 489              		.pad #8
+ 490 0008 08D04DE2 		sub	sp, sp, #8
+ 491              		.cfi_def_cfa_offset 24
+  47:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(buffer_head != nullptr);
+ 492              		.loc 1 47 0
+ 493 000c 1E00000A 		beq	.L32
+  48:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   SimpleMemoryAllocator tmp =
+ 494              		.loc 1 48 0
+ 495 0010 000051E3 		cmp	r1, #0
+ 496 0014 0140A0E1 		mov	r4, r1
+ 497 0018 1B00000A 		beq	.L32
+ 498              	.LVL44:
+ 499              	.LBB59:
+ 500              	.LBB60:
+  42:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 501              		.loc 1 42 0
+ 502 001c 025081E0 		add	r5, r1, r2
+ 503              	.LVL45:
+ 504              	.LBE60:
+ 505              	.LBE59:
+ 506              	.LBB61:
+ 507              	.LBB62:
+  90:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   if (aligned_result < head_) {
+ 508              		.loc 1 90 0
+ 509 0020 0410A0E3 		mov	r1, #4
+ 510              	.LVL46:
+ 511 0024 1C0045E2 		sub	r0, r5, #28
+ 512              	.LVL47:
+ 513 0028 FEFFFFEB 		bl	_ZN6tflite16AlignPointerDownEPhj
+ 514              	.LVL48:
+ 515              	.LBB63:
+  91:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+ 516              		.loc 1 91 0
+ 517 002c 000054E1 		cmp	r4, r0
+ 518 0030 0B00008A 		bhi	.L42
+ 519              	.LVL49:
+ 520              	.LBE63:
+ 521              	.LBE62:
+ 522              	.LBE61:
+  58:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 523              		.loc 1 58 0
+ 524 0034 000050E3 		cmp	r0, #0
+ 525 0038 0700000A 		beq	.L34
+ 526              	.LVL50:
+ 527              	.LBB67:
+ 528              	.LBB68:
+ 529              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #ifndef TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #define TENSORFLOW_LITE_MICRO_SIMPLE_MEMORY_ALLOCATOR_H_
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #include <cstddef>
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #include <cstdint>
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #include "tensorflow/lite/c/common.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #include "tensorflow/lite/core/api/error_reporter.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** #include "tensorflow/lite/micro/compatibility.h"
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** namespace tflite {
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** 
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** // TODO(petewarden): This allocator never frees up or reuses  any memory, even
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** // though we have enough information about lifetimes of the tensors to do so.
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** // This makes it pretty wasteful, so we should use a more intelligent method.
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\simple_memory_allocator.h **** class SimpleMemoryAllocator {
+ 530              		.loc 2 31 0
+ 531 003c 4C309FE5 		ldr	r3, .L43
+ 532 0040 046080E5 		str	r6, [r0, #4]
+ 533 0044 084080E5 		str	r4, [r0, #8]
+ 534 0048 0C5080E5 		str	r5, [r0, #12]
+ 535 004c 104080E5 		str	r4, [r0, #16]
+ 536 0050 140080E5 		str	r0, [r0, #20]
+ 537 0054 184080E5 		str	r4, [r0, #24]
+ 538              	.LVL51:
+ 539 0058 003080E5 		str	r3, [r0]
+ 540              	.LVL52:
+ 541              	.L34:
+ 542              	.LBE68:
+ 543              	.LBE67:
+  59:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 544              		.loc 1 59 0 discriminator 4
+ 545 005c 08D08DE2 		add	sp, sp, #8
+ 546              		.cfi_remember_state
+ 547              		.cfi_def_cfa_offset 16
+ 548              		@ sp needed
+ 549 0060 7080BDE8 		pop	{r4, r5, r6, pc}
+ 550              	.LVL53:
+ 551              	.L42:
+ 552              		.cfi_restore_state
+ 553              	.LBB69:
+ 554              	.LBB66:
+ 555              	.LBB65:
+ 556              	.LBB64:
+  93:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****     TF_LITE_REPORT_ERROR(error_reporter_,
+ 557              		.loc 1 93 0
+ 558 0064 003044E0 		sub	r3, r4, r0
+ 559              	.LVL54:
+  94:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****                          "Failed to allocate tail memory. Requested: %u, "
+ 560              		.loc 1 94 0
+ 561 0068 001000E3 		movw	r1, #:lower16:.LC1
+ 562 006c 00308DE5 		str	r3, [sp]
+ 563 0070 0600A0E1 		mov	r0, r6
+ 564              	.LVL55:
+ 565 0074 1C3063E2 		rsb	r3, r3, #28
+ 566              	.LVL56:
+ 567 0078 001040E3 		movt	r1, #:upper16:.LC1
+ 568 007c 1C20A0E3 		mov	r2, #28
+ 569 0080 FEFFFFEB 		bl	_ZN6tflite13ErrorReporter6ReportEPKcz
+ 570              	.LVL57:
+  99:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   }
+ 571              		.loc 1 99 0
+ 572 0084 0000A0E3 		mov	r0, #0
+ 573 0088 F3FFFFEA 		b	.L34
+ 574              	.LVL58:
+ 575              	.L32:
+ 576              	.LBE64:
+ 577              	.LBE65:
+ 578              	.LBE66:
+ 579              	.LBE69:
+  47:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   TFLITE_DCHECK(buffer_head != nullptr);
+ 580              		.loc 1 47 0 discriminator 1
+ 581 008c FEFFFFEB 		bl	abort
+ 582              	.LVL59:
+ 583              	.L44:
+ 584              		.align	2
+ 585              	.L43:
+ 586 0090 08000000 		.word	.LANCHOR0+8
+ 587              		.cfi_endproc
+ 588              	.LFE6508:
+ 589              		.fnend
+ 591              		.section	.text._ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv,"ax",%progbits
+ 592              		.align	2
+ 593              		.global	_ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv
+ 594              		.syntax unified
+ 595              		.arm
+ 596              		.fpu neon
+ 598              	_ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv:
+ 599              		.fnstart
+ 600              	.LFB6520:
+ 120:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 121:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** uint8_t* SimpleMemoryAllocator::GetHeadBuffer() const { return buffer_head_; }
+ 601              		.loc 1 121 0
+ 602              		.cfi_startproc
+ 603              		@ args = 0, pretend = 0, frame = 0
+ 604              		@ frame_needed = 0, uses_anonymous_args = 0
+ 605              		@ link register save eliminated.
+ 606              	.LVL60:
+ 607              		.loc 1 121 0
+ 608 0000 080090E5 		ldr	r0, [r0, #8]
+ 609              	.LVL61:
+ 610 0004 1EFF2FE1 		bx	lr
+ 611              		.cfi_endproc
+ 612              	.LFE6520:
+ 613              		.cantunwind
+ 614              		.fnend
+ 616              		.section	.text._ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv,"ax",%progbits
+ 617              		.align	2
+ 618              		.global	_ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv
+ 619              		.syntax unified
+ 620              		.arm
+ 621              		.fpu neon
+ 623              	_ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv:
+ 624              		.fnstart
+ 625              	.LFB6521:
+ 122:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 123:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** size_t SimpleMemoryAllocator::GetHeadUsedBytes() const {
+ 626              		.loc 1 123 0
+ 627              		.cfi_startproc
+ 628              		@ args = 0, pretend = 0, frame = 0
+ 629              		@ frame_needed = 0, uses_anonymous_args = 0
+ 630              		@ link register save eliminated.
+ 631              	.LVL62:
+ 124:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return head_ - buffer_head_;
+ 632              		.loc 1 124 0
+ 633 0000 102090E5 		ldr	r2, [r0, #16]
+ 634 0004 080090E5 		ldr	r0, [r0, #8]
+ 635              	.LVL63:
+ 125:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 636              		.loc 1 125 0
+ 637 0008 000042E0 		sub	r0, r2, r0
+ 638 000c 1EFF2FE1 		bx	lr
+ 639              		.cfi_endproc
+ 640              	.LFE6521:
+ 641              		.cantunwind
+ 642              		.fnend
+ 644              		.section	.text._ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv,"ax",%progbits
+ 645              		.align	2
+ 646              		.global	_ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv
+ 647              		.syntax unified
+ 648              		.arm
+ 649              		.fpu neon
+ 651              	_ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv:
+ 652              		.fnstart
+ 653              	.LFB6522:
+ 126:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 127:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** size_t SimpleMemoryAllocator::GetTailUsedBytes() const {
+ 654              		.loc 1 127 0
+ 655              		.cfi_startproc
+ 656              		@ args = 0, pretend = 0, frame = 0
+ 657              		@ frame_needed = 0, uses_anonymous_args = 0
+ 658              		@ link register save eliminated.
+ 659              	.LVL64:
+ 128:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return buffer_tail_ - tail_;
+ 660              		.loc 1 128 0
+ 661 0000 0C2090E5 		ldr	r2, [r0, #12]
+ 662 0004 140090E5 		ldr	r0, [r0, #20]
+ 663              	.LVL65:
+ 129:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 664              		.loc 1 129 0
+ 665 0008 000042E0 		sub	r0, r2, r0
+ 666 000c 1EFF2FE1 		bx	lr
+ 667              		.cfi_endproc
+ 668              	.LFE6522:
+ 669              		.cantunwind
+ 670              		.fnend
+ 672              		.section	.text._ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj,"ax",%progbits
+ 673              		.align	2
+ 674              		.global	_ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj
+ 675              		.syntax unified
+ 676              		.arm
+ 677              		.fpu neon
+ 679              	_ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj:
+ 680              		.fnstart
+ 681              	.LFB6523:
+ 130:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 131:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** size_t SimpleMemoryAllocator::GetAvailableMemory(size_t alignment) const {
+ 682              		.loc 1 131 0
+ 683              		.cfi_startproc
+ 684              		@ args = 0, pretend = 0, frame = 0
+ 685              		@ frame_needed = 0, uses_anonymous_args = 0
+ 686              	.LVL66:
+ 687 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 688              		.save {r4, r5, r6, lr}
+ 689              		.cfi_def_cfa_offset 16
+ 690              		.cfi_offset 4, -16
+ 691              		.cfi_offset 5, -12
+ 692              		.cfi_offset 6, -8
+ 693              		.cfi_offset 14, -4
+ 694              		.loc 1 131 0
+ 695 0004 0040A0E1 		mov	r4, r0
+ 696 0008 0160A0E1 		mov	r6, r1
+ 132:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_temp = AlignPointerUp(temp_, alignment);
+ 697              		.loc 1 132 0
+ 698 000c 180090E5 		ldr	r0, [r0, #24]
+ 699              	.LVL67:
+ 700 0010 FEFFFFEB 		bl	_ZN6tflite14AlignPointerUpEPhj
+ 701              	.LVL68:
+ 133:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_tail = AlignPointerDown(tail_, alignment);
+ 702              		.loc 1 133 0
+ 703 0014 0610A0E1 		mov	r1, r6
+ 132:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   uint8_t* const aligned_temp = AlignPointerUp(temp_, alignment);
+ 704              		.loc 1 132 0
+ 705 0018 0050A0E1 		mov	r5, r0
+ 706              	.LVL69:
+ 707              		.loc 1 133 0
+ 708 001c 140094E5 		ldr	r0, [r4, #20]
+ 709              	.LVL70:
+ 710 0020 FEFFFFEB 		bl	_ZN6tflite16AlignPointerDownEPhj
+ 711              	.LVL71:
+ 134:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return aligned_tail - aligned_temp;
+ 135:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 712              		.loc 1 135 0
+ 713 0024 050040E0 		sub	r0, r0, r5
+ 714              	.LVL72:
+ 715 0028 7080BDE8 		pop	{r4, r5, r6, pc}
+ 716              		.cfi_endproc
+ 717              	.LFE6523:
+ 718              		.fnend
+ 720              		.section	.text._ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv,"ax",%progbits
+ 721              		.align	2
+ 722              		.global	_ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv
+ 723              		.syntax unified
+ 724              		.arm
+ 725              		.fpu neon
+ 727              	_ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv:
+ 728              		.fnstart
+ 729              	.LFB6524:
+ 136:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 137:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** size_t SimpleMemoryAllocator::GetUsedBytes() const {
+ 730              		.loc 1 137 0
+ 731              		.cfi_startproc
+ 732              		@ args = 0, pretend = 0, frame = 0
+ 733              		@ frame_needed = 0, uses_anonymous_args = 0
+ 734              		@ link register save eliminated.
+ 735              	.LVL73:
+ 138:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return GetBufferSize() - (tail_ - temp_);
+ 736              		.loc 1 138 0
+ 737 0000 143090E5 		ldr	r3, [r0, #20]
+ 738 0004 181090E5 		ldr	r1, [r0, #24]
+ 739              	.LBB70:
+ 740              	.LBB71:
+ 139:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 140:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 141:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** size_t SimpleMemoryAllocator::GetBufferSize() const {
+ 142:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return buffer_tail_ - buffer_head_;
+ 741              		.loc 1 142 0
+ 742 0008 0C2090E5 		ldr	r2, [r0, #12]
+ 743 000c 08C090E5 		ldr	ip, [r0, #8]
+ 744              	.LBE71:
+ 745              	.LBE70:
+ 138:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return GetBufferSize() - (tail_ - temp_);
+ 746              		.loc 1 138 0
+ 747 0010 013043E0 		sub	r3, r3, r1
+ 748              	.LBB73:
+ 749              	.LBB72:
+ 750              		.loc 1 142 0
+ 751 0014 0C0042E0 		sub	r0, r2, ip
+ 752              	.LVL74:
+ 753              	.LBE72:
+ 754              	.LBE73:
+ 139:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 755              		.loc 1 139 0
+ 756 0018 030040E0 		sub	r0, r0, r3
+ 757 001c 1EFF2FE1 		bx	lr
+ 758              		.cfi_endproc
+ 759              	.LFE6524:
+ 760              		.cantunwind
+ 761              		.fnend
+ 763              		.section	.text._ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv,"ax",%progbits
+ 764              		.align	2
+ 765              		.global	_ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv
+ 766              		.syntax unified
+ 767              		.arm
+ 768              		.fpu neon
+ 770              	_ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv:
+ 771              		.fnstart
+ 772              	.LFB6525:
+ 141:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc ****   return buffer_tail_ - buffer_head_;
+ 773              		.loc 1 141 0
+ 774              		.cfi_startproc
+ 775              		@ args = 0, pretend = 0, frame = 0
+ 776              		@ frame_needed = 0, uses_anonymous_args = 0
+ 777              		@ link register save eliminated.
+ 778              	.LVL75:
+ 779              		.loc 1 142 0
+ 780 0000 0C2090E5 		ldr	r2, [r0, #12]
+ 781 0004 080090E5 		ldr	r0, [r0, #8]
+ 782              	.LVL76:
+ 143:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** }
+ 783              		.loc 1 143 0
+ 784 0008 000042E0 		sub	r0, r2, r0
+ 785 000c 1EFF2FE1 		bx	lr
+ 786              		.cfi_endproc
+ 787              	.LFE6525:
+ 788              		.cantunwind
+ 789              		.fnend
+ 791              		.section	.text._ZNK6tflite21SimpleMemoryAllocator4headEv,"ax",%progbits
+ 792              		.align	2
+ 793              		.global	_ZNK6tflite21SimpleMemoryAllocator4headEv
+ 794              		.syntax unified
+ 795              		.arm
+ 796              		.fpu neon
+ 798              	_ZNK6tflite21SimpleMemoryAllocator4headEv:
+ 799              		.fnstart
+ 800              	.LFB6526:
+ 144:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 145:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** uint8_t* SimpleMemoryAllocator::head() const { return head_; }
+ 801              		.loc 1 145 0
+ 802              		.cfi_startproc
+ 803              		@ args = 0, pretend = 0, frame = 0
+ 804              		@ frame_needed = 0, uses_anonymous_args = 0
+ 805              		@ link register save eliminated.
+ 806              	.LVL77:
+ 807              		.loc 1 145 0
+ 808 0000 100090E5 		ldr	r0, [r0, #16]
+ 809              	.LVL78:
+ 810 0004 1EFF2FE1 		bx	lr
+ 811              		.cfi_endproc
+ 812              	.LFE6526:
+ 813              		.cantunwind
+ 814              		.fnend
+ 816              		.section	.text._ZNK6tflite21SimpleMemoryAllocator4tailEv,"ax",%progbits
+ 817              		.align	2
+ 818              		.global	_ZNK6tflite21SimpleMemoryAllocator4tailEv
+ 819              		.syntax unified
+ 820              		.arm
+ 821              		.fpu neon
+ 823              	_ZNK6tflite21SimpleMemoryAllocator4tailEv:
+ 824              		.fnstart
+ 825              	.LFB6527:
+ 146:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** 
+ 147:../src/tensorflow_lite/tensorflow/lite/micro/simple_memory_allocator.cc **** uint8_t* SimpleMemoryAllocator::tail() const { return tail_; }
+ 826              		.loc 1 147 0
+ 827              		.cfi_startproc
+ 828              		@ args = 0, pretend = 0, frame = 0
+ 829              		@ frame_needed = 0, uses_anonymous_args = 0
+ 830              		@ link register save eliminated.
+ 831              	.LVL79:
+ 832              		.loc 1 147 0
+ 833 0000 140090E5 		ldr	r0, [r0, #20]
+ 834              	.LVL80:
+ 835 0004 1EFF2FE1 		bx	lr
+ 836              		.cfi_endproc
+ 837              	.LFE6527:
+ 838              		.cantunwind
+ 839              		.fnend
+ 841              		.global	_ZTSN6tflite21SimpleMemoryAllocatorE
+ 842              		.global	_ZTIN6tflite21SimpleMemoryAllocatorE
+ 843              		.global	_ZTVN6tflite21SimpleMemoryAllocatorE
+ 844              		.weak	_ZN11flatbuffers25flatbuffer_version_stringE
+ 845              		.section	.data._ZN11flatbuffers25flatbuffer_version_stringE,"aw",%progbits
+ 846              		.align	2
+ 849              	_ZN11flatbuffers25flatbuffer_version_stringE:
+ 850 0000 00000000 		.word	.LC4
+ 851              		.section	.rodata._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj.str1.4,"aMS",%progbits,1
+ 852              		.align	2
+ 853              	.LC0:
+ 854 0000 4661696C 		.ascii	"Failed to allocate temp memory. Requested: %u, avai"
+ 854      65642074 
+ 854      6F20616C 
+ 854      6C6F6361 
+ 854      74652074 
+ 855 0033 6C61626C 		.ascii	"lable %u, missing: %u\000"
+ 855      65202575 
+ 855      2C206D69 
+ 855      7373696E 
+ 855      673A2025 
+ 856              		.section	.rodata._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj.str1.4,"aMS",%progbits,1
+ 857              		.align	2
+ 858              	.LC1:
+ 859 0000 4661696C 		.ascii	"Failed to allocate tail memory. Requested: %u, avai"
+ 859      65642074 
+ 859      6F20616C 
+ 859      6C6F6361 
+ 859      74652074 
+ 860 0033 6C61626C 		.ascii	"lable %u, missing: %u\000"
+ 860      65202575 
+ 860      2C206D69 
+ 860      7373696E 
+ 860      673A2025 
+ 861              		.section	.rodata._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj.str1.4,"aMS",%progbits,1
+ 862              		.align	2
+ 863              	.LC2:
+ 864 0000 496E7465 		.ascii	"Internal error: SetHeadBufferSize() needs to be cal"
+ 864      726E616C 
+ 864      20657272 
+ 864      6F723A20 
+ 864      53657448 
+ 865 0033 6C656420 		.ascii	"led after ResetTempAllocations().\000"
+ 865      61667465 
+ 865      72205265 
+ 865      73657454 
+ 865      656D7041 
+ 866 0055 000000   		.space	3
+ 867              	.LC3:
+ 868 0058 4661696C 		.ascii	"Failed to set head size. Requested: %u, available %"
+ 868      65642074 
+ 868      6F207365 
+ 868      74206865 
+ 868      61642073 
+ 869 008b 752C206D 		.ascii	"u, missing: %u\000"
+ 869      69737369 
+ 869      6E673A20 
+ 869      257500
+ 870              		.section	.rodata._ZTIN6tflite21SimpleMemoryAllocatorE,"a",%progbits
+ 871              		.align	2
+ 874              	_ZTIN6tflite21SimpleMemoryAllocatorE:
+ 875 0000 08000000 		.word	_ZTVN10__cxxabiv117__class_type_infoE+8
+ 876 0004 00000000 		.word	_ZTSN6tflite21SimpleMemoryAllocatorE
+ 877              		.section	.rodata._ZTSN6tflite21SimpleMemoryAllocatorE,"a",%progbits
+ 878              		.align	3
+ 881              	_ZTSN6tflite21SimpleMemoryAllocatorE:
+ 882 0000 4E367466 		.ascii	"N6tflite21SimpleMemoryAllocatorE\000"
+ 882      6C697465 
+ 882      32315369 
+ 882      6D706C65 
+ 882      4D656D6F 
+ 883              		.section	.rodata._ZTVN6tflite21SimpleMemoryAllocatorE,"a",%progbits
+ 884              		.align	3
+ 885              		.set	.LANCHOR0,. + 0
+ 888              	_ZTVN6tflite21SimpleMemoryAllocatorE:
+ 889 0000 00000000 		.word	0
+ 890 0004 00000000 		.word	_ZTIN6tflite21SimpleMemoryAllocatorE
+ 891 0008 00000000 		.word	_ZN6tflite21SimpleMemoryAllocatorD1Ev
+ 892 000c 00000000 		.word	_ZN6tflite21SimpleMemoryAllocatorD0Ev
+ 893 0010 00000000 		.word	_ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj
+ 894 0014 00000000 		.word	_ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj
+ 895 0018 00000000 		.word	_ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj
+ 896 001c 00000000 		.word	_ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv
+ 897              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 898              		.align	2
+ 899              	.LC4:
+ 900 0000 466C6174 		.ascii	"FlatBuffers 1.12.0\000"
+ 900      42756666 
+ 900      65727320 
+ 900      312E3132 
+ 900      2E3000
+ 901              		.text
+ 902              	.Letext0:
+ 903              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 904              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 905              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 906              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 907              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 908              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 909              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 910              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 911              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 912              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 913              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 914              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 915              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 916              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 917              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 918              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 919              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 920              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 921              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 922              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 923              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 924              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 925              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 926              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 927              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 928              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 929              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 930              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 931              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 932              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 933              		.file 33 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 934              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 935              		.file 35 "<built-in>"
+ 936              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 937              		.file 37 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 938              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 939              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 940              		.file 40 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 941              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 942              		.file 42 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 943              		.file 43 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 944              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 945              		.file 45 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 946              		.file 46 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 947              		.file 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 948              		.file 48 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 949              		.file 49 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 950              		.file 50 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 951              		.file 51 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+DEFINED SYMBOLS
+                            *ABS*:00000000 simple_memory_allocator.cc
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:17     .text._ZN6tflite21SimpleMemoryAllocatorD2Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:23     .text._ZN6tflite21SimpleMemoryAllocatorD2Ev:00000000 _ZN6tflite21SimpleMemoryAllocatorD2Ev
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocatorD2Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:23     .text._ZN6tflite21SimpleMemoryAllocatorD2Ev:00000000 _ZN6tflite21SimpleMemoryAllocatorD1Ev
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:43     .text._ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:49     .text._ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv:00000000 _ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocator20ResetTempAllocationsEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:68     .text._ZN6tflite21SimpleMemoryAllocatorD0Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:74     .text._ZN6tflite21SimpleMemoryAllocatorD0Ev:00000000 _ZN6tflite21SimpleMemoryAllocatorD0Ev
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocatorD0Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:98     .text._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:104    .text._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj:00000000 _ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:853    .rodata._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj.str1.4:00000000 .LC0
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:173    .text._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:179    .text._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj:00000000 _ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:858    .rodata._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj.str1.4:00000000 .LC1
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:262    .text._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:268    .text._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj:00000000 _ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:863    .rodata._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj.str1.4:00000000 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:867    .rodata._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj.str1.4:00000058 .LC3
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:377    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:383    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:00000000 _ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:407    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:00000020 $d
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:383    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhS3_:00000000 _ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhS3_
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:416    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:422    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:00000000 _ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:456    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:00000028 $d
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:422    .text._ZN6tflite21SimpleMemoryAllocatorC2EPNS_13ErrorReporterEPhj:00000000 _ZN6tflite21SimpleMemoryAllocatorC1EPNS_13ErrorReporterEPhj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:465    .text._ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:471    .text._ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj:00000000 _ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:586    .text._ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj:00000090 $d
+.ARM.exidx.text._ZN6tflite21SimpleMemoryAllocator6CreateEPNS_13ErrorReporterEPhj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:592    .text._ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:598    .text._ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv:00000000 _ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator13GetHeadBufferEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:617    .text._ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:623    .text._ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv:00000000 _ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator16GetHeadUsedBytesEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:645    .text._ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:651    .text._ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv:00000000 _ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator16GetTailUsedBytesEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:673    .text._ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:679    .text._ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj:00000000 _ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator18GetAvailableMemoryEj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:721    .text._ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:727    .text._ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv:00000000 _ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator12GetUsedBytesEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:764    .text._ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:770    .text._ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv:00000000 _ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator13GetBufferSizeEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:792    .text._ZNK6tflite21SimpleMemoryAllocator4headEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:798    .text._ZNK6tflite21SimpleMemoryAllocator4headEv:00000000 _ZNK6tflite21SimpleMemoryAllocator4headEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator4headEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:817    .text._ZNK6tflite21SimpleMemoryAllocator4tailEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:823    .text._ZNK6tflite21SimpleMemoryAllocator4tailEv:00000000 _ZNK6tflite21SimpleMemoryAllocator4tailEv
+.ARM.exidx.text._ZNK6tflite21SimpleMemoryAllocator4tailEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:881    .rodata._ZTSN6tflite21SimpleMemoryAllocatorE:00000000 _ZTSN6tflite21SimpleMemoryAllocatorE
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:874    .rodata._ZTIN6tflite21SimpleMemoryAllocatorE:00000000 _ZTIN6tflite21SimpleMemoryAllocatorE
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:888    .rodata._ZTVN6tflite21SimpleMemoryAllocatorE:00000000 _ZTVN6tflite21SimpleMemoryAllocatorE
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:849    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 _ZN11flatbuffers25flatbuffer_version_stringE
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:846    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:852    .rodata._ZN6tflite21SimpleMemoryAllocator12AllocateTempEjj.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:857    .rodata._ZN6tflite21SimpleMemoryAllocator16AllocateFromTailEjj.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:862    .rodata._ZN6tflite21SimpleMemoryAllocator17SetHeadBufferSizeEjj.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:871    .rodata._ZTIN6tflite21SimpleMemoryAllocatorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:878    .rodata._ZTSN6tflite21SimpleMemoryAllocatorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:884    .rodata._ZTVN6tflite21SimpleMemoryAllocatorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccaaq1LE.s:898    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.cstddef.40.7f59894b65c26f8fc669473914a0ef3e
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.stdarg.h.31.b55da1089056868966f25de5dbfc7d3c
+                           .group:00000000 wm4.compatibility.h.16.1ceb35d63d4a0463dcdc2ac3bcdc6b08
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.wchar.h.2.f837619576d797e948eb58c44fac4678
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.wchar.h.21.454a0b75f45497599b41aa0e6acf289d
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.locale.h.8.27d0fe4c0abbb6f8893a1fa7c1799fd9
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.alloc_traits.h.31.c41c7c4789404962122a4e991dfa3abf
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.98.3bf7680ffcc8d24d09fa83ac1339c79d
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.wctype.h.2.898a9b94aa35d125e245195b099726a8
+                           .group:00000000 wm4.wctype.h.21.aec4d35c940c33b3f9c6f879c49edcd8
+                           .group:00000000 wm4.cwctype.54.6582aca101688c1c3785d03bc15e2af6
+                           .group:00000000 wm4.locale_facets.h.56.0d4bb655ce5e76ea564363ed7c5a34fc
+                           .group:00000000 wm4.typeinfo.30.04014f5b1b4fb021c5662653bc27c750
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.atomic_base.h.31.692a6b53cef50ad728d4af54dfbd4448
+                           .group:00000000 wm4.base.h.81.f7b1ec2a44bbbae0afe7a7a890202b81
+                           .group:00000000 wm4.flatbuffers.h.2690.8dde7194088843c14d4d121ab864e44f
+
+UNDEFINED SYMBOLS
+_ZdlPv
+_ZN6tflite14AlignPointerUpEPhj
+_ZN6tflite13ErrorReporter6ReportEPKcz
+__aeabi_unwind_cpp_pr0
+_ZN6tflite16AlignPointerDownEPhj
+abort
+_ZTVN10__cxxabiv117__class_type_infoE

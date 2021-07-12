@@ -1,0 +1,356 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_convolve_1_x_n_s8.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_convolve_1_x_n_s8,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_convolve_1_x_n_s8
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_convolve_1_x_n_s8:
+  24              	.LFB122:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolv
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Copyright (C) 2010-2021 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Title:        arm_convolve_1_x_n_s8.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Description:  s8 version of 1xN convolution using symmetric quantization.
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * $Date:        January 26, 2021
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * $Revision:    V.2.0.3
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Target Processor:  Cortex-M cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * -------------------------------------------------------------------- */
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #include "arm_nnfunctions.h"
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #include "arm_nnsupportfunctions.h"
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** /**
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *  @ingroup groupNN
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  */
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** /**
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * @addtogroup NNConv
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * @{
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  */
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** /*
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * 1xN s8 convolution function.
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  * Refer header file for details.
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  *
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****  */
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** arm_status arm_convolve_1_x_n_s8(const cmsis_nn_context *ctx,
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_conv_params *conv_params,
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_per_channel_quant_params *quant_params,
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_dims *input_dims,
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const q7_t *input_data,
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_dims *filter_dims,
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const q7_t *filter_data,
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_dims *bias_dims,
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const int32_t *bias_data,
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  const cmsis_nn_dims *output_dims,
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                  q7_t *output_data)
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** {
+  26              		.loc 1 61 0
+  27              		.cfi_startproc
+  28              		@ args = 28, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  32              		.cfi_def_cfa_offset 24
+  33              		.cfi_offset 4, -24
+  34              		.cfi_offset 5, -20
+  35              		.cfi_offset 6, -16
+  36              		.cfi_offset 7, -12
+  37              		.cfi_offset 8, -8
+  38              		.cfi_offset 14, -4
+  39              		.loc 1 61 0
+  40 0004 2CC09DE5 		ldr	ip, [sp, #44]
+  41 0008 18409DE5 		ldr	r4, [sp, #24]
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)bias_dims;
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     arm_status status = ARM_MATH_SUCCESS;
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     if (output_dims->w % 4 != 0)
+  42              		.loc 1 64 0
+  43 000c 08E09CE5 		ldr	lr, [ip, #8]
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)bias_dims;
+  44              		.loc 1 61 0
+  45 0010 1C509DE5 		ldr	r5, [sp, #28]
+  46 0014 20609DE5 		ldr	r6, [sp, #32]
+  47              		.loc 1 64 0
+  48 0018 03001EE3 		tst	lr, #3
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)bias_dims;
+  49              		.loc 1 61 0
+  50 001c 24709DE5 		ldr	r7, [sp, #36]
+  51 0020 28E09DE5 		ldr	lr, [sp, #40]
+  52 0024 30809DE5 		ldr	r8, [sp, #48]
+  53              		.loc 1 64 0
+  54 0028 0100001A 		bne	.L2
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     {
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         status = ARM_MATH_SIZE_MISMATCH;
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         goto out;
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     }
+  69:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #if defined(ARM_MATH_MVEI)
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)ctx;
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  73:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t input_x = input_dims->w;
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t kernel_x = filter_dims->w;
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t output_x = output_dims->w;
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t output_ch = output_dims->c;
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t input_ch = input_dims->c;
+  78:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t pad_x = conv_params->padding.w;
+  79:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const uint16_t stride_x = conv_params->stride.w;
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  81:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const int32_t input_offset = conv_params->input_offset;
+  82:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const int32_t out_offset = conv_params->output_offset;
+  83:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const int32_t out_activation_min = conv_params->activation.min;
+  84:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     const int32_t out_activation_max = conv_params->activation.max;
+  85:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     int32_t *output_mult = quant_params->multiplier;
+  86:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     int32_t *output_shift = quant_params->shift;
+  87:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  88:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     for (int i_out_x = 0; i_out_x <= (output_x - 4); i_out_x += 4)
+  89:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     {
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         int32_t input_begin_idx[4];
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         int32_t ker_begin_idx[4];
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         int32_t ker_end_idx[4];
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         for (int i = 0; i < 4; i++)
+  95:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         {
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             const int32_t est_input_x_idx = stride_x * (i_out_x + i) - pad_x;
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             input_begin_idx[i] = MAX(0, est_input_x_idx);
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             ker_begin_idx[i] = MAX(0, -est_input_x_idx);
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             ker_end_idx[i] = MIN(kernel_x, input_x - est_input_x_idx);
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         }
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 102:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         for (int i_out_ch = 0; i_out_ch < output_ch; i_out_ch++)
+ 103:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         {
+ 104:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             int32x4_t s_offset;
+ 105:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             int32_t acc[4];
+ 106:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             if ((ker_begin_idx[0] != 0) || (ker_end_idx[3] != kernel_x))
+ 107:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             {
+ 108:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 int32_t sum_row[4];
+ 109:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 110:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 (void)arm_nn_mat_mul_core_1x_s8((ker_end_idx[0] - ker_begin_idx[0]) * input_ch,
+ 111:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 input_data + input_begin_idx[0] * input_ch,
+ 112:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 filter_data + (input_ch * kernel_x * i_out_ch) +
+ 113:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                     (ker_begin_idx[0] * input_ch),
+ 114:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &sum_row[0],
+ 115:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &acc[0]);
+ 116:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 (void)arm_nn_mat_mul_core_1x_s8((ker_end_idx[1] - ker_begin_idx[1]) * input_ch,
+ 117:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 input_data + input_begin_idx[1] * input_ch,
+ 118:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 filter_data + (input_ch * kernel_x * i_out_ch) +
+ 119:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                     (ker_begin_idx[1] * input_ch),
+ 120:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &sum_row[1],
+ 121:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &acc[1]);
+ 122:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 123:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 (void)arm_nn_mat_mul_core_1x_s8((ker_end_idx[2] - ker_begin_idx[2]) * input_ch,
+ 124:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 input_data + input_begin_idx[2] * input_ch,
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 filter_data + (input_ch * kernel_x * i_out_ch) +
+ 126:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                     (ker_begin_idx[2] * input_ch),
+ 127:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &sum_row[2],
+ 128:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &acc[2]);
+ 129:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 130:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 (void)arm_nn_mat_mul_core_1x_s8((ker_end_idx[3] - ker_begin_idx[3]) * input_ch,
+ 131:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 input_data + input_begin_idx[3] * input_ch,
+ 132:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 filter_data + (input_ch * kernel_x * i_out_ch) +
+ 133:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                     (ker_begin_idx[3] * input_ch),
+ 134:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &sum_row[3],
+ 135:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &acc[3]);
+ 136:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 137:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 s_offset = vldrwq_s32(sum_row);
+ 138:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             }
+ 139:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             else
+ 140:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             {
+ 141:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 int32_t sum_row;
+ 142:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 (void)arm_nn_mat_mul_core_4x_s8(kernel_x * input_ch,
+ 143:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 stride_x * input_ch,
+ 144:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 input_data + input_begin_idx[0] * input_ch,
+ 145:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 filter_data + (input_ch * kernel_x * i_out_ch),
+ 146:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 &sum_row,
+ 147:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                                                 acc);
+ 148:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 149:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 s_offset = vdupq_n_s32(sum_row);
+ 150:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             }
+ 151:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             int32x4_t res = vldrwq_s32(acc);
+ 152:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             s_offset = vmulq_n_s32(s_offset, input_offset);
+ 153:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             res = vaddq_s32(res, s_offset);
+ 154:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             if (bias_data)
+ 155:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             {
+ 156:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                 res = vaddq_n_s32(res, bias_data[i_out_ch]);
+ 157:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             }
+ 158:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             res = arm_requantize_mve(res, output_mult[i_out_ch], output_shift[i_out_ch]);
+ 159:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             res = vaddq_n_s32(res, out_offset);
+ 160:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 161:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             res = vmaxq_s32(res, vdupq_n_s32(out_activation_min));
+ 162:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             res = vminq_s32(res, vdupq_n_s32(out_activation_max));
+ 163:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 164:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             const uint32x4_t scatter_offset = {0, output_ch, output_ch * 2, output_ch * 3};
+ 165:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             vstrbq_scatter_offset_s32(output_data, scatter_offset, res);
+ 166:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****             output_data++;
+ 167:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         }
+ 168:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****         output_data += (3 * output_ch);
+ 169:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     }
+ 170:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 171:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #else
+ 172:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     status = arm_convolve_s8(ctx,
+ 173:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              conv_params,
+ 174:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              quant_params,
+ 175:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              input_dims,
+ 176:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              input_data,
+ 177:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              filter_dims,
+ 178:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              filter_data,
+ 179:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              bias_dims,
+ 180:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              bias_data,
+ 181:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              output_dims,
+ 182:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              output_data);
+ 183:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #endif
+ 184:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 185:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** out:
+ 186:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     /* Return to application */
+ 187:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     return status;
+ 188:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** }
+  55              		.loc 1 188 0
+  56 002c F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+  57              		.cfi_remember_state
+  58              		.cfi_restore 14
+  59              		.cfi_restore 8
+  60              		.cfi_restore 7
+  61              		.cfi_restore 6
+  62              		.cfi_restore 5
+  63              		.cfi_restore 4
+  64              		.cfi_def_cfa_offset 0
+ 172:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****                              conv_params,
+  65              		.loc 1 172 0
+  66 0030 FEFFFFEA 		b	arm_convolve_s8
+  67              	.LVL1:
+  68              	.L2:
+  69              		.cfi_restore_state
+  70              		.loc 1 188 0
+  71 0034 0200E0E3 		mvn	r0, #2
+  72              	.LVL2:
+  73 0038 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  74              		.cfi_endproc
+  75              	.LFE122:
+  77              		.section	.text.arm_convolve_1_x_n_s8_get_buffer_size,"ax",%progbits
+  78              		.align	2
+  79              		.global	arm_convolve_1_x_n_s8_get_buffer_size
+  80              		.syntax unified
+  81              		.arm
+  82              		.fpu neon
+  84              	arm_convolve_1_x_n_s8_get_buffer_size:
+  85              	.LFB123:
+ 189:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** 
+ 190:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** int32_t arm_convolve_1_x_n_s8_get_buffer_size(const cmsis_nn_dims *input_dims, const cmsis_nn_dims 
+ 191:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** {
+  86              		.loc 1 191 0
+  87              		.cfi_startproc
+  88              		@ args = 0, pretend = 0, frame = 0
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90              		@ link register save eliminated.
+  91              	.LVL3:
+ 192:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #if defined(ARM_MATH_DSP) && !defined(ARM_MATH_MVEI)
+ 193:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     return (2 * input_dims->c * filter_dims->w * filter_dims->h) * sizeof(int16_t);
+  92              		.loc 1 193 0
+  93 0000 0C2090E5 		ldr	r2, [r0, #12]
+  94 0004 090091E9 		ldmib	r1, {r0, r3}
+  95              	.LVL4:
+  96 0008 8220A0E1 		lsl	r2, r2, #1
+  97 000c 930203E0 		mul	r3, r3, r2
+  98 0010 900300E0 		mul	r0, r0, r3
+ 194:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #else
+ 195:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)input_dims;
+ 196:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     (void)filter_dims;
+ 197:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c ****     return 0;
+ 198:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** #endif
+ 199:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c **** }
+  99              		.loc 1 199 0
+ 100 0014 8000A0E1 		lsl	r0, r0, #1
+ 101 0018 1EFF2FE1 		bx	lr
+ 102              		.cfi_endproc
+ 103              	.LFE123:
+ 105              		.text
+ 106              	.Letext0:
+ 107              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 108              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 109              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 110              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 111              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 112              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 113              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 114              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 115              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 116              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 117              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_convolve_1_x_n_s8.c
+C:\Users\a5050395\AppData\Local\Temp\ccLRR3mo.s:17     .text.arm_convolve_1_x_n_s8:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLRR3mo.s:23     .text.arm_convolve_1_x_n_s8:00000000 arm_convolve_1_x_n_s8
+C:\Users\a5050395\AppData\Local\Temp\ccLRR3mo.s:78     .text.arm_convolve_1_x_n_s8_get_buffer_size:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLRR3mo.s:84     .text.arm_convolve_1_x_n_s8_get_buffer_size:00000000 arm_convolve_1_x_n_s8_get_buffer_size
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+                           .group:00000000 wm4.arm_math_memory.h.27.15b48442bebd15b7684ae775c0e94421
+                           .group:00000000 wm4.none.h.38.52c167e5c66424d7c1fe8048a5bf9ef2
+                           .group:00000000 wm4.utils.h.27.57524573fe37b04009eecf3582a4c591
+                           .group:00000000 wm4.fast_math_functions.h.44.f0d080ca1ba957380c25e401a97da7cc
+                           .group:00000000 wm4.arm_common_tables.h.115.99deac85cf8f0a38da86d5f757adaa60
+                           .group:00000000 wm4.arm_nnsupportfunctions.h.40.02e2e72066f745a38156ef292fa21e7b
+
+UNDEFINED SYMBOLS
+arm_convolve_s8

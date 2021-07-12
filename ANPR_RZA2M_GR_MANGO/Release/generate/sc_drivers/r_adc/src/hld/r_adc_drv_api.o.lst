@@ -1,0 +1,428 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_adc_drv_api.c"
+  13              		.section	.text.adc_hld_get_version,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	adc_hld_get_version:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 003000E3 		movw	r3, #:lower16:.LC0
+  23 0004 10402DE9 		push	{r4, lr}
+  24 0008 0120A0E3 		mov	r2, #1
+  25 000c 0040A0E3 		mov	r4, #0
+  26 0010 003040E3 		movt	r3, #:upper16:.LC0
+  27 0014 0C0081E2 		add	r0, r1, #12
+  28 0018 B220C1E1 		strh	r2, [r1, #2]	@ movhi
+  29 001c 083081E5 		str	r3, [r1, #8]
+  30 0020 B040C1E1 		strh	r4, [r1]	@ movhi
+  31 0024 044081E5 		str	r4, [r1, #4]
+  32 0028 FEFFFFEB 		bl	R_ADC_GetVersion
+  33 002c 0400A0E1 		mov	r0, r4
+  34 0030 1080BDE8 		pop	{r4, pc}
+  36              		.section	.text.adc_hld_open,"ax",%progbits
+  37              		.align	2
+  38              		.syntax unified
+  39              		.arm
+  40              		.fpu neon
+  42              	adc_hld_open:
+  43              		@ args = 0, pretend = 0, frame = 8
+  44              		@ frame_needed = 0, uses_anonymous_args = 0
+  45 0000 70402DE9 		push	{r4, r5, r6, lr}
+  46 0004 004000E3 		movw	r4, #:lower16:.LANCHOR0
+  47 0008 004040E3 		movt	r4, #:upper16:.LANCHOR0
+  48 000c 08D04DE2 		sub	sp, sp, #8
+  49 0010 003094E5 		ldr	r3, [r4]
+  50 0014 000053E3 		cmp	r3, #0
+  51 0018 1500001A 		bne	.L6
+  52 001c FEFFFFEB 		bl	R_ADC_HWInitialise
+  53 0020 005050E2 		subs	r5, r0, #0
+  54 0024 1200001A 		bne	.L6
+  55 0028 080084E2 		add	r0, r4, #8
+  56 002c FEFFFFEB 		bl	R_ADC_LoadInitialConfiguration
+  57 0030 000050E3 		cmp	r0, #0
+  58 0034 1100001A 		bne	.L19
+  59 0038 000000E3 		movw	r0, #:lower16:adc_hld_interrupt_handler
+  60 003c 000040E3 		movt	r0, #:upper16:adc_hld_interrupt_handler
+  61 0040 FEFFFFEB 		bl	R_ADC_ConfigureInterrupts
+  62 0044 005050E2 		subs	r5, r0, #0
+  63 0048 0900001A 		bne	.L6
+  64 004c 020AA0E3 		mov	r0, #8192
+  65 0050 FEFFFFEB 		bl	cbCreate
+  66 0054 000050E3 		cmp	r0, #0
+  67 0058 040084E5 		str	r0, [r4, #4]
+  68 005c 0400000A 		beq	.L6
+  69 0060 0500A0E1 		mov	r0, r5
+  70 0064 0130A0E3 		mov	r3, #1
+  71 0068 003084E5 		str	r3, [r4]
+  72              	.L3:
+  73 006c 08D08DE2 		add	sp, sp, #8
+  74              		@ sp needed
+  75 0070 7080BDE8 		pop	{r4, r5, r6, pc}
+  76              	.L6:
+  77 0074 0000E0E3 		mvn	r0, #0
+  78 0078 08D08DE2 		add	sp, sp, #8
+  79              		@ sp needed
+  80 007c 7080BDE8 		pop	{r4, r5, r6, pc}
+  81              	.L19:
+  82 0080 03008DE2 		add	r0, sp, #3
+  83 0084 0560A0E1 		mov	r6, r5
+  84 0088 FEFFFFEB 		bl	R_ADC_GetConversionWidth
+  85              	.L9:
+  86 008c 7500EFE6 		uxtb	r0, r5
+  87 0090 04108DE2 		add	r1, sp, #4
+  88 0094 015085E2 		add	r5, r5, #1
+  89 0098 FEFFFFEB 		bl	R_ADC_IsChannelEnabled
+  90 009c 04309DE5 		ldr	r3, [sp, #4]
+  91 00a0 000053E3 		cmp	r3, #0
+  92 00a4 01608612 		addne	r6, r6, #1
+  93 00a8 080055E3 		cmp	r5, #8
+  94 00ac F6FFFF1A 		bne	.L9
+  95 00b0 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+  96 00b4 0000E0E3 		mvn	r0, #0
+  97 00b8 960306E0 		mul	r6, r6, r3
+  98 00bc 0C6084E5 		str	r6, [r4, #12]
+  99 00c0 E9FFFFEA 		b	.L3
+ 101              		.section	.text.adc_hld_interrupt_handler,"ax",%progbits
+ 102              		.align	2
+ 103              		.syntax unified
+ 104              		.arm
+ 105              		.fpu neon
+ 107              	adc_hld_interrupt_handler:
+ 108              		@ args = 0, pretend = 0, frame = 16
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 111 0004 005000E3 		movw	r5, #:lower16:.LANCHOR0
+ 112 0008 005040E3 		movt	r5, #:upper16:.LANCHOR0
+ 113 000c 10D04DE2 		sub	sp, sp, #16
+ 114 0010 040095E5 		ldr	r0, [r5, #4]
+ 115 0014 FEFFFFEB 		bl	cbFree
+ 116 0018 004050E2 		subs	r4, r0, #0
+ 117 001c 2A0000BA 		blt	.L20
+ 118 0020 06008DE2 		add	r0, sp, #6
+ 119 0024 FEFFFFEB 		bl	R_ADC_GetConversionWidth
+ 120 0028 0C3095E5 		ldr	r3, [r5, #12]
+ 121 002c 040053E1 		cmp	r3, r4
+ 122 0030 2700008A 		bhi	.L22
+ 123              	.L25:
+ 124 0034 0060A0E3 		mov	r6, #0
+ 125 0038 020000EA 		b	.L23
+ 126              	.L28:
+ 127 003c 016086E2 		add	r6, r6, #1
+ 128 0040 080056E3 		cmp	r6, #8
+ 129 0044 1B00000A 		beq	.L42
+ 130              	.L23:
+ 131 0048 7640EFE6 		uxtb	r4, r6
+ 132 004c 0C108DE2 		add	r1, sp, #12
+ 133 0050 0400A0E1 		mov	r0, r4
+ 134 0054 FEFFFFEB 		bl	R_ADC_IsChannelEnabled
+ 135 0058 0C309DE5 		ldr	r3, [sp, #12]
+ 136 005c 000053E3 		cmp	r3, #0
+ 137 0060 F5FFFF0A 		beq	.L28
+ 138 0064 0400A0E1 		mov	r0, r4
+ 139 0068 08108DE2 		add	r1, sp, #8
+ 140 006c FEFFFFEB 		bl	R_ADC_ReadConversion
+ 141 0070 0630DDE5 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 142 0074 000053E3 		cmp	r3, #0
+ 143 0078 EFFFFF0A 		beq	.L28
+ 144 007c 08109DE5 		ldr	r1, [sp, #8]
+ 145 0080 0040A0E3 		mov	r4, #0
+ 146              	.L29:
+ 147 0084 7110EFE6 		uxtb	r1, r1
+ 148 0088 040095E5 		ldr	r0, [r5, #4]
+ 149 008c 014084E2 		add	r4, r4, #1
+ 150 0090 FEFFFFEB 		bl	cbPut
+ 151 0094 08109DE5 		ldr	r1, [sp, #8]
+ 152 0098 0630DDE5 		ldrb	r3, [sp, #6]	@ zero_extendqisi2
+ 153 009c 2114A0E1 		lsr	r1, r1, #8
+ 154 00a0 040053E1 		cmp	r3, r4
+ 155 00a4 08108DE5 		str	r1, [sp, #8]
+ 156 00a8 F5FFFF8A 		bhi	.L29
+ 157 00ac 016086E2 		add	r6, r6, #1
+ 158 00b0 080056E3 		cmp	r6, #8
+ 159 00b4 E3FFFF1A 		bne	.L23
+ 160              	.L42:
+ 161 00b8 083095E5 		ldr	r3, [r5, #8]
+ 162 00bc 000053E3 		cmp	r3, #0
+ 163 00c0 0100000A 		beq	.L20
+ 164 00c4 0000A0E3 		mov	r0, #0
+ 165 00c8 33FF2FE1 		blx	r3
+ 166              	.L20:
+ 167 00cc 10D08DE2 		add	sp, sp, #16
+ 168              		@ sp needed
+ 169 00d0 7080BDE8 		pop	{r4, r5, r6, pc}
+ 170              	.L22:
+ 171 00d4 0040A0E3 		mov	r4, #0
+ 172              	.L24:
+ 173 00d8 07108DE2 		add	r1, sp, #7
+ 174 00dc 040095E5 		ldr	r0, [r5, #4]
+ 175 00e0 FEFFFFEB 		bl	cbGet
+ 176 00e4 0C3095E5 		ldr	r3, [r5, #12]
+ 177 00e8 014084E2 		add	r4, r4, #1
+ 178 00ec 040053E1 		cmp	r3, r4
+ 179 00f0 F8FFFF8A 		bhi	.L24
+ 180 00f4 CEFFFFEA 		b	.L25
+ 182              		.global	__aeabi_uidivmod
+ 183              		.section	.text.adc_hld_read,"ax",%progbits
+ 184              		.align	2
+ 185              		.syntax unified
+ 186              		.arm
+ 187              		.fpu neon
+ 189              	adc_hld_read:
+ 190              		@ args = 0, pretend = 0, frame = 0
+ 191              		@ frame_needed = 0, uses_anonymous_args = 0
+ 192 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 193 0004 007000E3 		movw	r7, #:lower16:.LANCHOR0
+ 194 0008 007040E3 		movt	r7, #:upper16:.LANCHOR0
+ 195 000c 0180A0E1 		mov	r8, r1
+ 196 0010 0200A0E1 		mov	r0, r2
+ 197 0014 0260A0E1 		mov	r6, r2
+ 198 0018 0C1097E5 		ldr	r1, [r7, #12]
+ 199 001c FEFFFFEB 		bl	__aeabi_uidivmod
+ 200 0020 004051E2 		subs	r4, r1, #0
+ 201 0024 0F00001A 		bne	.L48
+ 202 0028 FEFFFFEB 		bl	__disable_irq
+ 203 002c 000056E3 		cmp	r6, #0
+ 204 0030 0E00000A 		beq	.L49
+ 205 0034 0450A0E1 		mov	r5, r4
+ 206              	.L47:
+ 207 0038 051088E0 		add	r1, r8, r5
+ 208 003c 040097E5 		ldr	r0, [r7, #4]
+ 209 0040 FEFFFFEB 		bl	cbGet
+ 210 0044 000050E3 		cmp	r0, #0
+ 211 0048 0640A001 		moveq	r4, r6
+ 212 004c 01508512 		addne	r5, r5, #1
+ 213 0050 014084E2 		add	r4, r4, #1
+ 214 0054 040056E1 		cmp	r6, r4
+ 215 0058 F6FFFF8A 		bhi	.L47
+ 216              	.L45:
+ 217 005c FEFFFFEB 		bl	__enable_irq
+ 218              	.L43:
+ 219 0060 0500A0E1 		mov	r0, r5
+ 220 0064 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 221              	.L48:
+ 222 0068 0050E0E3 		mvn	r5, #0
+ 223 006c FBFFFFEA 		b	.L43
+ 224              	.L49:
+ 225 0070 0650A0E1 		mov	r5, r6
+ 226 0074 F8FFFFEA 		b	.L45
+ 228              		.section	.text.adc_hld_close,"ax",%progbits
+ 229              		.align	2
+ 230              		.syntax unified
+ 231              		.arm
+ 232              		.fpu neon
+ 234              	adc_hld_close:
+ 235              		@ args = 0, pretend = 0, frame = 0
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 238 0004 004000E3 		movw	r4, #:lower16:.LANCHOR0
+ 239 0008 004040E3 		movt	r4, #:upper16:.LANCHOR0
+ 240 000c 003094E5 		ldr	r3, [r4]
+ 241 0010 000053E3 		cmp	r3, #0
+ 242 0014 7080BD08 		popeq	{r4, r5, r6, pc}
+ 243 0018 FEFFFFEB 		bl	R_ADC_HWUninitialise
+ 244 001c 0050A0E3 		mov	r5, #0
+ 245 0020 040094E5 		ldr	r0, [r4, #4]
+ 246 0024 005084E5 		str	r5, [r4]
+ 247 0028 FEFFFFEB 		bl	cbDestroy
+ 248 002c F700A0E3 		mov	r0, #247
+ 249 0030 045084E5 		str	r5, [r4, #4]
+ 250 0034 FEFFFFEB 		bl	R_INTC_Disable
+ 251 0038 0510A0E1 		mov	r1, r5
+ 252 003c F700A0E3 		mov	r0, #247
+ 253 0040 7040BDE8 		pop	{r4, r5, r6, lr}
+ 254 0044 FEFFFFEA 		b	R_INTC_RegistIntFunc
+ 256              		.section	.text.adc_hld_control,"ax",%progbits
+ 257              		.align	2
+ 258              		.syntax unified
+ 259              		.arm
+ 260              		.fpu neon
+ 262              	adc_hld_control:
+ 263              		@ args = 0, pretend = 0, frame = 8
+ 264              		@ frame_needed = 0, uses_anonymous_args = 0
+ 265 0000 7110EFE6 		uxtb	r1, r1
+ 266 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 267 0008 0250A0E1 		mov	r5, r2
+ 268 000c 010051E3 		cmp	r1, #1
+ 269 0010 08D04DE2 		sub	sp, sp, #8
+ 270 0014 1000000A 		beq	.L58
+ 271 0018 1900003A 		bcc	.L59
+ 272 001c 020051E3 		cmp	r1, #2
+ 273 0020 1400001A 		bne	.L78
+ 274 0024 000052E3 		cmp	r2, #0
+ 275 0028 1200000A 		beq	.L78
+ 276 002c 0200A0E1 		mov	r0, r2
+ 277 0030 FEFFFFEB 		bl	R_ADC_GetConfiguration
+ 278 0034 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 279 0038 003090E2 		adds	r3, r0, #0
+ 280 003c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 281 0040 0130A013 		movne	r3, #1
+ 282 0044 082092E5 		ldr	r2, [r2, #8]
+ 283 0048 4C00C5E5 		strb	r0, [r5, #76]
+ 284 004c 000063E2 		rsb	r0, r3, #0
+ 285 0050 042085E5 		str	r2, [r5, #4]
+ 286 0054 08D08DE2 		add	sp, sp, #8
+ 287              		@ sp needed
+ 288 0058 7080BDE8 		pop	{r4, r5, r6, pc}
+ 289              	.L58:
+ 290 005c 000052E3 		cmp	r2, #0
+ 291 0060 0400000A 		beq	.L78
+ 292 0064 0200A0E1 		mov	r0, r2
+ 293 0068 FEFFFFEB 		bl	R_ADC_SetConfiguration
+ 294 006c 000050E3 		cmp	r0, #0
+ 295 0070 4C00C5E5 		strb	r0, [r5, #76]
+ 296 0074 1000000A 		beq	.L80
+ 297              	.L78:
+ 298 0078 0000E0E3 		mvn	r0, #0
+ 299 007c 08D08DE2 		add	sp, sp, #8
+ 300              		@ sp needed
+ 301 0080 7080BDE8 		pop	{r4, r5, r6, pc}
+ 302              	.L59:
+ 303 0084 FEFFFFEB 		bl	R_ADC_SoftwareTrigger
+ 304 0088 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 305 008c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 306 0090 083093E5 		ldr	r3, [r3, #8]
+ 307 0094 000053E3 		cmp	r3, #0
+ 308 0098 0300000A 		beq	.L61
+ 309              	.L63:
+ 310 009c 0000A0E3 		mov	r0, #0
+ 311 00a0 08D08DE2 		add	sp, sp, #8
+ 312              		@ sp needed
+ 313 00a4 7080BDE8 		pop	{r4, r5, r6, pc}
+ 314              	.L62:
+ 315              		.syntax divided
+ 316              	@ 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/compiler/inc/r_
+ 317 00a8 00F020E3 		nop
+ 318              	@ 0 "" 2
+ 319              		.arm
+ 320              		.syntax unified
+ 321              	.L61:
+ 322 00ac FEFFFFEB 		bl	R_ADC_IsConversionComplete
+ 323 00b0 000050E3 		cmp	r0, #0
+ 324 00b4 FBFFFF0A 		beq	.L62
+ 325 00b8 F7FFFFEA 		b	.L63
+ 326              	.L80:
+ 327 00bc FEFFFFEB 		bl	R_ADC_ConfigureAnalogueInputs
+ 328 00c0 004050E2 		subs	r4, r0, #0
+ 329 00c4 EBFFFF1A 		bne	.L78
+ 330 00c8 043095E5 		ldr	r3, [r5, #4]
+ 331 00cc 006000E3 		movw	r6, #:lower16:.LANCHOR0
+ 332 00d0 006040E3 		movt	r6, #:upper16:.LANCHOR0
+ 333 00d4 0450A0E1 		mov	r5, r4
+ 334 00d8 083086E5 		str	r3, [r6, #8]
+ 335 00dc FEFFFFEB 		bl	__disable_irq
+ 336 00e0 040096E5 		ldr	r0, [r6, #4]
+ 337 00e4 FEFFFFEB 		bl	cbClear
+ 338 00e8 FEFFFFEB 		bl	__enable_irq
+ 339 00ec 03008DE2 		add	r0, sp, #3
+ 340 00f0 FEFFFFEB 		bl	R_ADC_GetConversionWidth
+ 341              	.L67:
+ 342 00f4 7400EFE6 		uxtb	r0, r4
+ 343 00f8 04108DE2 		add	r1, sp, #4
+ 344 00fc 014084E2 		add	r4, r4, #1
+ 345 0100 FEFFFFEB 		bl	R_ADC_IsChannelEnabled
+ 346 0104 04309DE5 		ldr	r3, [sp, #4]
+ 347 0108 000053E3 		cmp	r3, #0
+ 348 010c 01508512 		addne	r5, r5, #1
+ 349 0110 080054E3 		cmp	r4, #8
+ 350 0114 F6FFFF1A 		bne	.L67
+ 351 0118 0330DDE5 		ldrb	r3, [sp, #3]	@ zero_extendqisi2
+ 352 011c 0000A0E3 		mov	r0, #0
+ 353 0120 950305E0 		mul	r5, r5, r3
+ 354 0124 0C5086E5 		str	r5, [r6, #12]
+ 355 0128 08D08DE2 		add	sp, sp, #8
+ 356              		@ sp needed
+ 357 012c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 359              		.global	g_adc_driver
+ 360              		.section	.bss.s_adc_drv_config,"aw",%nobits
+ 361              		.align	2
+ 362              		.set	.LANCHOR0,. + 0
+ 365              	s_adc_drv_config:
+ 366 0000 00000000 		.space	16
+ 366      00000000 
+ 366      00000000 
+ 366      00000000 
+ 367              		.section	.rodata.adc_hld_get_version.str1.4,"aMS",%progbits,1
+ 368              		.align	2
+ 369              	.LC0:
+ 370 0000 484C4420 		.ascii	"HLD ADC\000"
+ 370      41444300 
+ 371              		.section	.rodata.g_adc_driver,"a",%progbits
+ 372              		.align	2
+ 375              	g_adc_driver:
+ 376 0000 00000000 		.word	.LC1
+ 377 0004 00000000 		.word	adc_hld_open
+ 378 0008 00000000 		.word	adc_hld_close
+ 379 000c 00000000 		.word	adc_hld_read
+ 380 0010 00000000 		.word	no_dev_write
+ 381 0014 00000000 		.word	adc_hld_control
+ 382 0018 00000000 		.word	adc_hld_get_version
+ 383              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 384              		.align	2
+ 385              	.LC1:
+ 386 0000 41444320 		.ascii	"ADC Device Driver\000"
+ 386      44657669 
+ 386      63652044 
+ 386      72697665 
+ 386      7200
+ 387              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_adc_drv_api.c
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:14     .text.adc_hld_get_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:19     .text.adc_hld_get_version:00000000 adc_hld_get_version
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:369    .rodata.adc_hld_get_version.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:37     .text.adc_hld_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:42     .text.adc_hld_open:00000000 adc_hld_open
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:362    .bss.s_adc_drv_config:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:107    .text.adc_hld_interrupt_handler:00000000 adc_hld_interrupt_handler
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:102    .text.adc_hld_interrupt_handler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:184    .text.adc_hld_read:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:189    .text.adc_hld_read:00000000 adc_hld_read
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:229    .text.adc_hld_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:234    .text.adc_hld_close:00000000 adc_hld_close
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:257    .text.adc_hld_control:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:262    .text.adc_hld_control:00000000 adc_hld_control
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:375    .rodata.g_adc_driver:00000000 g_adc_driver
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:361    .bss.s_adc_drv_config:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:365    .bss.s_adc_drv_config:00000000 s_adc_drv_config
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:368    .rodata.adc_hld_get_version.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:372    .rodata.g_adc_driver:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5RUsaQ.s:384    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_ADC_GetVersion
+R_ADC_HWInitialise
+R_ADC_LoadInitialConfiguration
+R_ADC_ConfigureInterrupts
+cbCreate
+R_ADC_GetConversionWidth
+R_ADC_IsChannelEnabled
+cbFree
+R_ADC_ReadConversion
+cbPut
+cbGet
+__aeabi_uidivmod
+__disable_irq
+__enable_irq
+R_ADC_HWUninitialise
+cbDestroy
+R_INTC_Disable
+R_INTC_RegistIntFunc
+R_ADC_GetConfiguration
+R_ADC_SetConfiguration
+R_ADC_SoftwareTrigger
+R_ADC_IsConversionComplete
+R_ADC_ConfigureAnalogueInputs
+cbClear
+no_dev_write

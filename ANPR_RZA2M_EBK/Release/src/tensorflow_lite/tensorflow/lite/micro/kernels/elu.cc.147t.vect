@@ -1,0 +1,1890 @@
+
+;; Function TfLiteStatus tflite::{anonymous}::EluPrepare(TfLiteContext*, TfLiteNode*) (_ZN6tflite12_GLOBAL__N_110EluPrepareEP13TfLiteContextP10TfLiteNode, funcdef_no=1145, decl_uid=23098, cgraph_uid=455, symbol_order=458)
+
+
+Analyzing loop at ../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:53
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:53:34: note: ===== analyze_loop_nest =====
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:53:34: note: === vect_analyze_loop_form ===
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:53:34: note: not vectorized: control flow in loop.
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:53:34: note: bad loop form.
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:108:14: note: vectorized 0 loops in function.
+TfLiteStatus tflite::{anonymous}::EluPrepare(TfLiteContext*, TfLiteNode*) (struct TfLiteContext * context, struct TfLiteNode * node)
+{
+  float D.23817;
+  float D.23815;
+  const float inverse_scale;
+  int32_t maxval;
+  int32_t minval;
+  int32_t val;
+  const float dequantized;
+  const int32_t quantized;
+  const struct TfLiteTensor * input;
+  struct TfLiteTensor * output;
+  struct OpData * data;
+  TfLiteStatus D.23801;
+  struct TfLiteIntArray * _6;
+  int _7;
+  struct TfLiteIntArray * _8;
+  int _9;
+  TfLiteStatus _10;
+  TfLiteStatus _11;
+  const struct TfLiteTensor * input.11_12;
+  TfLiteType _13;
+  struct TfLiteTensor * output.12_14;
+  TfLiteType _15;
+  float _19;
+  TfLiteStatus _21;
+  float _25;
+  long int _26;
+  long int _27;
+  float _28;
+  float _31;
+  float _32;
+  long int _33;
+  float _34;
+  float _35;
+  long int quantized.16_36;
+  long int _37;
+  long int _39;
+  signed char _42;
+  float iftmp.13_45;
+  float _46;
+  float iftmp.13_47;
+  long int _74;
+  unsigned int ivtmp_85;
+  unsigned int ivtmp_86;
+
+  <bb 2>:
+  _6 = MEM[(struct TfLiteIntArray * *)node_3(D)];
+  _7 = _6->size;
+  if (_7 != 1)
+    goto <bb 3>;
+  else
+    goto <bb 4>;
+
+  <bb 3>:
+  goto <bb 15>;
+
+  <bb 4>:
+  _8 = MEM[(struct TfLiteIntArray * *)node_3(D) + 4B];
+  _9 = _8->size;
+  if (_9 != 1)
+    goto <bb 3>;
+  else
+    goto <bb 5>;
+
+  <bb 5>:
+  _10 = tflite::GetInputSafe (context_2(D), node_3(D), 0, &input);
+  if (_10 != 0)
+    goto <bb 15>;
+  else
+    goto <bb 6>;
+
+  <bb 6>:
+  _11 = tflite::GetOutputSafe (context_2(D), node_3(D), 0, &output);
+  if (_11 != 0)
+    goto <bb 15>;
+  else
+    goto <bb 7>;
+
+  <bb 7>:
+  input.11_12 = input;
+  _13 = input.11_12->type;
+  output.12_14 = output;
+  _15 = output.12_14->type;
+  if (_13 != _15)
+    goto <bb 3>;
+  else
+    goto <bb 8>;
+
+  <bb 8>:
+  if (_13 == 9)
+    goto <bb 10>;
+  else
+    goto <bb 9>;
+
+  <bb 9>:
+  goto <bb 15>;
+
+  <bb 10>:
+  data_16 = node_3(D)->user_data;
+  _19 = MEM[(float *)output.12_14 + 12B];
+  inverse_scale_23 = 1.0e+0 / _19;
+
+  <bb 11>:
+  # val_72 = PHI <val_43(14), -128(10)>
+  # ivtmp_86 = PHI <ivtmp_85(14), 256(10)>
+  _25 = MEM[(const float *)input.11_12 + 12B];
+  _26 = MEM[(const int32_t *)input.11_12 + 16B];
+  _27 = val_72 - _26;
+  _28 = (float) _27;
+  dequantized_29 = _25 * _28;
+  if (dequantized_29 < 0.0)
+    goto <bb 12>;
+  else
+    goto <bb 13>;
+
+  <bb 12>:
+  _46 = __builtin_expf (dequantized_29);
+  iftmp.13_47 = _46 - 1.0e+0;
+
+  <bb 13>:
+  # iftmp.13_45 = PHI <dequantized_29(11), iftmp.13_47(12)>
+  _31 = inverse_scale_23 * iftmp.13_45;
+  _32 = __builtin_roundf (_31);
+  _33 = MEM[(const int32_t *)output.12_14 + 16B];
+  _34 = (float) _33;
+  _35 = _32 + _34;
+  quantized.16_36 = (long int) _35;
+  _37 = val_72 & 255;
+  _74 = MAX_EXPR <quantized.16_36, -128>;
+  _39 = MIN_EXPR <_74, 127>;
+  _42 = (signed char) _39;
+  data_16->table[_37] = _42;
+  val_43 = val_72 + 1;
+  ivtmp_85 = ivtmp_86 - 1;
+  if (ivtmp_85 == 0)
+    goto <bb 9>;
+  else
+    goto <bb 14>;
+
+  <bb 14>:
+  goto <bb 11>;
+
+  <bb 15>:
+  # _21 = PHI <1(3), 0(9), _10(5), _11(6)>
+  input ={v} {CLOBBER};
+  output ={v} {CLOBBER};
+  return _21;
+
+}
+
+
+
+;; Function TfLiteStatus tflite::{anonymous}::EluEval(TfLiteContext*, TfLiteNode*) (_ZN6tflite12_GLOBAL__N_17EluEvalEP13TfLiteContextP10TfLiteNode, funcdef_no=1146, decl_uid=23102, cgraph_uid=456, symbol_order=459)
+
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/reference/elu.h:28
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/reference/elu.h:28:21: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/reference/elu.h:28:21: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/reference/elu.h:28:21: note: not vectorized: control flow in loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/reference/elu.h:28:21: note: bad loop form.
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === get_loop_niters ===
+Analyzing # of iterations of loop 2
+  exit condition [1, + , 1](no_overflow) < _60
+  bounds on difference of bases: 0 ... 2147483646
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+  result:
+    # of iterations (unsigned int) _60 + 4294967295, bounded by 2147483646
+Applying pattern match.pd:1047, generic-match.c:4821
+Applying pattern match.pd:83, generic-match.c:9008
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Symbolic number of iterations is (unsigned int) _60
+Creating dr for *_72
+analyze_innermost: success.
+	base_address: iftmp.6_71
+	offset from base address: 0
+	constant offset from base address: 0
+	step: 4
+	aligned to: 64
+	base_object: MEM[(const int *)iftmp.6_71]
+	Access function 0: {0B, +, 4}_2
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_refs ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: got vectype for stmt: _73 = *_72;
+const vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_scalar_cycles ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_94 = PHI <0(31), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Access function of PHI: {0, +, 1}_2
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: step: 1,  init: 0
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Detected induction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Access function of PHI: buffer_size_184
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_75 = _73 * buffer_size_184;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Detected reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_pattern_recog ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand i.5_69
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: i.5_69 = (unsigned int) i_94;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand i_94
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: i_94 = PHI <0(31), i_76(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: induction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_ref_accesses ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_mark_stmts_to_be_vectorized ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: phi relevant? i_94 = PHI <0(31), i_76(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: phi relevant? buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? i.5_69 = (unsigned int) i_94;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _70 = i.5_69 * 4;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _72 = iftmp.6_71 + _70;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? buffer_size_75 = _73 * buffer_size_184;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vec_stmt_relevant_p: used out of loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 0, live 1: buffer_size_75 = _73 * buffer_size_184;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? i_76 = i_94 + 1;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? if (_60 <= i_76)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: buffer_size_75 = _73 * buffer_size_184;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 3, live 0: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_184
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 3, live 0: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand 1
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_75
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_75 = _73 * buffer_size_184;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc-stmt defining reduc-phi in the same nest.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_ref_dependences ===
+(compute_affine_dependence
+  stmt_a: _73 = *_72;
+  stmt_b: _73 = *_72;
+(analyze_overlapping_iterations 
+  (chrec_a = {0B, +, 4}_2)
+  (chrec_b = {0B, +, 4}_2)
+  (overlap_iterations_a = [0])
+  (overlap_iterations_b = [0]))
+)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_determine_vectorization_factor ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining phi: i_94 = PHI <0(31), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i.5_69 = (unsigned int) i_94;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _70 = i.5_69 * 4;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _72 = iftmp.6_71 + _70;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _73 = *_72;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: buffer_size_75 = _73 * buffer_size_184;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i_76 = i_94 + 1;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: if (_60 <= i_76)
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectorization factor = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_slp ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_make_slp_decision ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_refs_alignment ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_compute_data_ref_alignment:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: can't force alignment of ref: *_72
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_prune_runtime_alias_test_list ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_enhance_data_refs_alignment ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Unknown misalignment, is_packed = 0
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_can_advance_ivs_p:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_94 = PHI <0(31), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Alignment of access forced using peeling.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Peeling for alignment will be applied.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_loop_operations ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: examining phi: i_94 = PHI <0(31), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: examining phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i.5_69 = (unsigned int) i_94;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _70 = i.5_69 * 4;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _72 = iftmp.6_71 + _70;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand *_72
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: not ssa-name.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: use not simple.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand *_72
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: not ssa-name.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: use not simple.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_model_load_cost: aligned.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_model_load_cost: inside_cost = 1, prologue_cost = 0 .
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: buffer_size_75 = _73 * buffer_size_184;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_184
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_75 = _73 * buffer_size_184;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: no optab for reduction.
+vect_model_reduction_cost: inside_cost = 1, prologue_cost = 1, epilogue_cost = 5 .
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i_76 = i_94 + 1;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: if (_60 <= i_76)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+cost model: prologue peel iters set to vf/2.
+cost model: epilogue peel iters set to vf/2 because peeling for alignment is unknown.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Cost model analysis: 
+  Vector inside of loop cost: 2
+  Vector prologue cost: 9
+  Vector epilogue cost: 13
+  Scalar iteration cost: 2
+  Scalar outside cost: 7
+  Vector outside cost: 22
+  prologue iterations: 2
+  epilogue iterations: 2
+  Calculated minimum iters for profitability: 9
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   Runtime profitability threshold = 8
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   Static estimate profitability threshold = 17
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: epilog loop required
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_can_advance_ivs_p:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_94 = PHI <0(31), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_184 = PHI <1(31), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: loop vectorized
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vec_transform_loop ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Profitability threshold is 8 loop iterations.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: loop peeled for vectorization to enhance alignment
+Applying pattern match.pd:83, generic-match.c:9904
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: created iftmp.6_71
+Applying pattern match.pd:1397, generic-match.c:2840
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: niters for prolog loop: MIN_EXPR <-((unsigned int) iftmp.6_71 >> 2 & 1) & 3, niters.70_130>
+Removing basic block 113
+basic block 113, loop depth 0
+ pred:       31
+ succ:      
+
+
+Applying pattern match.pd:2371, generic-match.c:1588
+;; Scaling loop 9 with scale 0.666600, bounding iterations to 8 from guessed 16
+;; guessed iterations are now 7
+;; Scaling loop 2 with scale 0.777800, bounding iterations to 0 from guessed 13
+;; guessed iterations are now 11
+
+loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:293: if (ivtmp_123 >= prologue_after_cost_adjust.73_216)
+
+Setting upper bound of nb iterations for prologue loop to 7
+Applying pattern match.pd:994, generic-match.c:4164
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_update_inits_of_dr ===
+Applying pattern match.pd:83, generic-match.c:9008
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_do_peeling_for_loop_bound ===
+Removing basic block 120
+basic block 120, loop depth 0
+ pred:       110
+ succ:      
+
+
+Applying pattern match.pd:1771, generic-match.c:1258
+;; Scaling loop 2 with scale 0.666600, bounding iterations to 0 from guessed 16
+;; guessed iterations are now 11
+;; Scaling loop 10 with scale 0.777800, bounding iterations to 4 from guessed 13
+;; guessed iterations are now 3
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_update_ivs_after_vectorizer: phi: i_94 = PHI <i_200(124), i_76(33)>
+
+Applying pattern match.pd:148, generic-match.c:566
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_update_ivs_after_vectorizer: phi: buffer_size_184 = PHI <buffer_size_190(124), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+Setting upper bound of nb iterations for epilogue loop to 2
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing phi: i_94 = PHI <i_200(128), i_76(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing phi: buffer_size_184 = PHI <buffer_size_190(128), buffer_size_75(33)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: i.5_69 = (unsigned int) i_94;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _70 = i.5_69 * 4;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _72 = iftmp.6_71 + _70;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _73 = *_72;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform statement.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform load. ncopies = 1
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: create vector_type-pointer variable to type: const vector(4) int  vectorizing a pointer ref: MEM[(const int *)iftmp.6_71]
+Applying pattern match.pd:83, generic-match.c:9008
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: created vectp_iftmp.79_164
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: add new stmt: vect__73.80_49 = MEM[(const int *)vectp_iftmp.78_67];
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: buffer_size_75 = _73 * buffer_size_184;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform statement.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_184
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_184 = PHI <buffer_size_190(128), buffer_size_75(33)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_75 = _73 * buffer_size_184;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: no optab for reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_get_vec_def_for_operand: _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _73
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   def_stmt =  _73 = *_72;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: add new stmt: vect_buffer_size_75.81_89 = vect__73.80_49 * vect_buffer_size_75.81_88;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_190
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_190 = PHI <buffer_size_140(117), 1(114)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: external
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform reduction: created def-use cycle: vect_buffer_size_75.81_88 = PHI <{ 1, 1, 1, 1 }(128), vect_buffer_size_75.81_89(33)>
+
+vect_buffer_size_75.81_89 = vect__73.80_49 * vect_buffer_size_75.81_88;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Reduce using vector shifts
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: extract scalar result
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: i_76 = i_94 + 1;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: vectp_iftmp.78_62 = vectp_iftmp.78_67 + 16;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: if (_60 <= i_76)
+
+
+loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:293: if (ivtmp_228 >= bnd.75_103)
+
+;; Scaling loop 2 with scale 0.250000, bounding iterations to 2 from guessed 11
+;; guessed iterations are now 2
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: LOOP VECTORIZED
+
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: not vectorized: control flow in loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: bad loop form.
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: not vectorized: control flow in loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: bad loop form.
+
+Analyzing loop at ../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: ===== analyze_loop_nest =====
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: === vect_analyze_loop_form ===
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: === get_loop_niters ===
+Analyzing # of iterations of loop 4
+  exit condition [1, + , 1](no_overflow) < buffer_size_202
+  bounds on difference of bases: 0 ... 2147483646
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+  result:
+    # of iterations (unsigned int) buffer_size_202 + 4294967295, bounded by 2147483646
+Applying pattern match.pd:1047, generic-match.c:4821
+Applying pattern match.pd:83, generic-match.c:9008
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: Symbolic number of iterations is (unsigned int) buffer_size_202
+Creating dr for *_105
+analyze_innermost: success.
+	base_address: _100
+	offset from base address: 0
+	constant offset from base address: 0
+	step: 1
+	aligned to: 64
+	base_object: MEM[(const int8_t *)_100]
+	Access function 0: {0B, +, 1}_4
+Creating dr for data_18->table[_108]
+analyze_innermost: Applying pattern match.pd:148, generic-match.c:566
+Applying pattern match.pd:83, generic-match.c:9008
+Applying pattern match.pd:83, generic-match.c:9008
+Applying pattern match.pd:1505, generic-match.c:7235
+failed: evolution of offset is not affine.
+	base_address: 
+	offset from base address: 
+	constant offset from base address: 
+	step: 
+	aligned to: 
+	base_object: *data_18
+	Access function 0: scev_not_known;
+	Access function 1: 0
+Creating dr for *_104
+analyze_innermost: success.
+	base_address: iftmp.8_210
+	offset from base address: 0
+	constant offset from base address: 0
+	step: 1
+	aligned to: 64
+	base_object: MEM[(int8_t *)iftmp.8_210]
+	Access function 0: {0B, +, 1}_4
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: === vect_analyze_data_refs ===
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: got vectype for stmt: _106 = *_105;
+const vector(16) signed char
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: not vectorized: data ref analysis failed _109 = data_18->table[_108];
+
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:73:21: note: bad data references.
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === get_loop_niters ===
+Analyzing # of iterations of loop 5
+  exit condition [1, + , 1](no_overflow) < _116
+  bounds on difference of bases: -2147483649 ... 2147483646
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+Applying pattern match.pd:1771, generic-match.c:1258
+  result:
+    zero if _116 <= 0
+    # of iterations (unsigned int) _116 + 4294967295, bounded by 2147483646
+Applying pattern match.pd:1047, generic-match.c:4821
+Applying pattern match.pd:83, generic-match.c:9008
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Symbolic number of iterations is (unsigned int) MAX_EXPR <_116, 1>
+Creating dr for *_128
+analyze_innermost: success.
+	base_address: iftmp.6_204
+	offset from base address: 0
+	constant offset from base address: 0
+	step: 4
+	aligned to: 64
+	base_object: MEM[(const int *)iftmp.6_204]
+	Access function 0: {0B, +, 4}_5
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_refs ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: got vectype for stmt: _129 = *_128;
+const vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_scalar_cycles ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_119 = PHI <0(68), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Access function of PHI: {0, +, 1}_5
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: step: 1,  init: 0
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Detected induction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Access function of PHI: buffer_size_178
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_131 = _129 * buffer_size_178;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Detected reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_pattern_recog ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand i.5_125
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: i.5_125 = (unsigned int) i_119;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand i_119
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: i_119 = PHI <0(68), i_132(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: induction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_ref_accesses ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_mark_stmts_to_be_vectorized ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: phi relevant? i_119 = PHI <0(68), i_132(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: phi relevant? buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? i.5_125 = (unsigned int) i_119;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _126 = i.5_125 * 4;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _128 = iftmp.6_204 + _126;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? buffer_size_131 = _129 * buffer_size_178;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vec_stmt_relevant_p: used out of loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 0, live 1: buffer_size_131 = _129 * buffer_size_178;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? i_132 = i_119 + 1;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: init: stmt relevant? if (_116 <= i_132)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: buffer_size_131 = _129 * buffer_size_178;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 3, live 0: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_178
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: mark relevant 3, live 0: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand 1
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_131
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_131 = _129 * buffer_size_178;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc-stmt defining reduc-phi in the same nest.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: worklist: examine stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_ref_dependences ===
+(compute_affine_dependence
+  stmt_a: _129 = *_128;
+  stmt_b: _129 = *_128;
+(analyze_overlapping_iterations 
+  (chrec_a = {0B, +, 4}_5)
+  (chrec_b = {0B, +, 4}_5)
+  (overlap_iterations_a = [0])
+  (overlap_iterations_b = [0]))
+)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_determine_vectorization_factor ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining phi: i_119 = PHI <0(68), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i.5_125 = (unsigned int) i_119;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _126 = i.5_125 * 4;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _128 = iftmp.6_204 + _126;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _129 = *_128;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: buffer_size_131 = _129 * buffer_size_178;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: get vectype for scalar type:  int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectype: vector(4) int
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: nunits = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i_132 = i_119 + 1;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: if (_116 <= i_132)
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vectorization factor = 4
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_slp ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_make_slp_decision ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_data_refs_alignment ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_compute_data_ref_alignment:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: can't force alignment of ref: *_128
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_prune_runtime_alias_test_list ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_enhance_data_refs_alignment ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Unknown misalignment, is_packed = 0
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_can_advance_ivs_p:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_119 = PHI <0(68), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Alignment of access forced using peeling.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Peeling for alignment will be applied.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_analyze_loop_operations ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: examining phi: i_119 = PHI <0(68), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: examining phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i.5_125 = (unsigned int) i_119;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _126 = i.5_125 * 4;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _128 = iftmp.6_204 + _126;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand *_128
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: not ssa-name.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: use not simple.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand *_128
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: not ssa-name.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: use not simple.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_model_load_cost: aligned.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_model_load_cost: inside_cost = 1, prologue_cost = 0 .
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: buffer_size_131 = _129 * buffer_size_178;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_178
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_131 = _129 * buffer_size_178;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: no optab for reduction.
+vect_model_reduction_cost: inside_cost = 1, prologue_cost = 1, epilogue_cost = 5 .
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: i_132 = i_119 + 1;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ==> examining statement: if (_116 <= i_132)
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: irrelevant.
+cost model: prologue peel iters set to vf/2.
+cost model: epilogue peel iters set to vf/2 because peeling for alignment is unknown.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Cost model analysis: 
+  Vector inside of loop cost: 2
+  Vector prologue cost: 9
+  Vector epilogue cost: 13
+  Scalar iteration cost: 2
+  Scalar outside cost: 7
+  Vector outside cost: 22
+  prologue iterations: 2
+  epilogue iterations: 2
+  Calculated minimum iters for profitability: 9
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   Runtime profitability threshold = 8
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   Static estimate profitability threshold = 17
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: epilog loop required
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_can_advance_ivs_p:
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: i_119 = PHI <0(68), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Analyze phi: buffer_size_178 = PHI <1(68), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: loop vectorized
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vec_transform_loop ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Profitability threshold is 8 loop iterations.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: loop peeled for vectorization to enhance alignment
+Applying pattern match.pd:83, generic-match.c:9904
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: created iftmp.6_204
+Applying pattern match.pd:1397, generic-match.c:2840
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: niters for prolog loop: MIN_EXPR <-((unsigned int) iftmp.6_204 >> 2 & 1) & 3, niters.85_229>
+Removing basic block 132
+basic block 132, loop depth 0
+ pred:       68
+ succ:      
+
+
+Applying pattern match.pd:2371, generic-match.c:1588
+;; Scaling loop 11 with scale 0.666600, bounding iterations to 8 from guessed 16
+;; guessed iterations are now 7
+;; Scaling loop 5 with scale 0.777800, bounding iterations to 0 from guessed 13
+;; guessed iterations are now 11
+
+loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:293: if (ivtmp_253 >= prologue_after_cost_adjust.88_245)
+
+Setting upper bound of nb iterations for prologue loop to 7
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_update_inits_of_dr ===
+Applying pattern match.pd:83, generic-match.c:9008
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: === vect_do_peeling_for_loop_bound ===
+Removing basic block 139
+basic block 139, loop depth 0
+ pred:       129
+ succ:      
+
+
+Applying pattern match.pd:1771, generic-match.c:1258
+;; Scaling loop 5 with scale 0.666600, bounding iterations to 0 from guessed 16
+;; guessed iterations are now 11
+;; Scaling loop 12 with scale 0.777800, bounding iterations to 4 from guessed 13
+;; guessed iterations are now 3
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_update_ivs_after_vectorizer: phi: i_119 = PHI <i_246(143), i_132(70)>
+
+Applying pattern match.pd:148, generic-match.c:566
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_update_ivs_after_vectorizer: phi: buffer_size_178 = PHI <buffer_size_248(143), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: reduc phi. skip.
+Setting upper bound of nb iterations for epilogue loop to 2
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing phi: i_119 = PHI <i_246(147), i_132(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing phi: buffer_size_178 = PHI <buffer_size_248(147), buffer_size_131(70)>
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: i.5_125 = (unsigned int) i_119;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _126 = i.5_125 * 4;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _128 = iftmp.6_204 + _126;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: _129 = *_128;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform statement.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform load. ncopies = 1
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: create vector_type-pointer variable to type: const vector(4) int  vectorizing a pointer ref: MEM[(const int *)iftmp.6_204]
+Applying pattern match.pd:83, generic-match.c:9008
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: created vectp_iftmp.94_279
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: add new stmt: vect__129.95_283 = MEM[(const int *)vectp_iftmp.93_281];
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: buffer_size_131 = _129 * buffer_size_178;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform statement.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_178
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_178 = PHI <buffer_size_248(147), buffer_size_131(70)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: reduction
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: detected reduction: buffer_size_131 = _129 * buffer_size_178;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: no optab for reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform reduction.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_get_vec_def_for_operand: _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand _129
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: internal
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note:   def_stmt =  _129 = *_128;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: add new stmt: vect_buffer_size_131.96_285 = vect__129.95_283 * vect_buffer_size_131.96_284;
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: vect_is_simple_use: operand buffer_size_248
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: def_stmt: buffer_size_248 = PHI <buffer_size_249(136), 1(133)>
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: type of def: external
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: transform reduction: created def-use cycle: vect_buffer_size_131.96_284 = PHI <{ 1, 1, 1, 1 }(147), vect_buffer_size_131.96_285(70)>
+
+vect_buffer_size_131.96_285 = vect__129.95_283 * vect_buffer_size_131.96_284;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: Reduce using vector shifts
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: extract scalar result
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: i_132 = i_119 + 1;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: vectp_iftmp.93_282 = vectp_iftmp.93_281 + 16;
+
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: ------>vectorizing statement: if (_116 <= i_132)
+
+
+loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:293: if (ivtmp_294 >= bnd.90_255)
+
+;; Scaling loop 5 with scale 0.250000, bounding iterations to 2 from guessed 11
+;; guessed iterations are now 1
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:292:23: note: LOOP VECTORIZED
+
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: not vectorized: control flow in loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:34: note: bad loop form.
+
+Analyzing loop at C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: ===== analyze_loop_nest =====
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: === vect_analyze_loop_form ===
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: not vectorized: control flow in loop.
+C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels/internal/types.h:216:51: note: bad loop form.
+../src/tensorflow_lite/tensorflow/lite/micro/kernels/elu.cc:112:14: note: vectorized 2 loops in function.
+Merging blocks 31 and 115
+Merging blocks 68 and 134
+Merging blocks 110 and 124
+Merging blocks 118 and 30
+Merging blocks 126 and 119
+Merging blocks 129 and 143
+Merging blocks 137 and 71
+Merging blocks 145 and 138
+fix_loop_structure: fixing up loops for function
+Created preheader block for loop 9
+Created preheader block for loop 11
+TfLiteStatus tflite::{anonymous}::EluEval(TfLiteContext*, TfLiteNode*) (struct TfLiteContext * context, struct TfLiteNode * node)
+{
+  int vect_buffer_size_131.99;
+  vector(4) int vect_buffer_size_131.98;
+  int stmp_buffer_size_131.97;
+  vector(4) int vect_buffer_size_131.96;
+  const vector(4) int vect__129.95;
+  const vector(4) int * vectp_iftmp.94;
+  const vector(4) int * vectp_iftmp.93;
+  int tmp.92;
+  unsigned int ratio_mult_vf.91;
+  unsigned int bnd.90;
+  unsigned int niters.89;
+  unsigned int prologue_after_cost_adjust.88;
+  unsigned int prolog_loop_niters.87;
+  const vector(4) int * vectp_iftmp.86;
+  unsigned int niters.85;
+  int vect_buffer_size_75.84;
+  vector(4) int vect_buffer_size_75.83;
+  int stmp_buffer_size_75.82;
+  vector(4) int vect_buffer_size_75.81;
+  const vector(4) int vect__73.80;
+  const vector(4) int * vectp_iftmp.79;
+  const vector(4) int * vectp_iftmp.78;
+  int tmp.77;
+  unsigned int ratio_mult_vf.76;
+  unsigned int bnd.75;
+  unsigned int niters.74;
+  unsigned int prologue_after_cost_adjust.73;
+  unsigned int prolog_loop_niters.72;
+  const vector(4) int * vectp_iftmp.71;
+  unsigned int niters.70;
+  int32_t D.23873;
+  int32_t D.23870;
+  int i;
+  int i;
+  int buffer_size;
+  int D.23867;
+  const struct RuntimeShape D.23859;
+  const struct RuntimeShape D.23858;
+  int i;
+  int32_t D.23853;
+  int32_t D.23850;
+  int i;
+  int i;
+  int buffer_size;
+  int D.23847;
+  int i;
+  const float val;
+  struct TfLiteEvalTensor * D.23835;
+  struct TfLiteEvalTensor * D.23831;
+  const struct OpData * data;
+  const struct RuntimeShape D.23110;
+  const struct RuntimeShape D.23107;
+  TfLiteStatus _1;
+  unsigned int _8;
+  TfLiteType _9;
+  unsigned int _12;
+  const float * _20;
+  float * iftmp.0_21;
+  float * iftmp.0_22;
+  long int _23;
+  int32_t * _24;
+  int32_t * _26;
+  long int _27;
+  int32_t * _28;
+  long int _29;
+  int32_t * _30;
+  struct TfLiteEvalTensor * (*<T3d09>) (const struct TfLiteContext *, int) _41;
+  struct TfLiteIntArray * _42;
+  int _43;
+  struct TfLiteEvalTensor * _44;
+  struct TfLiteEvalTensor * (*<T3d09>) (const struct TfLiteContext *, int) _45;
+  struct TfLiteIntArray * _46;
+  int _47;
+  struct TfLiteEvalTensor * _48;
+  unsigned int i.1_51;
+  unsigned int _52;
+  const float * _53;
+  float * _55;
+  float _56;
+  float iftmp.2_57;
+  long int _59;
+  long int _60;
+  int _61;
+  const int * _63;
+  const int32_t * iftmp.6_66;
+  unsigned int _68;
+  unsigned int i.5_69;
+  unsigned int _70;
+  const int32_t * iftmp.6_71;
+  const int * _72;
+  int _73;
+  unsigned int i.5_74;
+  int32_t * _79;
+  unsigned int i.4_80;
+  unsigned int _81;
+  const int32_t & _82;
+  long int iftmp.3_83;
+  unsigned int _86;
+  int32_t * _87;
+  const int32_t & _90;
+  long int iftmp.3_91;
+  unsigned int ivtmp_92;
+  unsigned int _93;
+  long int pretmp_95;
+  int32_t * _96;
+  int32_t * _98;
+  signed char * iftmp.8_99;
+  const signed char * _100;
+  unsigned int _101;
+  sizetype i.7_102;
+  int8_t * _104;
+  const int8_t * _105;
+  signed char _106;
+  unsigned char _107;
+  int _108;
+  signed char _109;
+  long int _111;
+  int32_t * _112;
+  long int _113;
+  int32_t * _114;
+  long int _115;
+  long int _116;
+  long int prephitmp_118;
+  const int32_t * iftmp.6_122;
+  unsigned int ivtmp_123;
+  unsigned int i.5_125;
+  unsigned int _126;
+  const int * _128;
+  int _129;
+  sizetype _133;
+  int32_t * _135;
+  unsigned int i.4_136;
+  unsigned int _137;
+  const int32_t & _138;
+  long int iftmp.3_139;
+  long int iftmp.3_141;
+  long int iftmp.3_142;
+  int32_t * _143;
+  const int32_t & _146;
+  long int iftmp.3_147;
+  unsigned int _149;
+  int _150;
+  const int * _153;
+  unsigned int _154;
+  unsigned int i.5_163;
+  int _165;
+  unsigned int _182;
+  long int iftmp.3_183;
+  long int iftmp.3_188;
+  unsigned int _198;
+  unsigned int _203;
+  const int32_t * iftmp.6_204;
+  unsigned int _205;
+  signed char * iftmp.8_210;
+  long int pretmp_218;
+  long int prephitmp_219;
+  unsigned int ivtmp_227;
+  unsigned int ivtmp_228;
+  long int _230;
+  unsigned int _232;
+  unsigned int _233;
+  unsigned int _234;
+  unsigned int _235;
+  unsigned int _236;
+  unsigned int i.5_239;
+  unsigned int _240;
+  const int * _241;
+  int _242;
+  unsigned int ivtmp_252;
+  unsigned int ivtmp_253;
+  unsigned int _256;
+  unsigned int _257;
+  unsigned int i.5_261;
+  unsigned int _262;
+  const int * _263;
+  int _264;
+  unsigned int _267;
+  unsigned int _268;
+  unsigned int _269;
+  unsigned int _270;
+  int _278;
+  sizetype _280;
+  unsigned int ivtmp_293;
+  unsigned int ivtmp_294;
+  unsigned int ivtmp_297;
+  unsigned int ivtmp_300;
+
+  <bb 2>:
+  if (context_5(D) != 0B)
+    goto <bb 4>;
+  else
+    goto <bb 3>;
+
+  <bb 3>:
+  abort ();
+
+  <bb 4>:
+  if (node_6(D) != 0B)
+    goto <bb 5>;
+  else
+    goto <bb 3>;
+
+  <bb 5>:
+  _45 = MEM[(const struct TfLiteContext *)context_5(D)].GetEvalTensor;
+  _46 = MEM[(const struct TfLiteNode *)node_6(D)].inputs;
+  _47 = _46->data[0];
+  _48 = _45 (context_5(D), _47);
+  _41 = MEM[(const struct TfLiteContext *)context_5(D)].GetEvalTensor;
+  _42 = MEM[(const struct TfLiteNode *)node_6(D)].outputs;
+  _43 = _42->data[0];
+  _44 = _41 (context_5(D), _43);
+  _9 = MEM[(const struct TfLiteEvalTensor *)_48].type;
+  switch (_9) <default: <L6>, case 1: <L0>, case 9: <L1>>
+
+<L0>:
+  D.23107 = tflite::micro::GetTensorShape (_48); [return slot optimization]
+  _20 = MEM[(const struct TfLiteEvalTensor *)_48].data.raw;
+  D.23110 = tflite::micro::GetTensorShape (_44); [return slot optimization]
+
+  <bb 7>:
+  if (_44 != 0B)
+    goto <bb 8>;
+  else
+    goto <bb 9>;
+
+  <bb 8>:
+  iftmp.0_21 = _44->data.raw;
+
+  <bb 9>:
+  # iftmp.0_22 = PHI <0B(7), iftmp.0_21(8)>
+  _59 = MEM[(long int *)&D.23107];
+  _60 = MEM[(long int *)&D.23110];
+  if (_59 == _60)
+    goto <bb 10>;
+  else
+    goto <bb 11>;
+
+  <bb 10>:
+  if (_60 <= 0)
+    goto <bb 27>;
+  else
+    goto <bb 12>;
+
+  <bb 11>:
+  abort ();
+
+  <bb 12>:
+  _79 = D.23107.D.20881.dims_pointer_;
+  _87 = D.23110.D.20881.dims_pointer_;
+  if (_60 > 5)
+    goto <bb 18>;
+  else
+    goto <bb 13>;
+
+  <bb 13>:
+
+  <bb 14>:
+  # i_207 = PHI <0(13), i_171(17)>
+  iftmp.3_188 = D.23107.D.20881.dims_[i_207];
+  if (_59 > i_207)
+    goto <bb 15>;
+  else
+    goto <bb 20>;
+
+  <bb 15>:
+  iftmp.3_183 = D.23110.D.20881.dims_[i_207];
+  if (iftmp.3_183 == iftmp.3_188)
+    goto <bb 16>;
+  else
+    goto <bb 23>;
+
+  <bb 16>:
+  i_171 = i_207 + 1;
+  if (_60 <= i_171)
+    goto <bb 27>;
+  else
+    goto <bb 17>;
+
+  <bb 17>:
+  goto <bb 14>;
+
+  <bb 18>:
+
+  <bb 19>:
+  # i_65 = PHI <0(18), i_64(26)>
+  i.4_80 = (unsigned int) i_65;
+  _81 = i.4_80 * 4;
+  _82 = _79 + _81;
+  iftmp.3_83 = *_82;
+  if (_59 > i_65)
+    goto <bb 22>;
+  else
+    goto <bb 20>;
+
+  <bb 20>:
+  abort ();
+
+<L12>:
+  goto <bb 124> (<L4>);
+
+  <bb 22>:
+  _90 = _87 + _81;
+  iftmp.3_91 = *_90;
+  if (iftmp.3_83 == iftmp.3_91)
+    goto <bb 25>;
+  else
+    goto <bb 23>;
+
+  <bb 23>:
+  abort ();
+
+<L13>:
+  goto <bb 124> (<L4>);
+
+  <bb 25>:
+  i_64 = i_65 + 1;
+  if (_60 <= i_64)
+    goto <bb 27>;
+  else
+    goto <bb 26>;
+
+  <bb 26>:
+  goto <bb 19>;
+
+  <bb 27>:
+  if (_60 > 5)
+    goto <bb 28>;
+  else
+    goto <bb 29>;
+
+  <bb 28>:
+  iftmp.6_66 = D.23107.D.20881.dims_pointer_;
+
+  <bb 29>:
+  # iftmp.6_71 = PHI <iftmp.6_66(28), &D.23107.D.20881.dims_(27)>
+  if (_60 <= 0)
+    goto <bb 47>;
+  else
+    goto <bb 33>;
+
+  <bb 30>:
+  # buffer_size_211 = PHI <buffer_size_50(42)>
+
+  <bb 31>:
+  # buffer_size_212 = PHI <buffer_size_211(30), vect_buffer_size_75.84_226(44)>
+
+  <bb 32>:
+  # buffer_size_148 = PHI <buffer_size_212(31), buffer_size_140(38)>
+  if (buffer_size_148 <= 0)
+    goto <bb 53>;
+  else
+    goto <bb 47>;
+
+  <bb 33>:
+  niters.70_130 = (unsigned int) _60;
+  _182 = (unsigned int) iftmp.6_71;
+  _205 = _182 >> 2;
+  _149 = _205 & 1;
+  _203 = -_149;
+  _93 = _203 & 3;
+  prolog_loop_niters.72_181 = MIN_EXPR <_93, niters.70_130>;
+  if (niters.70_130 <= 8)
+    goto <bb 34>;
+  else
+    goto <bb 35>;
+
+  <bb 34>:
+
+  <bb 35>:
+  # prologue_after_cost_adjust.73_216 = PHI <niters.70_130(34), prolog_loop_niters.72_181(33)>
+  if (prologue_after_cost_adjust.73_216 == 0)
+    goto <bb 39>;
+  else
+    goto <bb 36>;
+
+  <bb 36>:
+  # i_295 = PHI <0(35)>
+  # buffer_size_296 = PHI <1(35)>
+  # ivtmp_297 = PHI <0(35)>
+
+  <bb 136>:
+  # i_169 = PHI <i_295(36), i_217(37)>
+  # buffer_size_168 = PHI <buffer_size_296(36), buffer_size_215(37)>
+  # ivtmp_92 = PHI <ivtmp_297(36), ivtmp_123(37)>
+  i.5_163 = (unsigned int) i_169;
+  _154 = i.5_163 * 4;
+  _153 = iftmp.6_71 + _154;
+  _150 = *_153;
+  buffer_size_215 = _150 * buffer_size_168;
+  i_217 = i_169 + 1;
+  ivtmp_123 = ivtmp_92 + 1;
+  if (ivtmp_123 >= prologue_after_cost_adjust.73_216)
+    goto <bb 38>;
+  else
+    goto <bb 37>;
+
+  <bb 37>:
+  goto <bb 136>;
+
+  <bb 38>:
+  # i_214 = PHI <i_217(136)>
+  # buffer_size_140 = PHI <buffer_size_215(136)>
+  if (niters.70_130 == prologue_after_cost_adjust.73_216)
+    goto <bb 32>;
+  else
+    goto <bb 39>;
+
+  <bb 39>:
+  # i_200 = PHI <i_214(38), 0(35)>
+  # buffer_size_190 = PHI <buffer_size_140(38), 1(35)>
+  niters.74_117 = niters.70_130 - prologue_after_cost_adjust.73_216;
+  _101 = niters.74_117 + 4294967292;
+  _86 = _101 >> 2;
+  bnd.75_103 = _86 + 1;
+  ratio_mult_vf.76_85 = bnd.75_103 << 2;
+  _12 = (unsigned int) _60;
+  _8 = _12 - prologue_after_cost_adjust.73_216;
+  _198 = _8 + 4294967295;
+  if (_198 <= 2)
+    goto <bb 45>;
+  else
+    goto <bb 40>;
+
+  <bb 40>:
+  _133 = prologue_after_cost_adjust.73_216 * 4;
+  vectp_iftmp.79_164 = iftmp.6_71 + _133;
+
+  <bb 41>:
+  # i_94 = PHI <i_200(40), i_76(46)>
+  # buffer_size_184 = PHI <buffer_size_190(40), buffer_size_75(46)>
+  # vectp_iftmp.78_67 = PHI <vectp_iftmp.79_164(40), vectp_iftmp.78_62(46)>
+  # vect_buffer_size_75.81_88 = PHI <{ 1, 1, 1, 1 }(40), vect_buffer_size_75.81_89(46)>
+  # ivtmp_227 = PHI <0(40), ivtmp_228(46)>
+  i.5_69 = (unsigned int) i_94;
+  _70 = i.5_69 * 4;
+  _72 = iftmp.6_71 + _70;
+  vect__73.80_49 = MEM[(const int *)vectp_iftmp.78_67];
+  _73 = *_72;
+  vect_buffer_size_75.81_89 = vect__73.80_49 * vect_buffer_size_75.81_88;
+  buffer_size_75 = _73 * buffer_size_184;
+  i_76 = i_94 + 1;
+  vectp_iftmp.78_62 = vectp_iftmp.78_67 + 16;
+  ivtmp_228 = ivtmp_227 + 1;
+  if (ivtmp_228 >= bnd.75_103)
+    goto <bb 44>;
+  else
+    goto <bb 46>;
+
+  <bb 42>:
+  # i_78 = PHI <i_39(43), i_222(45)>
+  # buffer_size_77 = PHI <buffer_size_50(43), buffer_size_220(45)>
+  i.5_74 = (unsigned int) i_78;
+  _68 = i.5_74 * 4;
+  _63 = iftmp.6_71 + _68;
+  _61 = *_63;
+  buffer_size_50 = _61 * buffer_size_77;
+  i_39 = i_78 + 1;
+  if (_60 <= i_39)
+    goto <bb 30>;
+  else
+    goto <bb 43>;
+
+  <bb 43>:
+  goto <bb 42>;
+
+  <bb 44>:
+  # i_221 = PHI <i_76(41)>
+  # buffer_size_213 = PHI <buffer_size_75(41)>
+  # vect_buffer_size_75.81_25 = PHI <vect_buffer_size_75.81_89(41)>
+  vect_buffer_size_75.83_144 = VEC_PERM_EXPR <vect_buffer_size_75.81_25, { 0, 0, 0, 0 }, { 2, 3, 4, 5 }>;
+  vect_buffer_size_75.83_145 = vect_buffer_size_75.83_144 * vect_buffer_size_75.81_25;
+  vect_buffer_size_75.83_97 = VEC_PERM_EXPR <vect_buffer_size_75.83_145, { 0, 0, 0, 0 }, { 1, 2, 3, 4 }>;
+  vect_buffer_size_75.83_224 = vect_buffer_size_75.83_97 * vect_buffer_size_75.83_145;
+  stmp_buffer_size_75.82_225 = BIT_FIELD_REF <vect_buffer_size_75.83_224, 32, 0>;
+  vect_buffer_size_75.84_226 = stmp_buffer_size_75.82_225 * buffer_size_190;
+  _165 = (int) ratio_mult_vf.76_85;
+  tmp.77_177 = _165 + i_200;
+  if (ratio_mult_vf.76_85 == niters.74_117)
+    goto <bb 31>;
+  else
+    goto <bb 45>;
+
+  <bb 45>:
+  # i_222 = PHI <tmp.77_177(44), i_200(39)>
+  # buffer_size_220 = PHI <vect_buffer_size_75.84_226(44), buffer_size_190(39)>
+  goto <bb 42>;
+
+  <bb 46>:
+  goto <bb 41>;
+
+  <bb 47>:
+  # buffer_size_201 = PHI <buffer_size_148(32), 1(29)>
+
+  <bb 48>:
+  # i_161 = PHI <0(47), i_58(51)>
+  i.1_51 = (unsigned int) i_161;
+  _52 = i.1_51 * 4;
+  _53 = _20 + _52;
+  val_54 = *_53;
+  _55 = iftmp.0_22 + _52;
+  if (val_54 < 0.0)
+    goto <bb 49>;
+  else
+    goto <bb 50>;
+
+  <bb 49>:
+  _56 = __builtin_expm1f (val_54);
+
+  <bb 50>:
+  # iftmp.2_57 = PHI <val_54(48), _56(49)>
+  *_55 = iftmp.2_57;
+  i_58 = i_161 + 1;
+  if (i_58 >= buffer_size_201)
+    goto <bb 52>;
+  else
+    goto <bb 51>;
+
+  <bb 51>:
+  goto <bb 48>;
+
+  <bb 52>:
+  pretmp_218 = D.23110.size_;
+
+  <bb 53>:
+  # prephitmp_219 = PHI <pretmp_218(52), _60(32)>
+  if (prephitmp_219 > 5)
+    goto <bb 54>;
+  else
+    goto <bb 56>;
+
+  <bb 54>:
+  _26 = D.23110.D.20881.dims_pointer_;
+  if (_26 != 0B)
+    goto <bb 55>;
+  else
+    goto <bb 56>;
+
+  <bb 55>:
+  operator delete [] (_26);
+
+  <bb 56>:
+  D.23110 ={v} {CLOBBER};
+  _23 = D.23107.size_;
+  if (_23 > 5)
+    goto <bb 57>;
+  else
+    goto <bb 59>;
+
+  <bb 57>:
+  _24 = D.23107.D.20881.dims_pointer_;
+  if (_24 != 0B)
+    goto <bb 58>;
+  else
+    goto <bb 59>;
+
+  <bb 58>:
+  operator delete [] (_24);
+
+  <bb 59>:
+  D.23107 ={v} {CLOBBER};
+  goto <bb 122> (<L6>);
+
+<L1>:
+  data_18 = node_6(D)->user_data;
+  D.23859 = tflite::micro::GetTensorShape (_48); [return slot optimization]
+  D.23858 = tflite::micro::GetTensorShape (_44); [return slot optimization]
+
+  <bb 61>:
+  _115 = MEM[(long int *)&D.23859];
+  _116 = MEM[(long int *)&D.23858];
+  if (_115 == _116)
+    goto <bb 62>;
+  else
+    goto <bb 63>;
+
+  <bb 62>:
+  if (_116 <= 0)
+    goto <bb 135>;
+  else
+    goto <bb 64>;
+
+  <bb 63>:
+  abort ();
+
+  <bb 64>:
+  _135 = D.23859.D.20881.dims_pointer_;
+  _143 = D.23858.D.20881.dims_pointer_;
+  if (_116 > 5)
+    goto <bb 70>;
+  else
+    goto <bb 65>;
+
+  <bb 65>:
+
+  <bb 66>:
+  # i_170 = PHI <0(65), i_124(69)>
+  iftmp.3_142 = D.23859.D.20881.dims_[i_170];
+  if (_115 > i_170)
+    goto <bb 67>;
+  else
+    goto <bb 72>;
+
+  <bb 67>:
+  iftmp.3_141 = D.23858.D.20881.dims_[i_170];
+  if (iftmp.3_141 == iftmp.3_142)
+    goto <bb 68>;
+  else
+    goto <bb 75>;
+
+  <bb 68>:
+  i_124 = i_170 + 1;
+  if (_116 <= i_124)
+    goto <bb 79>;
+  else
+    goto <bb 69>;
+
+  <bb 69>:
+  goto <bb 66>;
+
+  <bb 70>:
+
+  <bb 71>:
+  # i_134 = PHI <0(70), i_120(78)>
+  i.4_136 = (unsigned int) i_134;
+  _137 = i.4_136 * 4;
+  _138 = _135 + _137;
+  iftmp.3_139 = *_138;
+  if (_115 > i_134)
+    goto <bb 74>;
+  else
+    goto <bb 72>;
+
+  <bb 72>:
+  abort ();
+
+<L16>:
+  goto <bb 112> (<L7>);
+
+  <bb 74>:
+  _146 = _143 + _137;
+  iftmp.3_147 = *_146;
+  if (iftmp.3_139 == iftmp.3_147)
+    goto <bb 77>;
+  else
+    goto <bb 75>;
+
+  <bb 75>:
+  abort ();
+
+<L17>:
+  goto <bb 112> (<L7>);
+
+  <bb 77>:
+  i_120 = i_134 + 1;
+  if (_116 <= i_120)
+    goto <bb 79>;
+  else
+    goto <bb 78>;
+
+  <bb 78>:
+  goto <bb 71>;
+
+  <bb 79>:
+  if (_116 > 5)
+    goto <bb 80>;
+  else
+    goto <bb 81>;
+
+  <bb 80>:
+  iftmp.6_122 = D.23859.D.20881.dims_pointer_;
+  if (_116 <= 0)
+    goto <bb 99>;
+  else
+    goto <bb 81>;
+
+  <bb 81>:
+  # iftmp.6_204 = PHI <&D.23859.D.20881.dims_(79), iftmp.6_122(80)>
+  _230 = MAX_EXPR <_116, 1>;
+  niters.85_229 = (unsigned int) _230;
+  _232 = (unsigned int) iftmp.6_204;
+  _233 = _232 >> 2;
+  _234 = _233 & 1;
+  _235 = -_234;
+  _236 = _235 & 3;
+  prolog_loop_niters.87_231 = MIN_EXPR <niters.85_229, _236>;
+  if (niters.85_229 <= 8)
+    goto <bb 82>;
+  else
+    goto <bb 83>;
+
+  <bb 82>:
+
+  <bb 83>:
+  # prologue_after_cost_adjust.88_245 = PHI <niters.85_229(82), prolog_loop_niters.87_231(81)>
+  if (prologue_after_cost_adjust.88_245 == 0)
+    goto <bb 87>;
+  else
+    goto <bb 84>;
+
+  <bb 84>:
+  # i_298 = PHI <0(83)>
+  # buffer_size_299 = PHI <1(83)>
+  # ivtmp_300 = PHI <0(83)>
+
+  <bb 137>:
+  # i_237 = PHI <i_298(84), i_244(85)>
+  # buffer_size_238 = PHI <buffer_size_299(84), buffer_size_243(85)>
+  # ivtmp_252 = PHI <ivtmp_300(84), ivtmp_253(85)>
+  i.5_239 = (unsigned int) i_237;
+  _240 = i.5_239 * 4;
+  _241 = iftmp.6_204 + _240;
+  _242 = *_241;
+  buffer_size_243 = _242 * buffer_size_238;
+  i_244 = i_237 + 1;
+  ivtmp_253 = ivtmp_252 + 1;
+  if (ivtmp_253 >= prologue_after_cost_adjust.88_245)
+    goto <bb 86>;
+  else
+    goto <bb 85>;
+
+  <bb 85>:
+  goto <bb 137>;
+
+  <bb 86>:
+  # i_247 = PHI <i_244(137)>
+  # buffer_size_249 = PHI <buffer_size_243(137)>
+  if (niters.85_229 == prologue_after_cost_adjust.88_245)
+    goto <bb 97>;
+  else
+    goto <bb 87>;
+
+  <bb 87>:
+  # i_246 = PHI <i_247(86), 0(83)>
+  # buffer_size_248 = PHI <buffer_size_249(86), 1(83)>
+  niters.89_254 = niters.85_229 - prologue_after_cost_adjust.88_245;
+  _256 = niters.89_254 + 4294967292;
+  _257 = _256 >> 2;
+  bnd.90_255 = _257 + 1;
+  ratio_mult_vf.91_258 = bnd.90_255 << 2;
+  _267 = (unsigned int) _116;
+  _268 = _267 + 4294967295;
+  _269 = _116 > 0 ? _268 : 0;
+  _270 = _269 - prologue_after_cost_adjust.88_245;
+  if (_270 <= 2)
+    goto <bb 93>;
+  else
+    goto <bb 88>;
+
+  <bb 88>:
+  _280 = prologue_after_cost_adjust.88_245 * 4;
+  vectp_iftmp.94_279 = iftmp.6_204 + _280;
+
+  <bb 89>:
+  # i_119 = PHI <i_246(88), i_132(94)>
+  # buffer_size_178 = PHI <buffer_size_248(88), buffer_size_131(94)>
+  # vectp_iftmp.93_281 = PHI <vectp_iftmp.94_279(88), vectp_iftmp.93_282(94)>
+  # vect_buffer_size_131.96_284 = PHI <{ 1, 1, 1, 1 }(88), vect_buffer_size_131.96_285(94)>
+  # ivtmp_293 = PHI <0(88), ivtmp_294(94)>
+  i.5_125 = (unsigned int) i_119;
+  _126 = i.5_125 * 4;
+  _128 = iftmp.6_204 + _126;
+  vect__129.95_283 = MEM[(const int *)vectp_iftmp.93_281];
+  _129 = *_128;
+  vect_buffer_size_131.96_285 = vect__129.95_283 * vect_buffer_size_131.96_284;
+  buffer_size_131 = _129 * buffer_size_178;
+  i_132 = i_119 + 1;
+  vectp_iftmp.93_282 = vectp_iftmp.93_281 + 16;
+  ivtmp_294 = ivtmp_293 + 1;
+  if (ivtmp_294 >= bnd.90_255)
+    goto <bb 92>;
+  else
+    goto <bb 94>;
+
+  <bb 90>:
+  # i_259 = PHI <i_266(91), i_271(93)>
+  # buffer_size_260 = PHI <buffer_size_265(91), buffer_size_273(93)>
+  i.5_261 = (unsigned int) i_259;
+  _262 = i.5_261 * 4;
+  _263 = iftmp.6_204 + _262;
+  _264 = *_263;
+  buffer_size_265 = _264 * buffer_size_260;
+  i_266 = i_259 + 1;
+  if (_116 <= i_266)
+    goto <bb 95>;
+  else
+    goto <bb 91>;
+
+  <bb 91>:
+  goto <bb 90>;
+
+  <bb 92>:
+  # i_272 = PHI <i_132(89)>
+  # buffer_size_274 = PHI <buffer_size_131(89)>
+  # vect_buffer_size_131.96_286 = PHI <vect_buffer_size_131.96_285(89)>
+  vect_buffer_size_131.98_287 = VEC_PERM_EXPR <vect_buffer_size_131.96_286, { 0, 0, 0, 0 }, { 2, 3, 4, 5 }>;
+  vect_buffer_size_131.98_288 = vect_buffer_size_131.98_287 * vect_buffer_size_131.96_286;
+  vect_buffer_size_131.98_289 = VEC_PERM_EXPR <vect_buffer_size_131.98_288, { 0, 0, 0, 0 }, { 1, 2, 3, 4 }>;
+  vect_buffer_size_131.98_290 = vect_buffer_size_131.98_289 * vect_buffer_size_131.98_288;
+  stmp_buffer_size_131.97_291 = BIT_FIELD_REF <vect_buffer_size_131.98_290, 32, 0>;
+  vect_buffer_size_131.99_292 = stmp_buffer_size_131.97_291 * buffer_size_248;
+  _278 = (int) ratio_mult_vf.91_258;
+  tmp.92_277 = i_246 + _278;
+  if (niters.89_254 == ratio_mult_vf.91_258)
+    goto <bb 96>;
+  else
+    goto <bb 93>;
+
+  <bb 93>:
+  # i_271 = PHI <tmp.92_277(92), i_246(87)>
+  # buffer_size_273 = PHI <vect_buffer_size_131.99_292(92), buffer_size_248(87)>
+  goto <bb 90>;
+
+  <bb 94>:
+  goto <bb 89>;
+
+  <bb 95>:
+  # buffer_size_276 = PHI <buffer_size_265(90)>
+
+  <bb 96>:
+  # buffer_size_275 = PHI <buffer_size_276(95), vect_buffer_size_131.99_292(92)>
+
+  <bb 97>:
+  # buffer_size_250 = PHI <buffer_size_275(96), buffer_size_249(86)>
+
+  <bb 98>:
+  # buffer_size_206 = PHI <buffer_size_250(97), 1(135)>
+  if (_115 > 5)
+    goto <bb 99>;
+  else
+    goto <bb 101>;
+
+  <bb 99>:
+  # buffer_size_7 = PHI <buffer_size_206(98), 1(80)>
+  _96 = D.23858.D.20881.dims_pointer_;
+  if (_96 != 0B)
+    goto <bb 100>;
+  else
+    goto <bb 101>;
+
+  <bb 100>:
+  operator delete [] (_96);
+  pretmp_95 = D.23859.size_;
+
+  <bb 101>:
+  # buffer_size_202 = PHI <buffer_size_206(98), buffer_size_7(99), buffer_size_7(100)>
+  # prephitmp_118 = PHI <_115(98), _115(99), pretmp_95(100)>
+  D.23858 ={v} {CLOBBER};
+  if (prephitmp_118 > 5)
+    goto <bb 102>;
+  else
+    goto <bb 134>;
+
+  <bb 102>:
+  _98 = D.23859.D.20881.dims_pointer_;
+  if (_98 != 0B)
+    goto <bb 103>;
+  else
+    goto <bb 134>;
+
+  <bb 103>:
+  operator delete [] (_98);
+  goto <bb 134>;
+
+  <bb 104>:
+  iftmp.8_99 = _44->data.raw;
+
+  <bb 105>:
+  # iftmp.8_210 = PHI <iftmp.8_99(104), 0B(134)>
+  _100 = MEM[(const struct TfLiteEvalTensor *)_48].data.raw;
+  if (buffer_size_202 <= 0)
+    goto <bb 106>;
+  else
+    goto <bb 107>;
+
+  <bb 106>:
+  goto <bb 122> (<L6>);
+
+  <bb 107>:
+
+  <bb 108>:
+  # i_121 = PHI <0(107), i_110(110)>
+  i.7_102 = (sizetype) i_121;
+  _104 = iftmp.8_210 + i.7_102;
+  _105 = _100 + i.7_102;
+  _106 = *_105;
+  _107 = (unsigned char) _106;
+  _108 = (int) _107;
+  _109 = data_18->table[_108];
+  *_104 = _109;
+  i_110 = i_121 + 1;
+  if (i_110 >= buffer_size_202)
+    goto <bb 109>;
+  else
+    goto <bb 110>;
+
+  <bb 109>:
+  goto <bb 106>;
+
+  <bb 110>:
+  goto <bb 108>;
+
+<L15>:
+
+<L7>:
+  _111 = D.23858.size_;
+  if (_111 > 5)
+    goto <bb 113>;
+  else
+    goto <bb 115>;
+
+  <bb 113>:
+  _112 = D.23858.D.20881.dims_pointer_;
+  if (_112 != 0B)
+    goto <bb 114>;
+  else
+    goto <bb 115>;
+
+  <bb 114>:
+  operator delete [] (_112);
+
+  <bb 115>:
+  D.23858 ={v} {CLOBBER};
+  resx 6
+
+<L18>:
+  goto <bb 118> (<L8>);
+
+<L14>:
+
+<L8>:
+  _113 = D.23859.size_;
+  if (_113 > 5)
+    goto <bb 119>;
+  else
+    goto <bb 121>;
+
+  <bb 119>:
+  _114 = D.23859.D.20881.dims_pointer_;
+  if (_114 != 0B)
+    goto <bb 120>;
+  else
+    goto <bb 121>;
+
+  <bb 120>:
+  operator delete [] (_114);
+
+  <bb 121>:
+  D.23859 ={v} {CLOBBER};
+  resx 5
+
+  # _1 = PHI <0(59), 0(106), 1(5)>
+<L6>:
+  return _1;
+
+<L11>:
+
+<L4>:
+  _27 = D.23110.size_;
+  if (_27 > 5)
+    goto <bb 125>;
+  else
+    goto <bb 127>;
+
+  <bb 125>:
+  _28 = D.23110.D.20881.dims_pointer_;
+  if (_28 != 0B)
+    goto <bb 126>;
+  else
+    goto <bb 127>;
+
+  <bb 126>:
+  operator delete [] (_28);
+
+  <bb 127>:
+  D.23110 ={v} {CLOBBER};
+  resx 2
+
+<L19>:
+  goto <bb 130> (<L5>);
+
+<L10>:
+
+<L5>:
+  _29 = D.23107.size_;
+  if (_29 > 5)
+    goto <bb 131>;
+  else
+    goto <bb 133>;
+
+  <bb 131>:
+  _30 = D.23107.D.20881.dims_pointer_;
+  if (_30 != 0B)
+    goto <bb 132>;
+  else
+    goto <bb 133>;
+
+  <bb 132>:
+  operator delete [] (_30);
+
+  <bb 133>:
+  D.23107 ={v} {CLOBBER};
+  resx 1
+
+  <bb 134>:
+  D.23859 ={v} {CLOBBER};
+  if (_44 != 0B)
+    goto <bb 104>;
+  else
+    goto <bb 105>;
+
+  <bb 135>:
+  if (_116 > 5)
+    goto <bb 80>;
+  else
+    goto <bb 98>;
+
+}
+
+

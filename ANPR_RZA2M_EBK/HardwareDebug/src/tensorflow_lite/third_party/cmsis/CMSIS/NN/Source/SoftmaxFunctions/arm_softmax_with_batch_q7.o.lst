@@ -1,0 +1,191 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_softmax_with_batch_q7.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_softmax_with_batch_q7,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_softmax_with_batch_q7
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_softmax_with_batch_q7:
+  24              	.LFB87:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_wit
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Copyright (C) 2010-2019 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Title:        arm_softmax_with_batch_q7.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Description:  Q7 softmax function
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * $Date:        09. October 2020
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * $Revision:    V.1.0.1
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * Target Processor:  Cortex-M and Cortex-A cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * -------------------------------------------------------------------- */
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** #include "arm_nnfunctions.h"
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** /**
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  @ingroup groupNN
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  */
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** /**
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @addtogroup Softmax
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @{
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  */
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** /**
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @brief Q7 softmax function with batch parameter
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @param[in]       vec_in      pointer to input vector
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @param[in]       nb_batches  number of batches
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @param[in]       dim_vec     input vector dimention
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @param[out]      p_out       pointer to output vector
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  * @details
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  Here, instead of typical natural logarithm e based softmax, we use
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  2-based softmax here, i.e.,:
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  y_i = 2^(x_i) / sum(2^x_j)
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  The relative output will be different here.
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  But mathematically, the gradient will be the same
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *  with a log(2) scaling factor.
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  *
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****  */
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** 
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** void arm_softmax_with_batch_q7(const q7_t *vec_in, const uint16_t nb_batches, const uint16_t dim_ve
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c **** {
+  26              		.loc 1 63 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31              	.LBB2:
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****     for (int i = 0; i < nb_batches; i++)
+  32              		.loc 1 64 0
+  33 0000 000051E3 		cmp	r1, #0
+  34              	.LVL1:
+  35 0004 1EFF2F01 		bxeq	lr
+  36              	.LBE2:
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****     for (int i = 0; i < nb_batches; i++)
+  37              		.loc 1 63 0
+  38 0008 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  39              		.cfi_def_cfa_offset 24
+  40              		.cfi_offset 4, -24
+  41              		.cfi_offset 5, -20
+  42              		.cfi_offset 6, -16
+  43              		.cfi_offset 7, -12
+  44              		.cfi_offset 8, -8
+  45              		.cfi_offset 14, -4
+  46 000c 0040A0E1 		mov	r4, r0
+  47 0010 0250A0E1 		mov	r5, r2
+  48 0014 0360A0E1 		mov	r6, r3
+  49 0018 018081E2 		add	r8, r1, #1
+  50              	.LBB3:
+  51              		.loc 1 64 0
+  52 001c 0170A0E3 		mov	r7, #1
+  53              	.LVL2:
+  54              	.L3:
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****     {
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****         arm_softmax_q7(vec_in, dim_vec, p_out);
+  55              		.loc 1 66 0 discriminator 3
+  56 0020 0620A0E1 		mov	r2, r6
+  57 0024 0400A0E1 		mov	r0, r4
+  58 0028 017087E2 		add	r7, r7, #1
+  59              	.LVL3:
+  60 002c 0510A0E1 		mov	r1, r5
+  61 0030 FEFFFFEB 		bl	arm_softmax_q7
+  62              	.LVL4:
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****     {
+  63              		.loc 1 64 0 discriminator 3
+  64 0034 070058E1 		cmp	r8, r7
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****         vec_in += dim_vec;
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****         p_out += dim_vec;
+  65              		.loc 1 68 0 discriminator 3
+  66 0038 056086E0 		add	r6, r6, r5
+  67              	.LVL5:
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****         vec_in += dim_vec;
+  68              		.loc 1 67 0 discriminator 3
+  69 003c 054084E0 		add	r4, r4, r5
+  70              	.LVL6:
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c ****     {
+  71              		.loc 1 64 0 discriminator 3
+  72 0040 F6FFFF1A 		bne	.L3
+  73 0044 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  74              	.LBE3:
+  75              		.cfi_endproc
+  76              	.LFE87:
+  78              		.text
+  79              	.Letext0:
+  80              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  81              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  82              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  83              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  84              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+  85              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  86              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  87              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third
+  88              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/thir
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_softmax_with_batch_q7.c
+C:\Users\a5050395\AppData\Local\Temp\ccVppX8l.s:17     .text.arm_softmax_with_batch_q7:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccVppX8l.s:23     .text.arm_softmax_with_batch_q7:00000000 arm_softmax_with_batch_q7
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+
+UNDEFINED SYMBOLS
+arm_softmax_q7

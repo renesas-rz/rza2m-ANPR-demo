@@ -1,0 +1,406 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"softmax_common.cc"
+  13              		.section	.text._ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj,"ax",%progbits
+  14              		.align	2
+  15              		.global	_ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	_ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj:
+  21              		.fnstart
+  22              	.LFB4161:
+  23              		@ args = 0, pretend = 0, frame = 0
+  24              		@ frame_needed = 0, uses_anonymous_args = 0
+  25 0000 383090E5 		ldr	r3, [r0, #56]
+  26 0004 000053E3 		cmp	r3, #0
+  27 0008 0100000A 		beq	.L7
+  28 000c 3810A0E3 		mov	r1, #56
+  29 0010 13FF2FE1 		bx	r3
+  30              	.L7:
+  31 0014 10402DE9 		push	{r4, lr}
+  32              		.save {r4, lr}
+  33 0018 FEFFFFEB 		bl	abort
+  34              		.fnend
+  36              		.section	.text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+  37              		.align	2
+  38              		.global	_ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode
+  39              		.syntax unified
+  40              		.arm
+  41              		.fpu neon
+  43              	_ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:
+  44              		.fnstart
+  45              	.LFB4162:
+  46              		@ args = 0, pretend = 0, frame = 24
+  47              		@ frame_needed = 0, uses_anonymous_args = 0
+  48 0000 002091E5 		ldr	r2, [r1]
+  49 0004 002092E5 		ldr	r2, [r2]
+  50 0008 010052E3 		cmp	r2, #1
+  51 000c 0100000A 		beq	.L71
+  52 0010 0100A0E3 		mov	r0, #1
+  53 0014 1EFF2FE1 		bx	lr
+  54              	.L71:
+  55 0018 042091E5 		ldr	r2, [r1, #4]
+  56 001c F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  57              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  58 0020 0140A0E1 		mov	r4, r1
+  59 0024 0C8B2DED 		vpush.64	{d8, d9, d10, d11, d12, d13}
+  60              		.vsave {d8, d9, d10, d11, d12, d13}
+  61              		.pad #28
+  62 0028 1CD04DE2 		sub	sp, sp, #28
+  63 002c 002092E5 		ldr	r2, [r2]
+  64 0030 010052E3 		cmp	r2, #1
+  65 0034 0300000A 		beq	.L72
+  66              	.L11:
+  67 0038 0100A0E3 		mov	r0, #1
+  68              	.L60:
+  69 003c 1CD08DE2 		add	sp, sp, #28
+  70              		@ sp needed
+  71 0040 0C8BBDEC 		vldm	sp!, {d8-d13}
+  72 0044 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+  73              	.L72:
+  74 0048 0020A0E3 		mov	r2, #0
+  75 004c 0050A0E1 		mov	r5, r0
+  76 0050 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+  77 0054 006050E2 		subs	r6, r0, #0
+  78 0058 F6FFFF0A 		beq	.L11
+  79 005c 083096E5 		ldr	r3, [r6, #8]
+  80 0060 003093E5 		ldr	r3, [r3]
+  81 0064 000053E3 		cmp	r3, #0
+  82 0068 F2FFFFDA 		ble	.L11
+  83 006c 0020A0E3 		mov	r2, #0
+  84 0070 0410A0E1 		mov	r1, r4
+  85 0074 0500A0E1 		mov	r0, r5
+  86 0078 FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+  87 007c 008050E2 		subs	r8, r0, #0
+  88 0080 ECFFFF0A 		beq	.L11
+  89 0084 107094E5 		ldr	r7, [r4, #16]
+  90 0088 000057E3 		cmp	r7, #0
+  91 008c E9FFFF0A 		beq	.L11
+  92 0090 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+  93 0094 070053E3 		cmp	r3, #7
+  94 0098 5500000A 		beq	.L73
+  95              	.L12:
+  96 009c 0020D8E5 		ldrb	r2, [r8]	@ zero_extendqisi2
+  97 00a0 070052E3 		cmp	r2, #7
+  98 00a4 0F00000A 		beq	.L74
+  99 00a8 030052E1 		cmp	r2, r3
+ 100 00ac E1FFFF1A 		bne	.L11
+ 101 00b0 072043E2 		sub	r2, r3, #7
+ 102 00b4 140094E5 		ldr	r0, [r4, #20]
+ 103 00b8 FD0012E3 		tst	r2, #253
+ 104 00bc 5D00000A 		beq	.L25
+ 105              	.L24:
+ 106 00c0 010053E3 		cmp	r3, #1
+ 107 00c4 DBFFFF1A 		bne	.L11
+ 108 00c8 0030D8E5 		ldrb	r3, [r8]	@ zero_extendqisi2
+ 109 00cc 010053E3 		cmp	r3, #1
+ 110 00d0 D8FFFF1A 		bne	.L11
+ 111 00d4 007AD0ED 		vldr.32	s15, [r0]
+ 112 00d8 0000A0E3 		mov	r0, #0
+ 113 00dc E70AF7EE 		vcvt.f64.f32	d16, s15
+ 114 00e0 000BC7ED 		vstr.64	d16, [r7]
+ 115 00e4 D4FFFFEA 		b	.L60
+ 116              	.L74:
+ 117 00e8 072043E2 		sub	r2, r3, #7
+ 118 00ec FD0012E3 		tst	r2, #253
+ 119 00f0 D0FFFF1A 		bne	.L11
+ 120 00f4 070053E3 		cmp	r3, #7
+ 121 00f8 4D00001A 		bne	.L16
+ 122 00fc 105098E5 		ldr	r5, [r8, #16]
+ 123 0100 000055E3 		cmp	r5, #0
+ 124 0104 CBFFFF1A 		bne	.L11
+ 125 0108 289097E5 		ldr	r9, [r7, #40]
+ 126 010c E3AA9FED 		vldr.32	s20, .L79+8
+ 127 0110 E3CA9FED 		vldr.32	s24, .L79+12
+ 128 0114 E38ADFED 		vldr.32	s17, .L79+16
+ 129 0118 02A049E2 		sub	r10, r9, #2
+ 130 011c E2DA9FED 		vldr.32	s26, .L79+20
+ 131 0120 E2BA9FED 		vldr.32	s22, .L79+24
+ 132 0124 E2CADFED 		vldr.32	s25, .L79+28
+ 133 0128 04BAF2EE 		vmov.f32	s23, #1.0e+1
+ 134 012c 060000EA 		b	.L19
+ 135              	.L76:
+ 136 0130 EC0AB4EE 		vcmpe.f32	s0, s25
+ 137 0134 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 138 0138 03CACDED 		vstr.32	s25, [sp, #12]
+ 139 013c 280000DA 		ble	.L17
+ 140              	.L18:
+ 141 0140 020C55E3 		cmp	r5, #512
+ 142 0144 B230EAE1 		strh	r3, [r10, #2]!	@ movhi
+ 143 0148 5D00000A 		beq	.L75
+ 144              	.L19:
+ 145 014c 6B9AF0EE 		vmov.f32	s19, s23
+ 146 0150 015085E2 		add	r5, r5, #1
+ 147 0154 00AAF6EE 		vmov.f32	s21, #5.0e-1
+ 148 0158 0C9A5AEE 		vnmls.f32	s19, s20, s24
+ 149 015c 690AB0EE 		vmov.f32	s0, s19
+ 150 0160 FEFFFFEB 		bl	expf
+ 151 0164 905A07EE 		vmov	s15, r5	@ int
+ 152 0168 E7AAB8EE 		vcvt.f32.s32	s20, s15
+ 153 016c 280A20EE 		vmul.f32	s0, s0, s17
+ 154 0170 FEFFFFEB 		bl	roundf
+ 155 0174 408AB0EE 		vmov.f32	s16, s0
+ 156 0178 6B0AB0EE 		vmov.f32	s0, s23
+ 157 017c 0C0A1AEE 		vnmls.f32	s0, s20, s24
+ 158 0180 FEFFFFEB 		bl	expf
+ 159 0184 409AB0EE 		vmov.f32	s18, s0
+ 160 0188 690AB0EE 		vmov.f32	s0, s19
+ 161 018c FEFFFFEB 		bl	expf
+ 162 0190 280A20EE 		vmul.f32	s0, s0, s17
+ 163 0194 FEFFFFEB 		bl	roundf
+ 164 0198 280A09EE 		vmla.f32	s0, s18, s17
+ 165 019c 2A0A20EE 		vmul.f32	s0, s0, s21
+ 166 01a0 FEFFFFEB 		bl	roundf
+ 167 01a4 409AB0EE 		vmov.f32	s18, s0
+ 168 01a8 8D0A39EE 		vadd.f32	s0, s19, s26
+ 169 01ac FEFFFFEB 		bl	expf
+ 170 01b0 280A20EE 		vmul.f32	s0, s0, s17
+ 171 01b4 FEFFFFEB 		bl	roundf
+ 172 01b8 400A39EE 		vsub.f32	s0, s18, s0
+ 173 01bc 2A0A20EE 		vmul.f32	s0, s0, s21
+ 174 01c0 FEFFFFEB 		bl	roundf
+ 175 01c4 400A38EE 		vsub.f32	s0, s16, s0
+ 176 01c8 FF3F07E3 		movw	r3, #32767
+ 177 01cc 04BA8DED 		vstr.32	s22, [sp, #16]
+ 178 01d0 CB0AB4EE 		vcmpe.f32	s0, s22
+ 179 01d4 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 180 01d8 050A8DED 		vstr.32	s0, [sp, #20]
+ 181 01dc D3FFFF5A 		bpl	.L76
+ 182 01e0 4B0AB0EE 		vmov.f32	s0, s22
+ 183              	.L17:
+ 184 01e4 C07AFDEE 		vcvt.s32.f32	s15, s0
+ 185 01e8 017ACDED 		vstr.32	s15, [sp, #4]	@ int
+ 186 01ec F430DDE1 		ldrsh	r3, [sp, #4]
+ 187 01f0 D2FFFFEA 		b	.L18
+ 188              	.L73:
+ 189 01f4 383095E5 		ldr	r3, [r5, #56]
+ 190 01f8 021400E3 		movw	r1, #1026
+ 191 01fc 0500A0E1 		mov	r0, r5
+ 192 0200 33FF2FE1 		blx	r3
+ 193 0204 000050E3 		cmp	r0, #0
+ 194 0208 8AFFFF0A 		beq	.L11
+ 195 020c 280087E5 		str	r0, [r7, #40]
+ 196 0210 021400E3 		movw	r1, #1026
+ 197 0214 0500A0E1 		mov	r0, r5
+ 198 0218 383095E5 		ldr	r3, [r5, #56]
+ 199 021c 33FF2FE1 		blx	r3
+ 200 0220 000050E3 		cmp	r0, #0
+ 201 0224 83FFFF0A 		beq	.L11
+ 202 0228 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+ 203 022c 2C0087E5 		str	r0, [r7, #44]
+ 204 0230 99FFFFEA 		b	.L12
+ 205              	.L16:
+ 206 0234 140094E5 		ldr	r0, [r4, #20]
+ 207              	.L25:
+ 208 0238 090053E3 		cmp	r3, #9
+ 209 023c 7DFFFF1A 		bne	.L11
+ 210 0240 0030D8E5 		ldrb	r3, [r8]	@ zero_extendqisi2
+ 211 0244 070053E3 		cmp	r3, #7
+ 212 0248 8400000A 		beq	.L77
+ 213 024c 090053E3 		cmp	r3, #9
+ 214 0250 78FFFF1A 		bne	.L11
+ 215 0254 103098E5 		ldr	r3, [r8, #16]
+ 216 0258 800073E3 		cmn	r3, #128
+ 217 025c 75FFFF1A 		bne	.L11
+ 218 0260 947ADFED 		vldr.32	s15, .L79+32
+ 219 0264 037A98ED 		vldr.32	s14, [r8, #12]
+ 220 0268 677AB4EE 		vcmp.f32	s14, s15
+ 221 026c 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 222 0270 70FFFF1A 		bne	.L11
+ 223              	.L34:
+ 224 0274 000A90ED 		vldr.32	s0, [r0]
+ 225 0278 14208DE2 		add	r2, sp, #20
+ 226 027c 031A96ED 		vldr.32	s2, [r6, #12]
+ 227 0280 081087E2 		add	r1, r7, #8
+ 228 0284 0500A0E3 		mov	r0, #5
+ 229 0288 C00AB7EE 		vcvt.f64.f32	d0, s0
+ 230 028c C11AB7EE 		vcvt.f64.f32	d1, s2
+ 231 0290 FEFFFFEB 		bl	_ZN6tflite24PreprocessSoftmaxScalingEddiPlPi
+ 232 0294 14109DE5 		ldr	r1, [sp, #20]
+ 233 0298 1F20A0E3 		mov	r2, #31
+ 234 029c 0500A0E3 		mov	r0, #5
+ 235 02a0 0C1087E5 		str	r1, [r7, #12]
+ 236 02a4 FEFFFFEB 		bl	_ZN6tflite20CalculateInputRadiusEiii
+ 237 02a8 900A07EE 		vmov	s15, r0	@ int
+ 238 02ac 0000A0E3 		mov	r0, #0
+ 239 02b0 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 240 02b4 600BF1EE 		vneg.f64	d16, d16
+ 241 02b8 E07BFDEE 		vcvt.s32.f64	s15, d16
+ 242 02bc 067AC7ED 		vstr.32	s15, [r7, #24]	@ int
+ 243 02c0 5DFFFFEA 		b	.L60
+ 244              	.L75:
+ 245 02c4 750A9FED 		vldr.32	s0, .L79+8
+ 246 02c8 019B89E2 		add	r9, r9, #1024
+ 247 02cc 758A9FED 		vldr.32	s16, .L79+16
+ 248 02d0 0239E0E3 		mvn	r3, #32768
+ 249 02d4 2CA097E5 		ldr	r10, [r7, #44]
+ 250 02d8 0150A0E3 		mov	r5, #1
+ 251 02dc 00DAB7EE 		vmov.f32	s26, #1.0e+0
+ 252 02e0 75BA9FED 		vldr.32	s22, .L79+36
+ 253 02e4 71DADFED 		vldr.32	s27, .L79+24
+ 254 02e8 02B04AE2 		sub	fp, r10, #2
+ 255 02ec 70CA9FED 		vldr.32	s24, .L79+28
+ 256 02f0 72CADFED 		vldr.32	s25, .L79+40
+ 257 02f4 40AAF0EE 		vmov.f32	s21, s0
+ 258 02f8 48AAB0EE 		vmov.f32	s20, s16
+ 259 02fc 4D9AB0EE 		vmov.f32	s18, s26
+ 260 0300 00BAF6EE 		vmov.f32	s23, #5.0e-1
+ 261 0304 B030C9E1 		strh	r3, [r9]	@ movhi
+ 262 0308 1C0000EA 		b	.L23
+ 263              	.L78:
+ 264 030c CC7AF4EE 		vcmpe.f32	s15, s24
+ 265 0310 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 266 0314 03CA8DED 		vstr.32	s24, [sp, #12]
+ 267 0318 250000DA 		ble	.L20
+ 268              	.L21:
+ 269 031c 015085E2 		add	r5, r5, #1
+ 270 0320 012200E3 		movw	r2, #513
+ 271 0324 020055E1 		cmp	r5, r2
+ 272 0328 B230EBE1 		strh	r3, [fp, #2]!	@ movhi
+ 273 032c 2400000A 		beq	.L22
+ 274 0330 905A07EE 		vmov	s15, r5	@ int
+ 275 0334 E7DAB8EE 		vcvt.f32.s32	s26, s15
+ 276 0338 FEFFFFEB 		bl	roundf
+ 277 033c 6A7AF0EE 		vmov.f32	s15, s21
+ 278 0340 408AB0EE 		vmov.f32	s16, s0
+ 279 0344 0B7A4DEE 		vmla.f32	s15, s26, s22
+ 280 0348 AC8A78EE 		vadd.f32	s17, s17, s25
+ 281 034c 898A78EE 		vadd.f32	s17, s17, s18
+ 282 0350 897A77EE 		vadd.f32	s15, s15, s18
+ 283 0354 277A89EE 		vdiv.f32	s14, s18, s15
+ 284 0358 0A0A07EE 		vmla.f32	s0, s14, s20
+ 285 035c 2B0A20EE 		vmul.f32	s0, s0, s23
+ 286 0360 FEFFFFEB 		bl	roundf
+ 287 0364 409AF0EE 		vmov.f32	s19, s0
+ 288 0368 280A89EE 		vdiv.f32	s0, s18, s17
+ 289 036c 0A0A20EE 		vmul.f32	s0, s0, s20
+ 290 0370 FEFFFFEB 		bl	roundf
+ 291 0374 C00A39EE 		vsub.f32	s0, s19, s0
+ 292 0378 2B0A20EE 		vmul.f32	s0, s0, s23
+ 293 037c FEFFFFEB 		bl	roundf
+ 294              	.L23:
+ 295 0380 6A8AF0EE 		vmov.f32	s17, s21
+ 296 0384 FF3F07E3 		movw	r3, #32767
+ 297 0388 407A78EE 		vsub.f32	s15, s16, s0
+ 298 038c 0B8A4DEE 		vmla.f32	s17, s26, s22
+ 299 0390 04DACDED 		vstr.32	s27, [sp, #16]
+ 300 0394 ED7AF4EE 		vcmpe.f32	s15, s27
+ 301 0398 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 302 039c 057ACDED 		vstr.32	s15, [sp, #20]
+ 303 03a0 897A38EE 		vadd.f32	s14, s17, s18
+ 304 03a4 070A89EE 		vdiv.f32	s0, s18, s14
+ 305 03a8 0A0A20EE 		vmul.f32	s0, s0, s20
+ 306 03ac D6FFFF5A 		bpl	.L78
+ 307 03b0 6D7AF0EE 		vmov.f32	s15, s27
+ 308              	.L20:
+ 309 03b4 E77AFDEE 		vcvt.s32.f32	s15, s15
+ 310 03b8 017ACDED 		vstr.32	s15, [sp, #4]	@ int
+ 311 03bc F430DDE1 		ldrsh	r3, [sp, #4]
+ 312 03c0 D5FFFFEA 		b	.L21
+ 313              	.L22:
+ 314 03c4 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+ 315 03c8 01AB8AE2 		add	r10, r10, #1024
+ 316 03cc 037A98ED 		vldr.32	s14, [r8, #12]
+ 317 03d0 0119A0E3 		mov	r1, #16384
+ 318 03d4 102098E5 		ldr	r2, [r8, #16]
+ 319 03d8 07C043E2 		sub	ip, r3, #7
+ 320 03dc 140094E5 		ldr	r0, [r4, #20]
+ 321 03e0 FD001CE3 		tst	ip, #253
+ 322 03e4 B010CAE1 		strh	r1, [r10]	@ movhi
+ 323 03e8 1C2087E5 		str	r2, [r7, #28]
+ 324 03ec 087A87ED 		vstr.32	s14, [r7, #32]
+ 325 03f0 32FFFF1A 		bne	.L24
+ 326 03f4 070053E3 		cmp	r3, #7
+ 327 03f8 8EFFFF1A 		bne	.L25
+ 328 03fc 000052E3 		cmp	r2, #0
+ 329 0400 0CFFFF1A 		bne	.L11
+ 330 0404 2E7ADFED 		vldr.32	s15, .L79+44
+ 331 0408 E77AB4EE 		vcmpe.f32	s14, s15
+ 332 040c 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 333 0410 677A77CE 		vsubgt.f32	s15, s14, s15
+ 334 0414 C77A77DE 		vsuble.f32	s15, s15, s14
+ 335 0418 2A7A9FED 		vldr.32	s14, .L79+48
+ 336 041c C77AF4EE 		vcmpe.f32	s15, s14
+ 337 0420 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 338 0424 03FFFFCA 		bgt	.L11
+ 339 0428 037AD6ED 		vldr.32	s15, [r6, #12]
+ 340 042c 14108DE2 		add	r1, sp, #20
+ 341 0430 007A90ED 		vldr.32	s14, [r0]
+ 342 0434 080087E2 		add	r0, r7, #8
+ 343 0438 160B9FED 		vldr.64	d0, .L79
+ 344 043c E70AF7EE 		vcvt.f64.f32	d16, s15
+ 345 0440 C77AB7EE 		vcvt.f64.f32	d7, s14
+ 346 0444 870B60EE 		vmul.f64	d16, d16, d7
+ 347 0448 800B80EE 		vdiv.f64	d0, d16, d0
+ 348 044c FEFFFFEB 		bl	_ZN6tflite18QuantizeMultiplierEdPlPi
+ 349 0450 14309DE5 		ldr	r3, [sp, #20]
+ 350 0454 0000A0E3 		mov	r0, #0
+ 351 0458 0C3087E5 		str	r3, [r7, #12]
+ 352 045c F6FEFFEA 		b	.L60
+ 353              	.L77:
+ 354 0460 103098E5 		ldr	r3, [r8, #16]
+ 355 0464 020973E3 		cmn	r3, #32768
+ 356 0468 F2FEFF1A 		bne	.L11
+ 357 046c 037A98ED 		vldr.32	s14, [r8, #12]
+ 358 0470 157ADFED 		vldr.32	s15, .L79+52
+ 359 0474 E77AB4EE 		vcmpe.f32	s14, s15
+ 360 0478 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 361 047c 677A77CE 		vsubgt.f32	s15, s14, s15
+ 362 0480 C77A77DE 		vsuble.f32	s15, s15, s14
+ 363 0484 117A9FED 		vldr.32	s14, .L79+56
+ 364 0488 C77AF4EE 		vcmpe.f32	s15, s14
+ 365 048c 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 366 0490 77FFFFDA 		ble	.L34
+ 367 0494 E7FEFFEA 		b	.L11
+ 368              	.L80:
+ 369              		.align	3
+ 370              	.L79:
+ 371 0498 14001400 		.word	1310740
+ 372 049c 1400243F 		.word	1059323924
+ 373 04a0 00000000 		.word	0
+ 374 04a4 0000A03C 		.word	1017118720
+ 375 04a8 00000047 		.word	1191182336
+ 376 04ac 0000203C 		.word	1008730112
+ 377 04b0 000000C7 		.word	-956301312
+ 378 04b4 00FEFF46 		.word	1191181824
+ 379 04b8 0000803B 		.word	998244352
+ 380 04bc 0000003B 		.word	989855744
+ 381 04c0 0000803A 		.word	981467136
+ 382 04c4 00000038 		.word	939524096
+ 383 04c8 6F120333 		.word	855839343
+ 384 04cc 00008037 		.word	931135488
+ 385 04d0 6F128332 		.word	847450735
+ 386              		.fnend
+ 388              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 softmax_common.cc
+C:\Users\a5050395\AppData\Local\Temp\cctgxhop.s:14     .text._ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cctgxhop.s:20     .text._ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj:00000000 _ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj
+.ARM.exidx.text._ZN6tflite11SoftmaxInitEP13TfLiteContextPKcj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cctgxhop.s:37     .text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cctgxhop.s:43     .text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\cctgxhop.s:371    .text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:00000498 $d
+.ARM.extab.text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+.ARM.exidx.text._ZN6tflite14SoftmaxPrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+
+UNDEFINED SYMBOLS
+abort
+__aeabi_unwind_cpp_pr0
+_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+expf
+roundf
+_ZN6tflite24PreprocessSoftmaxScalingEddiPlPi
+_ZN6tflite20CalculateInputRadiusEiii
+_ZN6tflite18QuantizeMultiplierEdPlPi
+__aeabi_unwind_cpp_pr1

@@ -1,0 +1,103 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_softmax_q15.c"
+  13              		.global	__aeabi_ldivmod
+  14              		.section	.text.arm_softmax_q15,"ax",%progbits
+  15              		.align	2
+  16              		.global	arm_softmax_q15
+  17              		.syntax unified
+  18              		.arm
+  19              		.fpu neon
+  21              	arm_softmax_q15:
+  22              		@ args = 0, pretend = 0, frame = 0
+  23              		@ frame_needed = 0, uses_anonymous_args = 0
+  24 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  25 0004 005051E2 		subs	r5, r1, #0
+  26 0008 F087BD08 		popeq	{r4, r5, r6, r7, r8, r9, r10, pc}
+  27 000c 0040A0E3 		mov	r4, #0
+  28 0010 0430A0E1 		mov	r3, r4
+  29 0014 F04F4FE3 		movt	r4, 65520
+  30              	.L3:
+  31 0018 8310A0E1 		lsl	r1, r3, #1
+  32 001c 013083E2 		add	r3, r3, #1
+  33 0020 7330BFE6 		sxth	r3, r3
+  34 0024 F1C090E1 		ldrsh	ip, [r0, r1]
+  35 0028 0C0054E1 		cmp	r4, ip
+  36 002c 0C40A0B1 		movlt	r4, ip
+  37 0030 050053E1 		cmp	r3, r5
+  38 0034 F7FFFFBA 		blt	.L3
+  39 0038 0030A0E3 		mov	r3, #0
+  40 003c 106044E2 		sub	r6, r4, #16
+  41 0040 03E0A0E1 		mov	lr, r3
+  42 0044 0170A0E3 		mov	r7, #1
+  43              	.L7:
+  44 0048 8310A0E1 		lsl	r1, r3, #1
+  45 004c F1C090E1 		ldrsh	ip, [r0, r1]
+  46 0050 06005CE1 		cmp	ip, r6
+  47 0054 06104CE0 		sub	r1, ip, r6
+  48 0058 060000DA 		ble	.L5
+  49 005c 1F0051E3 		cmp	r1, #31
+  50 0060 02C1A0E3 		mov	ip, #-2147483648
+  51 0064 020000CA 		bgt	.L6
+  52 0068 000051E3 		cmp	r1, #0
+  53 006c 17C1A0E1 		lsl	ip, r7, r1
+  54 0070 01C0A0B3 		movlt	ip, #1
+  55              	.L6:
+  56 0074 0CE08EE0 		add	lr, lr, ip
+  57              	.L5:
+  58 0078 013083E2 		add	r3, r3, #1
+  59 007c 7330BFE6 		sxth	r3, r3
+  60 0080 050053E1 		cmp	r3, r5
+  61 0084 EFFFFFBA 		blt	.L7
+  62 0088 CE3FA0E1 		asr	r3, lr, #31
+  63 008c 0280A0E1 		mov	r8, r2
+  64 0090 0070A0E1 		mov	r7, r0
+  65 0094 0E20A0E1 		mov	r2, lr
+  66 0098 0000A0E3 		mov	r0, #0
+  67 009c 0110A0E3 		mov	r1, #1
+  68 00a0 014084E2 		add	r4, r4, #1
+  69 00a4 FEFFFFEB 		bl	__aeabi_ldivmod
+  70 00a8 0030A0E3 		mov	r3, #0
+  71 00ac 02C9A0E3 		mov	ip, #32768
+  72 00b0 0390A0E1 		mov	r9, r3
+  73 00b4 FFCF4FE3 		movt	ip, 65535
+  74 00b8 FFEF07E3 		movw	lr, #32767
+  75              	.L12:
+  76 00bc 8320A0E1 		lsl	r2, r3, #1
+  77 00c0 F21097E1 		ldrsh	r1, [r7, r2]
+  78 00c4 060051E1 		cmp	r1, r6
+  79 00c8 01A044E0 		sub	r10, r4, r1
+  80 00cc B29088D1 		strhle	r9, [r8, r2]	@ movhi
+  81 00d0 080000DA 		ble	.L11
+  82 00d4 1F005AE3 		cmp	r10, #31
+  83 00d8 1F10A0E3 		mov	r1, #31
+  84 00dc CA1FCAD1 		bicle	r1, r10, r10, asr #31
+  85 00e0 5011A0E1 		asr	r1, r0, r1
+  86 00e4 0C0051E1 		cmp	r1, ip
+  87 00e8 0C10A0B1 		movlt	r1, ip
+  88 00ec 0E0051E1 		cmp	r1, lr
+  89 00f0 0E10A0A1 		movge	r1, lr
+  90 00f4 B21088E1 		strh	r1, [r8, r2]	@ movhi
+  91              	.L11:
+  92 00f8 013083E2 		add	r3, r3, #1
+  93 00fc 7330BFE6 		sxth	r3, r3
+  94 0100 050053E1 		cmp	r3, r5
+  95 0104 ECFFFFBA 		blt	.L12
+  96 0108 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+  98              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_softmax_q15.c
+C:\Users\a5050395\AppData\Local\Temp\ccGespla.s:15     .text.arm_softmax_q15:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGespla.s:21     .text.arm_softmax_q15:00000000 arm_softmax_q15
+
+UNDEFINED SYMBOLS
+__aeabi_ldivmod

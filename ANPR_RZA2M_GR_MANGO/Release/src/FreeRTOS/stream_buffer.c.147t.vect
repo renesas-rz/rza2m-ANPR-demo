@@ -1,0 +1,426 @@
+
+;; Function xStreamBufferSend (xStreamBufferSend, funcdef_no=6, decl_uid=6551, cgraph_uid=6, symbol_order=6)
+
+
+Analyzing loop at ../src/FreeRTOS/stream_buffer.c:521
+../src/FreeRTOS/stream_buffer.c:521:4: note: ===== analyze_loop_nest =====
+../src/FreeRTOS/stream_buffer.c:521:4: note: === vect_analyze_loop_form ===
+../src/FreeRTOS/stream_buffer.c:521:4: note: not vectorized: control flow in loop.
+../src/FreeRTOS/stream_buffer.c:521:4: note: bad loop form.
+../src/FreeRTOS/stream_buffer.c:487:8: note: vectorized 0 loops in function.
+xStreamBufferSend (void * xStreamBuffer, const void * pvTxData, size_t xDataLengthBytes, TickType_t xTicksToWait)
+{
+  size_t xNextHead;
+  size_t xFirstLength;
+  size_t D.7254;
+  size_t xNextHead;
+  size_t xFirstLength;
+  size_t D.7248;
+  BaseType_t xShouldWrite;
+  size_t xReturn;
+  size_t D.7242;
+  size_t xDataLengthBytes;
+  size_t xSpace;
+  size_t D.7234;
+  size_t xSpace;
+  size_t D.7231;
+  size_t xCount;
+  struct TimeOut_t xTimeOut;
+  size_t xRequiredSpace;
+  size_t xSpace;
+  size_t xReturn;
+  unsigned int _9;
+  unsigned char _13;
+  unsigned char _19;
+  long unsigned int xTicksToWait.0_21;
+  void * _27;
+  void * _30;
+  long unsigned int xTicksToWait.0_33;
+  long int _37;
+  unsigned int _43;
+  void * _45;
+  void * _46;
+  unsigned int _52;
+  unsigned int _54;
+  unsigned int _58;
+  unsigned int _59;
+  unsigned int _61;
+  unsigned int _66;
+  unsigned int _67;
+  unsigned int _69;
+  uint8_t * _73;
+  unsigned char _74;
+  unsigned char _75;
+  unsigned int xDataLengthBytes.2_77;
+  unsigned int _81;
+  unsigned int _83;
+  unsigned int _84;
+  unsigned int _86;
+  uint8_t * _87;
+  uint8_t * _88;
+  unsigned int _89;
+  unsigned int _90;
+  uint8_t * _91;
+  const uint8_t * _92;
+  unsigned int _94;
+  unsigned int _98;
+  unsigned int _99;
+  unsigned int _101;
+  uint8_t * _102;
+  uint8_t * _103;
+  unsigned int _104;
+  unsigned int _105;
+  uint8_t * _106;
+  const uint8_t * _107;
+  unsigned int _109;
+  unsigned int _122;
+  unsigned int pretmp_166;
+  unsigned int prephitmp_167;
+  unsigned int _181;
+  uint8_t * _182;
+  unsigned int _185;
+
+  <bb 2>:
+  if (pvTxData_15(D) == 0B)
+    goto <bb 3>;
+  else
+    goto <bb 4>;
+
+  <bb 3>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 497);
+
+  <bb 4>:
+  if (xStreamBuffer_12(D) == 0B)
+    goto <bb 5>;
+  else
+    goto <bb 6>;
+
+  <bb 5>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 498);
+
+  <bb 6>:
+  _19 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].ucFlags;
+  _13 = _19 & 1;
+  if (_13 != 0)
+    goto <bb 7>;
+  else
+    goto <bb 8>;
+
+  <bb 7>:
+  xRequiredSpace_20 = xDataLengthBytes_14(D) + 4;
+
+  <bb 8>:
+  # xRequiredSpace_3 = PHI <xDataLengthBytes_14(D)(6), xRequiredSpace_20(7)>
+  xTicksToWait.0_21 = xTicksToWait;
+  if (xTicksToWait.0_21 != 0)
+    goto <bb 9>;
+  else
+    goto <bb 18>;
+
+  <bb 9>:
+  vTaskSetTimeOutState (&xTimeOut);
+
+  <bb 10>:
+  vPortEnterCritical ();
+  _58 = MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  _59 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xTail;
+  xSpace_60 = _58 + _59;
+  _61 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  _122 = xSpace_60 + 4294967295;
+  xSpace_63 = _122 - _61;
+  if (_58 <= xSpace_63)
+    goto <bb 11>;
+  else
+    goto <bb 12>;
+
+  <bb 11>:
+  xSpace_64 = xSpace_63 - _58;
+
+  <bb 12>:
+  # xSpace_65 = PHI <xSpace_63(10), xSpace_64(11)>
+  if (xRequiredSpace_3 > xSpace_65)
+    goto <bb 13>;
+  else
+    goto <bb 17>;
+
+  <bb 13>:
+  xTaskNotifyStateClear (0B);
+  _27 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToSend;
+  if (_27 != 0B)
+    goto <bb 14>;
+  else
+    goto <bb 15>;
+
+  <bb 14>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 531);
+
+  <bb 15>:
+  _30 = xTaskGetCurrentTaskHandle ();
+  MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToSend ={v} _30;
+  vPortExitCritical ();
+  xTicksToWait.0_33 = xTicksToWait;
+  xTaskNotifyWait (0, 4294967295, 0B, xTicksToWait.0_33);
+  MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToSend ={v} 0B;
+  _37 = xTaskCheckForTimeOut (&xTimeOut, &xTicksToWait);
+  if (_37 == 0)
+    goto <bb 16>;
+  else
+    goto <bb 50>;
+
+  <bb 16>:
+  goto <bb 10>;
+
+  <bb 17>:
+  # xSpace_191 = PHI <xSpace_65(12)>
+  vPortExitCritical ();
+  goto <bb 51>;
+
+  <bb 18>:
+  _66 = MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  _67 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xTail;
+  xSpace_68 = _66 + _67;
+  _69 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  _81 = xSpace_68 + 4294967295;
+  xSpace_71 = _81 - _69;
+  if (_66 <= xSpace_71)
+    goto <bb 19>;
+  else
+    goto <bb 20>;
+
+  <bb 19>:
+  xSpace_72 = xSpace_71 - _66;
+
+  <bb 20>:
+  # xSpace_2 = PHI <xSpace_71(18), xSpace_72(19)>
+  xDataLengthBytes = xDataLengthBytes_14(D);
+  if (xSpace_2 == 0)
+    goto <bb 55>;
+  else
+    goto <bb 21>;
+
+  <bb 21>:
+  # xSpace_193 = PHI <xSpace_2(20), xSpace_192(52)>
+  _74 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].ucFlags;
+  _75 = _74 & 1;
+  if (_75 == 0)
+    goto <bb 22>;
+  else
+    goto <bb 23>;
+
+  <bb 22>:
+  xDataLengthBytes.2_77 = MIN_EXPR <xDataLengthBytes_14(D), xSpace_193>;
+  xDataLengthBytes = xDataLengthBytes.2_77;
+  goto <bb 53>;
+
+  <bb 23>:
+  if (xRequiredSpace_3 <= xSpace_193)
+    goto <bb 24>;
+  else
+    goto <bb 55>;
+
+  <bb 24>:
+  xNextHead_82 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  _83 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  _84 = _83 - xNextHead_82;
+  xFirstLength_85 = MIN_EXPR <_84, 4>;
+  _86 = xNextHead_82 + xFirstLength_85;
+  if (_83 < _86)
+    goto <bb 25>;
+  else
+    goto <bb 26>;
+
+  <bb 25>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 1034);
+
+  <bb 26>:
+  _87 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].pucBuffer;
+  _88 = _87 + xNextHead_82;
+  memcpy (_88, &xDataLengthBytes, xFirstLength_85);
+  if (xFirstLength_85 != 4)
+    goto <bb 27>;
+  else
+    goto <bb 30>;
+
+  <bb 27>:
+  _89 = 4 - xFirstLength_85;
+  _90 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  if (_89 > _90)
+    goto <bb 28>;
+  else
+    goto <bb 29>;
+
+  <bb 28>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 1042);
+
+  <bb 29>:
+  _91 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].pucBuffer;
+  _92 = &xDataLengthBytes + xFirstLength_85;
+  memcpy (_91, _92, _89);
+
+  <bb 30>:
+  xNextHead_93 = xNextHead_82 + 4;
+  _94 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  if (xNextHead_93 >= _94)
+    goto <bb 31>;
+  else
+    goto <bb 32>;
+
+  <bb 31>:
+  xNextHead_95 = xNextHead_93 - _94;
+
+  <bb 32>:
+  # xNextHead_96 = PHI <xNextHead_93(30), xNextHead_95(31)>
+  MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead ={v} xNextHead_96;
+  pretmp_166 = xDataLengthBytes;
+  goto <bb 53>;
+
+  <bb 33>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 1024);
+  xNextHead_187 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  _185 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  _181 = _185 - xNextHead_187;
+  xFirstLength_180 = MIN_EXPR <prephitmp_167, _181>;
+  _9 = xFirstLength_180 + xNextHead_187;
+  if (_9 > _185)
+    goto <bb 35>;
+  else
+    goto <bb 54>;
+
+  <bb 34>:
+  xNextHead_97 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  _98 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  _99 = _98 - xNextHead_97;
+  xFirstLength_100 = MIN_EXPR <_99, prephitmp_167>;
+  _101 = xNextHead_97 + xFirstLength_100;
+  if (_98 < _101)
+    goto <bb 35>;
+  else
+    goto <bb 36>;
+
+  <bb 35>:
+  # xNextHead_78 = PHI <xNextHead_97(34), xNextHead_187(33)>
+  # xFirstLength_112 = PHI <xFirstLength_100(34), xFirstLength_180(33)>
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 1034);
+
+  <bb 36>:
+  # xNextHead_8 = PHI <xNextHead_97(34), xNextHead_78(35)>
+  # xFirstLength_125 = PHI <xFirstLength_100(34), xFirstLength_112(35)>
+  _102 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].pucBuffer;
+  _103 = _102 + xNextHead_8;
+  memcpy (_103, pvTxData_15(D), xFirstLength_125);
+  if (xFirstLength_125 < prephitmp_167)
+    goto <bb 37>;
+  else
+    goto <bb 40>;
+
+  <bb 37>:
+  _104 = prephitmp_167 - xFirstLength_125;
+  _105 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  if (_104 > _105)
+    goto <bb 38>;
+  else
+    goto <bb 39>;
+
+  <bb 38>:
+  R_OS_AssertCalled ("../src/FreeRTOS/stream_buffer.c", 1042);
+
+  <bb 39>:
+  _106 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].pucBuffer;
+  _107 = pvTxData_15(D) + xFirstLength_125;
+  memcpy (_106, _107, _104);
+
+  <bb 40>:
+  # xNextHead_1 = PHI <xNextHead_8(36), xNextHead_8(39), xNextHead_187(54)>
+  xNextHead_108 = xNextHead_1 + prephitmp_167;
+  _109 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xLength;
+  if (xNextHead_108 >= _109)
+    goto <bb 41>;
+  else
+    goto <bb 42>;
+
+  <bb 41>:
+  xNextHead_110 = xNextHead_108 - _109;
+
+  <bb 42>:
+  # xNextHead_111 = PHI <xNextHead_108(40), xNextHead_110(41)>
+  MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead ={v} xNextHead_111;
+  if (prephitmp_167 != 0)
+    goto <bb 43>;
+  else
+    goto <bb 49>;
+
+  <bb 43>:
+  _52 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xHead;
+  xCount_53 = _52 + _109;
+  _54 ={v} MEM[(const struct StreamBuffer_t *)xStreamBuffer_12(D)].xTail;
+  xCount_55 = xCount_53 - _54;
+  if (xCount_55 >= _109)
+    goto <bb 44>;
+  else
+    goto <bb 45>;
+
+  <bb 44>:
+  xCount_56 = xCount_55 - _109;
+
+  <bb 45>:
+  # xCount_57 = PHI <xCount_55(43), xCount_56(44)>
+  _43 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTriggerLevelBytes;
+  if (_43 <= xCount_57)
+    goto <bb 46>;
+  else
+    goto <bb 49>;
+
+  <bb 46>:
+  vTaskSuspendAll ();
+  _45 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToReceive;
+  if (_45 != 0B)
+    goto <bb 47>;
+  else
+    goto <bb 48>;
+
+  <bb 47>:
+  _46 ={v} MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToReceive;
+  xTaskGenericNotify (_46, 0, 0, 0B);
+  MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].xTaskWaitingToReceive ={v} 0B;
+
+  <bb 48>:
+  xTaskResumeAll ();
+
+  <bb 49>:
+  # xReturn_117 = PHI <prephitmp_167(42), prephitmp_167(48), prephitmp_167(45), 0(55)>
+  xTimeOut ={v} {CLOBBER};
+  return xReturn_117;
+
+  <bb 50>:
+  # xSpace_113 = PHI <xSpace_65(15)>
+
+  <bb 51>:
+  # xSpace_192 = PHI <xSpace_113(50), xSpace_191(17)>
+  if (xSpace_192 == 0)
+    goto <bb 18>;
+  else
+    goto <bb 52>;
+
+  <bb 52>:
+  xDataLengthBytes = xDataLengthBytes_14(D);
+  goto <bb 21>;
+
+  <bb 53>:
+  # prephitmp_167 = PHI <pretmp_166(32), xDataLengthBytes.2_77(22)>
+  if (prephitmp_167 == 0)
+    goto <bb 33>;
+  else
+    goto <bb 34>;
+
+  <bb 54>:
+  _73 = MEM[(struct StreamBuffer_t *)xStreamBuffer_12(D)].pucBuffer;
+  _182 = _73 + xNextHead_187;
+  memcpy (_182, pvTxData_15(D), xFirstLength_180);
+  goto <bb 40>;
+
+  <bb 55>:
+  goto <bb 49>;
+
+}
+
+

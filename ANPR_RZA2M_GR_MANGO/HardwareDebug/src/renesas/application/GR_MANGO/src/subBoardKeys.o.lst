@@ -1,0 +1,629 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"subBoardKeys.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.initSW2gpioRead,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	initSW2gpioRead:
+  23              	.LFB4:
+  24              		.file 1 "../src/renesas/application/GR_MANGO/src/subBoardKeys.c"
+   1:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /*
+   2:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * demoBoardKeys.c
+   3:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  *
+   4:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  *  Created on: 24.11.2020
+   5:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  *      Author: a5050305
+   6:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  */
+   7:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+   8:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /******************************************************************************
+   9:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  Includes   <System Includes> , "Project Includes"
+  10:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  ******************************************************************************/
+  11:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  12:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include <stdio.h>
+  13:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include <fcntl.h>
+  14:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include <string.h>
+  15:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include <unistd.h>
+  16:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  17:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include "r_typedefs.h"
+  18:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include "iodefine.h"
+  19:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  20:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include "compiler_settings.h"
+  21:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  22:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include "r_adc_drv_api.h"
+  23:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  24:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** #include "subBoardKeysTdef.h"
+  25:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  26:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /******************************************************************************
+  27:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  Imported global variables and functions (from other files)
+  28:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  ******************************************************************************/
+  29:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  30:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /******************************************************************************
+  31:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  Exported global variables and functions (to be accessed by other files)
+  32:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  ******************************************************************************/
+  33:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  34:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** switchBoardType boardSwitchInfoStruct  = { 	0,0,1,        // SW2_ModeCnt, SW2_IsModified, SW2_ModeC
+  35:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 											0,0,1,        // SW3_ModeCnt, SW3_IsModified, SW3_ModeCntMax
+  36:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****                                          };     
+  37:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  38:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /******************************************************************************
+  39:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  local global variables
+  40:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  ******************************************************************************/
+  41:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  42:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static int_t SW2_lastKey     = 1 ;
+  43:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static int_t SW3_lastKey     = 1 ;
+  44:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  45:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+  46:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: initSW2gpioRead
+  47:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  : initialization for SW2
+  48:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+  49:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+  50:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+  51:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  52:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static void initSW2gpioRead ( void ) {
+  25              		.loc 1 52 0
+  26              		.cfi_startproc
+  27              		@ args = 0, pretend = 0, frame = 0
+  28              		@ frame_needed = 0, uses_anonymous_args = 0
+  29              		@ link register save eliminated.
+  53:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	/* SW2 Readout setting */
+  54:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PMR.BIT.PMR6 = 1;
+  30              		.loc 1 54 0
+  31 0000 FF300EE3 		movw	r3, #57599
+  32 0004 FF3C4FE3 		movt	r3, 64767
+  33 0008 722053E5 		ldrb	r2, [r3, #-114]	@ zero_extendqisi2
+  34 000c 402082E3 		orr	r2, r2, #64
+  35 0010 722043E5 		strb	r2, [r3, #-114]
+  55:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PMR.BIT.PMR6 = 0; /* SW2 peripheral function */
+  36              		.loc 1 55 0
+  37 0014 722053E5 		ldrb	r2, [r3, #-114]	@ zero_extendqisi2
+  38 0018 1F23C6E7 		bfc	r2, #6, #1
+  39 001c 722043E5 		strb	r2, [r3, #-114]
+  56:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PDR.BIT.PDR6 = 2; /* SW2  : input  */
+  40              		.loc 1 56 0
+  41 0020 B52E53E1 		ldrh	r2, [r3, #-229]
+  42 0024 0210A0E3 		mov	r1, #2
+  43 0028 1126CDE7 		bfi	r2, r1, #12, #2
+  44 002c B52E43E1 		strh	r2, [r3, #-229]	@ movhi
+  57:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  58:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PIDR.BIT.PIDR6;   /* Dummy read */
+  45              		.loc 1 58 0
+  46 0030 923053E5 		ldrb	r3, [r3, #-146]	@ zero_extendqisi2
+  47 0034 1EFF2FE1 		bx	lr
+  48              		.cfi_endproc
+  49              	.LFE4:
+  51              		.section	.text.initSW3gpioRead,"ax",%progbits
+  52              		.align	2
+  53              		.syntax unified
+  54              		.arm
+  55              		.fpu neon
+  57              	initSW3gpioRead:
+  58              	.LFB5:
+  59:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** }
+  60:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  61:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+  62:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: initSW3gpioRead
+  63:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  : initialization for SW3
+  64:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+  65:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+  66:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+  67:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  68:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static void initSW3gpioRead ( void ) {
+  59              		.loc 1 68 0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		@ link register save eliminated.
+  69:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	/* SW3 Readout setting */
+  70:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PMR.BIT.PMR7 = 1;
+  64              		.loc 1 70 0
+  65 0000 FF300EE3 		movw	r3, #57599
+  66 0004 FF3C4FE3 		movt	r3, 64767
+  67 0008 722053E5 		ldrb	r2, [r3, #-114]	@ zero_extendqisi2
+  68 000c 802082E3 		orr	r2, r2, #128
+  69 0010 722043E5 		strb	r2, [r3, #-114]
+  71:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PMR.BIT.PMR7 = 0; /* SW3 peripheral function */
+  70              		.loc 1 71 0
+  71 0014 722053E5 		ldrb	r2, [r3, #-114]	@ zero_extendqisi2
+  72 0018 9F23C7E7 		bfc	r2, #7, #1
+  73 001c 722043E5 		strb	r2, [r3, #-114]
+  72:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PDR.BIT.PDR7 = 2; /* SW3  : input  */
+  74              		.loc 1 72 0
+  75 0020 B52E53E1 		ldrh	r2, [r3, #-229]
+  76 0024 0210A0E3 		mov	r1, #2
+  77 0028 1127CFE7 		bfi	r2, r1, #14, #2
+  78 002c B52E43E1 		strh	r2, [r3, #-229]	@ movhi
+  73:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  74:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	PORTD.PIDR.BIT.PIDR7;   /* Dummy read */
+  79              		.loc 1 74 0
+  80 0030 923053E5 		ldrb	r3, [r3, #-146]	@ zero_extendqisi2
+  81 0034 1EFF2FE1 		bx	lr
+  82              		.cfi_endproc
+  83              	.LFE5:
+  85              		.section	.text.readSW2Switch,"ax",%progbits
+  86              		.align	2
+  87              		.syntax unified
+  88              		.arm
+  89              		.fpu neon
+  91              	readSW2Switch:
+  92              	.LFB6:
+  75:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** }
+  76:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  77:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+  78:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: readSW2Switch
+  79:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  : read port bit data PORTJ.PIDR.BIT.PIDR1
+  80:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+  81:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+  82:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+  83:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  84:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static void readSW2Switch ( void ) {
+  93              		.loc 1 84 0
+  94              		.cfi_startproc
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
+  85:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	uint8_t data = PORTD.PIDR.BIT.PIDR6;
+  98              		.loc 1 85 0
+  99 0000 FF300EE3 		movw	r3, #57599
+ 100 0004 FF3C4FE3 		movt	r3, 64767
+ 101 0008 923053E5 		ldrb	r3, [r3, #-146]	@ zero_extendqisi2
+ 102 000c 5333E0E7 		ubfx	r3, r3, #6, #1
+ 103              	.LVL0:
+  86:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+  87:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	if ( ! boardSwitchInfoStruct.SW2_IsModified && data == 0 ) {
+ 104              		.loc 1 87 0
+ 105 0010 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 106 0014 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 107 0018 042092E5 		ldr	r2, [r2, #4]
+ 108 001c 000052E3 		cmp	r2, #0
+ 109 0020 1700001A 		bne	.L4
+ 110              		.loc 1 87 0 is_stmt 0 discriminator 1
+ 111 0024 000053E3 		cmp	r3, #0
+ 112 0028 1500001A 		bne	.L4
+  88:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		if ( data != SW2_lastKey ) {
+ 113              		.loc 1 88 0 is_stmt 1
+ 114 002c 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 115 0030 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 116 0034 002092E5 		ldr	r2, [r2]
+ 117 0038 020053E1 		cmp	r3, r2
+ 118 003c 1000000A 		beq	.L4
+  89:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			if (boardSwitchInfoStruct.SW2_ModeCnt < boardSwitchInfoStruct.SW2_ModeCntMax ) {
+ 119              		.loc 1 89 0
+ 120 0040 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 121 0044 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 122 0048 001092E5 		ldr	r1, [r2]
+ 123 004c 082092E5 		ldr	r2, [r2, #8]
+ 124 0050 020051E1 		cmp	r1, r2
+ 125 0054 120000AA 		bge	.L5
+  90:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 				boardSwitchInfoStruct.SW2_ModeCnt++ ;
+ 126              		.loc 1 90 0
+ 127 0058 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 128 005c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 129 0060 011081E2 		add	r1, r1, #1
+ 130 0064 001082E5 		str	r1, [r2]
+ 131              	.L6:
+  91:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			} else {
+  92:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 				boardSwitchInfoStruct.SW2_ModeCnt = 0 ;
+  93:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			}
+  94:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			boardSwitchInfoStruct.SW2_IsModified = 1;
+ 132              		.loc 1 94 0
+ 133 0068 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 134 006c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 135 0070 0110A0E3 		mov	r1, #1
+ 136 0074 041082E5 		str	r1, [r2, #4]
+  95:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			SW2_lastKey = data ;
+ 137              		.loc 1 95 0
+ 138 0078 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 139 007c 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 140 0080 003082E5 		str	r3, [r2]
+ 141              	.L4:
+  96:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		}
+  97:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	}
+  98:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	if ( ! boardSwitchInfoStruct.SW2_IsModified ) {
+ 142              		.loc 1 98 0
+ 143 0084 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 144 0088 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 145 008c 042092E5 		ldr	r2, [r2, #4]
+ 146 0090 000052E3 		cmp	r2, #0
+  99:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		SW2_lastKey = data ;
+ 147              		.loc 1 99 0
+ 148 0094 00200003 		movweq	r2, #:lower16:.LANCHOR1
+ 149 0098 00204003 		movteq	r2, #:upper16:.LANCHOR1
+ 150 009c 00308205 		streq	r3, [r2]
+ 151 00a0 1EFF2FE1 		bx	lr
+ 152              	.L5:
+  92:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			}
+ 153              		.loc 1 92 0
+ 154 00a4 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 155 00a8 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 156 00ac 0010A0E3 		mov	r1, #0
+ 157 00b0 001082E5 		str	r1, [r2]
+ 158 00b4 EBFFFFEA 		b	.L6
+ 159              		.cfi_endproc
+ 160              	.LFE6:
+ 162              		.section	.text.readSW3Switch,"ax",%progbits
+ 163              		.align	2
+ 164              		.syntax unified
+ 165              		.arm
+ 166              		.fpu neon
+ 168              	readSW3Switch:
+ 169              	.LFB7:
+ 100:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	}
+ 101:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	return;
+ 102:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** }
+ 103:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 104:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+ 105:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: readSW3Switch
+ 106:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  : read port bit data PORTD.PIDR.BIT.PIDR7
+ 107:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+ 108:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+ 109:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+ 110:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 111:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** static void readSW3Switch ( void ) {
+ 170              		.loc 1 111 0
+ 171              		.cfi_startproc
+ 172              		@ args = 0, pretend = 0, frame = 0
+ 173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 174              		@ link register save eliminated.
+ 112:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	uint8_t data = PORTD.PIDR.BIT.PIDR7;
+ 175              		.loc 1 112 0
+ 176 0000 FF300EE3 		movw	r3, #57599
+ 177 0004 FF3C4FE3 		movt	r3, 64767
+ 178 0008 923053E5 		ldrb	r3, [r3, #-146]	@ zero_extendqisi2
+ 179 000c A333A0E1 		lsr	r3, r3, #7
+ 180              	.LVL1:
+ 113:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 114:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	if ( ! boardSwitchInfoStruct.SW3_IsModified && data == 0 ) {
+ 181              		.loc 1 114 0
+ 182 0010 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 183 0014 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 184 0018 102092E5 		ldr	r2, [r2, #16]
+ 185 001c 000052E3 		cmp	r2, #0
+ 186 0020 1700001A 		bne	.L9
+ 187              		.loc 1 114 0 is_stmt 0 discriminator 1
+ 188 0024 000053E3 		cmp	r3, #0
+ 189 0028 1500001A 		bne	.L9
+ 115:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		if ( data != SW3_lastKey ) {
+ 190              		.loc 1 115 0 is_stmt 1
+ 191 002c 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 192 0030 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 193 0034 002092E5 		ldr	r2, [r2]
+ 194 0038 020053E1 		cmp	r3, r2
+ 195 003c 1000000A 		beq	.L9
+ 116:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			if (boardSwitchInfoStruct.SW3_ModeCnt < boardSwitchInfoStruct.SW3_ModeCntMax ) {
+ 196              		.loc 1 116 0
+ 197 0040 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 198 0044 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 199 0048 0C1092E5 		ldr	r1, [r2, #12]
+ 200 004c 142092E5 		ldr	r2, [r2, #20]
+ 201 0050 020051E1 		cmp	r1, r2
+ 202 0054 120000AA 		bge	.L10
+ 117:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 				boardSwitchInfoStruct.SW3_ModeCnt++ ;
+ 203              		.loc 1 117 0
+ 204 0058 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 205 005c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 206 0060 011081E2 		add	r1, r1, #1
+ 207 0064 0C1082E5 		str	r1, [r2, #12]
+ 208              	.L11:
+ 118:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			} else {
+ 119:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 				boardSwitchInfoStruct.SW3_ModeCnt = 0 ;
+ 120:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			}
+ 121:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			boardSwitchInfoStruct.SW3_IsModified = 1;
+ 209              		.loc 1 121 0
+ 210 0068 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 211 006c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 212 0070 0110A0E3 		mov	r1, #1
+ 213 0074 101082E5 		str	r1, [r2, #16]
+ 122:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			SW3_lastKey = data ;
+ 214              		.loc 1 122 0
+ 215 0078 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 216 007c 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 217 0080 003082E5 		str	r3, [r2]
+ 218              	.L9:
+ 123:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		}
+ 124:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	}
+ 125:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	if ( ! boardSwitchInfoStruct.SW3_IsModified ) {
+ 219              		.loc 1 125 0
+ 220 0084 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 221 0088 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 222 008c 102092E5 		ldr	r2, [r2, #16]
+ 223 0090 000052E3 		cmp	r2, #0
+ 126:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 		SW3_lastKey = data ;
+ 224              		.loc 1 126 0
+ 225 0094 00200003 		movweq	r2, #:lower16:.LANCHOR2
+ 226 0098 00204003 		movteq	r2, #:upper16:.LANCHOR2
+ 227 009c 00308205 		streq	r3, [r2]
+ 228 00a0 1EFF2FE1 		bx	lr
+ 229              	.L10:
+ 119:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 			}
+ 230              		.loc 1 119 0
+ 231 00a4 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 232 00a8 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 233 00ac 0010A0E3 		mov	r1, #0
+ 234 00b0 0C1082E5 		str	r1, [r2, #12]
+ 235 00b4 EBFFFFEA 		b	.L11
+ 236              		.cfi_endproc
+ 237              	.LFE7:
+ 239              		.section	.text.initBoardSwitch,"ax",%progbits
+ 240              		.align	2
+ 241              		.global	initBoardSwitch
+ 242              		.syntax unified
+ 243              		.arm
+ 244              		.fpu neon
+ 246              	initBoardSwitch:
+ 247              	.LFB8:
+ 127:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	}
+ 128:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	return;
+ 129:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** }
+ 130:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 131:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+ 132:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * global functions
+ 133:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+ 134:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 135:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+ 136:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: initBoardSwitch
+ 137:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  : initialization of AD converter, SW2, SW3 and interrupts
+ 138:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+ 139:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+ 140:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+ 141:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 142:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** void initBoardSwitch ( void ) {
+ 248              		.loc 1 142 0
+ 249              		.cfi_startproc
+ 250              		@ args = 0, pretend = 0, frame = 0
+ 251              		@ frame_needed = 0, uses_anonymous_args = 0
+ 252 0000 10402DE9 		push	{r4, lr}
+ 253              		.cfi_def_cfa_offset 8
+ 254              		.cfi_offset 4, -8
+ 255              		.cfi_offset 14, -4
+ 143:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	boardSwitchInfoStruct  = (switchBoardType){ 0,0,1,        // SW2_ModeCnt, SW2_IsModified, SW2_Mode
+ 256              		.loc 1 143 0
+ 257 0004 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 258 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 259 000c 00E000E3 		movw	lr, #:lower16:.LANCHOR3
+ 260 0010 00E040E3 		movt	lr, #:upper16:.LANCHOR3
+ 261 0014 0F00BEE8 		ldmia	lr!, {r0, r1, r2, r3}
+ 262 0018 0F00ACE8 		stmia	ip!, {r0, r1, r2, r3}
+ 263 001c 03009EE8 		ldm	lr, {r0, r1}
+ 264 0020 03008CE8 		stm	ip, {r0, r1}
+ 144:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 												0,0,1,        // SW3_ModeCnt, SW3_IsModified, SW3_ModeCntMax
+ 145:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 											  };       
+ 146:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 147:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	initSW2gpioRead ( ) ;
+ 265              		.loc 1 147 0
+ 266 0024 FEFFFFEB 		bl	initSW2gpioRead
+ 267              	.LVL2:
+ 148:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	initSW3gpioRead ( ) ;
+ 268              		.loc 1 148 0
+ 269 0028 FEFFFFEB 		bl	initSW3gpioRead
+ 270              	.LVL3:
+ 271 002c 1080BDE8 		pop	{r4, pc}
+ 272              		.cfi_endproc
+ 273              	.LFE8:
+ 275              		.section	.text.readBoardSwitch,"ax",%progbits
+ 276              		.align	2
+ 277              		.global	readBoardSwitch
+ 278              		.syntax unified
+ 279              		.arm
+ 280              		.fpu neon
+ 282              	readBoardSwitch:
+ 283              	.LFB9:
+ 149:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** }
+ 150:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 151:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** /**************************************************************************************************
+ 152:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Function Name: readBoardSwitch
+ 153:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Description  :  
+ 154:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Arguments    : none
+ 155:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  * Return Value : 0
+ 156:../src/renesas/application/GR_MANGO/src/subBoardKeys.c ****  **************************************************************************************************
+ 157:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 
+ 158:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** void readBoardSwitch ( void ) {
+ 284              		.loc 1 158 0
+ 285              		.cfi_startproc
+ 286              		@ args = 0, pretend = 0, frame = 0
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 288 0000 10402DE9 		push	{r4, lr}
+ 289              		.cfi_def_cfa_offset 8
+ 290              		.cfi_offset 4, -8
+ 291              		.cfi_offset 14, -4
+ 159:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	readSW2Switch (  ) ; // read SW2 by pin polling
+ 292              		.loc 1 159 0
+ 293 0004 FEFFFFEB 		bl	readSW2Switch
+ 294              	.LVL4:
+ 160:../src/renesas/application/GR_MANGO/src/subBoardKeys.c **** 	readSW3Switch (  ) ; // read SW3 by pin polling
+ 295              		.loc 1 160 0
+ 296 0008 FEFFFFEB 		bl	readSW3Switch
+ 297              	.LVL5:
+ 298 000c 1080BDE8 		pop	{r4, pc}
+ 299              		.cfi_endproc
+ 300              	.LFE9:
+ 302              		.global	boardSwitchInfoStruct
+ 303              		.section	.rodata
+ 304              		.align	2
+ 305              		.set	.LANCHOR3,. + 0
+ 306              	.LC0:
+ 307 0000 00000000 		.word	0
+ 308 0004 00000000 		.word	0
+ 309 0008 01000000 		.word	1
+ 310 000c 00000000 		.word	0
+ 311 0010 00000000 		.word	0
+ 312 0014 01000000 		.word	1
+ 313              		.section	.data.SW2_lastKey,"aw",%progbits
+ 314              		.align	2
+ 315              		.set	.LANCHOR1,. + 0
+ 318              	SW2_lastKey:
+ 319 0000 01000000 		.word	1
+ 320              		.section	.data.SW3_lastKey,"aw",%progbits
+ 321              		.align	2
+ 322              		.set	.LANCHOR2,. + 0
+ 325              	SW3_lastKey:
+ 326 0000 01000000 		.word	1
+ 327              		.section	.data.boardSwitchInfoStruct,"aw",%progbits
+ 328              		.align	2
+ 329              		.set	.LANCHOR0,. + 0
+ 332              	boardSwitchInfoStruct:
+ 333 0000 00000000 		.word	0
+ 334 0004 00000000 		.word	0
+ 335 0008 01000000 		.word	1
+ 336 000c 00000000 		.word	0
+ 337 0010 00000000 		.word	0
+ 338 0014 01000000 		.word	1
+ 339              		.text
+ 340              	.Letext0:
+ 341              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 342              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 343              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 344              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 345              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 346              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 347              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 348              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 349              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 350              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 351              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/iod
+ 352              		.file 13 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 353              		.file 14 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/os_abstrac
+ 354              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 355              		.file 16 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/drivers/r_
+ 356              		.file 17 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/sc_drivers
+ 357              		.file 18 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/renesas/applica
+DEFINED SYMBOLS
+                            *ABS*:00000000 subBoardKeys.c
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:17     .text.initSW2gpioRead:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:22     .text.initSW2gpioRead:00000000 initSW2gpioRead
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:52     .text.initSW3gpioRead:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:57     .text.initSW3gpioRead:00000000 initSW3gpioRead
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:86     .text.readSW2Switch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:91     .text.readSW2Switch:00000000 readSW2Switch
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:329    .data.boardSwitchInfoStruct:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:315    .data.SW2_lastKey:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:163    .text.readSW3Switch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:168    .text.readSW3Switch:00000000 readSW3Switch
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:322    .data.SW3_lastKey:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:240    .text.initBoardSwitch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:246    .text.initBoardSwitch:00000000 initBoardSwitch
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:305    .rodata:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:276    .text.readBoardSwitch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:282    .text.readBoardSwitch:00000000 readBoardSwitch
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:332    .data.boardSwitchInfoStruct:00000000 boardSwitchInfoStruct
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:304    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:314    .data.SW2_lastKey:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:318    .data.SW2_lastKey:00000000 SW2_lastKey
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:321    .data.SW3_lastKey:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:325    .data.SW3_lastKey:00000000 SW3_lastKey
+C:\Users\a5050395\AppData\Local\Temp\ccFgy0kq.s:328    .data.boardSwitchInfoStruct:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.5cdadbb3efe495d1c9e38350b8c376c7
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.stddef.h.187.2ff233552538c6ff9b8575ca8ea52cb3
+                           .group:00000000 wm4.cdefs.h.47.e658329a094974ebad41b40c60502de7
+                           .group:00000000 wm4.stddef.h.39.ec95e8feac892e292b69dc7ae75b0d64
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:00000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:00000000 wm4._timeval.h.30.0e8bfd94e85db17dda3286ee81496fe6
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.30.bbece7fa40993a78092dcc5805132560
+                           .group:00000000 wm4.types.h.69.ed3eae3cf73030a737515151ebcab7a1
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.8188691c2279eac7a223caa50f6694b9
+                           .group:00000000 wm4._default_fcntl.h.6.b13d56891b95175b639f824a0fd1ed77
+                           .group:00000000 wm4.time.h.8.db4619001f026d0b4874c029fef0e91f
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.25.0e6a0fdbc9955f5707ed54246ed2e089
+                           .group:00000000 wm4.time.h.162.d096f2f5887c52e271c4dc33d795dc64
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+                           .group:00000000 wm4.fcntl.h.9.9336f33d7f5028f694c75e6e224e0cf7
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.unistd.h.2.39165d5b7784d1815ef4b0c4be6df560
+                           .group:00000000 wm4.unistd.h.156.614f0202926a9fae83688cfc56e25f59
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.r_typedefs.h.38.e90d9de5300d9ae020e5db8c5af88b3e
+                           .group:00000000 wm4.adc_iodefine.h.29.14c6f50dce37432a7d004e4b1ce33da7
+                           .group:00000000 wm4.bsc_iodefine.h.29.9281d1f3639266933964d6d0c2d42c4f
+                           .group:00000000 wm4.ceu_iodefine.h.29.2a669d0b46fdde030a50db9e3c307fbf
+                           .group:00000000 wm4.cpg_iodefine.h.29.d6fdc9cb4798723afd88b251d64c2ce2
+                           .group:00000000 wm4.csi2link_iodefine.h.29.221c4531636a409f24d307b16341ada8
+                           .group:00000000 wm4.dmac_iodefine.h.29.578fccc2cc1da886ec95a029bf874f01
+                           .group:00000000 wm4.drpk_iodefine.h.29.580eb8588a2b2d43d2726fbe791e513f
+                           .group:00000000 wm4.drw_iodefine.h.29.df30f4a4a34a79f6a86c4df91353dffe
+                           .group:00000000 wm4.edmac_iodefine.h.29.33e8759349004a722f42f5429c1353f6
+                           .group:00000000 wm4.eptpc_iodefine.h.29.74d8f9fab0f5549b56097fb9e937dde8
+                           .group:00000000 wm4.etherc_iodefine.h.29.14602750383a574f1c21f994ad33a366
+                           .group:00000000 wm4.gpio_iodefine.h.29.3d0b021c56839cee4ae5149903684e4b
+                           .group:00000000 wm4.gpt_iodefine.h.29.557ead75d7b0585b898d3898b64c7f87
+                           .group:00000000 wm4.hyper_iodefine.h.29.000caadbb74d881e97db55b39b432154
+                           .group:00000000 wm4.imr_iodefine.h.29.77c022f017e711c4d51cc0145db1dad3
+                           .group:00000000 wm4.intc_iodefine.h.29.b68f5799a35a7495d63b4cd458e1ba57
+                           .group:00000000 wm4.irda_iodefine.h.29.37e67bd2005173d68a74d1cc937d8444
+                           .group:00000000 wm4.jcu_iodefine.h.29.3aca452908962e7a7ccf26164751feda
+                           .group:00000000 wm4.lvds_iodefine.h.29.c11cbe1900e5209c8dcc76c2336c16bc
+                           .group:00000000 wm4.mtu_iodefine.h.29.5498fb974bb53caf05aa143c2deec781
+                           .group:00000000 wm4.nandc_iodefine.h.29.e0b343306750f017ee86e169ad98efe9
+                           .group:00000000 wm4.octa_iodefine.h.29.4cb0d62e4b9633e173858000dc1c626c
+                           .group:00000000 wm4.ostm_iodefine.h.29.6914f7e330a1cf0008b34219adcdfed4
+                           .group:00000000 wm4.pl_iodefine.h.29.abbb6d725aed990aa8343242bfe31416
+                           .group:00000000 wm4.pmg_iodefine.h.29.8bcfbc4771a6f9b7dd4d6f504427219e
+                           .group:00000000 wm4.poeg_iodefine.h.29.0d8e258d10986260cbc70cfb8c0ef273
+                           .group:00000000 wm4.poe_iodefine.h.29.fe74e55e7b6b4afbe3596c74ba035e98
+                           .group:00000000 wm4.prr_iodefine.h.29.c1f15576f7a27b9c83aa3b40f5b2f988
+                           .group:00000000 wm4.ptpedmac_iodefine.h.29.cd24a93374ce35cebc41e26889d619ef
+                           .group:00000000 wm4.rcanfd_iodefine.h.29.532dd48b82fcb61d63538aba4b6f1289
+                           .group:00000000 wm4.rcan_iodefine.h.29.a47a89db1b35c12b54af48fa1956acba
+                           .group:00000000 wm4.riic_iodefine.h.29.f96943d49800d297612c4af3bba5c943
+                           .group:00000000 wm4.rspi_iodefine.h.29.7efa041fe34a7d27db66a7b337879dfe
+                           .group:00000000 wm4.rtc_iodefine.h.29.6dc76be5ca3df69cecb5a81d06cc46b5
+                           .group:00000000 wm4.scifa_iodefine.h.29.b04ccd664d71baaf31c75761c45b9c4d
+                           .group:00000000 wm4.scim_iodefine.h.29.87d0760abf94446b00d826c797bf0ff2
+                           .group:00000000 wm4.sdmmc_iodefine.h.29.e67e9815445e8057a3262d1566bea0db
+                           .group:00000000 wm4.spdif_iodefine.h.29.59f5d70150fa200a4d8ee50be1ee34c8
+                           .group:00000000 wm4.spibsc_iodefine.h.29.f4930f8b8da1140200204513a363c76f
+                           .group:00000000 wm4.sprite_iodefine.h.29.55796d1fa083a2457fea4ece974a192e
+                           .group:00000000 wm4.ssif_iodefine.h.29.054ec6d95f487f631f16aee39c85c47a
+                           .group:00000000 wm4.usb_iodefine.h.29.6dc44ea388ba227e8fdcfb33c315887b
+                           .group:00000000 wm4.vdc_iodefine.h.29.db282ded1f052d8567fbbd3b61ce8f7a
+                           .group:00000000 wm4.vin_iodefine.h.29.9b392e5601347d53e64be3272934e170
+                           .group:00000000 wm4.wdt_iodefine.h.29.ed07bb44b797072f8c28b41c64fdca30
+                           .group:00000000 wm4.r_startup_config.h.28.41a2bd9676f9208cac4163ceb2eb9006
+                           .group:00000000 wm4.r_compiler_abstraction_api.h.26.bb21b39b83806cb7bb8838b6f825dcff
+                           .group:00000000 wm4.driver.h.34.180df73e0731406f5e50150641059ede
+                           .group:00000000 wm4.r_os_abstraction_api.h.53.c40489f97d2474c70b40d43822d1406c
+                           .group:00000000 wm4.compiler_settings.h.55.412db3588640e7e83336e77c1cd11233
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.reent.h.91.b3ea049ebc5486622b61409b78486f84
+                           .group:00000000 wm4.r_devlink_wrapper.h.72.ad1de4c851513efa3aed0532ebca7ca2
+                           .group:00000000 wm4.r_intc_lld_rza2m.h.35.148dee33e6a963828fdce2545668b517
+                           .group:00000000 wm4.r_adc_lld_rza2m.h.43.8df60c43d3804e11300d2b75d335ef18
+                           .group:00000000 wm4.r_adc_drv_api.h.39.9b0cdc9a395d98dd72007b812b399234
+
+NO UNDEFINED SYMBOLS

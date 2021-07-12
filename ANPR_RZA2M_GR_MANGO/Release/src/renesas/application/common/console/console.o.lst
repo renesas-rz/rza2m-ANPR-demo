@@ -1,0 +1,968 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"console.c"
+  13              		.section	.text.con_parse_command,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	con_parse_command:
+  20              		@ args = 0, pretend = 0, frame = 16
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 0030D0E5 		ldrb	r3, [r0]	@ zero_extendqisi2
+  23 0004 201043E2 		sub	r1, r3, #32
+  24 0008 DF1001E2 		and	r1, r1, #223
+  25 000c 000051E3 		cmp	r1, #0
+  26 0010 09005313 		cmpne	r3, #9
+  27 0014 0130A003 		moveq	r3, #1
+  28 0018 0030A013 		movne	r3, #0
+  29 001c C500001A 		bne	.L30
+  30 0020 00C0A0E1 		mov	ip, r0
+  31 0024 0010A0E3 		mov	r1, #0
+  32              	.L3:
+  33 0028 0120FCE5 		ldrb	r2, [ip, #1]!	@ zero_extendqisi2
+  34 002c 011081E2 		add	r1, r1, #1
+  35 0030 203042E2 		sub	r3, r2, #32
+  36 0034 DF3003E2 		and	r3, r3, #223
+  37 0038 000053E3 		cmp	r3, #0
+  38 003c 09005213 		cmpne	r2, #9
+  39 0040 F8FFFF0A 		beq	.L3
+  40              	.L2:
+  41 0044 242C90E5 		ldr	r2, [r0, #3108]
+  42 0048 0030A0E3 		mov	r3, #0
+  43 004c 243C80E5 		str	r3, [r0, #3108]
+  44 0050 010052E1 		cmp	r2, r1
+  45 0054 B500000A 		beq	.L31
+  46 0058 202CD0E5 		ldrb	r2, [r0, #3104]	@ zero_extendqisi2
+  47 005c F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  48 0060 0070A0E1 		mov	r7, r0
+  49 0064 14D04DE2 		sub	sp, sp, #20
+  50 0068 030052E1 		cmp	r2, r3
+  51 006c 203CC015 		strbne	r3, [r0, #3104]
+  52 0070 AA00000A 		beq	.L53
+  53              	.L7:
+  54 0074 443C00E3 		movw	r3, #3140
+  55 0078 F32097E1 		ldrsh	r2, [r7, r3]
+  56 007c 000052E3 		cmp	r2, #0
+  57 0080 8B0000DA 		ble	.L29
+  58 0084 033087E0 		add	r3, r7, r3
+  59 0088 0C308DE5 		str	r3, [sp, #12]
+  60 008c 0030A0E3 		mov	r3, #0
+  61 0090 04308DE5 		str	r3, [sp, #4]
+  62 0094 823E87E2 		add	r3, r7, #2080
+  63 0098 08308DE5 		str	r3, [sp, #8]
+  64              	.L28:
+  65 009c 403C97E5 		ldr	r3, [r7, #3136]
+  66 00a0 04109DE5 		ldr	r1, [sp, #4]
+  67 00a4 016193E7 		ldr	r6, [r3, r1, lsl #2]
+  68 00a8 000056E3 		cmp	r6, #0
+  69 00ac 7A00000A 		beq	.L8
+  70 00b0 012BA0E3 		mov	r2, #1024
+  71 00b4 0010A0E3 		mov	r1, #0
+  72 00b8 08009DE5 		ldr	r0, [sp, #8]
+  73 00bc 818E87E2 		add	r8, r7, #2064
+  74 00c0 FEFFFFEB 		bl	memset
+  75 00c4 0050A0E3 		mov	r5, #0
+  76 00c8 211D87E2 		add	r1, r7, #2112
+  77 00cc 233D87E2 		add	r3, r7, #2240
+  78 00d0 0C8088E2 		add	r8, r8, #12
+  79 00d4 07B0A0E1 		mov	fp, r7
+  80 00d8 25ED87E2 		add	lr, r7, #2368
+  81 00dc 27CD87E2 		add	ip, r7, #2496
+  82 00e0 290D87E2 		add	r0, r7, #2624
+  83 00e4 2B2D87E2 		add	r2, r7, #2752
+  84 00e8 201887E5 		str	r1, [r7, #2080]
+  85 00ec 243887E5 		str	r3, [r7, #2084]
+  86 00f0 2D1D87E2 		add	r1, r7, #2880
+  87 00f4 2F3D87E2 		add	r3, r7, #3008
+  88 00f8 28E887E5 		str	lr, [r7, #2088]
+  89 00fc 2CC887E5 		str	ip, [r7, #2092]
+  90 0100 300887E5 		str	r0, [r7, #2096]
+  91 0104 342887E5 		str	r2, [r7, #2100]
+  92 0108 381887E5 		str	r1, [r7, #2104]
+  93 010c 3C3887E5 		str	r3, [r7, #2108]
+  94              	.L9:
+  95 0110 0030DBE5 		ldrb	r3, [fp]	@ zero_extendqisi2
+  96 0114 7540BFE6 		sxth	r4, r5
+  97 0118 000053E3 		cmp	r3, #0
+  98 011c 3E00000A 		beq	.L22
+  99 0120 0490B8E5 		ldr	r9, [r8, #4]!
+ 100 0124 020000EA 		b	.L10
+ 101              	.L12:
+ 102 0128 0130FBE5 		ldrb	r3, [fp, #1]!	@ zero_extendqisi2
+ 103 012c 000053E3 		cmp	r3, #0
+ 104 0130 3500000A 		beq	.L11
+ 105              	.L10:
+ 106 0134 FEFFFFEB 		bl	__locale_ctype_ptr
+ 107 0138 0030DBE5 		ldrb	r3, [fp]	@ zero_extendqisi2
+ 108 013c 030080E0 		add	r0, r0, r3
+ 109 0140 0140D0E5 		ldrb	r4, [r0, #1]	@ zero_extendqisi2
+ 110 0144 084014E2 		ands	r4, r4, #8
+ 111 0148 F6FFFF1A 		bne	.L12
+ 112 014c 220053E3 		cmp	r3, #34
+ 113 0150 1700001A 		bne	.L13
+ 114 0154 0120DBE5 		ldrb	r2, [fp, #1]	@ zero_extendqisi2
+ 115 0158 01108BE2 		add	r1, fp, #1
+ 116 015c 000052E3 		cmp	r2, #0
+ 117 0160 22005213 		cmpne	r2, #34
+ 118 0164 0140A013 		movne	r4, #1
+ 119 0168 0040A003 		moveq	r4, #0
+ 120 016c 02B08B12 		addne	fp, fp, #2
+ 121 0170 0140A013 		movne	r4, #1
+ 122 0174 0300001A 		bne	.L16
+ 123 0178 0B0000EA 		b	.L15
+ 124              	.L17:
+ 125 017c 800053E3 		cmp	r3, #128
+ 126 0180 7340BFE6 		sxth	r4, r3
+ 127 0184 5700000A 		beq	.L54
+ 128              	.L16:
+ 129 0188 0120C9E4 		strb	r2, [r9], #1
+ 130 018c 013084E2 		add	r3, r4, #1
+ 131 0190 0020DBE5 		ldrb	r2, [fp]	@ zero_extendqisi2
+ 132 0194 0B10A0E1 		mov	r1, fp
+ 133 0198 7330FFE6 		uxth	r3, r3
+ 134 019c 01B08BE2 		add	fp, fp, #1
+ 135 01a0 000052E3 		cmp	r2, #0
+ 136 01a4 22005213 		cmpne	r2, #34
+ 137 01a8 F3FFFF1A 		bne	.L17
+ 138              	.L15:
+ 139 01ac 0130D1E5 		ldrb	r3, [r1, #1]	@ zero_extendqisi2
+ 140 01b0 01B081E2 		add	fp, r1, #1
+ 141              	.L13:
+ 142 01b4 000053E3 		cmp	r3, #0
+ 143 01b8 0BA0A011 		movne	r10, fp
+ 144 01bc 0700001A 		bne	.L20
+ 145 01c0 110000EA 		b	.L11
+ 146              	.L21:
+ 147 01c4 7F0053E3 		cmp	r3, #127
+ 148 01c8 4100008A 		bhi	.L55
+ 149 01cc 0110C9E4 		strb	r1, [r9], #1
+ 150 01d0 0AB0A0E1 		mov	fp, r10
+ 151 01d4 0030DAE5 		ldrb	r3, [r10]	@ zero_extendqisi2
+ 152 01d8 000053E3 		cmp	r3, #0
+ 153 01dc 0A00000A 		beq	.L11
+ 154              	.L20:
+ 155 01e0 FEFFFFEB 		bl	__locale_ctype_ptr
+ 156 01e4 0010DAE5 		ldrb	r1, [r10]	@ zero_extendqisi2
+ 157 01e8 013084E2 		add	r3, r4, #1
+ 158 01ec 7330FFE6 		uxth	r3, r3
+ 159 01f0 0AB0A0E1 		mov	fp, r10
+ 160 01f4 01A08AE2 		add	r10, r10, #1
+ 161 01f8 010080E0 		add	r0, r0, r1
+ 162 01fc 7340BFE6 		sxth	r4, r3
+ 163 0200 0120D0E5 		ldrb	r2, [r0, #1]	@ zero_extendqisi2
+ 164 0204 082012E2 		ands	r2, r2, #8
+ 165 0208 EDFFFF0A 		beq	.L21
+ 166              	.L11:
+ 167 020c 015085E2 		add	r5, r5, #1
+ 168 0210 080055E3 		cmp	r5, #8
+ 169 0214 BDFFFF1A 		bne	.L9
+ 170              	.L33:
+ 171 0218 0540A0E1 		mov	r4, r5
+ 172              	.L22:
+ 173 021c 200897E5 		ldr	r0, [r7, #2080]
+ 174 0220 FEFFFFEB 		bl	strlen
+ 175 0224 245096E5 		ldr	r5, [r6, #36]
+ 176 0228 0080A0E1 		mov	r8, r0
+ 177 022c 000055E3 		cmp	r5, #0
+ 178 0230 170000DA 		ble	.L51
+ 179 0234 00B0A0E3 		mov	fp, #0
+ 180 0238 030000EA 		b	.L27
+ 181              	.L25:
+ 182 023c 01B08BE2 		add	fp, fp, #1
+ 183 0240 7BB0BFE6 		sxth	fp, fp
+ 184 0244 05005BE1 		cmp	fp, r5
+ 185 0248 110000AA 		bge	.L51
+ 186              	.L27:
+ 187 024c 202096E5 		ldr	r2, [r6, #32]
+ 188 0250 8B308BE0 		add	r3, fp, fp, lsl #1
+ 189 0254 03A1A0E1 		lsl	r10, r3, #2
+ 190 0258 039192E7 		ldr	r9, [r2, r3, lsl #2]
+ 191 025c 0900A0E1 		mov	r0, r9
+ 192 0260 FEFFFFEB 		bl	strlen
+ 193 0264 000058E1 		cmp	r8, r0
+ 194 0268 F3FFFF1A 		bne	.L25
+ 195 026c 0900A0E1 		mov	r0, r9
+ 196 0270 201897E5 		ldr	r1, [r7, #2080]
+ 197 0274 FEFFFFEB 		bl	wild_compare
+ 198 0278 000050E3 		cmp	r0, #0
+ 199 027c 1D00001A 		bne	.L26
+ 200 0280 245096E5 		ldr	r5, [r6, #36]
+ 201 0284 01B08BE2 		add	fp, fp, #1
+ 202 0288 7BB0BFE6 		sxth	fp, fp
+ 203 028c 05005BE1 		cmp	fp, r5
+ 204 0290 EDFFFFBA 		blt	.L27
+ 205              	.L51:
+ 206 0294 0C309DE5 		ldr	r3, [sp, #12]
+ 207 0298 F020D3E1 		ldrsh	r2, [r3]
+ 208              	.L8:
+ 209 029c 04309DE5 		ldr	r3, [sp, #4]
+ 210 02a0 019083E2 		add	r9, r3, #1
+ 211 02a4 7930BFE6 		sxth	r3, r9
+ 212 02a8 020053E1 		cmp	r3, r2
+ 213 02ac 04308DE5 		str	r3, [sp, #4]
+ 214 02b0 79FFFFBA 		blt	.L28
+ 215              	.L29:
+ 216 02b4 001000E3 		movw	r1, #:lower16:.LC0
+ 217 02b8 0720A0E1 		mov	r2, r7
+ 218 02bc 001040E3 		movt	r1, #:upper16:.LC0
+ 219 02c0 380C97E5 		ldr	r0, [r7, #3128]
+ 220 02c4 FEFFFFEB 		bl	fprintf
+ 221 02c8 0000A0E3 		mov	r0, #0
+ 222 02cc 14D08DE2 		add	sp, sp, #20
+ 223              		@ sp needed
+ 224 02d0 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 225              	.L55:
+ 226 02d4 015085E2 		add	r5, r5, #1
+ 227 02d8 0020C9E5 		strb	r2, [r9]
+ 228 02dc 080055E3 		cmp	r5, #8
+ 229 02e0 8AFFFF1A 		bne	.L9
+ 230 02e4 CBFFFFEA 		b	.L33
+ 231              	.L54:
+ 232 02e8 0020A0E3 		mov	r2, #0
+ 233 02ec 0340A0E1 		mov	r4, r3
+ 234 02f0 0020C9E5 		strb	r2, [r9]
+ 235 02f4 ACFFFFEA 		b	.L15
+ 236              	.L26:
+ 237 02f8 203096E5 		ldr	r3, [r6, #32]
+ 238 02fc 0720A0E1 		mov	r2, r7
+ 239 0300 08109DE5 		ldr	r1, [sp, #8]
+ 240 0304 0400A0E1 		mov	r0, r4
+ 241 0308 0AA083E0 		add	r10, r3, r10
+ 242 030c 04309AE5 		ldr	r3, [r10, #4]
+ 243 0310 33FF2FE1 		blx	r3
+ 244 0314 7000EFE6 		uxtb	r0, r0
+ 245 0318 14D08DE2 		add	sp, sp, #20
+ 246              		@ sp needed
+ 247 031c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 248              	.L53:
+ 249 0320 0010A0E1 		mov	r1, r0
+ 250 0324 410E80E2 		add	r0, r0, #1040
+ 251 0328 FEFFFFEB 		bl	strcpy
+ 252 032c 50FFFFEA 		b	.L7
+ 253              	.L31:
+ 254 0330 0300A0E1 		mov	r0, r3
+ 255 0334 1EFF2FE1 		bx	lr
+ 256              	.L30:
+ 257 0338 0310A0E1 		mov	r1, r3
+ 258 033c 40FFFFEA 		b	.L2
+ 260              		.section	.text.show_welcome_msg,"ax",%progbits
+ 261              		.align	2
+ 262              		.global	show_welcome_msg
+ 263              		.syntax unified
+ 264              		.arm
+ 265              		.fpu neon
+ 267              	show_welcome_msg:
+ 268              		@ args = 0, pretend = 0, frame = 16
+ 269              		@ frame_needed = 0, uses_anonymous_args = 0
+ 270 0000 10402DE9 		push	{r4, lr}
+ 271 0004 0040A0E1 		mov	r4, r0
+ 272 0008 000000E3 		movw	r0, #:lower16:.LC1
+ 273 000c 18D04DE2 		sub	sp, sp, #24
+ 274 0010 0430A0E1 		mov	r3, r4
+ 275 0014 5520A0E3 		mov	r2, #85
+ 276 0018 0110A0E3 		mov	r1, #1
+ 277 001c 000040E3 		movt	r0, #:upper16:.LC1
+ 278 0020 FEFFFFEB 		bl	fwrite
+ 279 0024 001000E3 		movw	r1, #:lower16:.LC2
+ 280 0028 0330A0E3 		mov	r3, #3
+ 281 002c 001040E3 		movt	r1, #:upper16:.LC2
+ 282 0030 0120A0E3 		mov	r2, #1
+ 283 0034 0400A0E1 		mov	r0, r4
+ 284 0038 FEFFFFEB 		bl	fprintf
+ 285 003c 000000E3 		movw	r0, #:lower16:.LC3
+ 286 0040 0430A0E1 		mov	r3, r4
+ 287 0044 4A20A0E3 		mov	r2, #74
+ 288 0048 0110A0E3 		mov	r1, #1
+ 289 004c 000040E3 		movt	r0, #:upper16:.LC3
+ 290 0050 FEFFFFEB 		bl	fwrite
+ 291 0054 003000E3 		movw	r3, #:lower16:.LC4
+ 292 0058 002000E3 		movw	r2, #:lower16:.LC5
+ 293 005c 001000E3 		movw	r1, #:lower16:.LC6
+ 294 0060 003040E3 		movt	r3, #:upper16:.LC4
+ 295 0064 002040E3 		movt	r2, #:upper16:.LC5
+ 296 0068 001040E3 		movt	r1, #:upper16:.LC6
+ 297 006c 0400A0E1 		mov	r0, r4
+ 298 0070 FEFFFFEB 		bl	fprintf
+ 299 0074 0C008DE2 		add	r0, sp, #12
+ 300 0078 FEFFFFEB 		bl	R_OS_GetVersion
+ 301 007c 000050E3 		cmp	r0, #0
+ 302 0080 0700001A 		bne	.L57
+ 303 0084 BCC0DDE1 		ldrh	ip, [sp, #12]
+ 304 0088 001000E3 		movw	r1, #:lower16:.LC7
+ 305 008c BE30DDE1 		ldrh	r3, [sp, #14]
+ 306 0090 001040E3 		movt	r1, #:upper16:.LC7
+ 307 0094 14209DE5 		ldr	r2, [sp, #20]
+ 308 0098 0400A0E1 		mov	r0, r4
+ 309 009c 00C08DE5 		str	ip, [sp]
+ 310 00a0 FEFFFFEB 		bl	fprintf
+ 311              	.L57:
+ 312 00a4 0400A0E1 		mov	r0, r4
+ 313 00a8 FEFFFFEB 		bl	fflush
+ 314 00ac 18D08DE2 		add	sp, sp, #24
+ 315              		@ sp needed
+ 316 00b0 1080BDE8 		pop	{r4, pc}
+ 318              		.section	.text.console,"ax",%progbits
+ 319              		.align	2
+ 320              		.global	console
+ 321              		.syntax unified
+ 322              		.arm
+ 323              		.fpu neon
+ 325              	console:
+ 326              		@ args = 8, pretend = 0, frame = 0
+ 327              		@ frame_needed = 0, uses_anonymous_args = 0
+ 328 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 329 0004 0040A0E1 		mov	r4, r0
+ 330 0008 24609DE5 		ldr	r6, [sp, #36]
+ 331 000c 0190A0E1 		mov	r9, r1
+ 332 0010 0280A0E1 		mov	r8, r2
+ 333 0014 0010A0E3 		mov	r1, #0
+ 334 0018 20509DE5 		ldr	r5, [sp, #32]
+ 335 001c EC2403E3 		movw	r2, #13548
+ 336 0020 0370A0E1 		mov	r7, r3
+ 337 0024 FEFFFFEB 		bl	memset
+ 338 0028 442C00E3 		movw	r2, #3140
+ 339 002c 03CA84E2 		add	ip, r4, #12288
+ 340 0030 0030E0E3 		mvn	r3, #0
+ 341 0034 001000E3 		movw	r1, #:lower16:.LC8
+ 342 0038 409C84E5 		str	r9, [r4, #3136]
+ 343 003c 001040E3 		movt	r1, #:upper16:.LC8
+ 344 0040 347C84E5 		str	r7, [r4, #3124]
+ 345 0044 410E84E2 		add	r0, r4, #1040
+ 346 0048 385C84E5 		str	r5, [r4, #3128]
+ 347 004c 306C84E5 		str	r6, [r4, #3120]
+ 348 0050 B28084E1 		strh	r8, [r4, r2]	@ movhi
+ 349 0054 0220A0E3 		mov	r2, #2
+ 350 0058 E8648CE5 		str	r6, [ip, #1256]
+ 351 005c 463CC4E5 		strb	r3, [r4, #3142]
+ 352 0060 FEFFFFEB 		bl	memcpy
+ 353 0064 000056E3 		cmp	r6, #0
+ 354 0068 0600000A 		beq	.L60
+ 355 006c 0500A0E1 		mov	r0, r5
+ 356 0070 FEFFFFEB 		bl	fflush
+ 357 0074 001000E3 		movw	r1, #:lower16:.LC9
+ 358 0078 302C94E5 		ldr	r2, [r4, #3120]
+ 359 007c 001040E3 		movt	r1, #:upper16:.LC9
+ 360 0080 380C94E5 		ldr	r0, [r4, #3128]
+ 361 0084 FEFFFFEB 		bl	fprintf
+ 362              	.L60:
+ 363 0088 0500A0E1 		mov	r0, r5
+ 364 008c C26E84E2 		add	r6, r4, #3104
+ 365 0090 FEFFFFEB 		bl	fflush
+ 366 0094 0030A0E3 		mov	r3, #0
+ 367 0098 008000E3 		movw	r8, #:lower16:.LC9
+ 368 009c 0310A0E1 		mov	r1, r3
+ 369 00a0 0220A0E3 		mov	r2, #2
+ 370 00a4 0700A0E1 		mov	r0, r7
+ 371 00a8 086086E2 		add	r6, r6, #8
+ 372 00ac 008040E3 		movt	r8, #:upper16:.LC9
+ 373 00b0 FEFFFFEB 		bl	setvbuf
+ 374 00b4 0D0000EA 		b	.L86
+ 375              	.L65:
+ 376 00b8 3B0053E3 		cmp	r3, #59
+ 377 00bc 6000000A 		beq	.L69
+ 378 00c0 5800009A 		bls	.L128
+ 379 00c4 7E0053E3 		cmp	r3, #126
+ 380 00c8 7E00001A 		bne	.L129
+ 381 00cc 202CD4E5 		ldrb	r2, [r4, #3104]	@ zero_extendqisi2
+ 382 00d0 000052E3 		cmp	r2, #0
+ 383 00d4 3D00001A 		bne	.L81
+ 384 00d8 242C94E5 		ldr	r2, [r4, #3108]
+ 385 00dc 0E1400E3 		movw	r1, #1038
+ 386 00e0 010052E1 		cmp	r2, r1
+ 387 00e4 8B00009A 		bls	.L130
+ 388              	.L73:
+ 389 00e8 0500A0E1 		mov	r0, r5
+ 390 00ec FEFFFFEB 		bl	fflush
+ 391              	.L86:
+ 392 00f0 0700A0E1 		mov	r0, r7
+ 393 00f4 FEFFFFEB 		bl	fgetc
+ 394 00f8 010070E3 		cmn	r0, #1
+ 395 00fc 0020A0E1 		mov	r2, r0
+ 396 0100 7F00000A 		beq	.L131
+ 397 0104 2C3C94E5 		ldr	r3, [r4, #3116]
+ 398 0108 0500A0E1 		mov	r0, r5
+ 399 010c B020C6E1 		strh	r2, [r6]	@ movhi
+ 400 0110 013083E2 		add	r3, r3, #1
+ 401 0114 2C3C84E5 		str	r3, [r4, #3116]
+ 402 0118 FEFFFFEB 		bl	fflush
+ 403 011c 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+ 404 0120 0D0053E3 		cmp	r3, #13
+ 405 0124 1D00000A 		beq	.L64
+ 406 0128 E2FFFF8A 		bhi	.L65
+ 407 012c 080053E3 		cmp	r3, #8
+ 408 0130 6600000A 		beq	.L66
+ 409 0134 0A0053E3 		cmp	r3, #10
+ 410 0138 6000000A 		beq	.L67
+ 411 013c 000053E3 		cmp	r3, #0
+ 412 0140 5400000A 		beq	.L132
+ 413              	.L63:
+ 414 0144 242C94E5 		ldr	r2, [r4, #3108]
+ 415 0148 0E1400E3 		movw	r1, #1038
+ 416 014c 010052E1 		cmp	r2, r1
+ 417 0150 E4FFFF8A 		bhi	.L73
+ 418 0154 011082E2 		add	r1, r2, #1
+ 419 0158 241C84E5 		str	r1, [r4, #3108]
+ 420 015c 0230C4E7 		strb	r3, [r4, r2]
+ 421 0160 202CD4E5 		ldrb	r2, [r4, #3104]	@ zero_extendqisi2
+ 422 0164 010052E3 		cmp	r2, #1
+ 423 0168 7800000A 		beq	.L133
+ 424              	.L82:
+ 425              		.syntax divided
+ 426              	@ 274 "../src/renesas/application/common/console/console.c" 1
+ 427 016c 00F020E3 		nop
+ 428              	@ 0 "" 2
+ 429              		.arm
+ 430              		.syntax unified
+ 431 0170 000052E3 		cmp	r2, #0
+ 432 0174 DBFFFF1A 		bne	.L73
+ 433 0178 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+ 434 017c 400052E3 		cmp	r2, #64
+ 435 0180 D8FFFF0A 		beq	.L73
+ 436 0184 3C2CD4E5 		ldrb	r2, [r4, #3132]	@ zero_extendqisi2
+ 437 0188 000052E3 		cmp	r2, #0
+ 438 018c 3D00001A 		bne	.L134
+ 439              	.L85:
+ 440 0190 0300A0E1 		mov	r0, r3
+ 441 0194 381C94E5 		ldr	r1, [r4, #3128]
+ 442 0198 FEFFFFEB 		bl	fputc
+ 443 019c D1FFFFEA 		b	.L73
+ 444              	.L64:
+ 445 01a0 203CD4E5 		ldrb	r3, [r4, #3104]	@ zero_extendqisi2
+ 446 01a4 000053E3 		cmp	r3, #0
+ 447 01a8 0800001A 		bne	.L81
+ 448 01ac 0030D4E5 		ldrb	r3, [r4]	@ zero_extendqisi2
+ 449 01b0 400053E3 		cmp	r3, #64
+ 450 01b4 0500000A 		beq	.L81
+ 451 01b8 000000E3 		movw	r0, #:lower16:.LC11
+ 452 01bc 383C94E5 		ldr	r3, [r4, #3128]
+ 453 01c0 000040E3 		movt	r0, #:upper16:.LC11
+ 454 01c4 0220A0E3 		mov	r2, #2
+ 455 01c8 0110A0E3 		mov	r1, #1
+ 456 01cc FEFFFFEB 		bl	fwrite
+ 457              	.L81:
+ 458 01d0 243C94E5 		ldr	r3, [r4, #3108]
+ 459 01d4 0020A0E3 		mov	r2, #0
+ 460 01d8 0400A0E1 		mov	r0, r4
+ 461 01dc 0320C4E7 		strb	r2, [r4, r3]
+ 462 01e0 FEFFFFEB 		bl	con_parse_command
+ 463              	.L78:
+ 464 01e4 040050E3 		cmp	r0, #4
+ 465 01e8 3300008A 		bhi	.L135
+ 466              	.L120:
+ 467 01ec 010050E3 		cmp	r0, #1
+ 468 01f0 BCFFFF0A 		beq	.L73
+ 469 01f4 303C94E5 		ldr	r3, [r4, #3120]
+ 470 01f8 000053E3 		cmp	r3, #0
+ 471 01fc B9FFFF0A 		beq	.L73
+ 472 0200 380C94E5 		ldr	r0, [r4, #3128]
+ 473 0204 FEFFFFEB 		bl	fflush
+ 474 0208 302C94E5 		ldr	r2, [r4, #3120]
+ 475 020c 0810A0E1 		mov	r1, r8
+ 476 0210 380C94E5 		ldr	r0, [r4, #3128]
+ 477 0214 FEFFFFEB 		bl	fprintf
+ 478 0218 020910E3 		tst	r0, #32768
+ 479 021c B1FFFF0A 		beq	.L73
+ 480 0220 0700A0E3 		mov	r0, #7
+ 481 0224 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 482              	.L128:
+ 483 0228 1B0053E3 		cmp	r3, #27
+ 484 022c C4FFFF1A 		bne	.L63
+ 485 0230 0120A0E3 		mov	r2, #1
+ 486 0234 0030A0E3 		mov	r3, #0
+ 487 0238 202CC4E5 		strb	r2, [r4, #3104]
+ 488 023c 243C84E5 		str	r3, [r4, #3108]
+ 489 0240 A8FFFFEA 		b	.L73
+ 490              	.L69:
+ 491 0244 202CD4E5 		ldrb	r2, [r4, #3104]	@ zero_extendqisi2
+ 492 0248 000052E3 		cmp	r2, #0
+ 493 024c DFFFFF1A 		bne	.L81
+ 494 0250 242C94E5 		ldr	r2, [r4, #3108]
+ 495 0254 0E1400E3 		movw	r1, #1038
+ 496 0258 010052E1 		cmp	r2, r1
+ 497 025c A1FFFF8A 		bhi	.L73
+ 498 0260 011082E2 		add	r1, r2, #1
+ 499 0264 241C84E5 		str	r1, [r4, #3108]
+ 500 0268 0230C4E7 		strb	r3, [r4, r2]
+ 501              		.syntax divided
+ 502              	@ 274 "../src/renesas/application/common/console/console.c" 1
+ 503 026c 00F020E3 		nop
+ 504              	@ 0 "" 2
+ 505              		.arm
+ 506              		.syntax unified
+ 507 0270 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+ 508 0274 400052E3 		cmp	r2, #64
+ 509 0278 9AFFFF0A 		beq	.L73
+ 510 027c 3C2CD4E5 		ldrb	r2, [r4, #3132]	@ zero_extendqisi2
+ 511 0280 000052E3 		cmp	r2, #0
+ 512 0284 C1FFFF0A 		beq	.L85
+ 513              	.L134:
+ 514 0288 381C94E5 		ldr	r1, [r4, #3128]
+ 515              	.L122:
+ 516 028c 2A00A0E3 		mov	r0, #42
+ 517 0290 FEFFFFEB 		bl	fputc
+ 518 0294 93FFFFEA 		b	.L73
+ 519              	.L132:
+ 520 0298 202CD4E5 		ldrb	r2, [r4, #3104]	@ zero_extendqisi2
+ 521 029c 000052E3 		cmp	r2, #0
+ 522 02a0 90FFFF0A 		beq	.L73
+ 523 02a4 242C94E5 		ldr	r2, [r4, #3108]
+ 524 02a8 0400A0E1 		mov	r0, r4
+ 525 02ac 0230C4E7 		strb	r3, [r4, r2]
+ 526 02b0 FEFFFFEB 		bl	con_parse_command
+ 527 02b4 040050E3 		cmp	r0, #4
+ 528 02b8 CBFFFF9A 		bls	.L120
+ 529              	.L135:
+ 530 02bc F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 531              	.L67:
+ 532              		.syntax divided
+ 533              	@ 374 "../src/renesas/application/common/console/console.c" 1
+ 534 02c0 00F020E3 		nop
+ 535              	@ 0 "" 2
+ 536              		.arm
+ 537              		.syntax unified
+ 538 02c4 87FFFFEA 		b	.L73
+ 539              	.L129:
+ 540 02c8 7F0053E3 		cmp	r3, #127
+ 541 02cc 9CFFFF1A 		bne	.L63
+ 542              	.L66:
+ 543 02d0 243C94E5 		ldr	r3, [r4, #3108]
+ 544 02d4 000053E3 		cmp	r3, #0
+ 545 02d8 82FFFF0A 		beq	.L73
+ 546 02dc 000000E3 		movw	r0, #:lower16:.LC10
+ 547 02e0 383C94E5 		ldr	r3, [r4, #3128]
+ 548 02e4 000040E3 		movt	r0, #:upper16:.LC10
+ 549 02e8 0320A0E3 		mov	r2, #3
+ 550 02ec 0110A0E3 		mov	r1, #1
+ 551 02f0 FEFFFFEB 		bl	fwrite
+ 552 02f4 243C94E5 		ldr	r3, [r4, #3108]
+ 553 02f8 013043E2 		sub	r3, r3, #1
+ 554 02fc 243C84E5 		str	r3, [r4, #3108]
+ 555 0300 78FFFFEA 		b	.L73
+ 556              	.L131:
+ 557 0304 BC30D7E1 		ldrh	r3, [r7, #12]
+ 558 0308 0700A0E3 		mov	r0, #7
+ 559 030c 6030C3E3 		bic	r3, r3, #96
+ 560 0310 BC30C7E1 		strh	r3, [r7, #12]	@ movhi
+ 561 0314 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 562              	.L130:
+ 563 0318 011082E2 		add	r1, r2, #1
+ 564 031c 241C84E5 		str	r1, [r4, #3108]
+ 565 0320 0230C4E7 		strb	r3, [r4, r2]
+ 566              		.syntax divided
+ 567              	@ 274 "../src/renesas/application/common/console/console.c" 1
+ 568 0324 00F020E3 		nop
+ 569              	@ 0 "" 2
+ 570              		.arm
+ 571              		.syntax unified
+ 572 0328 0030D4E5 		ldrb	r3, [r4]	@ zero_extendqisi2
+ 573 032c 400053E3 		cmp	r3, #64
+ 574 0330 6CFFFF0A 		beq	.L73
+ 575 0334 3C3CD4E5 		ldrb	r3, [r4, #3132]	@ zero_extendqisi2
+ 576 0338 381C94E5 		ldr	r1, [r4, #3128]
+ 577 033c 000053E3 		cmp	r3, #0
+ 578 0340 D1FFFF1A 		bne	.L122
+ 579 0344 7E00A0E3 		mov	r0, #126
+ 580 0348 FEFFFFEB 		bl	fputc
+ 581 034c 65FFFFEA 		b	.L73
+ 582              	.L133:
+ 583 0350 020051E3 		cmp	r1, #2
+ 584 0354 84FFFF1A 		bne	.L82
+ 585 0358 0010D4E5 		ldrb	r1, [r4]	@ zero_extendqisi2
+ 586 035c 4F0051E3 		cmp	r1, #79
+ 587 0360 0500000A 		beq	.L84
+ 588 0364 310053E2 		subs	r0, r3, #49
+ 589 0368 0100A013 		movne	r0, #1
+ 590 036c 5B0051E3 		cmp	r1, #91
+ 591 0370 0000A013 		movne	r0, #0
+ 592 0374 000050E3 		cmp	r0, #0
+ 593 0378 7BFFFF0A 		beq	.L82
+ 594              	.L84:
+ 595 037c 0030A0E3 		mov	r3, #0
+ 596 0380 0400A0E1 		mov	r0, r4
+ 597 0384 0230C4E5 		strb	r3, [r4, #2]
+ 598 0388 FEFFFFEB 		bl	con_parse_command
+ 599 038c 94FFFFEA 		b	.L78
+ 601              		.section	.text.con_get_last_command_line,"ax",%progbits
+ 602              		.align	2
+ 603              		.global	con_get_last_command_line
+ 604              		.syntax unified
+ 605              		.arm
+ 606              		.fpu neon
+ 608              	con_get_last_command_line:
+ 609              		@ args = 0, pretend = 0, frame = 0
+ 610              		@ frame_needed = 0, uses_anonymous_args = 0
+ 611 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 612 0004 415E80E2 		add	r5, r0, #1040
+ 613 0008 0040A0E1 		mov	r4, r0
+ 614 000c 0510A0E1 		mov	r1, r5
+ 615 0010 FEFFFFEB 		bl	strcpy
+ 616 0014 381C94E5 		ldr	r1, [r4, #3128]
+ 617 0018 0400A0E1 		mov	r0, r4
+ 618 001c FEFFFFEB 		bl	fputs
+ 619 0020 0500A0E1 		mov	r0, r5
+ 620 0024 FEFFFFEB 		bl	strlen
+ 621 0028 240C84E5 		str	r0, [r4, #3108]
+ 622 002c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 624              		.section	.text.con_do_last_command_line,"ax",%progbits
+ 625              		.align	2
+ 626              		.global	con_do_last_command_line
+ 627              		.syntax unified
+ 628              		.arm
+ 629              		.fpu neon
+ 631              	con_do_last_command_line:
+ 632              		@ args = 0, pretend = 0, frame = 0
+ 633              		@ frame_needed = 0, uses_anonymous_args = 0
+ 634 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 635 0004 415E80E2 		add	r5, r0, #1040
+ 636 0008 0040A0E1 		mov	r4, r0
+ 637 000c 0510A0E1 		mov	r1, r5
+ 638 0010 FEFFFFEB 		bl	strcpy
+ 639 0014 381C94E5 		ldr	r1, [r4, #3128]
+ 640 0018 0400A0E1 		mov	r0, r4
+ 641 001c FEFFFFEB 		bl	fputs
+ 642 0020 0500A0E1 		mov	r0, r5
+ 643 0024 FEFFFFEB 		bl	strlen
+ 644 0028 240C84E5 		str	r0, [r4, #3108]
+ 645 002c 000000E3 		movw	r0, #:lower16:.LC11
+ 646 0030 383C94E5 		ldr	r3, [r4, #3128]
+ 647 0034 000040E3 		movt	r0, #:upper16:.LC11
+ 648 0038 0220A0E3 		mov	r2, #2
+ 649 003c 0110A0E3 		mov	r1, #1
+ 650 0040 FEFFFFEB 		bl	fwrite
+ 651 0044 0400A0E1 		mov	r0, r4
+ 652 0048 7040BDE8 		pop	{r4, r5, r6, lr}
+ 653 004c FEFFFFEA 		b	con_parse_command
+ 655              		.section	.text.con_process_char,"ax",%progbits
+ 656              		.align	2
+ 657              		.global	con_process_char
+ 658              		.syntax unified
+ 659              		.arm
+ 660              		.fpu neon
+ 662              	con_process_char:
+ 663              		@ args = 0, pretend = 0, frame = 0
+ 664              		@ frame_needed = 0, uses_anonymous_args = 0
+ 665 0000 0D0051E3 		cmp	r1, #13
+ 666 0004 0030A0E3 		mov	r3, #0
+ 667 0008 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 668 000c 0260A0E1 		mov	r6, r2
+ 669 0010 0030C2E5 		strb	r3, [r2]
+ 670 0014 0050A0E1 		mov	r5, r0
+ 671 0018 4800000A 		beq	.L142
+ 672 001c 01C0A0E1 		mov	ip, r1
+ 673 0020 1A00009A 		bls	.L197
+ 674 0024 3B0051E3 		cmp	r1, #59
+ 675 0028 0200000A 		beq	.L150
+ 676 002c 3300009A 		bls	.L198
+ 677 0030 7E0051E3 		cmp	r1, #126
+ 678 0034 2A00001A 		bne	.L199
+ 679              	.L150:
+ 680 0038 207CD5E5 		ldrb	r7, [r5, #3104]	@ zero_extendqisi2
+ 681 003c 000057E3 		cmp	r7, #0
+ 682 0040 2100001A 		bne	.L156
+ 683 0044 243C95E5 		ldr	r3, [r5, #3108]
+ 684 0048 0E2400E3 		movw	r2, #1038
+ 685 004c 020053E1 		cmp	r3, r2
+ 686 0050 1800008A 		bhi	.L165
+ 687 0054 012083E2 		add	r2, r3, #1
+ 688 0058 242C85E5 		str	r2, [r5, #3108]
+ 689 005c 03C0C5E7 		strb	ip, [r5, r3]
+ 690              		.syntax divided
+ 691              	@ 274 "../src/renesas/application/common/console/console.c" 1
+ 692 0060 00F020E3 		nop
+ 693              	@ 0 "" 2
+ 694              		.arm
+ 695              		.syntax unified
+ 696 0064 0030D5E5 		ldrb	r3, [r5]	@ zero_extendqisi2
+ 697 0068 400053E3 		cmp	r3, #64
+ 698 006c 2100000A 		beq	.L154
+ 699 0070 3C4CD5E5 		ldrb	r4, [r5, #3132]	@ zero_extendqisi2
+ 700 0074 381C95E5 		ldr	r1, [r5, #3128]
+ 701 0078 000054E3 		cmp	r4, #0
+ 702 007c 7500001A 		bne	.L200
+ 703              	.L162:
+ 704 0080 0C00A0E1 		mov	r0, ip
+ 705 0084 FEFFFFEB 		bl	fputc
+ 706 0088 0400A0E1 		mov	r0, r4
+ 707 008c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 708              	.L197:
+ 709 0090 080051E3 		cmp	r1, #8
+ 710 0094 1400000A 		beq	.L144
+ 711 0098 0A0051E3 		cmp	r1, #10
+ 712 009c 0700000A 		beq	.L145
+ 713 00a0 030051E1 		cmp	r1, r3
+ 714 00a4 1C00000A 		beq	.L201
+ 715              	.L141:
+ 716 00a8 243C95E5 		ldr	r3, [r5, #3108]
+ 717 00ac 0E2400E3 		movw	r2, #1038
+ 718 00b0 020053E1 		cmp	r3, r2
+ 719 00b4 3500009A 		bls	.L202
+ 720              	.L165:
+ 721 00b8 0200A0E3 		mov	r0, #2
+ 722 00bc F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 723              	.L145:
+ 724              		.syntax divided
+ 725              	@ 374 "../src/renesas/application/common/console/console.c" 1
+ 726 00c0 00F020E3 		nop
+ 727              	@ 0 "" 2
+ 728              		.arm
+ 729              		.syntax unified
+ 730 00c4 0300A0E1 		mov	r0, r3
+ 731 00c8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 732              	.L156:
+ 733 00cc 241C95E5 		ldr	r1, [r5, #3108]
+ 734 00d0 0120A0E3 		mov	r2, #1
+ 735 00d4 0130C5E7 		strb	r3, [r5, r1]
+ 736 00d8 0020C6E5 		strb	r2, [r6]
+ 737 00dc F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 738 00e0 FEFFFFEA 		b	con_parse_command
+ 739              	.L199:
+ 740 00e4 7F0051E3 		cmp	r1, #127
+ 741 00e8 EEFFFF1A 		bne	.L141
+ 742              	.L144:
+ 743 00ec 243C95E5 		ldr	r3, [r5, #3108]
+ 744 00f0 000053E3 		cmp	r3, #0
+ 745 00f4 3900001A 		bne	.L152
+ 746              	.L154:
+ 747 00f8 0000A0E3 		mov	r0, #0
+ 748 00fc F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 749              	.L198:
+ 750 0100 1B0051E3 		cmp	r1, #27
+ 751 0104 E7FFFF1A 		bne	.L141
+ 752 0108 0120A0E3 		mov	r2, #1
+ 753 010c 243C80E5 		str	r3, [r0, #3108]
+ 754 0110 0300A0E1 		mov	r0, r3
+ 755 0114 202CC5E5 		strb	r2, [r5, #3104]
+ 756 0118 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 757              	.L201:
+ 758 011c 203CD0E5 		ldrb	r3, [r0, #3104]	@ zero_extendqisi2
+ 759 0120 000053E3 		cmp	r3, #0
+ 760 0124 F3FFFF0A 		beq	.L154
+ 761 0128 242C90E5 		ldr	r2, [r0, #3108]
+ 762 012c 0130A0E3 		mov	r3, #1
+ 763 0130 0210C5E7 		strb	r1, [r5, r2]
+ 764 0134 0030C6E5 		strb	r3, [r6]
+ 765 0138 F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 766 013c FEFFFFEA 		b	con_parse_command
+ 767              	.L142:
+ 768 0140 203CD0E5 		ldrb	r3, [r0, #3104]	@ zero_extendqisi2
+ 769 0144 000053E3 		cmp	r3, #0
+ 770 0148 0800001A 		bne	.L158
+ 771 014c 0030D0E5 		ldrb	r3, [r0]	@ zero_extendqisi2
+ 772 0150 400053E3 		cmp	r3, #64
+ 773 0154 0500000A 		beq	.L158
+ 774 0158 000000E3 		movw	r0, #:lower16:.LC11
+ 775 015c 383C95E5 		ldr	r3, [r5, #3128]
+ 776 0160 000040E3 		movt	r0, #:upper16:.LC11
+ 777 0164 0220A0E3 		mov	r2, #2
+ 778 0168 0110A0E3 		mov	r1, #1
+ 779 016c FEFFFFEB 		bl	fwrite
+ 780              	.L158:
+ 781 0170 242C95E5 		ldr	r2, [r5, #3108]
+ 782 0174 0010A0E3 		mov	r1, #0
+ 783 0178 0130A0E3 		mov	r3, #1
+ 784 017c 0500A0E1 		mov	r0, r5
+ 785 0180 0210C5E7 		strb	r1, [r5, r2]
+ 786 0184 0030C6E5 		strb	r3, [r6]
+ 787 0188 F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 788 018c FEFFFFEA 		b	con_parse_command
+ 789              	.L202:
+ 790 0190 012083E2 		add	r2, r3, #1
+ 791 0194 242C85E5 		str	r2, [r5, #3108]
+ 792 0198 03C0C5E7 		strb	ip, [r5, r3]
+ 793 019c 204CD5E5 		ldrb	r4, [r5, #3104]	@ zero_extendqisi2
+ 794 01a0 010054E3 		cmp	r4, #1
+ 795 01a4 1800000A 		beq	.L203
+ 796              	.L159:
+ 797              		.syntax divided
+ 798              	@ 274 "../src/renesas/application/common/console/console.c" 1
+ 799 01a8 00F020E3 		nop
+ 800              	@ 0 "" 2
+ 801              		.arm
+ 802              		.syntax unified
+ 803 01ac 000054E3 		cmp	r4, #0
+ 804 01b0 D0FFFF1A 		bne	.L154
+ 805 01b4 0030D5E5 		ldrb	r3, [r5]	@ zero_extendqisi2
+ 806 01b8 400053E3 		cmp	r3, #64
+ 807 01bc CDFFFF0A 		beq	.L154
+ 808 01c0 3C3CD5E5 		ldrb	r3, [r5, #3132]	@ zero_extendqisi2
+ 809 01c4 381C95E5 		ldr	r1, [r5, #3128]
+ 810 01c8 000053E3 		cmp	r3, #0
+ 811 01cc ABFFFF0A 		beq	.L162
+ 812 01d0 2A00A0E3 		mov	r0, #42
+ 813 01d4 FEFFFFEB 		bl	fputc
+ 814 01d8 0400A0E1 		mov	r0, r4
+ 815 01dc F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 816              	.L152:
+ 817 01e0 000000E3 		movw	r0, #:lower16:.LC10
+ 818 01e4 383C95E5 		ldr	r3, [r5, #3128]
+ 819 01e8 0320A0E3 		mov	r2, #3
+ 820 01ec 0110A0E3 		mov	r1, #1
+ 821 01f0 000040E3 		movt	r0, #:upper16:.LC10
+ 822 01f4 FEFFFFEB 		bl	fwrite
+ 823 01f8 243C95E5 		ldr	r3, [r5, #3108]
+ 824 01fc 0000A0E3 		mov	r0, #0
+ 825 0200 013043E2 		sub	r3, r3, #1
+ 826 0204 243C85E5 		str	r3, [r5, #3108]
+ 827 0208 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 828              	.L203:
+ 829 020c 020052E3 		cmp	r2, #2
+ 830 0210 E4FFFF1A 		bne	.L159
+ 831 0214 0030D5E5 		ldrb	r3, [r5]	@ zero_extendqisi2
+ 832 0218 4F0053E3 		cmp	r3, #79
+ 833 021c 0600000A 		beq	.L161
+ 834 0220 5B3043E2 		sub	r3, r3, #91
+ 835 0224 31005CE3 		cmp	ip, #49
+ 836 0228 133F6FE1 		clz	r3, r3
+ 837 022c A332A0E1 		lsr	r3, r3, #5
+ 838 0230 0030A003 		moveq	r3, #0
+ 839 0234 000053E3 		cmp	r3, #0
+ 840 0238 DAFFFF0A 		beq	.L159
+ 841              	.L161:
+ 842 023c 0020A0E3 		mov	r2, #0
+ 843 0240 0130A0E3 		mov	r3, #1
+ 844 0244 0220C5E5 		strb	r2, [r5, #2]
+ 845 0248 0500A0E1 		mov	r0, r5
+ 846 024c 0030C6E5 		strb	r3, [r6]
+ 847 0250 F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 848 0254 FEFFFFEA 		b	con_parse_command
+ 849              	.L200:
+ 850 0258 2A00A0E3 		mov	r0, #42
+ 851 025c FEFFFFEB 		bl	fputc
+ 852 0260 0700A0E1 		mov	r0, r7
+ 853 0264 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 855              		.section	.rodata.con_parse_command.str1.4,"aMS",%progbits,1
+ 856              		.align	2
+ 857              	.LC0:
+ 858 0000 0D0A2225 		.ascii	"\015\012\"%s\" Unknown command\015\012\000"
+ 858      73222055 
+ 858      6E6B6E6F 
+ 858      776E2063 
+ 858      6F6D6D61 
+ 859              		.section	.rodata.console.str1.4,"aMS",%progbits,1
+ 860              		.align	2
+ 861              	.LC8:
+ 862 0000 3F00     		.ascii	"?\000"
+ 863 0002 0000     		.space	2
+ 864              	.LC9:
+ 865 0004 0D0A2573 		.ascii	"\015\012%s \000"
+ 865      2000
+ 866 000a 0000     		.space	2
+ 867              	.LC10:
+ 868 000c 08200800 		.ascii	"\010 \010\000"
+ 869              	.LC11:
+ 870 0010 0D0A00   		.ascii	"\015\012\000"
+ 871              		.section	.rodata.show_welcome_msg.str1.4,"aMS",%progbits,1
+ 872              		.align	2
+ 873              	.LC1:
+ 874 0000 0D0A0A23 		.ascii	"\015\012\012#######################################"
+ 874      23232323 
+ 874      23232323 
+ 874      23232323 
+ 874      23232323 
+ 875 002a 23232323 		.ascii	"#########################################\012\012\000"
+ 875      23232323 
+ 875      23232323 
+ 875      23232323 
+ 875      23232323 
+ 876 0056 0000     		.space	2
+ 877              	.LC2:
+ 878 0058 0D525A2F 		.ascii	"\015RZ/A2M Automatic number-plate recognition (ANPR"
+ 878      41324D20 
+ 878      4175746F 
+ 878      6D617469 
+ 878      63206E75 
+ 879 0088 2920666F 		.ascii	") for GCC Ver. %u.%u\012\000"
+ 879      72204743 
+ 879      43205665 
+ 879      722E2025 
+ 879      752E2575 
+ 880 009e 0000     		.space	2
+ 881              	.LC3:
+ 882 00a0 0D436F70 		.ascii	"\015Copyright (C) 2021 Renesas Electronics Corporat"
+ 882      79726967 
+ 882      68742028 
+ 882      43292032 
+ 882      30323120 
+ 883 00d0 696F6E2E 		.ascii	"ion. All rights reserved.\012\000"
+ 883      20416C6C 
+ 883      20726967 
+ 883      68747320 
+ 883      72657365 
+ 884 00eb 00       		.space	1
+ 885              	.LC4:
+ 886 00ec 31343A31 		.ascii	"14:11:20\000"
+ 886      313A3230 
+ 886      00
+ 887 00f5 000000   		.space	3
+ 888              	.LC5:
+ 889 00f8 4A756C20 		.ascii	"Jul  6 2021\000"
+ 889      20362032 
+ 889      30323100 
+ 890              	.LC6:
+ 891 0104 0D427569 		.ascii	"\015Build Info Date %s at %s \012\000"
+ 891      6C642049 
+ 891      6E666F20 
+ 891      44617465 
+ 891      20257320 
+ 892              	.LC7:
+ 893 0120 0D257320 		.ascii	"\015%s Version %d.%d\012\012\012\000"
+ 893      56657273 
+ 893      696F6E20 
+ 893      25642E25 
+ 893      640A0A0A 
+ 894              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 console.c
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:14     .text.con_parse_command:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:19     .text.con_parse_command:00000000 con_parse_command
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:857    .rodata.con_parse_command.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:261    .text.show_welcome_msg:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:267    .text.show_welcome_msg:00000000 show_welcome_msg
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:873    .rodata.show_welcome_msg.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:877    .rodata.show_welcome_msg.str1.4:00000058 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:881    .rodata.show_welcome_msg.str1.4:000000a0 .LC3
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:885    .rodata.show_welcome_msg.str1.4:000000ec .LC4
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:888    .rodata.show_welcome_msg.str1.4:000000f8 .LC5
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:890    .rodata.show_welcome_msg.str1.4:00000104 .LC6
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:892    .rodata.show_welcome_msg.str1.4:00000120 .LC7
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:319    .text.console:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:325    .text.console:00000000 console
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:861    .rodata.console.str1.4:00000000 .LC8
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:864    .rodata.console.str1.4:00000004 .LC9
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:869    .rodata.console.str1.4:00000010 .LC11
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:867    .rodata.console.str1.4:0000000c .LC10
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:602    .text.con_get_last_command_line:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:608    .text.con_get_last_command_line:00000000 con_get_last_command_line
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:625    .text.con_do_last_command_line:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:631    .text.con_do_last_command_line:00000000 con_do_last_command_line
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:656    .text.con_process_char:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:662    .text.con_process_char:00000000 con_process_char
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:856    .rodata.con_parse_command.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:860    .rodata.console.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccPvp2sI.s:872    .rodata.show_welcome_msg.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+memset
+__locale_ctype_ptr
+strlen
+wild_compare
+fprintf
+strcpy
+fwrite
+R_OS_GetVersion
+fflush
+memcpy
+setvbuf
+fgetc
+fputc
+fputs

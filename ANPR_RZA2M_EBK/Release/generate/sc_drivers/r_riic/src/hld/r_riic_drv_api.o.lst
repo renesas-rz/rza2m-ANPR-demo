@@ -1,0 +1,586 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_riic_drv_api.c"
+  13              		.section	.text.riic_hld_get_version,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	riic_hld_get_version:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 003000E3 		movw	r3, #:lower16:.LC0
+  23 0004 10402DE9 		push	{r4, lr}
+  24 0008 0420A0E3 		mov	r2, #4
+  25 000c 003040E3 		movt	r3, #:upper16:.LC0
+  26 0010 0040A0E3 		mov	r4, #0
+  27 0014 0100A0E3 		mov	r0, #1
+  28 0018 B200C1E1 		strh	r0, [r1, #2]	@ movhi
+  29 001c 0100A0E1 		mov	r0, r1
+  30 0020 B020C1E1 		strh	r2, [r1]	@ movhi
+  31 0024 083081E5 		str	r3, [r1, #8]
+  32 0028 044081E5 		str	r4, [r1, #4]
+  33 002c FEFFFFEB 		bl	R_RIIC_GetVersion
+  34 0030 0400A0E1 		mov	r0, r4
+  35 0034 1080BDE8 		pop	{r4, pc}
+  37              		.section	.text.riic_hld_control,"ax",%progbits
+  38              		.align	2
+  39              		.syntax unified
+  40              		.arm
+  41              		.fpu neon
+  43              	riic_hld_control:
+  44              		@ args = 0, pretend = 0, frame = 56
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46 0000 000050E3 		cmp	r0, #0
+  47 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  48 0008 38D04DE2 		sub	sp, sp, #56
+  49 000c 2300000A 		beq	.L19
+  50 0010 1CC0D0E5 		ldrb	ip, [r0, #28]	@ zero_extendqisi2
+  51 0014 00E000E3 		movw	lr, #:lower16:.LANCHOR0
+  52 0018 00E040E3 		movt	lr, #:upper16:.LANCHOR0
+  53 001c 0130A0E3 		mov	r3, #1
+  54 0020 0CC28CE0 		add	ip, ip, ip, lsl #4
+  55 0024 0C519EE7 		ldr	r5, [lr, ip, lsl #2]
+  56 0028 1335A0E1 		lsl	r3, r3, r5
+  57 002c 020953E3 		cmp	r3, #32768
+  58 0030 1A0000CA 		bgt	.L19
+  59 0034 5330E3E7 		ubfx	r3, r3, #0, #4
+  60 0038 000053E3 		cmp	r3, #0
+  61 003c 01007513 		cmnne	r5, #1
+  62 0040 1600000A 		beq	.L19
+  63 0044 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  64 0048 148090E5 		ldr	r8, [r0, #20]
+  65 004c 003040E3 		movt	r3, #:upper16:.LANCHOR1
+  66 0050 053193E7 		ldr	r3, [r3, r5, lsl #2]
+  67 0054 0C0018E3 		tst	r8, #12
+  68 0058 0080E003 		mvneq	r8, #0
+  69 005c 000052E3 		cmp	r2, #0
+  70 0060 00005313 		cmpne	r3, #0
+  71 0064 0D0000DA 		ble	.L19
+  72 0068 007000E3 		movw	r7, #:lower16:.LANCHOR2
+  73 006c 0160A0E1 		mov	r6, r1
+  74 0070 007040E3 		movt	r7, #:upper16:.LANCHOR2
+  75 0074 0240A0E1 		mov	r4, r2
+  76 0078 050197E7 		ldr	r0, [r7, r5, lsl #2]
+  77 007c FEFFFFEB 		bl	R_OS_MutexAcquire
+  78 0080 040056E3 		cmp	r6, #4
+  79 0084 06F19F97 		ldrls	pc, [pc, r6, asl #2]
+  80 0088 080000EA 		b	.L25
+  81              	.L8:
+  82 008c 34010000 		.word	.L7
+  83 0090 20010000 		.word	.L9
+  84 0094 B0000000 		.word	.L25
+  85 0098 00010000 		.word	.L10
+  86 009c C8000000 		.word	.L11
+  87              	.L19:
+  88 00a0 0040E0E3 		mvn	r4, #0
+  89 00a4 0400A0E1 		mov	r0, r4
+  90 00a8 38D08DE2 		add	sp, sp, #56
+  91              		@ sp needed
+  92 00ac F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  93              	.L25:
+  94 00b0 0040E0E3 		mvn	r4, #0
+  95              	.L6:
+  96 00b4 050197E7 		ldr	r0, [r7, r5, lsl #2]
+  97 00b8 FEFFFFEB 		bl	R_OS_MutexRelease
+  98 00bc 0400A0E1 		mov	r0, r4
+  99 00c0 38D08DE2 		add	sp, sp, #56
+ 100              		@ sp needed
+ 101 00c4 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 102              	.L11:
+ 103 00c8 080018E3 		tst	r8, #8
+ 104 00cc F7FFFF0A 		beq	.L25
+ 105 00d0 0410A0E1 		mov	r1, r4
+ 106 00d4 0500A0E1 		mov	r0, r5
+ 107 00d8 FEFFFFEB 		bl	write_data
+ 108 00dc 004050E2 		subs	r4, r0, #0
+ 109 00e0 F3FFFF0A 		beq	.L6
+ 110              	.L33:
+ 111 00e4 04108DE2 		add	r1, sp, #4
+ 112 00e8 0500A0E1 		mov	r0, r5
+ 113 00ec FEFFFFEB 		bl	R_RIIC_GetConfig
+ 114 00f0 04108DE2 		add	r1, sp, #4
+ 115 00f4 0500A0E1 		mov	r0, r5
+ 116 00f8 FEFFFFEB 		bl	R_RIIC_SetConfig
+ 117 00fc ECFFFFEA 		b	.L6
+ 118              	.L10:
+ 119 0100 040018E3 		tst	r8, #4
+ 120 0104 E9FFFF0A 		beq	.L25
+ 121 0108 0410A0E1 		mov	r1, r4
+ 122 010c 0500A0E1 		mov	r0, r5
+ 123 0110 FEFFFFEB 		bl	read_data
+ 124 0114 004050E2 		subs	r4, r0, #0
+ 125 0118 E5FFFF0A 		beq	.L6
+ 126 011c F0FFFFEA 		b	.L33
+ 127              	.L9:
+ 128 0120 0410A0E1 		mov	r1, r4
+ 129 0124 0500A0E1 		mov	r0, r5
+ 130 0128 FEFFFFEB 		bl	R_RIIC_GetConfig
+ 131 012c 0040A0E1 		mov	r4, r0
+ 132 0130 DFFFFFEA 		b	.L6
+ 133              	.L7:
+ 134 0134 0030D4E5 		ldrb	r3, [r4]	@ zero_extendqisi2
+ 135 0138 042094E5 		ldr	r2, [r4, #4]
+ 136 013c 1600D4E5 		ldrb	r0, [r4, #22]	@ zero_extendqisi2
+ 137 0140 003093E2 		adds	r3, r3, #0
+ 138 0144 081094E5 		ldr	r1, [r4, #8]
+ 139 0148 0130A013 		movne	r3, #1
+ 140 014c 010052E3 		cmp	r2, #1
+ 141 0150 1720D4E5 		ldrb	r2, [r4, #23]	@ zero_extendqisi2
+ 142 0154 003063E2 		rsb	r3, r3, #0
+ 143 0158 0030E083 		mvnhi	r3, #0
+ 144 015c 000050E3 		cmp	r0, #0
+ 145 0160 0C0094E5 		ldr	r0, [r4, #12]
+ 146 0164 0030E013 		mvnne	r3, #0
+ 147 0168 010051E3 		cmp	r1, #1
+ 148 016c 1810D4E5 		ldrb	r1, [r4, #24]	@ zero_extendqisi2
+ 149 0170 0030E083 		mvnhi	r3, #0
+ 150 0174 000052E3 		cmp	r2, #0
+ 151 0178 1920D4E5 		ldrb	r2, [r4, #25]	@ zero_extendqisi2
+ 152 017c 0030E013 		mvnne	r3, #0
+ 153 0180 010050E3 		cmp	r0, #1
+ 154 0184 1A00D4E5 		ldrb	r0, [r4, #26]	@ zero_extendqisi2
+ 155 0188 0030E083 		mvnhi	r3, #0
+ 156 018c 000051E3 		cmp	r1, #0
+ 157 0190 2410D4E5 		ldrb	r1, [r4, #36]	@ zero_extendqisi2
+ 158 0194 0030E013 		mvnne	r3, #0
+ 159 0198 030052E3 		cmp	r2, #3
+ 160 019c 2520D4E5 		ldrb	r2, [r4, #37]	@ zero_extendqisi2
+ 161 01a0 0030E023 		mvncs	r3, #0
+ 162 01a4 090050E3 		cmp	r0, #9
+ 163 01a8 0030E023 		mvncs	r3, #0
+ 164 01ac 050051E3 		cmp	r1, #5
+ 165 01b0 0030E023 		mvncs	r3, #0
+ 166 01b4 020052E3 		cmp	r2, #2
+ 167 01b8 BCFFFF8A 		bhi	.L25
+ 168 01bc 2620D4E5 		ldrb	r2, [r4, #38]	@ zero_extendqisi2
+ 169 01c0 010052E3 		cmp	r2, #1
+ 170 01c4 B9FFFF8A 		bhi	.L25
+ 171 01c8 282094E5 		ldr	r2, [r4, #40]
+ 172 01cc 013083E2 		add	r3, r3, #1
+ 173 01d0 010052E3 		cmp	r2, #1
+ 174 01d4 0030A083 		movhi	r3, #0
+ 175 01d8 01300392 		andls	r3, r3, #1
+ 176 01dc 000053E3 		cmp	r3, #0
+ 177 01e0 B2FFFF0A 		beq	.L25
+ 178 01e4 0410A0E1 		mov	r1, r4
+ 179 01e8 0500A0E1 		mov	r0, r5
+ 180 01ec FEFFFFEB 		bl	R_RIIC_SetConfig
+ 181 01f0 0040A0E1 		mov	r4, r0
+ 182 01f4 AEFFFFEA 		b	.L6
+ 184              		.section	.text.riic_hld_close,"ax",%progbits
+ 185              		.align	2
+ 186              		.syntax unified
+ 187              		.arm
+ 188              		.fpu neon
+ 190              	riic_hld_close:
+ 191              		@ args = 0, pretend = 0, frame = 0
+ 192              		@ frame_needed = 0, uses_anonymous_args = 0
+ 193 0000 000050E3 		cmp	r0, #0
+ 194 0004 1EFF2F01 		bxeq	lr
+ 195 0008 1C20D0E5 		ldrb	r2, [r0, #28]	@ zero_extendqisi2
+ 196 000c 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 197 0010 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 198 0014 70402DE9 		push	{r4, r5, r6, lr}
+ 199 0018 0130A0E3 		mov	r3, #1
+ 200 001c 022282E0 		add	r2, r2, r2, lsl #4
+ 201 0020 024191E7 		ldr	r4, [r1, r2, lsl #2]
+ 202 0024 1334A0E1 		lsl	r3, r3, r4
+ 203 0028 020953E3 		cmp	r3, #32768
+ 204 002c 7080BDC8 		popgt	{r4, r5, r6, pc}
+ 205 0030 5330E3E7 		ubfx	r3, r3, #0, #4
+ 206 0034 010074E3 		cmn	r4, #1
+ 207 0038 00005313 		cmpne	r3, #0
+ 208 003c 7080BD08 		popeq	{r4, r5, r6, pc}
+ 209 0040 005000E3 		movw	r5, #:lower16:.LANCHOR2
+ 210 0044 005040E3 		movt	r5, #:upper16:.LANCHOR2
+ 211 0048 040195E7 		ldr	r0, [r5, r4, lsl #2]
+ 212 004c 000050E3 		cmp	r0, #0
+ 213 0050 7080BD08 		popeq	{r4, r5, r6, pc}
+ 214 0054 0F30A0E3 		mov	r3, #15
+ 215 0058 5334A0E1 		asr	r3, r3, r4
+ 216 005c 010013E3 		tst	r3, #1
+ 217 0060 0000001A 		bne	.L39
+ 218 0064 7080BDE8 		pop	{r4, r5, r6, pc}
+ 219              	.L39:
+ 220 0068 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 221 006c 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 222 0070 042193E7 		ldr	r2, [r3, r4, lsl #2]
+ 223 0074 012042E2 		sub	r2, r2, #1
+ 224 0078 042183E7 		str	r2, [r3, r4, lsl #2]
+ 225 007c 046193E7 		ldr	r6, [r3, r4, lsl #2]
+ 226 0080 000056E3 		cmp	r6, #0
+ 227 0084 0000000A 		beq	.L40
+ 228 0088 7080BDE8 		pop	{r4, r5, r6, pc}
+ 229              	.L40:
+ 230 008c FEFFFFEB 		bl	R_OS_MutexAcquire
+ 231 0090 0400A0E1 		mov	r0, r4
+ 232 0094 FEFFFFEB 		bl	R_RIIC_CloseChannel
+ 233 0098 FEFFFFEB 		bl	R_OS_EnterCritical
+ 234 009c 040185E0 		add	r0, r5, r4, lsl #2
+ 235 00a0 FEFFFFEB 		bl	R_OS_MutexDelete
+ 236 00a4 046185E7 		str	r6, [r5, r4, lsl #2]
+ 237 00a8 7040BDE8 		pop	{r4, r5, r6, lr}
+ 238 00ac FEFFFFEA 		b	R_OS_ExitCritical
+ 240              		.section	.text.riic_hld_open,"ax",%progbits
+ 241              		.align	2
+ 242              		.syntax unified
+ 243              		.arm
+ 244              		.fpu neon
+ 246              	riic_hld_open:
+ 247              		@ args = 0, pretend = 0, frame = 16
+ 248              		@ frame_needed = 0, uses_anonymous_args = 0
+ 249 0000 F0432DE9 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 250 0004 009050E2 		subs	r9, r0, #0
+ 251 0008 028B2DED 		vpush.64	{d8}
+ 252 000c 14D04DE2 		sub	sp, sp, #20
+ 253 0010 2E00000A 		beq	.L61
+ 254 0014 1C30D9E5 		ldrb	r3, [r9, #28]	@ zero_extendqisi2
+ 255 0018 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 256 001c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 257 0020 01C0A0E3 		mov	ip, #1
+ 258 0024 033283E0 		add	r3, r3, r3, lsl #4
+ 259 0028 035192E7 		ldr	r5, [r2, r3, lsl #2]
+ 260 002c 1C35A0E1 		lsl	r3, ip, r5
+ 261 0030 020953E3 		cmp	r3, #32768
+ 262 0034 250000CA 		bgt	.L61
+ 263 0038 5330E3E7 		ubfx	r3, r3, #0, #4
+ 264 003c 010075E3 		cmn	r5, #1
+ 265 0040 00005313 		cmpne	r3, #0
+ 266 0044 2100000A 		beq	.L61
+ 267 0048 0F30A0E3 		mov	r3, #15
+ 268 004c 5335A0E1 		asr	r3, r3, r5
+ 269 0050 010013E3 		tst	r3, #1
+ 270 0054 1D00000A 		beq	.L61
+ 271 0058 002000E3 		movw	r2, #:lower16:.LANCHOR3
+ 272 005c 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 273 0060 002040E3 		movt	r2, #:upper16:.LANCHOR3
+ 274 0064 003092E5 		ldr	r3, [r2]
+ 275 0068 000053E3 		cmp	r3, #0
+ 276 006c 00404013 		movtne	r4, #:upper16:.LANCHOR1
+ 277 0070 0B00001A 		bne	.L58
+ 278 0074 001000E3 		movw	r1, #:lower16:.LANCHOR2
+ 279 0078 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 280 007c 001040E3 		movt	r1, #:upper16:.LANCHOR2
+ 281 0080 003084E5 		str	r3, [r4]
+ 282 0084 00C082E5 		str	ip, [r2]
+ 283 0088 043084E5 		str	r3, [r4, #4]
+ 284 008c 003081E5 		str	r3, [r1]
+ 285 0090 083084E5 		str	r3, [r4, #8]
+ 286 0094 043081E5 		str	r3, [r1, #4]
+ 287 0098 083081E5 		str	r3, [r1, #8]
+ 288 009c 0C3084E5 		str	r3, [r4, #12]
+ 289 00a0 0C3081E5 		str	r3, [r1, #12]
+ 290              	.L58:
+ 291 00a4 053194E7 		ldr	r3, [r4, r5, lsl #2]
+ 292 00a8 000053E3 		cmp	r3, #0
+ 293 00ac 0C00000A 		beq	.L65
+ 294 00b0 053194E7 		ldr	r3, [r4, r5, lsl #2]
+ 295 00b4 0060A0E3 		mov	r6, #0
+ 296 00b8 0600A0E1 		mov	r0, r6
+ 297 00bc 013083E2 		add	r3, r3, #1
+ 298 00c0 053184E7 		str	r3, [r4, r5, lsl #2]
+ 299 00c4 14D08DE2 		add	sp, sp, #20
+ 300              		@ sp needed
+ 301 00c8 028BBDEC 		vldm	sp!, {d8}
+ 302 00cc F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 303              	.L61:
+ 304 00d0 0060E0E3 		mvn	r6, #0
+ 305              	.L51:
+ 306 00d4 0600A0E1 		mov	r0, r6
+ 307 00d8 14D08DE2 		add	sp, sp, #20
+ 308              		@ sp needed
+ 309 00dc 028BBDEC 		vldm	sp!, {d8}
+ 310 00e0 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 311              	.L65:
+ 312 00e4 FEFFFFEB 		bl	R_OS_EnterCritical
+ 313 00e8 007000E3 		movw	r7, #:lower16:.LANCHOR2
+ 314 00ec FEFFFFEB 		bl	R_OS_MutexCreate
+ 315 00f0 000050E3 		cmp	r0, #0
+ 316 00f4 007040E3 		movt	r7, #:upper16:.LANCHOR2
+ 317 00f8 050187E7 		str	r0, [r7, r5, lsl #2]
+ 318 00fc 2900000A 		beq	.L66
+ 319 0100 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 320 0104 FEFFFFEB 		bl	R_OS_ExitCritical
+ 321 0108 000000E3 		movw	r0, #:lower16:.LC1
+ 322 010c 0210A0E3 		mov	r1, #2
+ 323 0110 000040E3 		movt	r0, #:upper16:.LC1
+ 324 0114 FEFFFFEB 		bl	direct_open
+ 325 0118 008050E2 		subs	r8, r0, #0
+ 326 011c 1F0000BA 		blt	.L56
+ 327 0120 0430A0E3 		mov	r3, #4
+ 328 0124 10208DE2 		add	r2, sp, #16
+ 329 0128 103062E5 		strb	r3, [r2, #-16]!
+ 330 012c 0610A0E3 		mov	r1, #6
+ 331 0130 FEFFFFEB 		bl	control
+ 332 0134 0060A0E1 		mov	r6, r0
+ 333 0138 0800A0E1 		mov	r0, r8
+ 334 013c 028B9DED 		vldr.64	d8, [sp, #8]
+ 335 0140 FEFFFFEB 		bl	direct_close
+ 336 0144 000056E3 		cmp	r6, #0
+ 337 0148 0500000A 		beq	.L67
+ 338              	.L57:
+ 339 014c 050197E7 		ldr	r0, [r7, r5, lsl #2]
+ 340 0150 FEFFFFEB 		bl	R_OS_MutexRelease
+ 341 0154 0600A0E1 		mov	r0, r6
+ 342 0158 14D08DE2 		add	sp, sp, #20
+ 343              		@ sp needed
+ 344 015c 028BBDEC 		vldm	sp!, {d8}
+ 345 0160 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 346              	.L67:
+ 347 0164 130BDFED 		vldr.64	d16, .L68
+ 348 0168 1C00D9E5 		ldrb	r0, [r9, #28]	@ zero_extendqisi2
+ 349 016c 208B28EE 		vmul.f64	d8, d8, d16
+ 350 0170 C87BFCEE 		vcvt.u32.f64	s15, d8
+ 351 0174 901A17EE 		vmov	r1, s15	@ int
+ 352 0178 FEFFFFEB 		bl	R_RIIC_ScInitChannel
+ 353 017c 006050E2 		subs	r6, r0, #0
+ 354 0180 F1FFFF1A 		bne	.L57
+ 355 0184 0500A0E1 		mov	r0, r5
+ 356 0188 FEFFFFEB 		bl	open_channel
+ 357 018c 006050E2 		subs	r6, r0, #0
+ 358 0190 05319407 		ldreq	r3, [r4, r5, lsl #2]
+ 359 0194 01308302 		addeq	r3, r3, #1
+ 360 0198 05318407 		streq	r3, [r4, r5, lsl #2]
+ 361 019c EAFFFFEA 		b	.L57
+ 362              	.L56:
+ 363 01a0 0060E0E3 		mvn	r6, #0
+ 364 01a4 E8FFFFEA 		b	.L57
+ 365              	.L66:
+ 366 01a8 FEFFFFEB 		bl	R_OS_ExitCritical
+ 367 01ac 0060E0E3 		mvn	r6, #0
+ 368 01b0 C7FFFFEA 		b	.L51
+ 369              	.L69:
+ 370 01b4 00F020E3 		.align	3
+ 371              	.L68:
+ 372 01b8 00000000 		.word	0
+ 373 01bc 00408F40 		.word	1083129856
+ 375              		.section	.text.validate_channel,"ax",%progbits
+ 376              		.align	2
+ 377              		.global	validate_channel
+ 378              		.syntax unified
+ 379              		.arm
+ 380              		.fpu neon
+ 382              	validate_channel:
+ 383              		@ args = 0, pretend = 0, frame = 0
+ 384              		@ frame_needed = 0, uses_anonymous_args = 0
+ 385              		@ link register save eliminated.
+ 386 0000 0F30A0E3 		mov	r3, #15
+ 387 0004 5300E0E1 		mvn	r0, r3, asr r0
+ 388 0008 5000A0E7 		sbfx	r0, r0, #0, #1
+ 389 000c 1EFF2FE1 		bx	lr
+ 391              		.global	g_riic_driver
+ 392              		.section	.bss.gs_channel_count,"aw",%nobits
+ 393              		.align	3
+ 394              		.set	.LANCHOR1,. + 0
+ 397              	gs_channel_count:
+ 398 0000 00000000 		.space	16
+ 398      00000000 
+ 398      00000000 
+ 398      00000000 
+ 399              		.section	.bss.gs_driver_open,"aw",%nobits
+ 400              		.align	2
+ 401              		.set	.LANCHOR3,. + 0
+ 404              	gs_driver_open:
+ 405 0000 00000000 		.space	4
+ 406              		.section	.bss.gsp_riic_control_mutex,"aw",%nobits
+ 407              		.align	3
+ 408              		.set	.LANCHOR2,. + 0
+ 411              	gsp_riic_control_mutex:
+ 412 0000 00000000 		.space	16
+ 412      00000000 
+ 412      00000000 
+ 412      00000000 
+ 413              		.section	.rodata.GPIO_SC_TABLE_riic2,"a",%progbits
+ 414              		.align	2
+ 417              	GPIO_SC_TABLE_riic2:
+ 418 0000 040D     		.short	3332
+ 419 0002 07       		.byte	7
+ 420 0003 01       		.byte	1
+ 421 0004 05       		.byte	5
+ 422 0005 00       		.space	1
+ 423 0006 050D     		.short	3333
+ 424 0008 07       		.byte	7
+ 425 0009 01       		.byte	1
+ 426 000a 05       		.byte	5
+ 427 000b 00       		.space	1
+ 428              		.section	.rodata.GPIO_SC_TABLE_riic3,"a",%progbits
+ 429              		.align	2
+ 432              	GPIO_SC_TABLE_riic3:
+ 433 0000 060D     		.short	3334
+ 434 0002 07       		.byte	7
+ 435 0003 01       		.byte	1
+ 436 0004 05       		.byte	5
+ 437 0005 00       		.space	1
+ 438 0006 070D     		.short	3335
+ 439 0008 07       		.byte	7
+ 440 0009 01       		.byte	1
+ 441 000a 05       		.byte	5
+ 442 000b 00       		.space	1
+ 443              		.section	.rodata.RIIC_SC_TABLE,"a",%progbits
+ 444              		.align	2
+ 445              		.set	.LANCHOR0,. + 0
+ 448              	RIIC_SC_TABLE:
+ 449 0000 02000000 		.word	2
+ 450 0004 00       		.byte	0
+ 451 0005 000000   		.space	3
+ 452 0008 01000000 		.word	1
+ 453 000c 00000000 		.word	0
+ 454 0010 00000000 		.word	0
+ 455 0014 0100     		.short	1
+ 456 0016 0100     		.short	1
+ 457 0018 0100     		.short	1
+ 458 001a 00       		.byte	0
+ 459 001b 00       		.byte	0
+ 460 001c 00       		.byte	0
+ 461 001d 00       		.byte	0
+ 462 001e 04       		.byte	4
+ 463 001f 00       		.space	1
+ 464 0020 00000000 		.word	0
+ 465 0024 00000000 		.word	0
+ 466 0028 00       		.byte	0
+ 467 0029 00       		.byte	0
+ 468 002a 00       		.byte	0
+ 469 002b 00       		.space	1
+ 470 002c 00000000 		.word	0
+ 471 0030 09       		.byte	9
+ 472 0031 09       		.byte	9
+ 473 0032 09       		.byte	9
+ 474 0033 09       		.byte	9
+ 475 0034 09       		.byte	9
+ 476 0035 09       		.byte	9
+ 477 0036 09       		.byte	9
+ 478 0037 09       		.byte	9
+ 479 0038 00000000 		.word	GPIO_SC_TABLE_riic2
+ 480 003c 02000000 		.word	2
+ 481 0040 00000000 		.space	4
+ 482 0044 03000000 		.word	3
+ 483 0048 00       		.byte	0
+ 484 0049 000000   		.space	3
+ 485 004c 01000000 		.word	1
+ 486 0050 00000000 		.word	0
+ 487 0054 00000000 		.word	0
+ 488 0058 0100     		.short	1
+ 489 005a 0100     		.short	1
+ 490 005c 0100     		.short	1
+ 491 005e 00       		.byte	0
+ 492 005f 00       		.byte	0
+ 493 0060 00       		.byte	0
+ 494 0061 00       		.byte	0
+ 495 0062 04       		.byte	4
+ 496 0063 00       		.space	1
+ 497 0064 00000000 		.word	0
+ 498 0068 00000000 		.word	0
+ 499 006c 00       		.byte	0
+ 500 006d 00       		.byte	0
+ 501 006e 00       		.byte	0
+ 502 006f 00       		.space	1
+ 503 0070 00000000 		.word	0
+ 504 0074 09       		.byte	9
+ 505 0075 09       		.byte	9
+ 506 0076 09       		.byte	9
+ 507 0077 09       		.byte	9
+ 508 0078 09       		.byte	9
+ 509 0079 09       		.byte	9
+ 510 007a 09       		.byte	9
+ 511 007b 09       		.byte	9
+ 512 007c 00000000 		.word	GPIO_SC_TABLE_riic3
+ 513 0080 02000000 		.word	2
+ 514 0084 00000000 		.space	4
+ 515              		.section	.rodata.g_riic_driver,"a",%progbits
+ 516              		.align	2
+ 519              	g_riic_driver:
+ 520 0000 00000000 		.word	.LC2
+ 521 0004 00000000 		.word	riic_hld_open
+ 522 0008 00000000 		.word	riic_hld_close
+ 523 000c 00000000 		.word	no_dev_read
+ 524 0010 00000000 		.word	no_dev_write
+ 525 0014 00000000 		.word	riic_hld_control
+ 526 0018 00000000 		.word	riic_hld_get_version
+ 527              		.section	.rodata.riic_hld_get_version.str1.4,"aMS",%progbits,1
+ 528              		.align	2
+ 529              	.LC0:
+ 530 0000 484C4420 		.ascii	"HLD RIIC\000"
+ 530      52494943 
+ 530      00
+ 531              		.section	.rodata.riic_hld_open.str1.4,"aMS",%progbits,1
+ 532              		.align	2
+ 533              	.LC1:
+ 534 0000 63706700 		.ascii	"cpg\000"
+ 535              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 536              		.align	2
+ 537              	.LC2:
+ 538 0000 49324320 		.ascii	"I2C Device Driver\000"
+ 538      44657669 
+ 538      63652044 
+ 538      72697665 
+ 538      7200
+ 539              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_riic_drv_api.c
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:14     .text.riic_hld_get_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:19     .text.riic_hld_get_version:00000000 riic_hld_get_version
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:529    .rodata.riic_hld_get_version.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:38     .text.riic_hld_control:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:43     .text.riic_hld_control:00000000 riic_hld_control
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:445    .rodata.RIIC_SC_TABLE:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:394    .bss.gs_channel_count:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:408    .bss.gsp_riic_control_mutex:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:82     .text.riic_hld_control:0000008c $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:88     .text.riic_hld_control:000000a0 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:185    .text.riic_hld_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:190    .text.riic_hld_close:00000000 riic_hld_close
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:241    .text.riic_hld_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:246    .text.riic_hld_open:00000000 riic_hld_open
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:401    .bss.gs_driver_open:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:533    .rodata.riic_hld_open.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:372    .text.riic_hld_open:000001b8 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:376    .text.validate_channel:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:382    .text.validate_channel:00000000 validate_channel
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:519    .rodata.g_riic_driver:00000000 g_riic_driver
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:393    .bss.gs_channel_count:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:397    .bss.gs_channel_count:00000000 gs_channel_count
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:400    .bss.gs_driver_open:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:404    .bss.gs_driver_open:00000000 gs_driver_open
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:407    .bss.gsp_riic_control_mutex:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:411    .bss.gsp_riic_control_mutex:00000000 gsp_riic_control_mutex
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:414    .rodata.GPIO_SC_TABLE_riic2:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:417    .rodata.GPIO_SC_TABLE_riic2:00000000 GPIO_SC_TABLE_riic2
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:429    .rodata.GPIO_SC_TABLE_riic3:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:432    .rodata.GPIO_SC_TABLE_riic3:00000000 GPIO_SC_TABLE_riic3
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:444    .rodata.RIIC_SC_TABLE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:448    .rodata.RIIC_SC_TABLE:00000000 RIIC_SC_TABLE
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:516    .rodata.g_riic_driver:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:528    .rodata.riic_hld_get_version.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:532    .rodata.riic_hld_open.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccp0AsCT.s:536    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_RIIC_GetVersion
+R_OS_MutexAcquire
+R_OS_MutexRelease
+write_data
+R_RIIC_GetConfig
+R_RIIC_SetConfig
+read_data
+R_RIIC_CloseChannel
+R_OS_EnterCritical
+R_OS_MutexDelete
+R_OS_ExitCritical
+R_OS_MutexCreate
+direct_open
+control
+direct_close
+R_RIIC_ScInitChannel
+open_channel
+no_dev_read
+no_dev_write

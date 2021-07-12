@@ -1,0 +1,221 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_cpg_drv_api.c"
+  13              		.section	.text.cpg_close,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	cpg_close:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22              		@ link register save eliminated.
+  23 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  24 0004 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  25 0008 B020D3E1 		ldrh	r2, [r3]
+  26 000c 000052E3 		cmp	r2, #0
+  27 0010 1EFF2F01 		bxeq	lr
+  28 0014 141090E5 		ldr	r1, [r0, #20]
+  29 0018 080011E3 		tst	r1, #8
+  30 001c 01204212 		subne	r2, r2, #1
+  31 0020 B020C311 		strhne	r2, [r3]	@ movhi
+  32 0024 1EFF2FE1 		bx	lr
+  34              		.section	.text.cpg_get_version,"ax",%progbits
+  35              		.align	2
+  36              		.syntax unified
+  37              		.arm
+  38              		.fpu neon
+  40              	cpg_get_version:
+  41              		@ args = 0, pretend = 0, frame = 0
+  42              		@ frame_needed = 0, uses_anonymous_args = 0
+  43              		@ link register save eliminated.
+  44 0000 003000E3 		movw	r3, #:lower16:.LC0
+  45 0004 0100A0E3 		mov	r0, #1
+  46 0008 05C0A0E3 		mov	ip, #5
+  47 000c 0020A0E3 		mov	r2, #0
+  48 0010 003040E3 		movt	r3, #:upper16:.LC0
+  49 0014 B200C1E1 		strh	r0, [r1, #2]	@ movhi
+  50 0018 B0C0C1E1 		strh	ip, [r1]	@ movhi
+  51 001c 0100A0E1 		mov	r0, r1
+  52 0020 0C0081E9 		stmib	r1, {r2, r3}
+  53 0024 FEFFFFEA 		b	R_CPG_GetVersion
+  55              		.section	.text.cpg_control,"ax",%progbits
+  56              		.align	2
+  57              		.syntax unified
+  58              		.arm
+  59              		.fpu neon
+  61              	cpg_control:
+  62              		@ args = 0, pretend = 0, frame = 0
+  63              		@ frame_needed = 0, uses_anonymous_args = 0
+  64              		@ link register save eliminated.
+  65 0000 000052E3 		cmp	r2, #0
+  66 0004 0600000A 		beq	.L11
+  67 0008 143090E5 		ldr	r3, [r0, #20]
+  68 000c 080013E3 		tst	r3, #8
+  69 0010 0500001A 		bne	.L13
+  70 0014 060051E3 		cmp	r1, #6
+  71 0018 0100001A 		bne	.L11
+  72 001c 040013E3 		tst	r3, #4
+  73 0020 2500001A 		bne	.L21
+  74              	.L11:
+  75 0024 0000E0E3 		mvn	r0, #0
+  76 0028 1EFF2FE1 		bx	lr
+  77              	.L13:
+  78 002c 000000E3 		movw	r0, #:lower16:.LANCHOR0
+  79 0030 000040E3 		movt	r0, #:upper16:.LANCHOR0
+  80 0034 B000D0E1 		ldrh	r0, [r0]
+  81 0038 000050E3 		cmp	r0, #0
+  82 003c F8FFFF0A 		beq	.L11
+  83 0040 060041E2 		sub	r0, r1, #6
+  84 0044 043023E2 		eor	r3, r3, #4
+  85 0048 100F6FE1 		clz	r0, r0
+  86 004c A002A0E1 		lsr	r0, r0, #5
+  87 0050 233110E0 		ands	r3, r0, r3, lsr #2
+  88 0054 F2FFFF1A 		bne	.L11
+  89 0058 011041E2 		sub	r1, r1, #1
+  90 005c 060051E3 		cmp	r1, #6
+  91 0060 01F19F97 		ldrls	pc, [pc, r1, asl #2]
+  92 0064 EEFFFFEA 		b	.L11
+  93              	.L16:
+  94 0068 B4000000 		.word	.L15
+  95 006c AC000000 		.word	.L17
+  96 0070 A0000000 		.word	.L18
+  97 0074 94000000 		.word	.L19
+  98 0078 8C000000 		.word	.L20
+  99 007c BC000000 		.word	.L21
+ 100 0080 84000000 		.word	.L22
+ 101              	.L22:
+ 102 0084 030092E8 		ldm	r2, {r0, r1}
+ 103 0088 FEFFFFEA 		b	R_CPG_SetSubClockDividers
+ 104              	.L20:
+ 105 008c 0200A0E1 		mov	r0, r2
+ 106 0090 FEFFFFEA 		b	R_CPG_ConfigExtClockPin
+ 107              	.L19:
+ 108 0094 0200A0E1 		mov	r0, r2
+ 109 0098 0110A0E3 		mov	r1, #1
+ 110 009c FEFFFFEA 		b	R_CPG_SetSubClockSource
+ 111              	.L18:
+ 112 00a0 0200A0E1 		mov	r0, r2
+ 113 00a4 0110A0E3 		mov	r1, #1
+ 114 00a8 FEFFFFEA 		b	R_CPG_SetSubClockDividers
+ 115              	.L17:
+ 116 00ac 0200A0E1 		mov	r0, r2
+ 117 00b0 FEFFFFEA 		b	R_CPG_SetMainClock
+ 118              	.L15:
+ 119 00b4 000B92ED 		vldr.64	d0, [r2]
+ 120 00b8 FEFFFFEA 		b	R_CPG_SetXtalClock
+ 121              	.L21:
+ 122 00bc 081082E2 		add	r1, r2, #8
+ 123 00c0 0000D2E5 		ldrb	r0, [r2]	@ zero_extendqisi2
+ 124 00c4 FEFFFFEA 		b	R_CPG_GetClock
+ 126              		.section	.text.cpg_open,"ax",%progbits
+ 127              		.align	2
+ 128              		.syntax unified
+ 129              		.arm
+ 130              		.fpu neon
+ 132              	cpg_open:
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 136 0004 10402DE9 		push	{r4, lr}
+ 137 0008 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 138 000c 0040A0E1 		mov	r4, r0
+ 139 0010 002093E5 		ldr	r2, [r3]
+ 140 0014 000052E3 		cmp	r2, #0
+ 141 0018 0A00000A 		beq	.L41
+ 142              	.L34:
+ 143 001c 140094E5 		ldr	r0, [r4, #20]
+ 144 0020 080010E2 		ands	r0, r0, #8
+ 145 0024 1080BD08 		popeq	{r4, pc}
+ 146 0028 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 147 002c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 148 0030 B000D3E1 		ldrh	r0, [r3]
+ 149 0034 000050E3 		cmp	r0, #0
+ 150 0038 0120A003 		moveq	r2, #1
+ 151 003c 0000E013 		mvnne	r0, #0
+ 152 0040 B020C301 		strheq	r2, [r3]	@ movhi
+ 153 0044 1080BDE8 		pop	{r4, pc}
+ 154              	.L41:
+ 155 0048 0120A0E3 		mov	r2, #1
+ 156 004c 002083E5 		str	r2, [r3]
+ 157 0050 FEFFFFEB 		bl	R_CPG_InitialiseHwIf
+ 158 0054 F0FFFFEA 		b	.L34
+ 160              		.global	g_cpg_driver
+ 161              		.section	.bss.gs_drv_cpg_is_initialized,"aw",%nobits
+ 162              		.align	2
+ 163              		.set	.LANCHOR1,. + 0
+ 166              	gs_drv_cpg_is_initialized:
+ 167 0000 00000000 		.space	4
+ 168              		.section	.bss.s_drv_config,"aw",%nobits
+ 169              		.align	2
+ 170              		.set	.LANCHOR0,. + 0
+ 173              	s_drv_config:
+ 174 0000 0000     		.space	2
+ 175              		.section	.rodata.cpg_get_version.str1.4,"aMS",%progbits,1
+ 176              		.align	2
+ 177              	.LC0:
+ 178 0000 484C4420 		.ascii	"HLD CPG\000"
+ 178      43504700 
+ 179              		.section	.rodata.g_cpg_driver,"a",%progbits
+ 180              		.align	2
+ 183              	g_cpg_driver:
+ 184 0000 00000000 		.word	.LC1
+ 185 0004 00000000 		.word	cpg_open
+ 186 0008 00000000 		.word	cpg_close
+ 187 000c 00000000 		.word	no_dev_read
+ 188 0010 00000000 		.word	no_dev_write
+ 189 0014 00000000 		.word	cpg_control
+ 190 0018 00000000 		.word	cpg_get_version
+ 191              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 192              		.align	2
+ 193              	.LC1:
+ 194 0000 43504720 		.ascii	"CPG Device Driver\000"
+ 194      44657669 
+ 194      63652044 
+ 194      72697665 
+ 194      7200
+ 195              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_cpg_drv_api.c
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:14     .text.cpg_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:19     .text.cpg_close:00000000 cpg_close
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:170    .bss.s_drv_config:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:35     .text.cpg_get_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:40     .text.cpg_get_version:00000000 cpg_get_version
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:177    .rodata.cpg_get_version.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:56     .text.cpg_control:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:61     .text.cpg_control:00000000 cpg_control
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:94     .text.cpg_control:00000068 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:102    .text.cpg_control:00000084 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:127    .text.cpg_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:132    .text.cpg_open:00000000 cpg_open
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:163    .bss.gs_drv_cpg_is_initialized:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:183    .rodata.g_cpg_driver:00000000 g_cpg_driver
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:162    .bss.gs_drv_cpg_is_initialized:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:166    .bss.gs_drv_cpg_is_initialized:00000000 gs_drv_cpg_is_initialized
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:169    .bss.s_drv_config:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:173    .bss.s_drv_config:00000000 s_drv_config
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:176    .rodata.cpg_get_version.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:180    .rodata.g_cpg_driver:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoswmlf.s:192    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_CPG_GetVersion
+R_CPG_SetSubClockDividers
+R_CPG_ConfigExtClockPin
+R_CPG_SetSubClockSource
+R_CPG_SetMainClock
+R_CPG_SetXtalClock
+R_CPG_GetClock
+R_CPG_InitialiseHwIf
+no_dev_read
+no_dev_write

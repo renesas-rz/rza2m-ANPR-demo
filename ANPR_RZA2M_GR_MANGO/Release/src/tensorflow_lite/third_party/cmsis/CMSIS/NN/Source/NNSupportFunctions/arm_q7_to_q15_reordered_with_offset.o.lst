@@ -1,0 +1,104 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_q7_to_q15_reordered_with_offset.c"
+  13              		.section	.text.arm_q7_to_q15_reordered_with_offset,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_q7_to_q15_reordered_with_offset
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_q7_to_q15_reordered_with_offset:
+  21              		@ args = 0, pretend = 0, frame = 16
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  24 0004 0370A0E1 		mov	r7, r3
+  25 0008 2231B0E1 		lsrs	r3, r2, #2
+  26 000c 14D04DE2 		sub	sp, sp, #20
+  27 0010 0280A0E1 		mov	r8, r2
+  28 0014 04308DE5 		str	r3, [sp, #4]
+  29 0018 00B0A0E1 		mov	fp, r0
+  30 001c 0190A0E1 		mov	r9, r1
+  31              		.syntax divided
+  32              	@ 64 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_reo
+  33 0020 175887E6 		pkhbt r5, r7, r7, lsl #16
+  34              	@ 0 "" 2
+  35              		.arm
+  36              		.syntax unified
+  37 0024 2A00000A 		beq	.L6
+  38 0028 036180E0 		add	r6, r0, r3, lsl #2
+  39 002c 0140A0E1 		mov	r4, r1
+  40              	.L3:
+  41 0030 0420A0E3 		mov	r2, #4
+  42 0034 0B10A0E1 		mov	r1, fp
+  43 0038 0C008DE2 		add	r0, sp, #12
+  44 003c 02B08BE0 		add	fp, fp, r2
+  45 0040 FEFFFFEB 		bl	memcpy
+  46 0044 0C309DE5 		ldr	r3, [sp, #12]
+  47 0048 0420A0E3 		mov	r2, #4
+  48 004c 0C108DE2 		add	r1, sp, #12
+  49 0050 0400A0E1 		mov	r0, r4
+  50              		.syntax divided
+  51              	@ 2002 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+  52 0054 73C085E6 		sxtab16 ip, r5, r3
+  53              	@ 0 "" 2
+  54              		.arm
+  55              		.syntax unified
+  56 0058 0CC08DE5 		str	ip, [sp, #12]
+  57 005c 6334A0E1 		ror	r3, r3, #8
+  58              		.syntax divided
+  59              	@ 2002 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+  60 0060 73A085E6 		sxtab16 r10, r5, r3
+  61              	@ 0 "" 2
+  62              		.arm
+  63              		.syntax unified
+  64 0064 FEFFFFEB 		bl	memcpy
+  65 0068 0420A0E3 		mov	r2, #4
+  66 006c 0C108DE2 		add	r1, sp, #12
+  67 0070 020084E0 		add	r0, r4, r2
+  68 0074 0CA08DE5 		str	r10, [sp, #12]
+  69 0078 FEFFFFEB 		bl	memcpy
+  70 007c 06005BE1 		cmp	fp, r6
+  71 0080 084084E2 		add	r4, r4, #8
+  72 0084 E9FFFF1A 		bne	.L3
+  73 0088 04309DE5 		ldr	r3, [sp, #4]
+  74 008c 839189E0 		add	r9, r9, r3, lsl #3
+  75              	.L2:
+  76 0090 038018E2 		ands	r8, r8, #3
+  77 0094 0C00000A 		beq	.L1
+  78 0098 D030D6E1 		ldrsb	r3, [r6]
+  79 009c 7770FFE6 		uxth	r7, r7
+  80 00a0 010058E3 		cmp	r8, #1
+  81 00a4 033087E0 		add	r3, r7, r3
+  82 00a8 B030C9E1 		strh	r3, [r9]	@ movhi
+  83 00ac 0600000A 		beq	.L1
+  84 00b0 D130D6E1 		ldrsb	r3, [r6, #1]
+  85 00b4 020058E3 		cmp	r8, #2
+  86 00b8 033087E0 		add	r3, r7, r3
+  87 00bc B230C9E1 		strh	r3, [r9, #2]	@ movhi
+  88 00c0 D230D611 		ldrsbne	r3, [r6, #2]
+  89 00c4 03708710 		addne	r7, r7, r3
+  90 00c8 B470C911 		strhne	r7, [r9, #4]	@ movhi
+  91              	.L1:
+  92 00cc 14D08DE2 		add	sp, sp, #20
+  93              		@ sp needed
+  94 00d0 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+  95              	.L6:
+  96 00d4 0060A0E1 		mov	r6, r0
+  97 00d8 ECFFFFEA 		b	.L2
+  99              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_q7_to_q15_reordered_with_offset.c
+C:\Users\a5050395\AppData\Local\Temp\ccflvt8x.s:14     .text.arm_q7_to_q15_reordered_with_offset:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccflvt8x.s:20     .text.arm_q7_to_q15_reordered_with_offset:00000000 arm_q7_to_q15_reordered_with_offset
+
+UNDEFINED SYMBOLS
+memcpy

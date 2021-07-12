@@ -1,0 +1,820 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"mock_micro_graph.cc"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite14MockMicroGraph14InvokeSubgraphEi,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite14MockMicroGraph14InvokeSubgraphEi
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite14MockMicroGraph14InvokeSubgraphEi:
+  24              		.fnstart
+  25              	.LFB6946:
+  26              		.file 1 "../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc"
+   1:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** /* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+   3:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+   7:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+   9:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** limitations under the License.
+  14:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** ==============================================================================*/
+  15:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  16:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** #include "tensorflow/lite/micro/mock_micro_graph.h"
+  17:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  18:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** #include "tensorflow/lite/micro/test_helpers.h"
+  19:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  20:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** namespace tflite {
+  21:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  22:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** MockMicroGraph::MockMicroGraph(SimpleMemoryAllocator* allocator)
+  23:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     : MicroGraph(nullptr, nullptr, nullptr),
+  24:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       allocator_(allocator),
+  25:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       init_count_(0),
+  26:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       prepare_count_(0),
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       free_count_(0) {
+  28:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+  29:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_ =
+  30:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       reinterpret_cast<TfLiteEvalTensor*>(allocator_->AllocateFromTail(
+  31:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****           sizeof(TfLiteEvalTensor), alignof(TfLiteEvalTensor)));
+  32:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   int* dims_array = reinterpret_cast<int*>(
+  33:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       allocator_->AllocateFromTail(3 * sizeof(int), alignof(int)));
+  34:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   float* data_array = reinterpret_cast<float*>(
+  35:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       allocator_->AllocateFromTail(2 * sizeof(float), alignof(float)));
+  36:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   int dims[] = {2, 1, 2};
+  37:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memcpy(dims_array, dims, 3 * sizeof(int));
+  38:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->dims = testing::IntArrayFromInts(dims_array);
+  39:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->data.f = data_array;
+  40:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->type = kTfLiteFloat32;
+  41:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+  42:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  43:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** TfLiteStatus MockMicroGraph::InvokeSubgraph(int subgraph_idx) {
+  27              		.loc 1 43 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+  33 0000 011180E0 		add	r1, r0, r1, lsl #2
+  34              	.LVL1:
+  44:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   invoke_counts_[subgraph_idx]++;
+  45:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   return kTfLiteOk;
+  46:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+  35              		.loc 1 46 0
+  36 0004 0000A0E3 		mov	r0, #0
+  37              	.LVL2:
+  44:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   invoke_counts_[subgraph_idx]++;
+  38              		.loc 1 44 0
+  39 0008 303091E5 		ldr	r3, [r1, #48]
+  40 000c 013083E2 		add	r3, r3, #1
+  41 0010 303081E5 		str	r3, [r1, #48]
+  42              		.loc 1 46 0
+  43 0014 1EFF2FE1 		bx	lr
+  44              		.cfi_endproc
+  45              	.LFE6946:
+  46              		.cantunwind
+  47              		.fnend
+  49              		.section	.text._ZN6tflite14MockMicroGraph20ResetVariableTensorsEv,"ax",%progbits
+  50              		.align	2
+  51              		.global	_ZN6tflite14MockMicroGraph20ResetVariableTensorsEv
+  52              		.syntax unified
+  53              		.arm
+  54              		.fpu neon
+  56              	_ZN6tflite14MockMicroGraph20ResetVariableTensorsEv:
+  57              		.fnstart
+  58              	.LFB6947:
+  47:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  48:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** TfLiteStatus MockMicroGraph::ResetVariableTensors() { return kTfLiteOk; }
+  59              		.loc 1 48 0
+  60              		.cfi_startproc
+  61              		@ args = 0, pretend = 0, frame = 0
+  62              		@ frame_needed = 0, uses_anonymous_args = 0
+  63              		@ link register save eliminated.
+  64              	.LVL3:
+  65              		.loc 1 48 0
+  66 0000 0000A0E3 		mov	r0, #0
+  67              	.LVL4:
+  68 0004 1EFF2FE1 		bx	lr
+  69              		.cfi_endproc
+  70              	.LFE6947:
+  71              		.cantunwind
+  72              		.fnend
+  74              		.section	.text._ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi,"ax",%progbits
+  75              		.align	2
+  76              		.global	_ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi
+  77              		.syntax unified
+  78              		.arm
+  79              		.fpu neon
+  81              	_ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi:
+  82              		.fnstart
+  83              	.LFB6950:
+  49:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  50:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** size_t MockMicroGraph::NumSubgraphInputs(int subgraph_idx) { return 1; }
+  51:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  52:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** TfLiteEvalTensor* MockMicroGraph::GetSubgraphInput(int subgraph_idx,
+  53:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****                                                    int tensor_idx) {
+  54:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   return mock_tensor_;
+  55:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+  56:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  57:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** size_t MockMicroGraph::NumSubgraphOutputs(int subgraph_idx) { return 1; }
+  84              		.loc 1 57 0
+  85              		.cfi_startproc
+  86              		@ args = 0, pretend = 0, frame = 0
+  87              		@ frame_needed = 0, uses_anonymous_args = 0
+  88              		@ link register save eliminated.
+  89              	.LVL5:
+  90              		.loc 1 57 0
+  91 0000 0100A0E3 		mov	r0, #1
+  92              	.LVL6:
+  93 0004 1EFF2FE1 		bx	lr
+  94              		.cfi_endproc
+  95              	.LFE6950:
+  96              		.cantunwind
+  97              		.fnend
+  99              		.global	_ZN6tflite14MockMicroGraph17NumSubgraphInputsEi
+ 100              		.set	_ZN6tflite14MockMicroGraph17NumSubgraphInputsEi,_ZN6tflite14MockMicroGraph18NumSubgraphOutput
+ 101              		.section	.text._ZN6tflite14MockMicroGraph17GetSubgraphOutputEii,"ax",%progbits
+ 102              		.align	2
+ 103              		.global	_ZN6tflite14MockMicroGraph17GetSubgraphOutputEii
+ 104              		.syntax unified
+ 105              		.arm
+ 106              		.fpu neon
+ 108              	_ZN6tflite14MockMicroGraph17GetSubgraphOutputEii:
+ 109              		.fnstart
+ 110              	.LFB6951:
+  58:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  59:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** TfLiteEvalTensor* MockMicroGraph::GetSubgraphOutput(int subgraph_idx,
+  60:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****                                                     int tensor_idx) {
+ 111              		.loc 1 60 0
+ 112              		.cfi_startproc
+ 113              		@ args = 0, pretend = 0, frame = 0
+ 114              		@ frame_needed = 0, uses_anonymous_args = 0
+ 115              		@ link register save eliminated.
+ 116              	.LVL7:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   return mock_tensor_;
+  62:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+ 117              		.loc 1 62 0
+ 118 0000 200090E5 		ldr	r0, [r0, #32]
+ 119              	.LVL8:
+ 120 0004 1EFF2FE1 		bx	lr
+ 121              		.cfi_endproc
+ 122              	.LFE6951:
+ 123              		.cantunwind
+ 124              		.fnend
+ 126              		.global	_ZN6tflite14MockMicroGraph16GetSubgraphInputEii
+ 127              		.set	_ZN6tflite14MockMicroGraph16GetSubgraphInputEii,_ZN6tflite14MockMicroGraph17GetSubgraphOutput
+ 128              		.section	.text._ZN6tflite14MockMicroGraph12NumSubgraphsEv,"ax",%progbits
+ 129              		.align	2
+ 130              		.global	_ZN6tflite14MockMicroGraph12NumSubgraphsEv
+ 131              		.syntax unified
+ 132              		.arm
+ 133              		.fpu neon
+ 135              	_ZN6tflite14MockMicroGraph12NumSubgraphsEv:
+ 136              		.fnstart
+ 137              	.LFB6952:
+  63:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+  64:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** int MockMicroGraph::NumSubgraphs() { return kMaxSubgraphs; }
+ 138              		.loc 1 64 0
+ 139              		.cfi_startproc
+ 140              		@ args = 0, pretend = 0, frame = 0
+ 141              		@ frame_needed = 0, uses_anonymous_args = 0
+ 142              		@ link register save eliminated.
+ 143              	.LVL9:
+ 144              		.loc 1 64 0
+ 145 0000 0A00A0E3 		mov	r0, #10
+ 146              	.LVL10:
+ 147 0004 1EFF2FE1 		bx	lr
+ 148              		.cfi_endproc
+ 149              	.LFE6952:
+ 150              		.cantunwind
+ 151              		.fnend
+ 153              		.section	.text._ZN6tflite14MockMicroGraphD2Ev,"axG",%progbits,_ZN6tflite14MockMicroGraphD5Ev,comda
+ 154              		.align	2
+ 155              		.weak	_ZN6tflite14MockMicroGraphD2Ev
+ 156              		.syntax unified
+ 157              		.arm
+ 158              		.fpu neon
+ 160              	_ZN6tflite14MockMicroGraphD2Ev:
+ 161              		.fnstart
+ 162              	.LFB11260:
+ 163              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** /* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #ifndef TENSORFLOW_LITE_MICRO_MOCK_MICRO_GRAPH_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #define TENSORFLOW_LITE_MICRO_MOCK_MICRO_GRAPH_H_
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #include "tensorflow/lite/c/common.h"
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #include "tensorflow/lite/micro/micro_allocator.h"
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #include "tensorflow/lite/micro/micro_graph.h"
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** #include "tensorflow/lite/schema/schema_generated.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** namespace tflite {
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** 
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** // MockMicroGraph stubs out all MicroGraph methods used during invoke. A count
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** // of the number of calls to invoke for each subgraph is maintained for
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** // validation of control flow operators.
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/tensorflow/lite/micro\mock_micro_graph.h **** class MockMicroGraph : public MicroGraph {
+ 164              		.loc 2 29 0
+ 165              		.cfi_startproc
+ 166              		@ args = 0, pretend = 0, frame = 0
+ 167              		@ frame_needed = 0, uses_anonymous_args = 0
+ 168              	.LVL11:
+ 169              	.LBB5:
+ 170 0000 14309FE5 		ldr	r3, .L8
+ 171              	.LBE5:
+ 172 0004 10402DE9 		push	{r4, lr}
+ 173              		.cfi_def_cfa_offset 8
+ 174              		.cfi_offset 4, -8
+ 175              		.cfi_offset 14, -4
+ 176              		.loc 2 29 0
+ 177 0008 0040A0E1 		mov	r4, r0
+ 178              	.LBB6:
+ 179 000c 003080E5 		str	r3, [r0]
+ 180 0010 FEFFFFEB 		bl	_ZN6tflite10MicroGraphD2Ev
+ 181              	.LVL12:
+ 182              	.LBE6:
+ 183 0014 0400A0E1 		mov	r0, r4
+ 184 0018 1080BDE8 		pop	{r4, pc}
+ 185              	.L9:
+ 186              		.align	2
+ 187              	.L8:
+ 188 001c 08000000 		.word	.LANCHOR0+8
+ 189              		.cfi_endproc
+ 190              	.LFE11260:
+ 191              		.cantunwind
+ 192              		.fnend
+ 194              		.weak	_ZN6tflite14MockMicroGraphD1Ev
+ 195              		.set	_ZN6tflite14MockMicroGraphD1Ev,_ZN6tflite14MockMicroGraphD2Ev
+ 196              		.section	.text._ZN6tflite14MockMicroGraphD0Ev,"axG",%progbits,_ZN6tflite14MockMicroGraphD5Ev,comda
+ 197              		.align	2
+ 198              		.weak	_ZN6tflite14MockMicroGraphD0Ev
+ 199              		.syntax unified
+ 200              		.arm
+ 201              		.fpu neon
+ 203              	_ZN6tflite14MockMicroGraphD0Ev:
+ 204              		.fnstart
+ 205              	.LFB11262:
+ 206              		.loc 2 29 0
+ 207              		.cfi_startproc
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210              	.LVL13:
+ 211              	.LBB7:
+ 212              	.LBB8:
+ 213 0000 1C309FE5 		ldr	r3, .L12
+ 214              	.LBE8:
+ 215              	.LBE7:
+ 216 0004 10402DE9 		push	{r4, lr}
+ 217              		.cfi_def_cfa_offset 8
+ 218              		.cfi_offset 4, -8
+ 219              		.cfi_offset 14, -4
+ 220              		.loc 2 29 0
+ 221 0008 0040A0E1 		mov	r4, r0
+ 222              	.LVL14:
+ 223              	.LBB10:
+ 224              	.LBB9:
+ 225 000c 003080E5 		str	r3, [r0]
+ 226 0010 FEFFFFEB 		bl	_ZN6tflite10MicroGraphD2Ev
+ 227              	.LVL15:
+ 228              	.LBE9:
+ 229              	.LBE10:
+ 230 0014 0400A0E1 		mov	r0, r4
+ 231 0018 FEFFFFEB 		bl	_ZdlPv
+ 232              	.LVL16:
+ 233 001c 0400A0E1 		mov	r0, r4
+ 234 0020 1080BDE8 		pop	{r4, pc}
+ 235              	.L13:
+ 236              		.align	2
+ 237              	.L12:
+ 238 0024 08000000 		.word	.LANCHOR0+8
+ 239              		.cfi_endproc
+ 240              	.LFE11262:
+ 241              		.cantunwind
+ 242              		.fnend
+ 244              		.section	.text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE,"ax",%progbits
+ 245              		.align	2
+ 246              		.global	_ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE
+ 247              		.syntax unified
+ 248              		.arm
+ 249              		.fpu neon
+ 251              	_ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:
+ 252              		.fnstart
+ 253              	.LFB6944:
+  22:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     : MicroGraph(nullptr, nullptr, nullptr),
+ 254              		.loc 1 22 0
+ 255              		.cfi_startproc
+ 256              		.cfi_personality 0,__gxx_personality_v0
+ 257              		.cfi_lsda 0,.LLSDA6944
+ 258              		@ args = 0, pretend = 0, frame = 16
+ 259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260              	.LVL17:
+ 261              	.LBB11:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 262              		.loc 1 27 0
+ 263 0000 0030A0E3 		mov	r3, #0
+ 264              	.LBE11:
+  22:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     : MicroGraph(nullptr, nullptr, nullptr),
+ 265              		.loc 1 22 0
+ 266 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 267              		.save {r4, r5, r6, lr}
+ 268              		.cfi_def_cfa_offset 16
+ 269              		.cfi_offset 4, -16
+ 270              		.cfi_offset 5, -12
+ 271              		.cfi_offset 6, -8
+ 272              		.cfi_offset 14, -4
+ 273              	.LBB17:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 274              		.loc 1 27 0
+ 275 0008 0320A0E1 		mov	r2, r3
+ 276              	.LBE17:
+  22:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     : MicroGraph(nullptr, nullptr, nullptr),
+ 277              		.loc 1 22 0
+ 278 000c 0150A0E1 		mov	r5, r1
+ 279              		.pad #16
+ 280 0010 10D04DE2 		sub	sp, sp, #16
+ 281              		.cfi_def_cfa_offset 32
+ 282              	.LBB18:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 283              		.loc 1 27 0
+ 284 0014 0310A0E1 		mov	r1, r3
+ 285              	.LVL18:
+ 286              	.LBE18:
+  22:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****     : MicroGraph(nullptr, nullptr, nullptr),
+ 287              		.loc 1 22 0
+ 288 0018 0040A0E1 		mov	r4, r0
+ 289              	.LEHB0:
+ 290              	.LBB19:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 291              		.loc 1 27 0
+ 292 001c FEFFFFEB 		bl	_ZN6tflite10MicroGraphC2EP13TfLiteContextPKNS_5ModelEPNS_14MicroAllocatorE
+ 293              	.LVL19:
+ 294              	.LEHE0:
+ 295 0020 D8209FE5 		ldr	r2, .L22
+ 296 0024 0030A0E3 		mov	r3, #0
+ 297              	.LBB12:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_ =
+ 298              		.loc 1 28 0
+ 299 0028 0310A0E1 		mov	r1, r3
+ 300              	.LBE12:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 301              		.loc 1 27 0
+ 302 002c 243084E5 		str	r3, [r4, #36]
+ 303 0030 283084E5 		str	r3, [r4, #40]
+ 304              	.LBB13:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_ =
+ 305              		.loc 1 28 0
+ 306 0034 300084E2 		add	r0, r4, #48
+ 307              	.LBE13:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 308              		.loc 1 27 0
+ 309 0038 002084E5 		str	r2, [r4]
+ 310              	.LBB14:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_ =
+ 311              		.loc 1 28 0
+ 312 003c 2820A0E3 		mov	r2, #40
+ 313              	.LBE14:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 314              		.loc 1 27 0
+ 315 0040 2C3084E5 		str	r3, [r4, #44]
+ 316 0044 1C5084E5 		str	r5, [r4, #28]
+ 317              	.LBB15:
+  28:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_ =
+ 318              		.loc 1 28 0
+ 319 0048 FEFFFFEB 		bl	memset
+ 320              	.LVL20:
+  31:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   int* dims_array = reinterpret_cast<int*>(
+ 321              		.loc 1 31 0
+ 322 004c 003095E5 		ldr	r3, [r5]
+  30:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****           sizeof(TfLiteEvalTensor), alignof(TfLiteEvalTensor)));
+ 323              		.loc 1 30 0
+ 324 0050 0500A0E1 		mov	r0, r5
+ 325 0054 0420A0E3 		mov	r2, #4
+ 326 0058 0C10A0E3 		mov	r1, #12
+ 327 005c 0C3093E5 		ldr	r3, [r3, #12]
+ 328              	.LEHB1:
+ 329 0060 33FF2FE1 		blx	r3
+ 330              	.LVL21:
+  33:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   float* data_array = reinterpret_cast<float*>(
+ 331              		.loc 1 33 0
+ 332 0064 1C3094E5 		ldr	r3, [r4, #28]
+ 333 0068 0420A0E3 		mov	r2, #4
+  29:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****       reinterpret_cast<TfLiteEvalTensor*>(allocator_->AllocateFromTail(
+ 334              		.loc 1 29 0
+ 335 006c 200084E5 		str	r0, [r4, #32]
+  33:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   float* data_array = reinterpret_cast<float*>(
+ 336              		.loc 1 33 0
+ 337 0070 0C10A0E3 		mov	r1, #12
+ 338 0074 00C093E5 		ldr	ip, [r3]
+ 339 0078 0300A0E1 		mov	r0, r3
+ 340 007c 0C309CE5 		ldr	r3, [ip, #12]
+ 341 0080 33FF2FE1 		blx	r3
+ 342              	.LVL22:
+  33:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   float* data_array = reinterpret_cast<float*>(
+ 343              		.loc 1 33 0 is_stmt 0 discriminator 1
+ 344 0084 0050A0E1 		mov	r5, r0
+ 345              	.LVL23:
+  35:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   int dims[] = {2, 1, 2};
+ 346              		.loc 1 35 0 is_stmt 1 discriminator 1
+ 347 0088 1C0094E5 		ldr	r0, [r4, #28]
+ 348              	.LVL24:
+ 349 008c 0420A0E3 		mov	r2, #4
+ 350 0090 0810A0E3 		mov	r1, #8
+ 351 0094 003090E5 		ldr	r3, [r0]
+ 352 0098 0C3093E5 		ldr	r3, [r3, #12]
+ 353 009c 33FF2FE1 		blx	r3
+ 354              	.LVL25:
+  36:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memcpy(dims_array, dims, 3 * sizeof(int));
+ 355              		.loc 1 36 0 discriminator 1
+ 356 00a0 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  35:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   int dims[] = {2, 1, 2};
+ 357              		.loc 1 35 0 discriminator 1
+ 358 00a4 0060A0E1 		mov	r6, r0
+ 359              	.LVL26:
+  36:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memcpy(dims_array, dims, 3 * sizeof(int));
+ 360              		.loc 1 36 0 discriminator 1
+ 361 00a8 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 362 00ac 04C08DE2 		add	ip, sp, #4
+ 363 00b0 070093E8 		ldm	r3, {r0, r1, r2}
+ 364              	.LVL27:
+ 365 00b4 07008CE8 		stm	ip, {r0, r1, r2}
+  37:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->dims = testing::IntArrayFromInts(dims_array);
+ 366              		.loc 1 37 0 discriminator 1
+ 367 00b8 0500A0E1 		mov	r0, r5
+ 368 00bc 0C10A0E1 		mov	r1, ip
+ 369 00c0 0C20A0E3 		mov	r2, #12
+ 370 00c4 FEFFFFEB 		bl	memcpy
+ 371              	.LVL28:
+  38:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->data.f = data_array;
+ 372              		.loc 1 38 0 discriminator 1
+ 373 00c8 0500A0E1 		mov	r0, r5
+ 374 00cc 205094E5 		ldr	r5, [r4, #32]
+ 375              	.LVL29:
+ 376 00d0 FEFFFFEB 		bl	_ZN6tflite7testing16IntArrayFromIntsEPi
+ 377              	.LVL30:
+ 378              	.LEHE1:
+  39:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->type = kTfLiteFloat32;
+ 379              		.loc 1 39 0 discriminator 1
+ 380 00d4 203094E5 		ldr	r3, [r4, #32]
+  40:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+ 381              		.loc 1 40 0 discriminator 1
+ 382 00d8 0120A0E3 		mov	r2, #1
+  38:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->data.f = data_array;
+ 383              		.loc 1 38 0 discriminator 1
+ 384 00dc 040085E5 		str	r0, [r5, #4]
+ 385              	.LBE15:
+ 386              	.LBE19:
+  41:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+ 387              		.loc 1 41 0 discriminator 1
+ 388 00e0 0400A0E1 		mov	r0, r4
+ 389              	.LBB20:
+ 390              	.LBB16:
+  39:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   mock_tensor_->type = kTfLiteFloat32;
+ 391              		.loc 1 39 0 discriminator 1
+ 392 00e4 006083E5 		str	r6, [r3]
+  40:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** }
+ 393              		.loc 1 40 0 discriminator 1
+ 394 00e8 0820C3E5 		strb	r2, [r3, #8]
+ 395              	.LBE16:
+ 396              	.LBE20:
+  41:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc **** 
+ 397              		.loc 1 41 0 discriminator 1
+ 398 00ec 10D08DE2 		add	sp, sp, #16
+ 399              		.cfi_remember_state
+ 400              		.cfi_def_cfa_offset 16
+ 401              		@ sp needed
+ 402 00f0 7080BDE8 		pop	{r4, r5, r6, pc}
+ 403              	.LVL31:
+ 404              	.L16:
+ 405              		.cfi_restore_state
+ 406              	.LBB21:
+  27:../src/tensorflow_lite/tensorflow/lite/micro/mock_micro_graph.cc ****   memset(invoke_counts_, 0, sizeof(invoke_counts_));
+ 407              		.loc 1 27 0
+ 408 00f4 0400A0E1 		mov	r0, r4
+ 409 00f8 FEFFFFEB 		bl	_ZN6tflite10MicroGraphD2Ev
+ 410              	.LVL32:
+ 411              	.LEHB2:
+ 412 00fc FEFFFFEB 		bl	__cxa_end_cleanup
+ 413              	.LVL33:
+ 414              	.LEHE2:
+ 415              	.L23:
+ 416              		.align	2
+ 417              	.L22:
+ 418 0100 08000000 		.word	.LANCHOR0+8
+ 419              	.LBE21:
+ 420              		.cfi_endproc
+ 421              	.LFE6944:
+ 422              		.global	__gxx_personality_v0
+ 423              		.personality	__gxx_personality_v0
+ 424              		.handlerdata
+ 425              	.LLSDA6944:
+ 426 0008 FF       		.byte	0xff
+ 427 0009 FF       		.byte	0xff
+ 428 000a 01       		.byte	0x1
+ 429 000b 0E       		.uleb128 .LLSDACSE6944-.LLSDACSB6944
+ 430              	.LLSDACSB6944:
+ 431 000c 1C       		.uleb128 .LEHB0-.LFB6944
+ 432 000d 04       		.uleb128 .LEHE0-.LEHB0
+ 433 000e 00       		.uleb128 0
+ 434 000f 00       		.uleb128 0
+ 435 0010 60       		.uleb128 .LEHB1-.LFB6944
+ 436 0011 74       		.uleb128 .LEHE1-.LEHB1
+ 437 0012 F401     		.uleb128 .L16-.LFB6944
+ 438 0014 00       		.uleb128 0
+ 439 0015 FC01     		.uleb128 .LEHB2-.LFB6944
+ 440 0017 04       		.uleb128 .LEHE2-.LEHB2
+ 441 0018 00       		.uleb128 0
+ 442 0019 00       		.uleb128 0
+ 443              	.LLSDACSE6944:
+ 444              		.section	.text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE
+ 445              		.fnend
+ 447              		.global	_ZN6tflite14MockMicroGraphC1EPNS_21SimpleMemoryAllocatorE
+ 448              		.set	_ZN6tflite14MockMicroGraphC1EPNS_21SimpleMemoryAllocatorE,_ZN6tflite14MockMicroGraphC2EPNS_21
+ 449              		.global	_ZTSN6tflite14MockMicroGraphE
+ 450              		.global	_ZTIN6tflite14MockMicroGraphE
+ 451              		.global	_ZTVN6tflite14MockMicroGraphE
+ 452              		.weak	_ZN11flatbuffers25flatbuffer_version_stringE
+ 453              		.section	.rodata
+ 454              		.align	2
+ 455              		.set	.LANCHOR1,. + 0
+ 456              	.LC0:
+ 457 0000 02000000 		.word	2
+ 458 0004 01000000 		.word	1
+ 459 0008 02000000 		.word	2
+ 460              		.section	.data._ZN11flatbuffers25flatbuffer_version_stringE,"aw",%progbits
+ 461              		.align	2
+ 464              	_ZN11flatbuffers25flatbuffer_version_stringE:
+ 465 0000 00000000 		.word	.LC1
+ 466              		.section	.rodata._ZTIN6tflite14MockMicroGraphE,"a",%progbits
+ 467              		.align	2
+ 470              	_ZTIN6tflite14MockMicroGraphE:
+ 471 0000 08000000 		.word	_ZTVN10__cxxabiv120__si_class_type_infoE+8
+ 472 0004 00000000 		.word	_ZTSN6tflite14MockMicroGraphE
+ 473 0008 00000000 		.word	_ZTIN6tflite10MicroGraphE
+ 474              		.section	.rodata._ZTSN6tflite14MockMicroGraphE,"a",%progbits
+ 475              		.align	3
+ 478              	_ZTSN6tflite14MockMicroGraphE:
+ 479 0000 4E367466 		.ascii	"N6tflite14MockMicroGraphE\000"
+ 479      6C697465 
+ 479      31344D6F 
+ 479      636B4D69 
+ 479      63726F47 
+ 480              		.section	.rodata._ZTVN6tflite14MockMicroGraphE,"a",%progbits
+ 481              		.align	3
+ 482              		.set	.LANCHOR0,. + 0
+ 485              	_ZTVN6tflite14MockMicroGraphE:
+ 486 0000 00000000 		.word	0
+ 487 0004 00000000 		.word	_ZTIN6tflite14MockMicroGraphE
+ 488 0008 00000000 		.word	_ZN6tflite14MockMicroGraphD1Ev
+ 489 000c 00000000 		.word	_ZN6tflite14MockMicroGraphD0Ev
+ 490 0010 00000000 		.word	_ZN6tflite10MicroGraph13InitSubgraphsEv
+ 491 0014 00000000 		.word	_ZN6tflite10MicroGraph16PrepareSubgraphsEv
+ 492 0018 00000000 		.word	_ZN6tflite10MicroGraph13FreeSubgraphsEv
+ 493 001c 00000000 		.word	_ZN6tflite14MockMicroGraph14InvokeSubgraphEi
+ 494 0020 00000000 		.word	_ZN6tflite14MockMicroGraph20ResetVariableTensorsEv
+ 495 0024 00000000 		.word	_ZN6tflite14MockMicroGraph17NumSubgraphInputsEi
+ 496 0028 00000000 		.word	_ZN6tflite14MockMicroGraph16GetSubgraphInputEii
+ 497 002c 00000000 		.word	_ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi
+ 498 0030 00000000 		.word	_ZN6tflite14MockMicroGraph17GetSubgraphOutputEii
+ 499 0034 00000000 		.word	_ZN6tflite14MockMicroGraph12NumSubgraphsEv
+ 500              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 501              		.align	2
+ 502              	.LC1:
+ 503 0000 466C6174 		.ascii	"FlatBuffers 1.12.0\000"
+ 503      42756666 
+ 503      65727320 
+ 503      312E3132 
+ 503      2E3000
+ 504              		.text
+ 505              	.Letext0:
+ 506              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 507              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 508              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 509              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 510              		.file 7 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 511              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 512              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 513              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 514              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 515              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 516              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 517              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 518              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 519              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 520              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 521              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 522              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 523              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 524              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 525              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 526              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 527              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 528              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 529              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 530              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 531              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 532              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 533              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 534              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 535              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 536              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 537              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 538              		.file 35 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 539              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 540              		.file 37 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 541              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 542              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 543              		.file 40 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 544              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 545              		.file 42 "<built-in>"
+ 546              		.file 43 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 547              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 548              		.file 45 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 549              		.file 46 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 550              		.file 47 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 551              		.file 48 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 552              		.file 49 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 553              		.file 50 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 554              		.file 51 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 555              		.file 52 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 556              		.file 53 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 557              		.file 54 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 558              		.file 55 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 559              		.file 56 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 mock_micro_graph.cc
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:17     .text._ZN6tflite14MockMicroGraph14InvokeSubgraphEi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:23     .text._ZN6tflite14MockMicroGraph14InvokeSubgraphEi:00000000 _ZN6tflite14MockMicroGraph14InvokeSubgraphEi
+.ARM.exidx.text._ZN6tflite14MockMicroGraph14InvokeSubgraphEi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:50     .text._ZN6tflite14MockMicroGraph20ResetVariableTensorsEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:56     .text._ZN6tflite14MockMicroGraph20ResetVariableTensorsEv:00000000 _ZN6tflite14MockMicroGraph20ResetVariableTensorsEv
+.ARM.exidx.text._ZN6tflite14MockMicroGraph20ResetVariableTensorsEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:75     .text._ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:81     .text._ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi:00000000 _ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi
+.ARM.exidx.text._ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:81     .text._ZN6tflite14MockMicroGraph18NumSubgraphOutputsEi:00000000 _ZN6tflite14MockMicroGraph17NumSubgraphInputsEi
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:102    .text._ZN6tflite14MockMicroGraph17GetSubgraphOutputEii:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:108    .text._ZN6tflite14MockMicroGraph17GetSubgraphOutputEii:00000000 _ZN6tflite14MockMicroGraph17GetSubgraphOutputEii
+.ARM.exidx.text._ZN6tflite14MockMicroGraph17GetSubgraphOutputEii:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:108    .text._ZN6tflite14MockMicroGraph17GetSubgraphOutputEii:00000000 _ZN6tflite14MockMicroGraph16GetSubgraphInputEii
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:129    .text._ZN6tflite14MockMicroGraph12NumSubgraphsEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:135    .text._ZN6tflite14MockMicroGraph12NumSubgraphsEv:00000000 _ZN6tflite14MockMicroGraph12NumSubgraphsEv
+.ARM.exidx.text._ZN6tflite14MockMicroGraph12NumSubgraphsEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:154    .text._ZN6tflite14MockMicroGraphD2Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:160    .text._ZN6tflite14MockMicroGraphD2Ev:00000000 _ZN6tflite14MockMicroGraphD2Ev
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:188    .text._ZN6tflite14MockMicroGraphD2Ev:0000001c $d
+.ARM.exidx.text._ZN6tflite14MockMicroGraphD2Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:160    .text._ZN6tflite14MockMicroGraphD2Ev:00000000 _ZN6tflite14MockMicroGraphD1Ev
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:197    .text._ZN6tflite14MockMicroGraphD0Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:203    .text._ZN6tflite14MockMicroGraphD0Ev:00000000 _ZN6tflite14MockMicroGraphD0Ev
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:238    .text._ZN6tflite14MockMicroGraphD0Ev:00000024 $d
+.ARM.exidx.text._ZN6tflite14MockMicroGraphD0Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:245    .text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:251    .text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000000 _ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:455    .rodata:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:418    .text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000100 $d
+.ARM.extab.text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000000 $d
+.ARM.exidx.text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:251    .text._ZN6tflite14MockMicroGraphC2EPNS_21SimpleMemoryAllocatorE:00000000 _ZN6tflite14MockMicroGraphC1EPNS_21SimpleMemoryAllocatorE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:478    .rodata._ZTSN6tflite14MockMicroGraphE:00000000 _ZTSN6tflite14MockMicroGraphE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:470    .rodata._ZTIN6tflite14MockMicroGraphE:00000000 _ZTIN6tflite14MockMicroGraphE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:485    .rodata._ZTVN6tflite14MockMicroGraphE:00000000 _ZTVN6tflite14MockMicroGraphE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:464    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 _ZN11flatbuffers25flatbuffer_version_stringE
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:454    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:461    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:467    .rodata._ZTIN6tflite14MockMicroGraphE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:475    .rodata._ZTSN6tflite14MockMicroGraphE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:481    .rodata._ZTVN6tflite14MockMicroGraphE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccfs8mg0.s:501    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 _ZN6tflite14MockMicroGraphD5Ev
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cstddef.40.7f59894b65c26f8fc669473914a0ef3e
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.wchar.h.2.f837619576d797e948eb58c44fac4678
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.wchar.h.41.2307b469886c2ca55d92707971ac50ce
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.locale.h.8.27d0fe4c0abbb6f8893a1fa7c1799fd9
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.alloc_traits.h.31.c41c7c4789404962122a4e991dfa3abf
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.c3e9cb15e5af2807c4650345134c1a8a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.98.3bf7680ffcc8d24d09fa83ac1339c79d
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.wctype.h.2.898a9b94aa35d125e245195b099726a8
+                           .group:00000000 wm4.wctype.h.21.aec4d35c940c33b3f9c6f879c49edcd8
+                           .group:00000000 wm4.cwctype.54.6582aca101688c1c3785d03bc15e2af6
+                           .group:00000000 wm4.locale_facets.h.56.0d4bb655ce5e76ea564363ed7c5a34fc
+                           .group:00000000 wm4.typeinfo.30.04014f5b1b4fb021c5662653bc27c750
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.atomic_base.h.31.692a6b53cef50ad728d4af54dfbd4448
+                           .group:00000000 wm4.base.h.81.f7b1ec2a44bbbae0afe7a7a890202b81
+                           .group:00000000 wm4.flatbuffers.h.2690.8dde7194088843c14d4d121ab864e44f
+                           .group:00000000 wm4.stdarg.h.31.250806951830a1b6a3066ee41cf22414
+                           .group:00000000 wm4.compatibility.h.16.1ceb35d63d4a0463dcdc2ac3bcdc6b08
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+                           .group:00000000 wm4.builtin_op_data.h.16.b961d1222c948363e3f10ad99298fd3f
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.portable_type_to_tflitetype.h.16.9e825508ceecbebd3f2674f111a6d83d
+
+UNDEFINED SYMBOLS
+_ZN6tflite10MicroGraphD2Ev
+_ZdlPv
+__gxx_personality_v0
+_ZN6tflite10MicroGraphC2EP13TfLiteContextPKNS_5ModelEPNS_14MicroAllocatorE
+memset
+memcpy
+_ZN6tflite7testing16IntArrayFromIntsEPi
+__cxa_end_cleanup
+_ZTVN10__cxxabiv120__si_class_type_infoE
+_ZTIN6tflite10MicroGraphE
+_ZN6tflite10MicroGraph13InitSubgraphsEv
+_ZN6tflite10MicroGraph16PrepareSubgraphsEv
+_ZN6tflite10MicroGraph13FreeSubgraphsEv

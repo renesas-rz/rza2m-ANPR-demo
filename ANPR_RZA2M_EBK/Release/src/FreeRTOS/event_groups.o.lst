@@ -1,0 +1,587 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"event_groups.c"
+  13              		.section	.text.vEventGroupClearBitsCallback,"ax",%progbits
+  14              		.align	2
+  15              		.global	vEventGroupClearBitsCallback
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	vEventGroupClearBitsCallback:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 70402DE9 		push	{r4, r5, r6, lr}
+  24 0004 004050E2 		subs	r4, r0, #0
+  25 0008 0150A0E1 		mov	r5, r1
+  26 000c 0B00000A 		beq	.L9
+  27              	.L2:
+  28 0010 FF0415E3 		tst	r5, #-16777216
+  29 0014 0300000A 		beq	.L3
+  30 0018 000000E3 		movw	r0, #:lower16:.LC0
+  31 001c C61100E3 		movw	r1, #454
+  32 0020 000040E3 		movt	r0, #:upper16:.LC0
+  33 0024 FEFFFFEB 		bl	R_OS_AssertCalled
+  34              	.L3:
+  35 0028 FEFFFFEB 		bl	vPortEnterCritical
+  36 002c 001094E5 		ldr	r1, [r4]
+  37 0030 0510C1E1 		bic	r1, r1, r5
+  38 0034 001084E5 		str	r1, [r4]
+  39 0038 7040BDE8 		pop	{r4, r5, r6, lr}
+  40 003c FEFFFFEA 		b	vPortExitCritical
+  41              	.L9:
+  42 0040 000000E3 		movw	r0, #:lower16:.LC0
+  43 0044 C51100E3 		movw	r1, #453
+  44 0048 000040E3 		movt	r0, #:upper16:.LC0
+  45 004c FEFFFFEB 		bl	R_OS_AssertCalled
+  46 0050 EEFFFFEA 		b	.L2
+  48              		.section	.text.xEventGroupCreate,"ax",%progbits
+  49              		.align	2
+  50              		.global	xEventGroupCreate
+  51              		.syntax unified
+  52              		.arm
+  53              		.fpu neon
+  55              	xEventGroupCreate:
+  56              		@ args = 0, pretend = 0, frame = 0
+  57              		@ frame_needed = 0, uses_anonymous_args = 0
+  58 0000 10402DE9 		push	{r4, lr}
+  59 0004 1C00A0E3 		mov	r0, #28
+  60 0008 FEFFFFEB 		bl	pvPortMalloc
+  61 000c 004050E2 		subs	r4, r0, #0
+  62 0010 0300000A 		beq	.L11
+  63 0014 0030A0E3 		mov	r3, #0
+  64 0018 0400A0E1 		mov	r0, r4
+  65 001c 043080E4 		str	r3, [r0], #4
+  66 0020 FEFFFFEB 		bl	vListInitialise
+  67              	.L11:
+  68 0024 0400A0E1 		mov	r0, r4
+  69 0028 1080BDE8 		pop	{r4, pc}
+  71              		.section	.text.xEventGroupWaitBits,"ax",%progbits
+  72              		.align	2
+  73              		.global	xEventGroupWaitBits
+  74              		.syntax unified
+  75              		.arm
+  76              		.fpu neon
+  78              	xEventGroupWaitBits:
+  79              		@ args = 4, pretend = 0, frame = 0
+  80              		@ frame_needed = 0, uses_anonymous_args = 0
+  81 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  82 0004 006050E2 		subs	r6, r0, #0
+  83 0008 0150A0E1 		mov	r5, r1
+  84 000c 0280A0E1 		mov	r8, r2
+  85 0010 0370A0E1 		mov	r7, r3
+  86 0014 20909DE5 		ldr	r9, [sp, #32]
+  87 0018 5000000A 		beq	.L46
+  88              	.L17:
+  89 001c FF0415E3 		tst	r5, #-16777216
+  90 0020 4600001A 		bne	.L47
+  91 0024 000055E3 		cmp	r5, #0
+  92 0028 2E00000A 		beq	.L48
+  93              	.L19:
+  94 002c FEFFFFEB 		bl	xTaskGetSchedulerState
+  95 0030 000090E2 		adds	r0, r0, #0
+  96 0034 0100A013 		movne	r0, #1
+  97 0038 000059E3 		cmp	r9, #0
+  98 003c 01008003 		orreq	r0, r0, #1
+  99 0040 000050E3 		cmp	r0, #0
+ 100 0044 0300001A 		bne	.L32
+ 101 0048 000000E3 		movw	r0, #:lower16:.LC0
+ 102 004c 361100E3 		movw	r1, #310
+ 103 0050 000040E3 		movt	r0, #:upper16:.LC0
+ 104 0054 FEFFFFEB 		bl	R_OS_AssertCalled
+ 105              	.L32:
+ 106 0058 FEFFFFEB 		bl	vTaskSuspendAll
+ 107 005c 000057E3 		cmp	r7, #0
+ 108 0060 004096E5 		ldr	r4, [r6]
+ 109 0064 0700001A 		bne	.L21
+ 110 0068 040015E1 		tst	r5, r4
+ 111 006c 0700000A 		beq	.L23
+ 112              	.L22:
+ 113 0070 000058E3 		cmp	r8, #0
+ 114 0074 0550C411 		bicne	r5, r4, r5
+ 115 0078 00508615 		strne	r5, [r6]
+ 116              	.L24:
+ 117 007c FEFFFFEB 		bl	xTaskResumeAll
+ 118 0080 0400A0E1 		mov	r0, r4
+ 119 0084 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 120              	.L21:
+ 121 0088 0430D5E1 		bics	r3, r5, r4
+ 122 008c F7FFFF0A 		beq	.L22
+ 123              	.L23:
+ 124 0090 000059E3 		cmp	r9, #0
+ 125 0094 F8FFFF0A 		beq	.L24
+ 126 0098 000058E3 		cmp	r8, #0
+ 127 009c 0920A0E1 		mov	r2, r9
+ 128 00a0 0534A013 		movne	r3, #83886080
+ 129 00a4 0133A003 		moveq	r3, #67108864
+ 130 00a8 0114A013 		movne	r1, #16777216
+ 131 00ac 0010A003 		moveq	r1, #0
+ 132 00b0 000057E3 		cmp	r7, #0
+ 133 00b4 040086E2 		add	r0, r6, #4
+ 134 00b8 0310A011 		movne	r1, r3
+ 135 00bc 051081E1 		orr	r1, r1, r5
+ 136 00c0 FEFFFFEB 		bl	vTaskPlaceOnUnorderedEventList
+ 137 00c4 FEFFFFEB 		bl	xTaskResumeAll
+ 138 00c8 000050E3 		cmp	r0, #0
+ 139 00cc 0A00000A 		beq	.L49
+ 140 00d0 FEFFFFEB 		bl	uxTaskResetEventItemValue
+ 141 00d4 020410E3 		tst	r0, #33554432
+ 142 00d8 0040A0E1 		mov	r4, r0
+ 143 00dc 0B00000A 		beq	.L50
+ 144              	.L28:
+ 145 00e0 FF04C4E3 		bic	r0, r4, #-16777216
+ 146 00e4 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 147              	.L48:
+ 148 00e8 000000E3 		movw	r0, #:lower16:.LC0
+ 149 00ec 331100E3 		movw	r1, #307
+ 150 00f0 000040E3 		movt	r0, #:upper16:.LC0
+ 151 00f4 FEFFFFEB 		bl	R_OS_AssertCalled
+ 152 00f8 CBFFFFEA 		b	.L19
+ 153              	.L49:
+ 154              		.syntax divided
+ 155              	@ 388 "../src/FreeRTOS/event_groups.c" 1
+ 156 00fc 000000EF 		SWI 0
+ 157              	@ 0 "" 2
+ 158              		.arm
+ 159              		.syntax unified
+ 160 0100 FEFFFFEB 		bl	uxTaskResetEventItemValue
+ 161 0104 020410E3 		tst	r0, #33554432
+ 162 0108 0040A0E1 		mov	r4, r0
+ 163 010c F3FFFF1A 		bne	.L28
+ 164              	.L50:
+ 165 0110 FEFFFFEB 		bl	vPortEnterCritical
+ 166 0114 000057E3 		cmp	r7, #0
+ 167 0118 004096E5 		ldr	r4, [r6]
+ 168 011c 0C00001A 		bne	.L29
+ 169 0120 040015E1 		tst	r5, r4
+ 170 0124 0200000A 		beq	.L31
+ 171              	.L30:
+ 172 0128 000058E3 		cmp	r8, #0
+ 173 012c 0550C411 		bicne	r5, r4, r5
+ 174 0130 00508615 		strne	r5, [r6]
+ 175              	.L31:
+ 176 0134 FEFFFFEB 		bl	vPortExitCritical
+ 177 0138 FF04C4E3 		bic	r0, r4, #-16777216
+ 178 013c F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 179              	.L47:
+ 180 0140 000000E3 		movw	r0, #:lower16:.LC0
+ 181 0144 321100E3 		movw	r1, #306
+ 182 0148 000040E3 		movt	r0, #:upper16:.LC0
+ 183 014c FEFFFFEB 		bl	R_OS_AssertCalled
+ 184 0150 B5FFFFEA 		b	.L19
+ 185              	.L29:
+ 186 0154 0430D5E1 		bics	r3, r5, r4
+ 187 0158 F5FFFF1A 		bne	.L31
+ 188 015c F1FFFFEA 		b	.L30
+ 189              	.L46:
+ 190 0160 000000E3 		movw	r0, #:lower16:.LC0
+ 191 0164 311100E3 		movw	r1, #305
+ 192 0168 000040E3 		movt	r0, #:upper16:.LC0
+ 193 016c FEFFFFEB 		bl	R_OS_AssertCalled
+ 194 0170 A9FFFFEA 		b	.L17
+ 196              		.section	.text.xEventGroupClearBits,"ax",%progbits
+ 197              		.align	2
+ 198              		.global	xEventGroupClearBits
+ 199              		.syntax unified
+ 200              		.arm
+ 201              		.fpu neon
+ 203              	xEventGroupClearBits:
+ 204              		@ args = 0, pretend = 0, frame = 0
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+ 206 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 207 0004 006050E2 		subs	r6, r0, #0
+ 208 0008 0140A0E1 		mov	r4, r1
+ 209 000c 0C00000A 		beq	.L58
+ 210              	.L52:
+ 211 0010 FF0414E3 		tst	r4, #-16777216
+ 212 0014 0300000A 		beq	.L53
+ 213 0018 000000E3 		movw	r0, #:lower16:.LC0
+ 214 001c C61100E3 		movw	r1, #454
+ 215 0020 000040E3 		movt	r0, #:upper16:.LC0
+ 216 0024 FEFFFFEB 		bl	R_OS_AssertCalled
+ 217              	.L53:
+ 218 0028 FEFFFFEB 		bl	vPortEnterCritical
+ 219 002c 005096E5 		ldr	r5, [r6]
+ 220 0030 0440C5E1 		bic	r4, r5, r4
+ 221 0034 004086E5 		str	r4, [r6]
+ 222 0038 FEFFFFEB 		bl	vPortExitCritical
+ 223 003c 0500A0E1 		mov	r0, r5
+ 224 0040 7080BDE8 		pop	{r4, r5, r6, pc}
+ 225              	.L58:
+ 226 0044 000000E3 		movw	r0, #:lower16:.LC0
+ 227 0048 C51100E3 		movw	r1, #453
+ 228 004c 000040E3 		movt	r0, #:upper16:.LC0
+ 229 0050 FEFFFFEB 		bl	R_OS_AssertCalled
+ 230 0054 EDFFFFEA 		b	.L52
+ 232              		.section	.text.xEventGroupClearBitsFromISR,"ax",%progbits
+ 233              		.align	2
+ 234              		.global	xEventGroupClearBitsFromISR
+ 235              		.syntax unified
+ 236              		.arm
+ 237              		.fpu neon
+ 239              	xEventGroupClearBitsFromISR:
+ 240              		@ args = 0, pretend = 0, frame = 0
+ 241              		@ frame_needed = 0, uses_anonymous_args = 0
+ 242              		@ link register save eliminated.
+ 243 0000 0120A0E1 		mov	r2, r1
+ 244 0004 0010A0E1 		mov	r1, r0
+ 245 0008 000000E3 		movw	r0, #:lower16:vEventGroupClearBitsCallback
+ 246 000c 0030A0E3 		mov	r3, #0
+ 247 0010 000040E3 		movt	r0, #:upper16:vEventGroupClearBitsCallback
+ 248 0014 FEFFFFEA 		b	xTimerPendFunctionCallFromISR
+ 250              		.section	.text.xEventGroupGetBitsFromISR,"ax",%progbits
+ 251              		.align	2
+ 252              		.global	xEventGroupGetBitsFromISR
+ 253              		.syntax unified
+ 254              		.arm
+ 255              		.fpu neon
+ 257              	xEventGroupGetBitsFromISR:
+ 258              		@ args = 0, pretend = 0, frame = 0
+ 259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260 0000 10402DE9 		push	{r4, lr}
+ 261 0004 0040A0E1 		mov	r4, r0
+ 262 0008 FEFFFFEB 		bl	ulPortSetInterruptMask
+ 263 000c 004094E5 		ldr	r4, [r4]
+ 264 0010 FEFFFFEB 		bl	vPortClearInterruptMask
+ 265 0014 0400A0E1 		mov	r0, r4
+ 266 0018 1080BDE8 		pop	{r4, pc}
+ 268              		.section	.text.xEventGroupSetBits,"ax",%progbits
+ 269              		.align	2
+ 270              		.global	xEventGroupSetBits
+ 271              		.syntax unified
+ 272              		.arm
+ 273              		.fpu neon
+ 275              	xEventGroupSetBits:
+ 276              		@ args = 0, pretend = 0, frame = 0
+ 277              		@ frame_needed = 0, uses_anonymous_args = 0
+ 278 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 279 0004 006050E2 		subs	r6, r0, #0
+ 280 0008 0140A0E1 		mov	r4, r1
+ 281 000c 2B00000A 		beq	.L80
+ 282              	.L63:
+ 283 0010 FF0414E3 		tst	r4, #-16777216
+ 284 0014 2200001A 		bne	.L81
+ 285              	.L64:
+ 286 0018 FEFFFFEB 		bl	vTaskSuspendAll
+ 287 001c 100096E5 		ldr	r0, [r6, #16]
+ 288 0020 0C5086E2 		add	r5, r6, #12
+ 289 0024 001096E5 		ldr	r1, [r6]
+ 290 0028 000055E1 		cmp	r5, r0
+ 291 002c 011084E1 		orr	r1, r4, r1
+ 292 0030 001086E5 		str	r1, [r6]
+ 293 0034 1F00000A 		beq	.L72
+ 294 0038 0070A0E3 		mov	r7, #0
+ 295 003c 090000EA 		b	.L69
+ 296              	.L83:
+ 297 0040 010012E1 		tst	r2, r1
+ 298 0044 0400000A 		beq	.L68
+ 299              	.L67:
+ 300 0048 010413E3 		tst	r3, #16777216
+ 301 004c 021481E3 		orr	r1, r1, #33554432
+ 302 0050 02708711 		orrne	r7, r7, r2
+ 303 0054 FEFFFFEB 		bl	vTaskRemoveFromUnorderedEventList
+ 304 0058 001096E5 		ldr	r1, [r6]
+ 305              	.L68:
+ 306 005c 040055E1 		cmp	r5, r4
+ 307 0060 0400A0E1 		mov	r0, r4
+ 308 0064 0800000A 		beq	.L82
+ 309              	.L69:
+ 310 0068 180090E8 		ldm	r0, {r3, r4}
+ 311 006c 010313E3 		tst	r3, #67108864
+ 312 0070 FF24C3E3 		bic	r2, r3, #-16777216
+ 313 0074 F1FFFF0A 		beq	.L83
+ 314 0078 01C0D2E1 		bics	ip, r2, r1
+ 315 007c F1FFFF0A 		beq	.L67
+ 316 0080 040055E1 		cmp	r5, r4
+ 317 0084 0400A0E1 		mov	r0, r4
+ 318 0088 F6FFFF1A 		bne	.L69
+ 319              	.L82:
+ 320 008c 0770E0E1 		mvn	r7, r7
+ 321              	.L65:
+ 322 0090 017007E0 		and	r7, r7, r1
+ 323 0094 007086E5 		str	r7, [r6]
+ 324 0098 FEFFFFEB 		bl	xTaskResumeAll
+ 325 009c 000096E5 		ldr	r0, [r6]
+ 326 00a0 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 327              	.L81:
+ 328 00a4 000000E3 		movw	r0, #:lower16:.LC0
+ 329 00a8 811FA0E3 		mov	r1, #516
+ 330 00ac 000040E3 		movt	r0, #:upper16:.LC0
+ 331 00b0 FEFFFFEB 		bl	R_OS_AssertCalled
+ 332 00b4 D7FFFFEA 		b	.L64
+ 333              	.L72:
+ 334 00b8 0070E0E3 		mvn	r7, #0
+ 335 00bc F3FFFFEA 		b	.L65
+ 336              	.L80:
+ 337 00c0 000000E3 		movw	r0, #:lower16:.LC0
+ 338 00c4 031200E3 		movw	r1, #515
+ 339 00c8 000040E3 		movt	r0, #:upper16:.LC0
+ 340 00cc FEFFFFEB 		bl	R_OS_AssertCalled
+ 341 00d0 CEFFFFEA 		b	.L63
+ 343              		.section	.text.xEventGroupSync,"ax",%progbits
+ 344              		.align	2
+ 345              		.global	xEventGroupSync
+ 346              		.syntax unified
+ 347              		.arm
+ 348              		.fpu neon
+ 350              	xEventGroupSync:
+ 351              		@ args = 0, pretend = 0, frame = 0
+ 352              		@ frame_needed = 0, uses_anonymous_args = 0
+ 353 0000 FF0412E3 		tst	r2, #-16777216
+ 354 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 355 0008 0260A0E1 		mov	r6, r2
+ 356 000c 0050A0E1 		mov	r5, r0
+ 357 0010 0140A0E1 		mov	r4, r1
+ 358 0014 0370A0E1 		mov	r7, r3
+ 359 0018 3700001A 		bne	.L103
+ 360 001c 000052E3 		cmp	r2, #0
+ 361 0020 1500000A 		beq	.L104
+ 362              	.L86:
+ 363 0024 FEFFFFEB 		bl	xTaskGetSchedulerState
+ 364 0028 173F6FE1 		clz	r3, r7
+ 365 002c A332A0E1 		lsr	r3, r3, #5
+ 366 0030 000050E3 		cmp	r0, #0
+ 367 0034 0300A001 		moveq	r0, r3
+ 368 0038 01008313 		orrne	r0, r3, #1
+ 369 003c 000050E3 		cmp	r0, #0
+ 370 0040 1900000A 		beq	.L88
+ 371              	.L96:
+ 372 0044 FEFFFFEB 		bl	vTaskSuspendAll
+ 373 0048 008095E5 		ldr	r8, [r5]
+ 374 004c 0410A0E1 		mov	r1, r4
+ 375 0050 0500A0E1 		mov	r0, r5
+ 376 0054 FEFFFFEB 		bl	xEventGroupSetBits
+ 377 0058 044088E1 		orr	r4, r8, r4
+ 378 005c 0430D6E1 		bics	r3, r6, r4
+ 379 0060 3000000A 		beq	.L98
+ 380 0064 000057E3 		cmp	r7, #0
+ 381 0068 00409505 		ldreq	r4, [r5]
+ 382 006c 1300001A 		bne	.L105
+ 383              	.L90:
+ 384 0070 FEFFFFEB 		bl	xTaskResumeAll
+ 385 0074 0400A0E1 		mov	r0, r4
+ 386 0078 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 387              	.L104:
+ 388 007c 000000E3 		movw	r0, #:lower16:.LC0
+ 389 0080 B810A0E3 		mov	r1, #184
+ 390 0084 000040E3 		movt	r0, #:upper16:.LC0
+ 391 0088 FEFFFFEB 		bl	R_OS_AssertCalled
+ 392 008c FEFFFFEB 		bl	xTaskGetSchedulerState
+ 393 0090 173F6FE1 		clz	r3, r7
+ 394 0094 A332A0E1 		lsr	r3, r3, #5
+ 395 0098 000050E3 		cmp	r0, #0
+ 396 009c 0300A001 		moveq	r0, r3
+ 397 00a0 01008313 		orrne	r0, r3, #1
+ 398 00a4 000050E3 		cmp	r0, #0
+ 399 00a8 1800001A 		bne	.L87
+ 400              	.L88:
+ 401 00ac 000000E3 		movw	r0, #:lower16:.LC0
+ 402 00b0 BB10A0E3 		mov	r1, #187
+ 403 00b4 000040E3 		movt	r0, #:upper16:.LC0
+ 404 00b8 FEFFFFEB 		bl	R_OS_AssertCalled
+ 405 00bc E0FFFFEA 		b	.L96
+ 406              	.L105:
+ 407 00c0 0720A0E1 		mov	r2, r7
+ 408 00c4 051486E3 		orr	r1, r6, #83886080
+ 409 00c8 040085E2 		add	r0, r5, #4
+ 410 00cc FEFFFFEB 		bl	vTaskPlaceOnUnorderedEventList
+ 411 00d0 FEFFFFEB 		bl	xTaskResumeAll
+ 412 00d4 000050E3 		cmp	r0, #0
+ 413 00d8 0000001A 		bne	.L93
+ 414              		.syntax divided
+ 415              	@ 240 "../src/FreeRTOS/event_groups.c" 1
+ 416 00dc 000000EF 		SWI 0
+ 417              	@ 0 "" 2
+ 418              		.arm
+ 419              		.syntax unified
+ 420              	.L93:
+ 421 00e0 FEFFFFEB 		bl	uxTaskResetEventItemValue
+ 422 00e4 020410E3 		tst	r0, #33554432
+ 423 00e8 0040A0E1 		mov	r4, r0
+ 424 00ec 1100000A 		beq	.L106
+ 425 00f0 FF44C4E3 		bic	r4, r4, #-16777216
+ 426              	.L107:
+ 427 00f4 0400A0E1 		mov	r0, r4
+ 428 00f8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 429              	.L103:
+ 430 00fc 000000E3 		movw	r0, #:lower16:.LC0
+ 431 0100 B710A0E3 		mov	r1, #183
+ 432 0104 000040E3 		movt	r0, #:upper16:.LC0
+ 433 0108 FEFFFFEB 		bl	R_OS_AssertCalled
+ 434 010c C4FFFFEA 		b	.L86
+ 435              	.L87:
+ 436 0110 FEFFFFEB 		bl	vTaskSuspendAll
+ 437 0114 007095E5 		ldr	r7, [r5]
+ 438 0118 0410A0E1 		mov	r1, r4
+ 439 011c 0500A0E1 		mov	r0, r5
+ 440 0120 FEFFFFEB 		bl	xEventGroupSetBits
+ 441 0124 074084E1 		orr	r4, r4, r7
+ 442              	.L98:
+ 443 0128 003095E5 		ldr	r3, [r5]
+ 444 012c 0660C3E1 		bic	r6, r3, r6
+ 445 0130 006085E5 		str	r6, [r5]
+ 446 0134 CDFFFFEA 		b	.L90
+ 447              	.L106:
+ 448 0138 FEFFFFEB 		bl	vPortEnterCritical
+ 449 013c 004095E5 		ldr	r4, [r5]
+ 450 0140 0430D6E1 		bics	r3, r6, r4
+ 451 0144 0660C401 		biceq	r6, r4, r6
+ 452 0148 FF44C4E3 		bic	r4, r4, #-16777216
+ 453 014c 00608505 		streq	r6, [r5]
+ 454 0150 FEFFFFEB 		bl	vPortExitCritical
+ 455 0154 E6FFFFEA 		b	.L107
+ 457              		.section	.text.vEventGroupSetBitsCallback,"ax",%progbits
+ 458              		.align	2
+ 459              		.global	vEventGroupSetBitsCallback
+ 460              		.syntax unified
+ 461              		.arm
+ 462              		.fpu neon
+ 464              	vEventGroupSetBitsCallback:
+ 465              		@ args = 0, pretend = 0, frame = 0
+ 466              		@ frame_needed = 0, uses_anonymous_args = 0
+ 467              		@ link register save eliminated.
+ 468 0000 FEFFFFEA 		b	xEventGroupSetBits
+ 470              		.section	.text.vEventGroupDelete,"ax",%progbits
+ 471              		.align	2
+ 472              		.global	vEventGroupDelete
+ 473              		.syntax unified
+ 474              		.arm
+ 475              		.fpu neon
+ 477              	vEventGroupDelete:
+ 478              		@ args = 0, pretend = 0, frame = 0
+ 479              		@ frame_needed = 0, uses_anonymous_args = 0
+ 480 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 481 0004 0040A0E1 		mov	r4, r0
+ 482 0008 FEFFFFEB 		bl	vTaskSuspendAll
+ 483 000c 043094E5 		ldr	r3, [r4, #4]
+ 484 0010 000053E3 		cmp	r3, #0
+ 485 0014 00600013 		movwne	r6, #:lower16:.LC0
+ 486 0018 0C508412 		addne	r5, r4, #12
+ 487 001c 00604013 		movtne	r6, #:upper16:.LC0
+ 488 0020 0700000A 		beq	.L113
+ 489              	.L112:
+ 490 0024 100094E5 		ldr	r0, [r4, #16]
+ 491 0028 000055E1 		cmp	r5, r0
+ 492 002c 0800000A 		beq	.L116
+ 493              	.L111:
+ 494 0030 0214A0E3 		mov	r1, #33554432
+ 495 0034 FEFFFFEB 		bl	vTaskRemoveFromUnorderedEventList
+ 496 0038 043094E5 		ldr	r3, [r4, #4]
+ 497 003c 000053E3 		cmp	r3, #0
+ 498 0040 F7FFFF1A 		bne	.L112
+ 499              	.L113:
+ 500 0044 0400A0E1 		mov	r0, r4
+ 501 0048 FEFFFFEB 		bl	vPortFree
+ 502 004c 7040BDE8 		pop	{r4, r5, r6, lr}
+ 503 0050 FEFFFFEA 		b	xTaskResumeAll
+ 504              	.L116:
+ 505 0054 0600A0E1 		mov	r0, r6
+ 506 0058 631200E3 		movw	r1, #611
+ 507 005c FEFFFFEB 		bl	R_OS_AssertCalled
+ 508 0060 100094E5 		ldr	r0, [r4, #16]
+ 509 0064 F1FFFFEA 		b	.L111
+ 511              		.section	.text.xEventGroupSetBitsFromISR,"ax",%progbits
+ 512              		.align	2
+ 513              		.global	xEventGroupSetBitsFromISR
+ 514              		.syntax unified
+ 515              		.arm
+ 516              		.fpu neon
+ 518              	xEventGroupSetBitsFromISR:
+ 519              		@ args = 0, pretend = 0, frame = 0
+ 520              		@ frame_needed = 0, uses_anonymous_args = 0
+ 521              		@ link register save eliminated.
+ 522 0000 0230A0E1 		mov	r3, r2
+ 523 0004 0120A0E1 		mov	r2, r1
+ 524 0008 0010A0E1 		mov	r1, r0
+ 525 000c 000000E3 		movw	r0, #:lower16:vEventGroupSetBitsCallback
+ 526 0010 000040E3 		movt	r0, #:upper16:vEventGroupSetBitsCallback
+ 527 0014 FEFFFFEA 		b	xTimerPendFunctionCallFromISR
+ 529              		.section	.text.uxEventGroupGetNumber,"ax",%progbits
+ 530              		.align	2
+ 531              		.global	uxEventGroupGetNumber
+ 532              		.syntax unified
+ 533              		.arm
+ 534              		.fpu neon
+ 536              	uxEventGroupGetNumber:
+ 537              		@ args = 0, pretend = 0, frame = 0
+ 538              		@ frame_needed = 0, uses_anonymous_args = 0
+ 539              		@ link register save eliminated.
+ 540 0000 000050E3 		cmp	r0, #0
+ 541 0004 18009015 		ldrne	r0, [r0, #24]
+ 542 0008 1EFF2FE1 		bx	lr
+ 544              		.section	.text.vEventGroupSetNumber,"ax",%progbits
+ 545              		.align	2
+ 546              		.global	vEventGroupSetNumber
+ 547              		.syntax unified
+ 548              		.arm
+ 549              		.fpu neon
+ 551              	vEventGroupSetNumber:
+ 552              		@ args = 0, pretend = 0, frame = 0
+ 553              		@ frame_needed = 0, uses_anonymous_args = 0
+ 554              		@ link register save eliminated.
+ 555 0000 181080E5 		str	r1, [r0, #24]
+ 556 0004 1EFF2FE1 		bx	lr
+ 558              		.section	.rodata.vEventGroupClearBitsCallback.str1.4,"aMS",%progbits,1
+ 559              		.align	2
+ 560              	.LC0:
+ 561 0000 2E2E2F73 		.ascii	"../src/FreeRTOS/event_groups.c\000"
+ 561      72632F46 
+ 561      72656552 
+ 561      544F532F 
+ 561      6576656E 
+ 562              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 event_groups.c
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:14     .text.vEventGroupClearBitsCallback:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:20     .text.vEventGroupClearBitsCallback:00000000 vEventGroupClearBitsCallback
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:560    .rodata.vEventGroupClearBitsCallback.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:49     .text.xEventGroupCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:55     .text.xEventGroupCreate:00000000 xEventGroupCreate
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:72     .text.xEventGroupWaitBits:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:78     .text.xEventGroupWaitBits:00000000 xEventGroupWaitBits
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:197    .text.xEventGroupClearBits:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:203    .text.xEventGroupClearBits:00000000 xEventGroupClearBits
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:233    .text.xEventGroupClearBitsFromISR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:239    .text.xEventGroupClearBitsFromISR:00000000 xEventGroupClearBitsFromISR
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:251    .text.xEventGroupGetBitsFromISR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:257    .text.xEventGroupGetBitsFromISR:00000000 xEventGroupGetBitsFromISR
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:269    .text.xEventGroupSetBits:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:275    .text.xEventGroupSetBits:00000000 xEventGroupSetBits
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:344    .text.xEventGroupSync:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:350    .text.xEventGroupSync:00000000 xEventGroupSync
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:458    .text.vEventGroupSetBitsCallback:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:464    .text.vEventGroupSetBitsCallback:00000000 vEventGroupSetBitsCallback
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:471    .text.vEventGroupDelete:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:477    .text.vEventGroupDelete:00000000 vEventGroupDelete
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:512    .text.xEventGroupSetBitsFromISR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:518    .text.xEventGroupSetBitsFromISR:00000000 xEventGroupSetBitsFromISR
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:530    .text.uxEventGroupGetNumber:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:536    .text.uxEventGroupGetNumber:00000000 uxEventGroupGetNumber
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:545    .text.vEventGroupSetNumber:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:551    .text.vEventGroupSetNumber:00000000 vEventGroupSetNumber
+C:\Users\a5050395\AppData\Local\Temp\ccTJokHX.s:559    .rodata.vEventGroupClearBitsCallback.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_OS_AssertCalled
+vPortEnterCritical
+vPortExitCritical
+pvPortMalloc
+vListInitialise
+xTaskGetSchedulerState
+vTaskSuspendAll
+xTaskResumeAll
+vTaskPlaceOnUnorderedEventList
+uxTaskResetEventItemValue
+xTimerPendFunctionCallFromISR
+ulPortSetInterruptMask
+vPortClearInterruptMask
+vTaskRemoveFromUnorderedEventList
+vPortFree

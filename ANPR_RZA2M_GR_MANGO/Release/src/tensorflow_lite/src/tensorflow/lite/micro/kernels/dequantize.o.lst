@@ -1,0 +1,816 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"dequantize.cpp"
+  13              		.section	.text._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbi
+  14              		.align	2
+  15              		.global	_ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	_ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode:
+  21              		.fnstart
+  22              	.LFB6224:
+  23              		@ args = 0, pretend = 0, frame = 0
+  24              		@ frame_needed = 0, uses_anonymous_args = 0
+  25 0000 003091E5 		ldr	r3, [r1]
+  26 0004 30402DE9 		push	{r4, r5, lr}
+  27              		.save {r4, r5, lr}
+  28              		.pad #20
+  29 0008 14D04DE2 		sub	sp, sp, #20
+  30 000c 004093E5 		ldr	r4, [r3]
+  31 0010 010054E3 		cmp	r4, #1
+  32 0014 0E00000A 		beq	.L2
+  33 0018 E8309FE5 		ldr	r3, .L9
+  34 001c 0150A0E3 		mov	r5, #1
+  35 0020 0C508DE5 		str	r5, [sp, #12]
+  36 0024 08408DE5 		str	r4, [sp, #8]
+  37 0028 04308DE5 		str	r3, [sp, #4]
+  38 002c D8309FE5 		ldr	r3, .L9+4
+  39 0030 D8209FE5 		ldr	r2, .L9+8
+  40 0034 D8109FE5 		ldr	r1, .L9+12
+  41 0038 00308DE5 		str	r3, [sp]
+  42 003c 2030A0E3 		mov	r3, #32
+  43 0040 144090E5 		ldr	r4, [r0, #20]
+  44 0044 34FF2FE1 		blx	r4
+  45              	.L3:
+  46 0048 0500A0E1 		mov	r0, r5
+  47 004c 14D08DE2 		add	sp, sp, #20
+  48              		@ sp needed
+  49 0050 3080BDE8 		pop	{r4, r5, pc}
+  50              	.L2:
+  51 0054 041091E5 		ldr	r1, [r1, #4]
+  52 0058 005091E5 		ldr	r5, [r1]
+  53 005c 010055E3 		cmp	r5, #1
+  54 0060 0C00000A 		beq	.L4
+  55 0064 9C309FE5 		ldr	r3, .L9
+  56 0068 0C408DE5 		str	r4, [sp, #12]
+  57 006c 08508DE5 		str	r5, [sp, #8]
+  58 0070 04308DE5 		str	r3, [sp, #4]
+  59 0074 9C309FE5 		ldr	r3, .L9+16
+  60 0078 90209FE5 		ldr	r2, .L9+8
+  61 007c 90109FE5 		ldr	r1, .L9+12
+  62 0080 00308DE5 		str	r3, [sp]
+  63 0084 2130A0E3 		mov	r3, #33
+  64 0088 145090E5 		ldr	r5, [r0, #20]
+  65 008c 35FF2FE1 		blx	r5
+  66 0090 0450A0E1 		mov	r5, r4
+  67 0094 EBFFFFEA 		b	.L3
+  68              	.L4:
+  69 0098 043093E5 		ldr	r3, [r3, #4]
+  70 009c 08C090E5 		ldr	ip, [r0, #8]
+  71 00a0 04E091E5 		ldr	lr, [r1, #4]
+  72 00a4 0313DCE7 		ldrb	r1, [ip, r3, lsl #6]	@ zero_extendqisi2
+  73 00a8 FB3001E2 		and	r3, r1, #251
+  74 00ac 030053E3 		cmp	r3, #3
+  75 00b0 09005113 		cmpne	r1, #9
+  76 00b4 0130A013 		movne	r3, #1
+  77 00b8 0030A003 		moveq	r3, #0
+  78 00bc 0700000A 		beq	.L5
+  79 00c0 54309FE5 		ldr	r3, .L9+20
+  80 00c4 00308DE5 		str	r3, [sp]
+  81 00c8 2930A0E3 		mov	r3, #41
+  82 00cc 144090E5 		ldr	r4, [r0, #20]
+  83              	.L8:
+  84 00d0 38209FE5 		ldr	r2, .L9+8
+  85 00d4 44109FE5 		ldr	r1, .L9+24
+  86 00d8 34FF2FE1 		blx	r4
+  87 00dc D9FFFFEA 		b	.L3
+  88              	.L5:
+  89 00e0 0E13DCE7 		ldrb	r1, [ip, lr, lsl #6]	@ zero_extendqisi2
+  90 00e4 011041E2 		sub	r1, r1, #1
+  91 00e8 010051E3 		cmp	r1, #1
+  92 00ec 0350A091 		movls	r5, r3
+  93 00f0 D4FFFF9A 		bls	.L3
+  94 00f4 28309FE5 		ldr	r3, .L9+28
+  95 00f8 00308DE5 		str	r3, [sp]
+  96 00fc 2B30A0E3 		mov	r3, #43
+  97 0100 144090E5 		ldr	r4, [r0, #20]
+  98 0104 F1FFFFEA 		b	.L8
+  99              	.L10:
+ 100              		.align	2
+ 101              	.L9:
+ 102 0108 62000000 		.word	.LC2
+ 103 010c 64000000 		.word	.LC3
+ 104 0110 00000000 		.word	.LC0
+ 105 0114 48000000 		.word	.LC1
+ 106 0118 74000000 		.word	.LC4
+ 107 011c 9C000000 		.word	.LC6
+ 108 0120 85000000 		.word	.LC5
+ 109 0124 F5000000 		.word	.LC7
+ 110              		.fnend
+ 112              		.section	.text._ZN6tflite12RuntimeShapeD2Ev,"axG",%progbits,_ZN6tflite12RuntimeShapeD5Ev,comdat
+ 113              		.align	2
+ 114              		.weak	_ZN6tflite12RuntimeShapeD2Ev
+ 115              		.syntax unified
+ 116              		.arm
+ 117              		.fpu neon
+ 119              	_ZN6tflite12RuntimeShapeD2Ev:
+ 120              		.fnstart
+ 121              	.LFB3207:
+ 122              		@ args = 0, pretend = 0, frame = 0
+ 123              		@ frame_needed = 0, uses_anonymous_args = 0
+ 124 0000 003090E5 		ldr	r3, [r0]
+ 125 0004 10402DE9 		push	{r4, lr}
+ 126 0008 0040A0E1 		mov	r4, r0
+ 127 000c 040053E3 		cmp	r3, #4
+ 128 0010 030000DA 		ble	.L12
+ 129 0014 040090E5 		ldr	r0, [r0, #4]
+ 130 0018 000050E3 		cmp	r0, #0
+ 131 001c 0000000A 		beq	.L12
+ 132 0020 FEFFFFEB 		bl	_ZdaPv
+ 133              	.L12:
+ 134 0024 0400A0E1 		mov	r0, r4
+ 135 0028 1080BDE8 		pop	{r4, pc}
+ 136              		.cantunwind
+ 137              		.fnend
+ 139              		.weak	_ZN6tflite12RuntimeShapeD1Ev
+ 140              		.set	_ZN6tflite12RuntimeShapeD1Ev,_ZN6tflite12RuntimeShapeD2Ev
+ 141              		.section	.text._ZNK6tflite12RuntimeShape4DimsEi,"axG",%progbits,_ZNK6tflite12RuntimeShape4DimsEi,c
+ 142              		.align	2
+ 143              		.weak	_ZNK6tflite12RuntimeShape4DimsEi
+ 144              		.syntax unified
+ 145              		.arm
+ 146              		.fpu neon
+ 148              	_ZNK6tflite12RuntimeShape4DimsEi:
+ 149              		.fnstart
+ 150              	.LFB3210:
+ 151              		@ args = 0, pretend = 0, frame = 0
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153 0000 000051E3 		cmp	r1, #0
+ 154 0004 010000AA 		bge	.L18
+ 155              	.L19:
+ 156 0008 10402DE9 		push	{r4, lr}
+ 157              		.save {r4, lr}
+ 158 000c FEFFFFEB 		bl	abort
+ 159              	.L18:
+ 160 0010 003090E5 		ldr	r3, [r0]
+ 161 0014 010053E1 		cmp	r3, r1
+ 162 0018 FAFFFFDA 		ble	.L19
+ 163 001c 040053E3 		cmp	r3, #4
+ 164 0020 043090C5 		ldrgt	r3, [r0, #4]
+ 165 0024 010180D0 		addle	r0, r0, r1, lsl #2
+ 166 0028 040090D5 		ldrle	r0, [r0, #4]
+ 167 002c 010193C7 		ldrgt	r0, [r3, r1, lsl #2]
+ 168 0030 1EFF2FE1 		bx	lr
+ 169              		.fnend
+ 171              		.section	.text._ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_,"axG",%progbits,_ZN6tflite16Ma
+ 172              		.align	2
+ 173              		.weak	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+ 174              		.syntax unified
+ 175              		.arm
+ 176              		.fpu neon
+ 178              	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_:
+ 179              		.fnstart
+ 180              	.LFB3242:
+ 181              		@ args = 0, pretend = 0, frame = 0
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 184              		.save {r4, r5, r6, r7, r8, lr}
+ 185 0004 003091E5 		ldr	r3, [r1]
+ 186 0008 006090E5 		ldr	r6, [r0]
+ 187 000c 030056E1 		cmp	r6, r3
+ 188 0010 0040A001 		moveq	r4, r0
+ 189 0014 0170A001 		moveq	r7, r1
+ 190 0018 0050A003 		moveq	r5, #0
+ 191 001c 0000000A 		beq	.L26
+ 192              	.L25:
+ 193 0020 FEFFFFEB 		bl	abort
+ 194              	.L26:
+ 195 0024 060055E1 		cmp	r5, r6
+ 196 0028 0A0000AA 		bge	.L27
+ 197 002c 0510A0E1 		mov	r1, r5
+ 198 0030 0400A0E1 		mov	r0, r4
+ 199 0034 FEFFFFEB 		bl	_ZNK6tflite12RuntimeShape4DimsEi
+ 200 0038 0510A0E1 		mov	r1, r5
+ 201 003c 0080A0E1 		mov	r8, r0
+ 202 0040 0700A0E1 		mov	r0, r7
+ 203 0044 FEFFFFEB 		bl	_ZNK6tflite12RuntimeShape4DimsEi
+ 204 0048 000058E1 		cmp	r8, r0
+ 205 004c F3FFFF1A 		bne	.L25
+ 206 0050 015085E2 		add	r5, r5, #1
+ 207 0054 F2FFFFEA 		b	.L26
+ 208              	.L27:
+ 209 0058 002094E5 		ldr	r2, [r4]
+ 210 005c 0030A0E3 		mov	r3, #0
+ 211 0060 0100A0E3 		mov	r0, #1
+ 212 0064 040052E3 		cmp	r2, #4
+ 213 0068 044094C5 		ldrgt	r4, [r4, #4]
+ 214 006c 044084D2 		addle	r4, r4, #4
+ 215              	.L31:
+ 216 0070 030052E1 		cmp	r2, r3
+ 217 0074 F081BDD8 		pople	{r4, r5, r6, r7, r8, pc}
+ 218 0078 031194E7 		ldr	r1, [r4, r3, lsl #2]
+ 219 007c 013083E2 		add	r3, r3, #1
+ 220 0080 910000E0 		mul	r0, r1, r0
+ 221 0084 F9FFFFEA 		b	.L31
+ 222              		.fnend
+ 224              		.section	.text._ZN6tflite14GetTensorShapeEPK12TfLiteTensor,"axG",%progbits,_ZN6tflite14GetTensorSh
+ 225              		.align	2
+ 226              		.weak	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 227              		.syntax unified
+ 228              		.arm
+ 229              		.fpu neon
+ 231              	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor:
+ 232              		.fnstart
+ 233              	.LFB3319:
+ 234              		@ args = 0, pretend = 0, frame = 0
+ 235              		@ frame_needed = 0, uses_anonymous_args = 0
+ 236 0000 000051E3 		cmp	r1, #0
+ 237 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 238              		.save {r4, r5, r6, lr}
+ 239 0008 0040A0E1 		mov	r4, r0
+ 240 000c 00108005 		streq	r1, [r0]
+ 241 0010 1100000A 		beq	.L34
+ 242 0014 085091E5 		ldr	r5, [r1, #8]
+ 243 0018 003095E5 		ldr	r3, [r5]
+ 244 001c 040053E3 		cmp	r3, #4
+ 245 0020 003080E5 		str	r3, [r0]
+ 246 0024 0361A0E1 		lsl	r6, r3, #2
+ 247 0028 040000DA 		ble	.L37
+ 248 002c 2E0273E3 		cmn	r3, #-536870910
+ 249 0030 0B0000CA 		bgt	.L38
+ 250 0034 0600A0E1 		mov	r0, r6
+ 251 0038 FEFFFFEB 		bl	_Znaj
+ 252 003c 040084E5 		str	r0, [r4, #4]
+ 253              	.L37:
+ 254 0040 003094E5 		ldr	r3, [r4]
+ 255 0044 0620A0E1 		mov	r2, r6
+ 256 0048 041085E2 		add	r1, r5, #4
+ 257 004c 040053E3 		cmp	r3, #4
+ 258 0050 040094C5 		ldrgt	r0, [r4, #4]
+ 259 0054 040084D2 		addle	r0, r4, #4
+ 260 0058 FEFFFFEB 		bl	memcpy
+ 261              	.L34:
+ 262 005c 0400A0E1 		mov	r0, r4
+ 263 0060 7080BDE8 		pop	{r4, r5, r6, pc}
+ 264              	.L38:
+ 265 0064 FEFFFFEB 		bl	__cxa_throw_bad_array_new_length
+ 266              		.fnend
+ 268              		.section	.text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 269              		.align	2
+ 270              		.global	_ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode
+ 271              		.syntax unified
+ 272              		.arm
+ 273              		.fpu neon
+ 275              	_ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:
+ 276              		.fnstart
+ 277              	.LFB6225:
+ 278              		@ args = 0, pretend = 0, frame = 56
+ 279              		@ frame_needed = 0, uses_anonymous_args = 0
+ 280 0000 003091E5 		ldr	r3, [r1]
+ 281 0004 042091E5 		ldr	r2, [r1, #4]
+ 282 0008 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 283              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 284 000c 0060A0E1 		mov	r6, r0
+ 285 0010 089090E5 		ldr	r9, [r0, #8]
+ 286 0014 043093E5 		ldr	r3, [r3, #4]
+ 287 0018 04A092E5 		ldr	r10, [r2, #4]
+ 288 001c 028B2DED 		vpush.64	{d8}
+ 289              		.vsave {d8}
+ 290              		.pad #60
+ 291 0020 3CD04DE2 		sub	sp, sp, #60
+ 292 0024 0303D9E7 		ldrb	r0, [r9, r3, lsl #6]	@ zero_extendqisi2
+ 293 0028 037389E0 		add	r7, r9, r3, lsl #6
+ 294 002c 0A43D9E7 		ldrb	r4, [r9, r10, lsl #6]	@ zero_extendqisi2
+ 295 0030 0A8389E0 		add	r8, r9, r10, lsl #6
+ 296 0034 038A97ED 		vldr.32	s16, [r7, #12]
+ 297 0038 010054E3 		cmp	r4, #1
+ 298 003c 105097E5 		ldr	r5, [r7, #16]
+ 299 0040 C88AB7EE 		vcvt.f64.f32	d8, s16
+ 300 0044 3F00001A 		bne	.L43
+ 301 0048 030050E3 		cmp	r0, #3
+ 302 004c 0D00000A 		beq	.L45
+ 303 0050 090050E3 		cmp	r0, #9
+ 304 0054 2300000A 		beq	.L46
+ 305 0058 145096E5 		ldr	r5, [r6, #20]
+ 306              	.LEHB0:
+ 307 005c FEFFFFEB 		bl	TfLiteTypeGetName
+ 308 0060 0070A0E1 		mov	r7, r0
+ 309 0064 0A03D9E7 		ldrb	r0, [r9, r10, lsl #6]	@ zero_extendqisi2
+ 310 0068 FEFFFFEB 		bl	TfLiteTypeGetName
+ 311 006c 0720A0E1 		mov	r2, r7
+ 312 0070 0030A0E1 		mov	r3, r0
+ 313 0074 14139FE5 		ldr	r1, .L90+8
+ 314 0078 0600A0E1 		mov	r0, r6
+ 315 007c 35FF2FE1 		blx	r5
+ 316              	.L88:
+ 317 0080 0100A0E3 		mov	r0, #1
+ 318 0084 600000EA 		b	.L85
+ 319              	.L45:
+ 320 0088 0710A0E1 		mov	r1, r7
+ 321 008c 10008DE2 		add	r0, sp, #16
+ 322 0090 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 323              	.LEHE0:
+ 324 0094 0810A0E1 		mov	r1, r8
+ 325 0098 24008DE2 		add	r0, sp, #36
+ 326 009c 046097E5 		ldr	r6, [r7, #4]
+ 327              	.LEHB1:
+ 328 00a0 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 329              	.LEHE1:
+ 330 00a4 24108DE2 		add	r1, sp, #36
+ 331 00a8 10008DE2 		add	r0, sp, #16
+ 332 00ac 044098E5 		ldr	r4, [r8, #4]
+ 333              	.LEHB2:
+ 334 00b0 FEFFFFEB 		bl	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+ 335              	.LEHE2:
+ 336 00b4 0420A0E1 		mov	r2, r4
+ 337 00b8 0610A0E1 		mov	r1, r6
+ 338              	.L48:
+ 339 00bc 063041E0 		sub	r3, r1, r6
+ 340 00c0 000053E1 		cmp	r3, r0
+ 341 00c4 4B0000AA 		bge	.L56
+ 342 00c8 0130D1E4 		ldrb	r3, [r1], #1	@ zero_extendqisi2
+ 343 00cc 053043E0 		sub	r3, r3, r5
+ 344 00d0 903A07EE 		vmov	s15, r3	@ int
+ 345 00d4 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 346 00d8 880B60EE 		vmul.f64	d16, d16, d8
+ 347 00dc E07BF7EE 		vcvt.f32.f64	s15, d16
+ 348 00e0 017AE2EC 		vstmia.32	r2!, {s15}
+ 349 00e4 F4FFFFEA 		b	.L48
+ 350              	.L46:
+ 351 00e8 0710A0E1 		mov	r1, r7
+ 352 00ec 10008DE2 		add	r0, sp, #16
+ 353              	.LEHB3:
+ 354 00f0 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 355              	.LEHE3:
+ 356 00f4 0810A0E1 		mov	r1, r8
+ 357 00f8 24008DE2 		add	r0, sp, #36
+ 358 00fc 046097E5 		ldr	r6, [r7, #4]
+ 359              	.LEHB4:
+ 360 0100 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 361              	.LEHE4:
+ 362 0104 24108DE2 		add	r1, sp, #36
+ 363 0108 10008DE2 		add	r0, sp, #16
+ 364 010c 044098E5 		ldr	r4, [r8, #4]
+ 365              	.LEHB5:
+ 366 0110 FEFFFFEB 		bl	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+ 367              	.LEHE5:
+ 368 0114 0420A0E1 		mov	r2, r4
+ 369 0118 0610A0E1 		mov	r1, r6
+ 370              	.L51:
+ 371 011c 063041E0 		sub	r3, r1, r6
+ 372 0120 030050E1 		cmp	r0, r3
+ 373 0124 330000DA 		ble	.L56
+ 374 0128 D130D1E0 		ldrsb	r3, [r1], #1
+ 375 012c 053043E0 		sub	r3, r3, r5
+ 376 0130 903A07EE 		vmov	s15, r3	@ int
+ 377 0134 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 378 0138 880B60EE 		vmul.f64	d16, d16, d8
+ 379 013c E07BF7EE 		vcvt.f32.f64	s15, d16
+ 380 0140 017AE2EC 		vstmia.32	r2!, {s15}
+ 381 0144 F4FFFFEA 		b	.L51
+ 382              	.L43:
+ 383 0148 020054E3 		cmp	r4, #2
+ 384 014c 0300001A 		bne	.L52
+ 385 0150 070050E3 		cmp	r0, #7
+ 386 0154 0C00000A 		beq	.L54
+ 387 0158 090050E3 		cmp	r0, #9
+ 388 015c 2D00000A 		beq	.L55
+ 389              	.L52:
+ 390 0160 144096E5 		ldr	r4, [r6, #20]
+ 391              	.LEHB6:
+ 392 0164 FEFFFFEB 		bl	TfLiteTypeGetName
+ 393 0168 0050A0E1 		mov	r5, r0
+ 394 016c 0A03D9E7 		ldrb	r0, [r9, r10, lsl #6]	@ zero_extendqisi2
+ 395 0170 FEFFFFEB 		bl	TfLiteTypeGetName
+ 396 0174 0520A0E1 		mov	r2, r5
+ 397 0178 0030A0E1 		mov	r3, r0
+ 398 017c 0C129FE5 		ldr	r1, .L90+8
+ 399 0180 0600A0E1 		mov	r0, r6
+ 400 0184 34FF2FE1 		blx	r4
+ 401 0188 BCFFFFEA 		b	.L88
+ 402              	.L54:
+ 403 018c 0710A0E1 		mov	r1, r7
+ 404 0190 10008DE2 		add	r0, sp, #16
+ 405 0194 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 406              	.LEHE6:
+ 407 0198 0810A0E1 		mov	r1, r8
+ 408 019c 24008DE2 		add	r0, sp, #36
+ 409 01a0 046097E5 		ldr	r6, [r7, #4]
+ 410              	.LEHB7:
+ 411 01a4 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 412              	.LEHE7:
+ 413 01a8 24108DE2 		add	r1, sp, #36
+ 414 01ac 10008DE2 		add	r0, sp, #16
+ 415 01b0 047098E5 		ldr	r7, [r8, #4]
+ 416              	.LEHB8:
+ 417 01b4 FEFFFFEB 		bl	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+ 418 01b8 0080A0E1 		mov	r8, r0
+ 419 01bc 026046E2 		sub	r6, r6, #2
+ 420 01c0 0040A0E3 		mov	r4, #0
+ 421              	.L57:
+ 422 01c4 040058E1 		cmp	r8, r4
+ 423 01c8 0A0000DA 		ble	.L56
+ 424 01cc F230F6E1 		ldrsh	r3, [r6, #2]!
+ 425 01d0 053043E0 		sub	r3, r3, r5
+ 426 01d4 903A07EE 		vmov	s15, r3	@ int
+ 427 01d8 E70BB8EE 		vcvt.f64.s32	d0, s15
+ 428 01dc 080B20EE 		vmul.f64	d0, d0, d8
+ 429 01e0 FEFFFFEB 		bl	round
+ 430              	.LEHE8:
+ 431 01e4 C00BBDEE 		vcvt.s32.f64	s0, d0
+ 432 01e8 103A10EE 		vmov	r3, s0	@ int
+ 433 01ec 043187E7 		str	r3, [r7, r4, lsl #2]
+ 434 01f0 014084E2 		add	r4, r4, #1
+ 435 01f4 F2FFFFEA 		b	.L57
+ 436              	.L56:
+ 437 01f8 24008DE2 		add	r0, sp, #36
+ 438 01fc FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 439 0200 10008DE2 		add	r0, sp, #16
+ 440 0204 FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 441              	.L58:
+ 442 0208 0000A0E3 		mov	r0, #0
+ 443              	.L85:
+ 444 020c 3CD08DE2 		add	sp, sp, #60
+ 445              		@ sp needed
+ 446 0210 028BBDEC 		vldm	sp!, {d8}
+ 447 0214 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 448              	.L55:
+ 449 0218 030A98ED 		vldr.32	s0, [r8, #12]
+ 450 021c 0C108DE2 		add	r1, sp, #12
+ 451 0220 08008DE2 		add	r0, sp, #8
+ 452 0224 C00AB7EE 		vcvt.f64.f32	d0, s0
+ 453 0228 000B88EE 		vdiv.f64	d0, d8, d0
+ 454              	.LEHB9:
+ 455 022c FEFFFFEB 		bl	_ZN6tflite18QuantizeMultiplierEdPlPi
+ 456 0230 0710A0E1 		mov	r1, r7
+ 457 0234 10008DE2 		add	r0, sp, #16
+ 458 0238 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 459              	.LEHE9:
+ 460 023c 0810A0E1 		mov	r1, r8
+ 461 0240 24008DE2 		add	r0, sp, #36
+ 462              	.LEHB10:
+ 463 0244 FEFFFFEB 		bl	_ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+ 464              	.LEHE10:
+ 465 0248 24108DE2 		add	r1, sp, #36
+ 466 024c 10008DE2 		add	r0, sp, #16
+ 467              	.LEHB11:
+ 468 0250 FEFFFFEB 		bl	_ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+ 469              	.LEHE11:
+ 470 0254 00008DE5 		str	r0, [sp]
+ 471 0258 24008DE2 		add	r0, sp, #36
+ 472 025c FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 473 0260 10008DE2 		add	r0, sp, #16
+ 474 0264 FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 475 0268 0C509DE5 		ldr	r5, [sp, #12]
+ 476 026c 0000A0E3 		mov	r0, #0
+ 477 0270 440BDFED 		vldr.64	d16, .L90	@ int
+ 478 0274 043098E5 		ldr	r3, [r8, #4]
+ 479 0278 000055E3 		cmp	r5, #0
+ 480 027c 00C065E2 		rsb	ip, r5, #0
+ 481 0280 00C0A0C3 		movgt	ip, #0
+ 482 0284 046097E5 		ldr	r6, [r7, #4]
+ 483 0288 04308DE5 		str	r3, [sp, #4]
+ 484 028c C55FC5E1 		bic	r5, r5, r5, asr #31
+ 485 0290 90CB01EE 		vmov.32	d17[0], ip
+ 486 0294 08E09DE5 		ldr	lr, [sp, #8]
+ 487 0298 A00471F3 		vshl.u64	d16, d16, d17
+ 488 029c 107097E5 		ldr	r7, [r7, #16]
+ 489 02a0 109098E5 		ldr	r9, [r8, #16]
+ 490 02a4 302B53EC 		vmov	r2, r3, d16	@ int
+ 491 02a8 011042E2 		sub	r1, r2, #1
+ 492 02ac C180A0E1 		asr	r8, r1, #1
+ 493              	.L62:
+ 494 02b0 00309DE5 		ldr	r3, [sp]
+ 495 02b4 000053E1 		cmp	r3, r0
+ 496 02b8 D2FFFFDA 		ble	.L58
+ 497 02bc D0A096E1 		ldrsb	r10, [r6, r0]
+ 498 02c0 07A04AE0 		sub	r10, r10, r7
+ 499 02c4 1AA5A0E1 		lsl	r10, r10, r5
+ 500 02c8 9A2EC3E0 		smull	r2, r3, r10, lr
+ 501 02cc 000052E3 		cmp	r2, #0
+ 502 02d0 0040D3E2 		sbcs	r4, r3, #0
+ 503 02d4 01B1A0A3 		movge	fp, #1073741824
+ 504 02d8 07B1A0B3 		movlt	fp, #-1073741823
+ 505 02dc 0A005EE1 		cmp	lr, r10
+ 506 02e0 02015A03 		cmpeq	r10, #-2147483648
+ 507 02e4 0221E003 		mvneq	r2, #-2147483648
+ 508 02e8 0800000A 		beq	.L60
+ 509 02ec 0BA092E0 		adds	r10, r2, fp
+ 510 02f0 CBBFA3E0 		adc	fp, r3, fp, asr #31
+ 511 02f4 0030A0E3 		mov	r3, #0
+ 512 02f8 CB2FA0E1 		asr	r2, fp, #31
+ 513 02fc 0221C2E3 		bic	r2, r2, #-2147483648
+ 514 0300 0A2092E0 		adds	r2, r2, r10
+ 515 0304 A22FA0E1 		lsr	r2, r2, #31
+ 516 0308 0B30A3E0 		adc	r3, r3, fp
+ 517 030c 832082E1 		orr	r2, r2, r3, lsl #1
+ 518              	.L60:
+ 519 0310 1F005CE3 		cmp	ip, #31
+ 520 0314 040000DA 		ble	.L61
+ 521 0318 74309FE5 		ldr	r3, .L90+12
+ 522 031c 671100E3 		movw	r1, #359
+ 523 0320 70209FE5 		ldr	r2, .L90+16
+ 524 0324 70009FE5 		ldr	r0, .L90+20
+ 525              	.LEHB12:
+ 526 0328 FEFFFFEB 		bl	__assert_func
+ 527              	.L61:
+ 528 032c A23F88E0 		add	r3, r8, r2, lsr #31
+ 529 0330 02A001E0 		and	r10, r1, r2
+ 530 0334 522CA0E1 		asr	r2, r2, ip
+ 531 0338 03005AE1 		cmp	r10, r3
+ 532 033c 012082C2 		addgt	r2, r2, #1
+ 533 0340 04309DE5 		ldr	r3, [sp, #4]
+ 534 0344 092082E0 		add	r2, r2, r9
+ 535 0348 002183E7 		str	r2, [r3, r0, lsl #2]
+ 536 034c 010080E2 		add	r0, r0, #1
+ 537 0350 D6FFFFEA 		b	.L62
+ 538              	.L74:
+ 539              	.L89:
+ 540 0354 24008DE2 		add	r0, sp, #36
+ 541 0358 FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 542 035c FFFFFFEA 		b	.L70
+ 543              	.L73:
+ 544              	.L70:
+ 545 0360 10008DE2 		add	r0, sp, #16
+ 546 0364 FEFFFFEB 		bl	_ZN6tflite12RuntimeShapeD1Ev
+ 547 0368 FEFFFFEB 		bl	__cxa_end_cleanup
+ 548              	.LEHE12:
+ 549              	.L76:
+ 550 036c F8FFFFEA 		b	.L89
+ 551              	.L75:
+ 552 0370 FAFFFFEA 		b	.L70
+ 553              	.L78:
+ 554 0374 F6FFFFEA 		b	.L89
+ 555              	.L77:
+ 556 0378 F8FFFFEA 		b	.L70
+ 557              	.L80:
+ 558 037c F4FFFFEA 		b	.L89
+ 559              	.L79:
+ 560 0380 F6FFFFEA 		b	.L70
+ 561              	.L91:
+ 562 0384 00F020E3 		.align	3
+ 563              	.L90:
+ 564 0388 01000000 		.word	1
+ 565 038c 00000000 		.word	0
+ 566 0390 00000000 		.word	.LC8
+ 567 0394 23000000 		.word	.LC9
+ 568 0398 00000000 		.word	.LANCHOR0
+ 569 039c 32000000 		.word	.LC10
+ 570              		.global	__gxx_personality_v0
+ 571              		.personality	__gxx_personality_v0
+ 572              		.handlerdata
+ 573              	.LLSDA6225:
+ 574 000c FF       		.byte	0xff
+ 575 000d FF       		.byte	0xff
+ 576 000e 01       		.byte	0x1
+ 577 000f 48       		.uleb128 .LLSDACSE6225-.LLSDACSB6225
+ 578              	.LLSDACSB6225:
+ 579 0010 5C       		.uleb128 .LEHB0-.LFB6225
+ 580 0011 38       		.uleb128 .LEHE0-.LEHB0
+ 581 0012 00       		.uleb128 0
+ 582 0013 00       		.uleb128 0
+ 583 0014 A001     		.uleb128 .LEHB1-.LFB6225
+ 584 0016 04       		.uleb128 .LEHE1-.LEHB1
+ 585 0017 E006     		.uleb128 .L73-.LFB6225
+ 586 0019 00       		.uleb128 0
+ 587 001a B001     		.uleb128 .LEHB2-.LFB6225
+ 588 001c 04       		.uleb128 .LEHE2-.LEHB2
+ 589 001d D406     		.uleb128 .L74-.LFB6225
+ 590 001f 00       		.uleb128 0
+ 591 0020 F001     		.uleb128 .LEHB3-.LFB6225
+ 592 0022 04       		.uleb128 .LEHE3-.LEHB3
+ 593 0023 00       		.uleb128 0
+ 594 0024 00       		.uleb128 0
+ 595 0025 8002     		.uleb128 .LEHB4-.LFB6225
+ 596 0027 04       		.uleb128 .LEHE4-.LEHB4
+ 597 0028 F006     		.uleb128 .L75-.LFB6225
+ 598 002a 00       		.uleb128 0
+ 599 002b 9002     		.uleb128 .LEHB5-.LFB6225
+ 600 002d 04       		.uleb128 .LEHE5-.LEHB5
+ 601 002e EC06     		.uleb128 .L76-.LFB6225
+ 602 0030 00       		.uleb128 0
+ 603 0031 E402     		.uleb128 .LEHB6-.LFB6225
+ 604 0033 34       		.uleb128 .LEHE6-.LEHB6
+ 605 0034 00       		.uleb128 0
+ 606 0035 00       		.uleb128 0
+ 607 0036 A403     		.uleb128 .LEHB7-.LFB6225
+ 608 0038 04       		.uleb128 .LEHE7-.LEHB7
+ 609 0039 F806     		.uleb128 .L77-.LFB6225
+ 610 003b 00       		.uleb128 0
+ 611 003c B403     		.uleb128 .LEHB8-.LFB6225
+ 612 003e 30       		.uleb128 .LEHE8-.LEHB8
+ 613 003f F406     		.uleb128 .L78-.LFB6225
+ 614 0041 00       		.uleb128 0
+ 615 0042 AC04     		.uleb128 .LEHB9-.LFB6225
+ 616 0044 10       		.uleb128 .LEHE9-.LEHB9
+ 617 0045 00       		.uleb128 0
+ 618 0046 00       		.uleb128 0
+ 619 0047 C404     		.uleb128 .LEHB10-.LFB6225
+ 620 0049 04       		.uleb128 .LEHE10-.LEHB10
+ 621 004a 8007     		.uleb128 .L79-.LFB6225
+ 622 004c 00       		.uleb128 0
+ 623 004d D004     		.uleb128 .LEHB11-.LFB6225
+ 624 004f 04       		.uleb128 .LEHE11-.LEHB11
+ 625 0050 FC06     		.uleb128 .L80-.LFB6225
+ 626 0052 00       		.uleb128 0
+ 627 0053 A806     		.uleb128 .LEHB12-.LFB6225
+ 628 0055 44       		.uleb128 .LEHE12-.LEHB12
+ 629 0056 00       		.uleb128 0
+ 630 0057 00       		.uleb128 0
+ 631              	.LLSDACSE6225:
+ 632              		.section	.text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode
+ 633              		.fnend
+ 635              		.section	.text._ZN6tflite3ops5micro19Register_DEQUANTIZEEv,"ax",%progbits
+ 636              		.align	2
+ 637              		.global	_ZN6tflite3ops5micro19Register_DEQUANTIZEEv
+ 638              		.syntax unified
+ 639              		.arm
+ 640              		.fpu neon
+ 642              	_ZN6tflite3ops5micro19Register_DEQUANTIZEEv:
+ 643              		.fnstart
+ 644              	.LFB6226:
+ 645              		@ args = 0, pretend = 0, frame = 0
+ 646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 647              		@ link register save eliminated.
+ 648 0000 10009FE5 		ldr	r0, .L93
+ 649 0004 10309FE5 		ldr	r3, .L93+4
+ 650 0008 083080E5 		str	r3, [r0, #8]
+ 651 000c 0C309FE5 		ldr	r3, .L93+8
+ 652 0010 0C3080E5 		str	r3, [r0, #12]
+ 653 0014 1EFF2FE1 		bx	lr
+ 654              	.L94:
+ 655              		.align	2
+ 656              	.L93:
+ 657 0018 00000000 		.word	.LANCHOR1
+ 658 001c 00000000 		.word	_ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode
+ 659 0020 00000000 		.word	_ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode
+ 660              		.cantunwind
+ 661              		.fnend
+ 663              		.weak	_ZN11flatbuffers25flatbuffer_version_stringE
+ 664              		.section	.bss._ZZN6tflite3ops5micro19Register_DEQUANTIZEEvE1r,"aw",%nobits
+ 665              		.align	2
+ 666              		.set	.LANCHOR1,. + 0
+ 669              	_ZZN6tflite3ops5micro19Register_DEQUANTIZEEvE1r:
+ 670 0000 00000000 		.space	32
+ 670      00000000 
+ 670      00000000 
+ 670      00000000 
+ 670      00000000 
+ 671              		.section	.data._ZN11flatbuffers25flatbuffer_version_stringE,"aw",%progbits
+ 672              		.align	2
+ 675              	_ZN11flatbuffers25flatbuffer_version_stringE:
+ 676 0000 00000000 		.word	.LC11
+ 677              		.section	.rodata._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode.str1.1,"aMS",
+ 678              	.LC8:
+ 679 0000 496E7075 		.ascii	"Input %s, output %s not supported.\000"
+ 679      74202573 
+ 679      2C206F75 
+ 679      74707574 
+ 679      20257320 
+ 680              	.LC9:
+ 681 0023 6578706F 		.ascii	"exponent <= 31\000"
+ 681      6E656E74 
+ 681      203C3D20 
+ 681      333100
+ 682              	.LC10:
+ 683 0032 433A2F52 		.ascii	"C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/AN"
+ 683      656E6573 
+ 683      61732F65 
+ 683      32737475 
+ 683      64696F5F 
+ 684 0065 50525F52 		.ascii	"PR_RZA2M_GR_MANGO/src/tensorflow_lite/src/third_par"
+ 684      5A41324D 
+ 684      5F47525F 
+ 684      4D414E47 
+ 684      4F2F7372 
+ 685 0098 74792F67 		.ascii	"ty/gemmlowp/fixedpoint/fixedpoint.h\000"
+ 685      656D6D6C 
+ 685      6F77702F 
+ 685      66697865 
+ 685      64706F69 
+ 686              		.section	.rodata._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode.str1.1,"aM
+ 687              	.LC0:
+ 688 0000 2E2E2F73 		.ascii	"../src/tensorflow_lite/src/tensorflow/lite/micro/ke"
+ 688      72632F74 
+ 688      656E736F 
+ 688      72666C6F 
+ 688      775F6C69 
+ 689 0033 726E656C 		.ascii	"rnels/dequantize.cpp\000"
+ 689      732F6465 
+ 689      7175616E 
+ 689      74697A65 
+ 689      2E637070 
+ 690              	.LC1:
+ 691 0048 25733A25 		.ascii	"%s:%d %s != %s (%d != %d)\000"
+ 691      64202573 
+ 691      20213D20 
+ 691      25732028 
+ 691      25642021 
+ 692              	.LC2:
+ 693 0062 3100     		.ascii	"1\000"
+ 694              	.LC3:
+ 695 0064 4E756D49 		.ascii	"NumInputs(node)\000"
+ 695      6E707574 
+ 695      73286E6F 
+ 695      64652900 
+ 696              	.LC4:
+ 697 0074 4E756D4F 		.ascii	"NumOutputs(node)\000"
+ 697      75747075 
+ 697      7473286E 
+ 697      6F646529 
+ 697      00
+ 698              	.LC5:
+ 699 0085 25733A25 		.ascii	"%s:%d %s was not true.\000"
+ 699      64202573 
+ 699      20776173 
+ 699      206E6F74 
+ 699      20747275 
+ 700              	.LC6:
+ 701 009c 696E7075 		.ascii	"input->type == kTfLiteUInt8 || input->type == kTfLi"
+ 701      742D3E74 
+ 701      79706520 
+ 701      3D3D206B 
+ 701      54664C69 
+ 702 00cf 7465496E 		.ascii	"teInt8 || input->type == kTfLiteInt16\000"
+ 702      7438207C 
+ 702      7C20696E 
+ 702      7075742D 
+ 702      3E747970 
+ 703              	.LC7:
+ 704 00f5 6F757470 		.ascii	"output->type == kTfLiteFloat32 || output->type == k"
+ 704      75742D3E 
+ 704      74797065 
+ 704      203D3D20 
+ 704      6B54664C 
+ 705 0128 54664C69 		.ascii	"TfLiteInt32\000"
+ 705      7465496E 
+ 705      74333200 
+ 706              		.section	.rodata._ZZN8gemmlowp19RoundingDivideByPOTIlEET_S1_iE19__PRETTY_FUNCTION__,"a",%progbits
+ 707              		.set	.LANCHOR0,. + 0
+ 710              	_ZZN8gemmlowp19RoundingDivideByPOTIlEET_S1_iE19__PRETTY_FUNCTION__:
+ 711 0000 496E7465 		.ascii	"IntegerType gemmlowp::RoundingDivideByPOT(IntegerTy"
+ 711      67657254 
+ 711      79706520 
+ 711      67656D6D 
+ 711      6C6F7770 
+ 712 0033 70652C20 		.ascii	"pe, int) [with IntegerType = long int]\000"
+ 712      696E7429 
+ 712      205B7769 
+ 712      74682049 
+ 712      6E746567 
+ 713              		.section	.rodata.str1.1,"aMS",%progbits,1
+ 714              	.LC11:
+ 715 0000 466C6174 		.ascii	"FlatBuffers 1.11.0\000"
+ 715      42756666 
+ 715      65727320 
+ 715      312E3131 
+ 715      2E3000
+ 716              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 dequantize.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:14     .text._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:20     .text._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:102    .text._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode:00000108 $d
+.ARM.exidx.text._ZN6tflite3ops5micro10dequantize7PrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:113    .text._ZN6tflite12RuntimeShapeD2Ev:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:119    .text._ZN6tflite12RuntimeShapeD2Ev:00000000 _ZN6tflite12RuntimeShapeD2Ev
+.ARM.exidx.text._ZN6tflite12RuntimeShapeD2Ev:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:119    .text._ZN6tflite12RuntimeShapeD2Ev:00000000 _ZN6tflite12RuntimeShapeD1Ev
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:142    .text._ZNK6tflite12RuntimeShape4DimsEi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:148    .text._ZNK6tflite12RuntimeShape4DimsEi:00000000 _ZNK6tflite12RuntimeShape4DimsEi
+.ARM.exidx.text._ZNK6tflite12RuntimeShape4DimsEi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:172    .text._ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:178    .text._ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_:00000000 _ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_
+.ARM.exidx.text._ZN6tflite16MatchingFlatSizeERKNS_12RuntimeShapeES2_:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:225    .text._ZN6tflite14GetTensorShapeEPK12TfLiteTensor:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:231    .text._ZN6tflite14GetTensorShapeEPK12TfLiteTensor:00000000 _ZN6tflite14GetTensorShapeEPK12TfLiteTensor
+.ARM.exidx.text._ZN6tflite14GetTensorShapeEPK12TfLiteTensor:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:269    .text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:275    .text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:564    .text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:00000388 $d
+.ARM.extab.text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+.ARM.exidx.text._ZN6tflite3ops5micro10dequantize4EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:636    .text._ZN6tflite3ops5micro19Register_DEQUANTIZEEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:642    .text._ZN6tflite3ops5micro19Register_DEQUANTIZEEv:00000000 _ZN6tflite3ops5micro19Register_DEQUANTIZEEv
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:657    .text._ZN6tflite3ops5micro19Register_DEQUANTIZEEv:00000018 $d
+.ARM.exidx.text._ZN6tflite3ops5micro19Register_DEQUANTIZEEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:675    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 _ZN11flatbuffers25flatbuffer_version_stringE
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:665    .bss._ZZN6tflite3ops5micro19Register_DEQUANTIZEEvE1r:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:669    .bss._ZZN6tflite3ops5micro19Register_DEQUANTIZEEvE1r:00000000 _ZZN6tflite3ops5micro19Register_DEQUANTIZEEvE1r
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:672    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccrMaV1c.s:710    .rodata._ZZN8gemmlowp19RoundingDivideByPOTIlEET_S1_iE19__PRETTY_FUNCTION__:00000000 _ZZN8gemmlowp19RoundingDivideByPOTIlEET_S1_iE19__PRETTY_FUNCTION__
+                           .group:00000000 _ZN6tflite12RuntimeShapeD5Ev
+
+UNDEFINED SYMBOLS
+__aeabi_unwind_cpp_pr0
+_ZdaPv
+abort
+_Znaj
+memcpy
+__cxa_throw_bad_array_new_length
+TfLiteTypeGetName
+round
+_ZN6tflite18QuantizeMultiplierEdPlPi
+__assert_func
+__cxa_end_cleanup
+__gxx_personality_v0

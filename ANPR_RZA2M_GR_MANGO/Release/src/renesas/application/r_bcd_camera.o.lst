@@ -1,0 +1,485 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_bcd_camera.c"
+  13              		.section	.text.mipi_int_isr,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	mipi_int_isr:
+  20              		@ args = 0, pretend = 0, frame = 8
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 020510E3 		tst	r0, #8388608
+  23 0004 1EFF2F01 		bxeq	lr
+  24 0008 30402DE9 		push	{r4, r5, lr}
+  25 000c 0CD04DE2 		sub	sp, sp, #12
+  26 0010 04008DE2 		add	r0, sp, #4
+  27 0014 005000E3 		movw	r5, #:lower16:.LANCHOR0
+  28 0018 005040E3 		movt	r5, #:upper16:.LANCHOR0
+  29 001c 004000E3 		movw	r4, #:lower16:.LANCHOR2
+  30 0020 FEFFFFEB 		bl	R_MIPI_GetInfo
+  31 0024 0700DDE5 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+  32 0028 002000E3 		movw	r2, #:lower16:.LANCHOR1
+  33 002c 004040E3 		movt	r4, #:upper16:.LANCHOR2
+  34 0030 002040E3 		movt	r2, #:upper16:.LANCHOR1
+  35 0034 003000E3 		movw	r3, #:lower16:.LANCHOR3
+  36 0038 4B1AA0E3 		mov	r1, #307200
+  37 003c 00C195E7 		ldr	ip, [r5, r0, lsl #2]
+  38 0040 003040E3 		movt	r3, #:upper16:.LANCHOR3
+  39 0044 00C082E5 		str	ip, [r2]
+  40 0048 002094E5 		ldr	r2, [r4]
+  41 004c 913221E0 		mla	r1, r1, r2, r3
+  42 0050 FEFFFFEB 		bl	R_RVAPI_SetBufferMIPI
+  43 0054 002094E5 		ldr	r2, [r4]
+  44 0058 0730DDE5 		ldrb	r3, [sp, #7]	@ zero_extendqisi2
+  45 005c 032185E7 		str	r2, [r5, r3, lsl #2]
+  46 0060 003094E5 		ldr	r3, [r4]
+  47 0064 013083E2 		add	r3, r3, #1
+  48 0068 003084E5 		str	r3, [r4]
+  49 006c 003094E5 		ldr	r3, [r4]
+  50 0070 000053E3 		cmp	r3, #0
+  51 0074 0030A013 		movne	r3, #0
+  52 0078 00308415 		strne	r3, [r4]
+  53 007c 0CD08DE2 		add	sp, sp, #12
+  54              		@ sp needed
+  55 0080 3080BDE8 		pop	{r4, r5, pc}
+  57              		.section	.text.R_BCD_CameraGetFrameAddress,"ax",%progbits
+  58              		.align	2
+  59              		.global	R_BCD_CameraGetFrameAddress
+  60              		.syntax unified
+  61              		.arm
+  62              		.fpu neon
+  64              	R_BCD_CameraGetFrameAddress:
+  65              		@ args = 0, pretend = 0, frame = 0
+  66              		@ frame_needed = 0, uses_anonymous_args = 0
+  67              		@ link register save eliminated.
+  68 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+  69 0004 4B2AA0E3 		mov	r2, #307200
+  70 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+  71 000c 923020E0 		mla	r0, r2, r0, r3
+  72 0010 1EFF2FE1 		bx	lr
+  74              		.section	.text.R_BCD_CameraInit,"ax",%progbits
+  75              		.align	2
+  76              		.global	R_BCD_CameraInit
+  77              		.syntax unified
+  78              		.arm
+  79              		.fpu neon
+  81              	R_BCD_CameraInit:
+  82              		@ args = 0, pretend = 0, frame = 80
+  83              		@ frame_needed = 0, uses_anonymous_args = 0
+  84 0000 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  85 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  86 0008 0030A0E3 		mov	r3, #0
+  87 000c 50D04DE2 		sub	sp, sp, #80
+  88 0010 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  89 0014 0310A0E3 		mov	r1, #3
+  90 0018 3A0BDFED 		vldr	d16, .L21
+  91 001c 04E0A0E3 		mov	lr, #4
+  92 0020 20C0A0E3 		mov	ip, #32
+  93 0024 1400A0E3 		mov	r0, #20
+  94 0028 003082E5 		str	r3, [r2]
+  95 002c F34303E3 		movw	r4, #13299
+  96 0030 0A2DA0E3 		mov	r2, #640
+  97 0034 1530CDE5 		strb	r3, [sp, #21]
+  98 0038 1630CDE5 		strb	r3, [sp, #22]
+  99 003c 0280A0E3 		mov	r8, #2
+ 100 0040 1730CDE5 		strb	r3, [sp, #23]
+ 101 0044 5070A0E3 		mov	r7, #80
+ 102 0048 B831CDE1 		strh	r3, [sp, #24]	@ movhi
+ 103 004c 0960A0E3 		mov	r6, #9
+ 104 0050 3E30CDE5 		strb	r3, [sp, #62]
+ 105 0054 0A50A0E3 		mov	r5, #10
+ 106 0058 4C30CDE5 		strb	r3, [sp, #76]
+ 107 005c 4D30CDE5 		strb	r3, [sp, #77]
+ 108 0060 4B3AA0E3 		mov	r3, #307200
+ 109 0064 0A0BCDED 		vstr	d16, [sp, #40]
+ 110 0068 B412CDE1 		strh	r1, [sp, #36]	@ movhi
+ 111 006c 4010CDE5 		strb	r1, [sp, #64]
+ 112 0070 3CE0CDE5 		strb	lr, [sp, #60]
+ 113 0074 3DC0CDE5 		strb	ip, [sp, #61]
+ 114 0078 B424CDE1 		strh	r2, [sp, #68]	@ movhi
+ 115 007c 48308DE5 		str	r3, [sp, #72]
+ 116 0080 BE01CDE1 		strh	r0, [sp, #30]	@ movhi
+ 117 0084 B202CDE1 		strh	r0, [sp, #34]	@ movhi
+ 118 0088 B642CDE1 		strh	r4, [sp, #38]	@ movhi
+ 119 008c 1480CDE5 		strb	r8, [sp, #20]
+ 120 0090 BA71CDE1 		strh	r7, [sp, #26]	@ movhi
+ 121 0094 BC61CDE1 		strh	r6, [sp, #28]	@ movhi
+ 122 0098 B052CDE1 		strh	r5, [sp, #32]	@ movhi
+ 123 009c FEFFFFEB 		bl	Init_Camera
+ 124 00a0 FEFFFFEB 		bl	getBayerMode
+ 125 00a4 003000E3 		movw	r3, #:lower16:.LANCHOR4
+ 126 00a8 003040E3 		movt	r3, #:upper16:.LANCHOR4
+ 127 00ac 0000C3E5 		strb	r0, [r3]
+ 128 00b0 FEFFFFEB 		bl	R_RVAPI_InitializeMIPI
+ 129 00b4 14008DE2 		add	r0, sp, #20
+ 130 00b8 FEFFFFEB 		bl	R_RVAPI_OpenMIPI
+ 131 00bc 000050E3 		cmp	r0, #0
+ 132 00c0 0040E013 		mvnne	r4, #0
+ 133 00c4 0400001A 		bne	.L18
+ 134 00c8 28008DE2 		add	r0, sp, #40
+ 135 00cc FEFFFFEB 		bl	R_RVAPI_SetupMIPI
+ 136 00d0 000090E2 		adds	r0, r0, #0
+ 137 00d4 0100A013 		movne	r0, #1
+ 138 00d8 004060E2 		rsb	r4, r0, #0
+ 139              	.L18:
+ 140 00dc 003000E3 		movw	r3, #:lower16:mipi_int_isr
+ 141 00e0 0020A0E3 		mov	r2, #0
+ 142 00e4 0215A0E3 		mov	r1, #8388608
+ 143 00e8 003040E3 		movt	r3, #:upper16:mipi_int_isr
+ 144 00ec 04008DE2 		add	r0, sp, #4
+ 145 00f0 0E008DE9 		stmib	sp, {r1, r2, r3}
+ 146 00f4 10208DE5 		str	r2, [sp, #16]
+ 147 00f8 FEFFFFEB 		bl	R_RVAPI_InterruptEnableMIPI
+ 148 00fc 0400A0E1 		mov	r0, r4
+ 149 0100 50D08DE2 		add	sp, sp, #80
+ 150              		@ sp needed
+ 151 0104 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 152              	.L22:
+ 153              		.align	3
+ 154              	.L21:
+ 155 0108 0000     		.short	0
+ 156 010a DF01     		.short	479
+ 157 010c 0000     		.short	0
+ 158 010e 7F02     		.short	639
+ 160              		.section	.text.R_BCD_CameraCaptureStart,"ax",%progbits
+ 161              		.align	2
+ 162              		.global	R_BCD_CameraCaptureStart
+ 163              		.syntax unified
+ 164              		.arm
+ 165              		.fpu neon
+ 167              	R_BCD_CameraCaptureStart:
+ 168              		@ args = 0, pretend = 0, frame = 0
+ 169              		@ frame_needed = 0, uses_anonymous_args = 0
+ 170 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 171 0004 0050A0E3 		mov	r5, #0
+ 172 0008 004000E3 		movw	r4, #:lower16:.LANCHOR2
+ 173 000c 007000E3 		movw	r7, #:lower16:.LANCHOR3
+ 174 0010 006000E3 		movw	r6, #:lower16:.LANCHOR0
+ 175 0014 0590A0E1 		mov	r9, r5
+ 176 0018 004040E3 		movt	r4, #:upper16:.LANCHOR2
+ 177 001c 007040E3 		movt	r7, #:upper16:.LANCHOR3
+ 178 0020 006040E3 		movt	r6, #:upper16:.LANCHOR0
+ 179 0024 4B8AA0E3 		mov	r8, #307200
+ 180              	.L25:
+ 181 0028 001094E5 		ldr	r1, [r4]
+ 182 002c 7500EFE6 		uxtb	r0, r5
+ 183 0030 987121E0 		mla	r1, r8, r1, r7
+ 184 0034 FEFFFFEB 		bl	R_RVAPI_SetBufferMIPI
+ 185 0038 003094E5 		ldr	r3, [r4]
+ 186 003c 053186E7 		str	r3, [r6, r5, lsl #2]
+ 187 0040 015085E2 		add	r5, r5, #1
+ 188 0044 003094E5 		ldr	r3, [r4]
+ 189 0048 013083E2 		add	r3, r3, #1
+ 190 004c 003084E5 		str	r3, [r4]
+ 191 0050 003094E5 		ldr	r3, [r4]
+ 192 0054 000053E3 		cmp	r3, #0
+ 193 0058 00908415 		strne	r9, [r4]
+ 194 005c 030055E3 		cmp	r5, #3
+ 195 0060 F0FFFF1A 		bne	.L25
+ 196 0064 FEFFFFEB 		bl	R_RVAPI_CaptureStartMIPI
+ 197 0068 0040A0E1 		mov	r4, r0
+ 198 006c FEFFFFEB 		bl	Start_Camera
+ 199 0070 000094E2 		adds	r0, r4, #0
+ 200 0074 0100A013 		movne	r0, #1
+ 201 0078 000060E2 		rsb	r0, r0, #0
+ 202 007c F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 204              		.section	.text.R_BCD_CameraGetCaptureStatus,"ax",%progbits
+ 205              		.align	2
+ 206              		.global	R_BCD_CameraGetCaptureStatus
+ 207              		.syntax unified
+ 208              		.arm
+ 209              		.fpu neon
+ 211              	R_BCD_CameraGetCaptureStatus:
+ 212              		@ args = 0, pretend = 0, frame = 0
+ 213              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214              		@ link register save eliminated.
+ 215 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 216 0004 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 217 0008 000093E5 		ldr	r0, [r3]
+ 218 000c 1EFF2FE1 		bx	lr
+ 220              		.section	.text.R_BCD_CameraClearCaptureStatus,"ax",%progbits
+ 221              		.align	2
+ 222              		.global	R_BCD_CameraClearCaptureStatus
+ 223              		.syntax unified
+ 224              		.arm
+ 225              		.fpu neon
+ 227              	R_BCD_CameraClearCaptureStatus:
+ 228              		@ args = 0, pretend = 0, frame = 0
+ 229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 230              		@ link register save eliminated.
+ 231 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 232 0004 0020E0E3 		mvn	r2, #0
+ 233 0008 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 234 000c 002083E5 		str	r2, [r3]
+ 235 0010 1EFF2FE1 		bx	lr
+ 237              		.section	.text.R_BCD_SetCameraGain,"ax",%progbits
+ 238              		.align	2
+ 239              		.global	R_BCD_SetCameraGain
+ 240              		.syntax unified
+ 241              		.arm
+ 242              		.fpu neon
+ 244              	R_BCD_SetCameraGain:
+ 245              		@ args = 0, pretend = 0, frame = 0
+ 246              		@ frame_needed = 0, uses_anonymous_args = 0
+ 247 0000 800080E0 		add	r0, r0, r0, lsl #1
+ 248 0004 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 249 0008 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 250 000c 10402DE9 		push	{r4, lr}
+ 251 0010 5A20A0E3 		mov	r2, #90
+ 252 0014 004083E0 		add	r4, r3, r0
+ 253 0018 0110A0E3 		mov	r1, #1
+ 254 001c 0030D3E7 		ldrb	r3, [r3, r0]	@ zero_extendqisi2
+ 255 0020 2000A0E3 		mov	r0, #32
+ 256 0024 FEFFFFEB 		bl	RIIC_MipiWrite
+ 257 0028 0130D4E5 		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+ 258 002c 5B20A0E3 		mov	r2, #91
+ 259 0030 0110A0E3 		mov	r1, #1
+ 260 0034 2000A0E3 		mov	r0, #32
+ 261 0038 FEFFFFEB 		bl	RIIC_MipiWrite
+ 262 003c 0230D4E5 		ldrb	r3, [r4, #2]	@ zero_extendqisi2
+ 263 0040 5720A0E3 		mov	r2, #87
+ 264 0044 0110A0E3 		mov	r1, #1
+ 265 0048 2000A0E3 		mov	r0, #32
+ 266 004c 1040BDE8 		pop	{r4, lr}
+ 267 0050 FEFFFFEA 		b	RIIC_MipiWrite
+ 269              		.global	R_BCD_CameraBayerMode
+ 270              		.section	.bss.R_BCD_CameraBayerMode,"aw",%nobits
+ 271              		.set	.LANCHOR4,. + 0
+ 274              	R_BCD_CameraBayerMode:
+ 275 0000 00       		.space	1
+ 276              		.section	.bss.buff_write_point,"aw",%nobits
+ 277              		.align	2
+ 278              		.set	.LANCHOR2,. + 0
+ 281              	buff_write_point:
+ 282 0000 00000000 		.space	4
+ 283              		.section	.bss.mb_manage_table,"aw",%nobits
+ 284              		.align	3
+ 285              		.set	.LANCHOR0,. + 0
+ 288              	mb_manage_table:
+ 289 0000 00000000 		.space	12
+ 289      00000000 
+ 289      00000000 
+ 290              		.section	.data.vdc_captured,"aw",%progbits
+ 291              		.align	2
+ 292              		.set	.LANCHOR1,. + 0
+ 295              	vdc_captured:
+ 296 0000 FFFFFFFF 		.word	-1
+ 297              		.section	.rodata.gaintbl,"a",%progbits
+ 298              		.align	3
+ 299              		.set	.LANCHOR5,. + 0
+ 302              	gaintbl:
+ 303 0000 03       		.byte	3
+ 304 0001 E8       		.byte	-24
+ 305 0002 00       		.byte	0
+ 306 0003 04       		.byte	4
+ 307 0004 23       		.byte	35
+ 308 0005 00       		.byte	0
+ 309 0006 04       		.byte	4
+ 310 0007 62       		.byte	98
+ 311 0008 00       		.byte	0
+ 312 0009 04       		.byte	4
+ 313 000a A5       		.byte	-91
+ 314 000b 00       		.byte	0
+ 315 000c 04       		.byte	4
+ 316 000d EB       		.byte	-21
+ 317 000e 00       		.byte	0
+ 318 000f 05       		.byte	5
+ 319 0010 36       		.byte	54
+ 320 0011 00       		.byte	0
+ 321 0012 05       		.byte	5
+ 322 0013 85       		.byte	-123
+ 323 0014 00       		.byte	0
+ 324 0015 05       		.byte	5
+ 325 0016 D8       		.byte	-40
+ 326 0017 00       		.byte	0
+ 327 0018 06       		.byte	6
+ 328 0019 31       		.byte	49
+ 329 001a 00       		.byte	0
+ 330 001b 06       		.byte	6
+ 331 001c 8F       		.byte	-113
+ 332 001d 00       		.byte	0
+ 333 001e 06       		.byte	6
+ 334 001f F2       		.byte	-14
+ 335 0020 00       		.byte	0
+ 336 0021 07       		.byte	7
+ 337 0022 5C       		.byte	92
+ 338 0023 00       		.byte	0
+ 339 0024 07       		.byte	7
+ 340 0025 CB       		.byte	-53
+ 341 0026 00       		.byte	0
+ 342 0027 08       		.byte	8
+ 343 0028 41       		.byte	65
+ 344 0029 00       		.byte	0
+ 345 002a 08       		.byte	8
+ 346 002b BF       		.byte	-65
+ 347 002c 00       		.byte	0
+ 348 002d 09       		.byte	9
+ 349 002e 43       		.byte	67
+ 350 002f 00       		.byte	0
+ 351 0030 09       		.byte	9
+ 352 0031 D0       		.byte	-48
+ 353 0032 00       		.byte	0
+ 354 0033 0A       		.byte	10
+ 355 0034 65       		.byte	101
+ 356 0035 00       		.byte	0
+ 357 0036 0B       		.byte	11
+ 358 0037 02       		.byte	2
+ 359 0038 00       		.byte	0
+ 360 0039 0B       		.byte	11
+ 361 003a A9       		.byte	-87
+ 362 003b 00       		.byte	0
+ 363 003c 0C       		.byte	12
+ 364 003d 5A       		.byte	90
+ 365 003e 00       		.byte	0
+ 366 003f 0C       		.byte	12
+ 367 0040 5A       		.byte	90
+ 368 0041 0E       		.byte	14
+ 369 0042 0C       		.byte	12
+ 370 0043 5A       		.byte	90
+ 371 0044 1C       		.byte	28
+ 372 0045 0C       		.byte	12
+ 373 0046 5A       		.byte	90
+ 374 0047 28       		.byte	40
+ 375 0048 0C       		.byte	12
+ 376 0049 5A       		.byte	90
+ 377 004a 35       		.byte	53
+ 378 004b 0C       		.byte	12
+ 379 004c 5A       		.byte	90
+ 380 004d 40       		.byte	64
+ 381 004e 0C       		.byte	12
+ 382 004f 5A       		.byte	90
+ 383 0050 4B       		.byte	75
+ 384 0051 0C       		.byte	12
+ 385 0052 5A       		.byte	90
+ 386 0053 55       		.byte	85
+ 387 0054 0C       		.byte	12
+ 388 0055 5A       		.byte	90
+ 389 0056 5F       		.byte	95
+ 390 0057 0C       		.byte	12
+ 391 0058 5A       		.byte	90
+ 392 0059 67       		.byte	103
+ 393 005a 0C       		.byte	12
+ 394 005b 5A       		.byte	90
+ 395 005c 70       		.byte	112
+ 396 005d 0C       		.byte	12
+ 397 005e 5A       		.byte	90
+ 398 005f 78       		.byte	120
+ 399 0060 0C       		.byte	12
+ 400 0061 5A       		.byte	90
+ 401 0062 80       		.byte	-128
+ 402 0063 0C       		.byte	12
+ 403 0064 5A       		.byte	90
+ 404 0065 87       		.byte	-121
+ 405 0066 0C       		.byte	12
+ 406 0067 5A       		.byte	90
+ 407 0068 8E       		.byte	-114
+ 408 0069 0C       		.byte	12
+ 409 006a 5A       		.byte	90
+ 410 006b 94       		.byte	-108
+ 411 006c 0C       		.byte	12
+ 412 006d 5A       		.byte	90
+ 413 006e 9A       		.byte	-102
+ 414 006f 0C       		.byte	12
+ 415 0070 5A       		.byte	90
+ 416 0071 A0       		.byte	-96
+ 417 0072 0C       		.byte	12
+ 418 0073 5A       		.byte	90
+ 419 0074 A5       		.byte	-91
+ 420 0075 0C       		.byte	12
+ 421 0076 5A       		.byte	90
+ 422 0077 AA       		.byte	-86
+ 423 0078 0C       		.byte	12
+ 424 0079 5A       		.byte	90
+ 425 007a AF       		.byte	-81
+ 426 007b 0C       		.byte	12
+ 427 007c 5A       		.byte	90
+ 428 007d B4       		.byte	-76
+ 429 007e 0C       		.byte	12
+ 430 007f 5A       		.byte	90
+ 431 0080 B8       		.byte	-72
+ 432 0081 0C       		.byte	12
+ 433 0082 5A       		.byte	90
+ 434 0083 BC       		.byte	-68
+ 435 0084 0C       		.byte	12
+ 436 0085 5A       		.byte	90
+ 437 0086 C0       		.byte	-64
+ 438 0087 0C       		.byte	12
+ 439 0088 5A       		.byte	90
+ 440 0089 C3       		.byte	-61
+ 441 008a 0C       		.byte	12
+ 442 008b 5A       		.byte	90
+ 443 008c C6       		.byte	-58
+ 444 008d 0C       		.byte	12
+ 445 008e 5A       		.byte	90
+ 446 008f CA       		.byte	-54
+ 447 0090 0C       		.byte	12
+ 448 0091 5A       		.byte	90
+ 449 0092 CD       		.byte	-51
+ 450              		.section	Capture_RAM,"aw",%progbits
+ 451              		.align	2
+ 452              		.set	.LANCHOR3,. + 0
+ 455              	frame_buffer:
+ 456 0000 00000000 		.space	307200
+ 456      00000000 
+ 456      00000000 
+ 456      00000000 
+ 456      00000000 
+ 457              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_bcd_camera.c
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:14     .text.mipi_int_isr:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:19     .text.mipi_int_isr:00000000 mipi_int_isr
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:285    .bss.mb_manage_table:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:278    .bss.buff_write_point:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:292    .data.vdc_captured:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:452    Capture_RAM:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:58     .text.R_BCD_CameraGetFrameAddress:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:64     .text.R_BCD_CameraGetFrameAddress:00000000 R_BCD_CameraGetFrameAddress
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:75     .text.R_BCD_CameraInit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:81     .text.R_BCD_CameraInit:00000000 R_BCD_CameraInit
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:271    .bss.R_BCD_CameraBayerMode:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:155    .text.R_BCD_CameraInit:00000108 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:161    .text.R_BCD_CameraCaptureStart:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:167    .text.R_BCD_CameraCaptureStart:00000000 R_BCD_CameraCaptureStart
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:205    .text.R_BCD_CameraGetCaptureStatus:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:211    .text.R_BCD_CameraGetCaptureStatus:00000000 R_BCD_CameraGetCaptureStatus
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:221    .text.R_BCD_CameraClearCaptureStatus:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:227    .text.R_BCD_CameraClearCaptureStatus:00000000 R_BCD_CameraClearCaptureStatus
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:238    .text.R_BCD_SetCameraGain:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:244    .text.R_BCD_SetCameraGain:00000000 R_BCD_SetCameraGain
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:299    .rodata.gaintbl:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:274    .bss.R_BCD_CameraBayerMode:00000000 R_BCD_CameraBayerMode
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:275    .bss.R_BCD_CameraBayerMode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:277    .bss.buff_write_point:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:281    .bss.buff_write_point:00000000 buff_write_point
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:284    .bss.mb_manage_table:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:288    .bss.mb_manage_table:00000000 mb_manage_table
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:291    .data.vdc_captured:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:295    .data.vdc_captured:00000000 vdc_captured
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:298    .rodata.gaintbl:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:302    .rodata.gaintbl:00000000 gaintbl
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:451    Capture_RAM:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cch7Swkw.s:455    Capture_RAM:00000000 frame_buffer
+
+UNDEFINED SYMBOLS
+R_MIPI_GetInfo
+R_RVAPI_SetBufferMIPI
+Init_Camera
+getBayerMode
+R_RVAPI_InitializeMIPI
+R_RVAPI_OpenMIPI
+R_RVAPI_SetupMIPI
+R_RVAPI_InterruptEnableMIPI
+R_RVAPI_CaptureStartMIPI
+Start_Camera
+RIIC_MipiWrite

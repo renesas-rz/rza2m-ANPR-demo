@@ -1,0 +1,414 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"vdc_portsetting.c"
+  13              		.section	.text.VDC_LcdPortSetting,"ax",%progbits
+  14              		.align	2
+  15              		.global	VDC_LcdPortSetting
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	VDC_LcdPortSetting:
+  21              		@ args = 0, pretend = 0, frame = 32
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 000000E3 		movw	r0, #:lower16:.LC0
+  24 0004 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  25 0008 0010A0E3 		mov	r1, #0
+  26 000c 20D04DE2 		sub	sp, sp, #32
+  27 0010 000040E3 		movt	r0, #:upper16:.LC0
+  28 0014 FEFFFFEB 		bl	direct_open
+  29 0018 006050E2 		subs	r6, r0, #0
+  30 001c 440000BA 		blt	.L15
+  31 0020 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  32 0024 00E0A0E3 		mov	lr, #0
+  33 0028 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  34 002c 1FC0A0E3 		mov	ip, #31
+  35 0030 04208DE2 		add	r2, sp, #4
+  36 0034 0410A0E3 		mov	r1, #4
+  37 0038 08508DE9 		stmib	sp, {r3, ip, lr}
+  38 003c FEFFFFEB 		bl	direct_control
+  39 0040 000050E3 		cmp	r0, #0
+  40 0044 3B0000BA 		blt	.L16
+  41 0048 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  42 004c 10208DE2 		add	r2, sp, #16
+  43 0050 003040E3 		movt	r3, #:upper16:.LANCHOR1
+  44 0054 0150A0E3 		mov	r5, #1
+  45 0058 0210A0E3 		mov	r1, #2
+  46 005c 0600A0E1 		mov	r0, r6
+  47 0060 10308DE5 		str	r3, [sp, #16]
+  48 0064 14508DE5 		str	r5, [sp, #20]
+  49 0068 FEFFFFEB 		bl	direct_control
+  50 006c 000050E3 		cmp	r0, #0
+  51 0070 310000BA 		blt	.L17
+  52 0074 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  53 0078 0810A0E3 		mov	r1, #8
+  54 007c 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  55 0080 0600A0E1 		mov	r0, r6
+  56 0084 FEFFFFEB 		bl	direct_control
+  57 0088 000050E3 		cmp	r0, #0
+  58 008c 2B0000BA 		blt	.L18
+  59 0090 0A00A0E3 		mov	r0, #10
+  60 0094 FEFFFFEB 		bl	R_OS_TaskSleep
+  61 0098 002000E3 		movw	r2, #:lower16:.LANCHOR3
+  62 009c 0810A0E3 		mov	r1, #8
+  63 00a0 002040E3 		movt	r2, #:upper16:.LANCHOR3
+  64 00a4 0600A0E1 		mov	r0, r6
+  65 00a8 FEFFFFEB 		bl	direct_control
+  66 00ac 000050E3 		cmp	r0, #0
+  67 00b0 230000BA 		blt	.L19
+  68 00b4 000000E3 		movw	r0, #:lower16:.LC1
+  69 00b8 0210A0E3 		mov	r1, #2
+  70 00bc 000040E3 		movt	r0, #:upper16:.LC1
+  71 00c0 FEFFFFEB 		bl	open
+  72 00c4 007050E2 		subs	r7, r0, #0
+  73 00c8 150000BA 		blt	.L12
+  74 00cc 004000E3 		movw	r4, #:lower16:.LANCHOR4
+  75 00d0 03A08DE2 		add	r10, sp, #3
+  76 00d4 004040E3 		movt	r4, #:upper16:.LANCHOR4
+  77 00d8 5280A0E3 		mov	r8, #82
+  78 00dc 4E9084E2 		add	r9, r4, #78
+  79              	.L13:
+  80 00e0 00C0D4E5 		ldrb	ip, [r4]	@ zero_extendqisi2
+  81 00e4 10208DE2 		add	r2, sp, #16
+  82 00e8 0130D4E5 		ldrb	r3, [r4, #1]	@ zero_extendqisi2
+  83 00ec 0410A0E3 		mov	r1, #4
+  84 00f0 024084E2 		add	r4, r4, #2
+  85 00f4 0700A0E1 		mov	r0, r7
+  86 00f8 B081CDE1 		strh	r8, [sp, #16]	@ movhi
+  87 00fc 1250CDE5 		strb	r5, [sp, #18]
+  88 0100 18508DE5 		str	r5, [sp, #24]
+  89 0104 1CA08DE5 		str	r10, [sp, #28]
+  90 0108 14C08DE5 		str	ip, [sp, #20]
+  91 010c 0330CDE5 		strb	r3, [sp, #3]
+  92 0110 FEFFFFEB 		bl	control
+  93 0114 040059E1 		cmp	r9, r4
+  94 0118 F0FFFF1A 		bne	.L13
+  95 011c 0700A0E1 		mov	r0, r7
+  96 0120 FEFFFFEB 		bl	close
+  97              	.L12:
+  98 0124 0600A0E1 		mov	r0, r6
+  99 0128 FEFFFFEB 		bl	direct_close
+ 100 012c 20D08DE2 		add	sp, sp, #32
+ 101              		@ sp needed
+ 102 0130 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 103              	.L15:
+ 104 0134 FEFFFFEA 		b	.L15
+ 105              	.L16:
+ 106 0138 FEFFFFEA 		b	.L16
+ 107              	.L17:
+ 108 013c FEFFFFEA 		b	.L17
+ 109              	.L18:
+ 110 0140 FEFFFFEA 		b	.L18
+ 111              	.L19:
+ 112 0144 FEFFFFEA 		b	.L19
+ 114              		.global	g_dvi_reg_init_table
+ 115              		.section	.data.s_pk5_hi,"aw",%progbits
+ 116              		.align	2
+ 117              		.set	.LANCHOR3,. + 0
+ 120              	s_pk5_hi:
+ 121 0000 0513     		.short	4869
+ 122 0002 02       		.byte	2
+ 123 0003 00       		.byte	0
+ 124              		.section	.data.s_pk5_lo,"aw",%progbits
+ 125              		.align	2
+ 126              		.set	.LANCHOR2,. + 0
+ 129              	s_pk5_lo:
+ 130 0000 0513     		.short	4869
+ 131 0002 01       		.byte	1
+ 132 0003 00       		.byte	0
+ 133              		.section	.rodata.GPIO_SC_TABLE_vdc,"a",%progbits
+ 134              		.align	2
+ 135              		.set	.LANCHOR0,. + 0
+ 138              	GPIO_SC_TABLE_vdc:
+ 139 0000 0207     		.short	1794
+ 140 0002 09       		.byte	9
+ 141 0003 01       		.byte	1
+ 142 0004 04       		.byte	4
+ 143 0005 00       		.space	1
+ 144 0006 0607     		.short	1798
+ 145 0008 09       		.byte	9
+ 146 0009 01       		.byte	1
+ 147 000a 04       		.byte	4
+ 148 000b 00       		.space	1
+ 149 000c 0707     		.short	1799
+ 150 000e 09       		.byte	9
+ 151 000f 01       		.byte	1
+ 152 0010 04       		.byte	4
+ 153 0011 00       		.space	1
+ 154 0012 0008     		.short	2048
+ 155 0014 09       		.byte	9
+ 156 0015 01       		.byte	1
+ 157 0016 04       		.byte	4
+ 158 0017 00       		.space	1
+ 159 0018 000A     		.short	2560
+ 160 001a 09       		.byte	9
+ 161 001b 01       		.byte	1
+ 162 001c 04       		.byte	4
+ 163 001d 00       		.space	1
+ 164 001e 010A     		.short	2561
+ 165 0020 09       		.byte	9
+ 166 0021 01       		.byte	1
+ 167 0022 04       		.byte	4
+ 168 0023 00       		.space	1
+ 169 0024 020A     		.short	2562
+ 170 0026 09       		.byte	9
+ 171 0027 01       		.byte	1
+ 172 0028 04       		.byte	4
+ 173 0029 00       		.space	1
+ 174 002a 030A     		.short	2563
+ 175 002c 09       		.byte	9
+ 176 002d 01       		.byte	1
+ 177 002e 04       		.byte	4
+ 178 002f 00       		.space	1
+ 179 0030 040A     		.short	2564
+ 180 0032 09       		.byte	9
+ 181 0033 01       		.byte	1
+ 182 0034 04       		.byte	4
+ 183 0035 00       		.space	1
+ 184 0036 050A     		.short	2565
+ 185 0038 09       		.byte	9
+ 186 0039 01       		.byte	1
+ 187 003a 04       		.byte	4
+ 188 003b 00       		.space	1
+ 189 003c 060A     		.short	2566
+ 190 003e 09       		.byte	9
+ 191 003f 01       		.byte	1
+ 192 0040 04       		.byte	4
+ 193 0041 00       		.space	1
+ 194 0042 070A     		.short	2567
+ 195 0044 09       		.byte	9
+ 196 0045 01       		.byte	1
+ 197 0046 04       		.byte	4
+ 198 0047 00       		.space	1
+ 199 0048 000B     		.short	2816
+ 200 004a 09       		.byte	9
+ 201 004b 01       		.byte	1
+ 202 004c 04       		.byte	4
+ 203 004d 00       		.space	1
+ 204 004e 010B     		.short	2817
+ 205 0050 09       		.byte	9
+ 206 0051 01       		.byte	1
+ 207 0052 04       		.byte	4
+ 208 0053 00       		.space	1
+ 209 0054 020B     		.short	2818
+ 210 0056 09       		.byte	9
+ 211 0057 01       		.byte	1
+ 212 0058 04       		.byte	4
+ 213 0059 00       		.space	1
+ 214 005a 030B     		.short	2819
+ 215 005c 09       		.byte	9
+ 216 005d 01       		.byte	1
+ 217 005e 04       		.byte	4
+ 218 005f 00       		.space	1
+ 219 0060 040B     		.short	2820
+ 220 0062 09       		.byte	9
+ 221 0063 01       		.byte	1
+ 222 0064 04       		.byte	4
+ 223 0065 00       		.space	1
+ 224 0066 050B     		.short	2821
+ 225 0068 09       		.byte	9
+ 226 0069 01       		.byte	1
+ 227 006a 04       		.byte	4
+ 228 006b 00       		.space	1
+ 229 006c 030C     		.short	3075
+ 230 006e 0B       		.byte	11
+ 231 006f 01       		.byte	1
+ 232 0070 04       		.byte	4
+ 233 0071 00       		.space	1
+ 234 0072 040C     		.short	3076
+ 235 0074 0B       		.byte	11
+ 236 0075 01       		.byte	1
+ 237 0076 04       		.byte	4
+ 238 0077 00       		.space	1
+ 239 0078 000F     		.short	3840
+ 240 007a 09       		.byte	9
+ 241 007b 01       		.byte	1
+ 242 007c 04       		.byte	4
+ 243 007d 00       		.space	1
+ 244 007e 010F     		.short	3841
+ 245 0080 09       		.byte	9
+ 246 0081 01       		.byte	1
+ 247 0082 04       		.byte	4
+ 248 0083 00       		.space	1
+ 249 0084 020F     		.short	3842
+ 250 0086 09       		.byte	9
+ 251 0087 01       		.byte	1
+ 252 0088 04       		.byte	4
+ 253 0089 00       		.space	1
+ 254 008a 030F     		.short	3843
+ 255 008c 09       		.byte	9
+ 256 008d 01       		.byte	1
+ 257 008e 04       		.byte	4
+ 258 008f 00       		.space	1
+ 259 0090 040F     		.short	3844
+ 260 0092 09       		.byte	9
+ 261 0093 01       		.byte	1
+ 262 0094 04       		.byte	4
+ 263 0095 00       		.space	1
+ 264 0096 050F     		.short	3845
+ 265 0098 09       		.byte	9
+ 266 0099 01       		.byte	1
+ 267 009a 04       		.byte	4
+ 268 009b 00       		.space	1
+ 269 009c 060F     		.short	3846
+ 270 009e 09       		.byte	9
+ 271 009f 01       		.byte	1
+ 272 00a0 04       		.byte	4
+ 273 00a1 00       		.space	1
+ 274 00a2 070F     		.short	3847
+ 275 00a4 09       		.byte	9
+ 276 00a5 01       		.byte	1
+ 277 00a6 04       		.byte	4
+ 278 00a7 00       		.space	1
+ 279 00a8 0211     		.short	4354
+ 280 00aa 09       		.byte	9
+ 281 00ab 01       		.byte	1
+ 282 00ac 04       		.byte	4
+ 283 00ad 00       		.space	1
+ 284 00ae 0612     		.short	4614
+ 285 00b0 09       		.byte	9
+ 286 00b1 01       		.byte	1
+ 287 00b2 02       		.byte	2
+ 288 00b3 00       		.space	1
+ 289 00b4 0712     		.short	4615
+ 290 00b6 09       		.byte	9
+ 291 00b7 01       		.byte	1
+ 292 00b8 05       		.byte	5
+ 293 00b9 00       		.space	1
+ 294              		.section	.rodata.VDC_LcdPortSetting.str1.4,"aMS",%progbits,1
+ 295              		.align	2
+ 296              	.LC0:
+ 297 0000 6770696F 		.ascii	"gpio\000"
+ 297      00
+ 298 0005 000000   		.space	3
+ 299              	.LC1:
+ 300 0008 5C5C2E5C 		.ascii	"\\\\.\\riic1\000"
+ 300      72696963 
+ 300      3100
+ 301              		.section	.rodata.g_dvi_reg_init_table,"a",%progbits
+ 302              		.align	2
+ 303              		.set	.LANCHOR4,. + 0
+ 306              	g_dvi_reg_init_table:
+ 307 0000 00       		.byte	0
+ 308 0001 80       		.byte	-128
+ 309 0002 40       		.byte	64
+ 310 0003 08       		.byte	8
+ 311 0004 05       		.byte	5
+ 312 0005 14       		.byte	20
+ 313 0006 7B       		.byte	123
+ 314 0007 00       		.byte	0
+ 315 0008 7C       		.byte	124
+ 316 0009 00       		.byte	0
+ 317 000a 7D       		.byte	125
+ 318 000b 00       		.byte	0
+ 319 000c 7E       		.byte	126
+ 320 000d 00       		.byte	0
+ 321 000e 7F       		.byte	127
+ 322 000f 01       		.byte	1
+ 323 0010 63       		.byte	99
+ 324 0011 00       		.byte	0
+ 325 0012 64       		.byte	100
+ 326 0013 16       		.byte	22
+ 327 0014 65       		.byte	101
+ 328 0015 0C       		.byte	12
+ 329 0016 74       		.byte	116
+ 330 0017 70       		.byte	112
+ 331 0018 75       		.byte	117
+ 332 0019 01       		.byte	1
+ 333 001a 76       		.byte	118
+ 334 001b 00       		.byte	0
+ 335 001c 77       		.byte	119
+ 336 001d 00       		.byte	0
+ 337 001e 78       		.byte	120
+ 338 001f 00       		.byte	0
+ 339 0020 79       		.byte	121
+ 340 0021 00       		.byte	0
+ 341 0022 0A       		.byte	10
+ 342 0023 81       		.byte	-127
+ 343 0024 33       		.byte	51
+ 344 0025 0F       		.byte	15
+ 345 0026 0E       		.byte	14
+ 346 0027 0D       		.byte	13
+ 347 0028 66       		.byte	102
+ 348 0029 BB       		.byte	-69
+ 349 002a 67       		.byte	103
+ 350 002b 10       		.byte	16
+ 351 002c 68       		.byte	104
+ 352 002d A0       		.byte	-96
+ 353 002e 69       		.byte	105
+ 354 002f 00       		.byte	0
+ 355 0030 6A       		.byte	106
+ 356 0031 40       		.byte	64
+ 357 0032 6B       		.byte	107
+ 358 0033 00       		.byte	0
+ 359 0034 6C       		.byte	108
+ 360 0035 00       		.byte	0
+ 361 0036 6D       		.byte	109
+ 362 0037 00       		.byte	0
+ 363 0038 6E       		.byte	110
+ 364 0039 00       		.byte	0
+ 365 003a 6F       		.byte	111
+ 366 003b 00       		.byte	0
+ 367 003c 70       		.byte	112
+ 368 003d 00       		.byte	0
+ 369 003e 71       		.byte	113
+ 370 003f 00       		.byte	0
+ 371 0040 72       		.byte	114
+ 372 0041 00       		.byte	0
+ 373 0042 73       		.byte	115
+ 374 0043 00       		.byte	0
+ 375 0044 3F       		.byte	63
+ 376 0045 F8       		.byte	-8
+ 377 0046 0D       		.byte	13
+ 378 0047 80       		.byte	-128
+ 379 0048 0C       		.byte	12
+ 380 0049 30       		.byte	48
+ 381 004a 08       		.byte	8
+ 382 004b 97       		.byte	-105
+ 383 004c 01       		.byte	1
+ 384 004d 00       		.byte	0
+ 385              		.section	.rodata.s_ep952_pin_list,"a",%progbits
+ 386              		.align	3
+ 387              		.set	.LANCHOR1,. + 0
+ 390              	s_ep952_pin_list:
+ 391 0000 0513     		.short	4869
+ 392              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 vdc_portsetting.c
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:14     .text.VDC_LcdPortSetting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:20     .text.VDC_LcdPortSetting:00000000 VDC_LcdPortSetting
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:296    .rodata.VDC_LcdPortSetting.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:135    .rodata.GPIO_SC_TABLE_vdc:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:387    .rodata.s_ep952_pin_list:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:126    .data.s_pk5_lo:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:117    .data.s_pk5_hi:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:299    .rodata.VDC_LcdPortSetting.str1.4:00000008 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:303    .rodata.g_dvi_reg_init_table:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:306    .rodata.g_dvi_reg_init_table:00000000 g_dvi_reg_init_table
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:116    .data.s_pk5_hi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:120    .data.s_pk5_hi:00000000 s_pk5_hi
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:125    .data.s_pk5_lo:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:129    .data.s_pk5_lo:00000000 s_pk5_lo
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:134    .rodata.GPIO_SC_TABLE_vdc:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:138    .rodata.GPIO_SC_TABLE_vdc:00000000 GPIO_SC_TABLE_vdc
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:295    .rodata.VDC_LcdPortSetting.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:302    .rodata.g_dvi_reg_init_table:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:386    .rodata.s_ep952_pin_list:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCrWQMY.s:390    .rodata.s_ep952_pin_list:00000000 s_ep952_pin_list
+
+UNDEFINED SYMBOLS
+direct_open
+direct_control
+R_OS_TaskSleep
+open
+control
+close
+direct_close

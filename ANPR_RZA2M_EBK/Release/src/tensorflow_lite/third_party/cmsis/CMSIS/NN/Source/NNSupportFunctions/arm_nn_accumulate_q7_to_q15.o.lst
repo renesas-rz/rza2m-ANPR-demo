@@ -1,0 +1,129 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_accumulate_q7_to_q15.c"
+  13              		.section	.text.arm_nn_accumulate_q7_to_q15,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_nn_accumulate_q7_to_q15
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_nn_accumulate_q7_to_q15:
+  21              		@ args = 0, pretend = 0, frame = 16
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 2231A0E1 		lsr	r3, r2, #2
+  24 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  25 0008 14D04DE2 		sub	sp, sp, #20
+  26 000c 000053E3 		cmp	r3, #0
+  27 0010 0090A0E1 		mov	r9, r0
+  28 0014 00208DE5 		str	r2, [sp]
+  29 0018 01A0A0E1 		mov	r10, r1
+  30 001c 04308DE5 		str	r3, [sp, #4]
+  31 0020 2A00000A 		beq	.L2
+  32 0024 0380A0E1 		mov	r8, r3
+  33 0028 01B0A0E1 		mov	fp, r1
+  34 002c 0060A0E1 		mov	r6, r0
+  35              	.L3:
+  36 0030 0420A0E3 		mov	r2, #4
+  37 0034 0B10A0E1 		mov	r1, fp
+  38 0038 0C008DE2 		add	r0, sp, #12
+  39 003c 02B08BE0 		add	fp, fp, r2
+  40 0040 FEFFFFEB 		bl	memcpy
+  41 0044 0C309DE5 		ldr	r3, [sp, #12]
+  42 0048 0420A0E3 		mov	r2, #4
+  43 004c 0610A0E1 		mov	r1, r6
+  44 0050 0C008DE2 		add	r0, sp, #12
+  45              		.syntax divided
+  46              	@ 1983 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  47 0054 73C08FE6 		sxtb16 ip, r3
+  48              	@ 0 "" 2
+  49              		.arm
+  50              		.syntax unified
+  51 0058 024086E0 		add	r4, r6, r2
+  52 005c 6334A0E1 		ror	r3, r3, #8
+  53              		.syntax divided
+  54              	@ 1983 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  55 0060 73308FE6 		sxtb16 r3, r3
+  56              	@ 0 "" 2
+  57              	@ 57 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_accumulate
+  58 0064 5C5883E6 		pkhtb r5, r3, ip, asr #16
+  59              	@ 0 "" 2
+  60              	@ 58 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_accumulate
+  61 0068 13788CE6 		pkhbt r7, ip, r3, lsl #16
+  62              	@ 0 "" 2
+  63              		.arm
+  64              		.syntax unified
+  65 006c FEFFFFEB 		bl	memcpy
+  66 0070 0420A0E3 		mov	r2, #4
+  67 0074 0C108DE2 		add	r1, sp, #12
+  68 0078 0600A0E1 		mov	r0, r6
+  69 007c 0C309DE5 		ldr	r3, [sp, #12]
+  70              		.syntax divided
+  71              	@ 1751 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  72 0080 133F27E6 		qadd16 r3, r7, r3
+  73              	@ 0 "" 2
+  74              		.arm
+  75              		.syntax unified
+  76 0084 0C308DE5 		str	r3, [sp, #12]
+  77 0088 086086E2 		add	r6, r6, #8
+  78 008c FEFFFFEB 		bl	memcpy
+  79 0090 0410A0E1 		mov	r1, r4
+  80 0094 0420A0E3 		mov	r2, #4
+  81 0098 0C008DE2 		add	r0, sp, #12
+  82 009c FEFFFFEB 		bl	memcpy
+  83 00a0 0400A0E1 		mov	r0, r4
+  84 00a4 0420A0E3 		mov	r2, #4
+  85 00a8 0C108DE2 		add	r1, sp, #12
+  86 00ac 0C309DE5 		ldr	r3, [sp, #12]
+  87              		.syntax divided
+  88              	@ 1751 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  89 00b0 135F25E6 		qadd16 r5, r5, r3
+  90              	@ 0 "" 2
+  91              		.arm
+  92              		.syntax unified
+  93 00b4 0C508DE5 		str	r5, [sp, #12]
+  94 00b8 FEFFFFEB 		bl	memcpy
+  95 00bc 018058E2 		subs	r8, r8, #1
+  96 00c0 DAFFFF1A 		bne	.L3
+  97 00c4 04309DE5 		ldr	r3, [sp, #4]
+  98 00c8 839189E0 		add	r9, r9, r3, lsl #3
+  99 00cc 03A18AE0 		add	r10, r10, r3, lsl #2
+ 100              	.L2:
+ 101 00d0 00309DE5 		ldr	r3, [sp]
+ 102 00d4 033013E2 		ands	r3, r3, #3
+ 103 00d8 0E00000A 		beq	.L1
+ 104 00dc D010DAE1 		ldrsb	r1, [r10]
+ 105 00e0 010053E3 		cmp	r3, #1
+ 106 00e4 B020D9E1 		ldrh	r2, [r9]
+ 107 00e8 012082E0 		add	r2, r2, r1
+ 108 00ec B020C9E1 		strh	r2, [r9]	@ movhi
+ 109 00f0 0800000A 		beq	.L1
+ 110 00f4 D120DAE1 		ldrsb	r2, [r10, #1]
+ 111 00f8 020053E3 		cmp	r3, #2
+ 112 00fc B230D9E1 		ldrh	r3, [r9, #2]
+ 113 0100 023083E0 		add	r3, r3, r2
+ 114 0104 B230C9E1 		strh	r3, [r9, #2]	@ movhi
+ 115 0108 B430D911 		ldrhne	r3, [r9, #4]
+ 116 010c D220DA11 		ldrsbne	r2, [r10, #2]
+ 117 0110 02308310 		addne	r3, r3, r2
+ 118 0114 B430C911 		strhne	r3, [r9, #4]	@ movhi
+ 119              	.L1:
+ 120 0118 14D08DE2 		add	sp, sp, #20
+ 121              		@ sp needed
+ 122 011c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 124              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_accumulate_q7_to_q15.c
+C:\Users\a5050395\AppData\Local\Temp\ccVnN2UD.s:14     .text.arm_nn_accumulate_q7_to_q15:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccVnN2UD.s:20     .text.arm_nn_accumulate_q7_to_q15:00000000 arm_nn_accumulate_q7_to_q15
+
+UNDEFINED SYMBOLS
+memcpy

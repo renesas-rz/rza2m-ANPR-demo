@@ -1,0 +1,751 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_cache_lld_rza2m.c"
+  13              		.section	.text.R_CACHE_L1Init,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_CACHE_L1Init
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_CACHE_L1Init:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 FEFFFFEB 		bl	r_cache_l1_d_enable
+  25 0008 FEFFFFEB 		bl	r_cache_l1_i_enable
+  26 000c FEFFFFEB 		bl	r_cache_l1_btac_enable
+  27 0010 FEFFFFEB 		bl	r_cache_l1_prefetch_enable
+  28 0014 1040BDE8 		pop	{r4, lr}
+  29 0018 FEFFFFEA 		b	r_cache_l1_cache_init
+  31              		.section	.text.R_CACHE_L1InstInvalidAll,"ax",%progbits
+  32              		.align	2
+  33              		.global	R_CACHE_L1InstInvalidAll
+  34              		.syntax unified
+  35              		.arm
+  36              		.fpu neon
+  38              	R_CACHE_L1InstInvalidAll:
+  39              		@ args = 0, pretend = 0, frame = 0
+  40              		@ frame_needed = 0, uses_anonymous_args = 0
+  41              		@ link register save eliminated.
+  42 0000 FEFFFFEA 		b	r_cache_l1_i_inv_all
+  44              		.section	.text.R_CACHE_L1DataInvalidAll,"ax",%progbits
+  45              		.align	2
+  46              		.global	R_CACHE_L1DataInvalidAll
+  47              		.syntax unified
+  48              		.arm
+  49              		.fpu neon
+  51              	R_CACHE_L1DataInvalidAll:
+  52              		@ args = 0, pretend = 0, frame = 0
+  53              		@ frame_needed = 0, uses_anonymous_args = 0
+  54              		@ link register save eliminated.
+  55 0000 0000A0E3 		mov	r0, #0
+  56 0004 FEFFFFEA 		b	r_cache_l1_d_cache_operation
+  58              		.section	.text.R_CACHE_L1DataCleanAll,"ax",%progbits
+  59              		.align	2
+  60              		.global	R_CACHE_L1DataCleanAll
+  61              		.syntax unified
+  62              		.arm
+  63              		.fpu neon
+  65              	R_CACHE_L1DataCleanAll:
+  66              		@ args = 0, pretend = 0, frame = 0
+  67              		@ frame_needed = 0, uses_anonymous_args = 0
+  68              		@ link register save eliminated.
+  69 0000 0100A0E3 		mov	r0, #1
+  70 0004 FEFFFFEA 		b	r_cache_l1_d_cache_operation
+  72              		.section	.text.R_CACHE_L1DataCleanInvalidAll,"ax",%progbits
+  73              		.align	2
+  74              		.global	R_CACHE_L1DataCleanInvalidAll
+  75              		.syntax unified
+  76              		.arm
+  77              		.fpu neon
+  79              	R_CACHE_L1DataCleanInvalidAll:
+  80              		@ args = 0, pretend = 0, frame = 0
+  81              		@ frame_needed = 0, uses_anonymous_args = 0
+  82              		@ link register save eliminated.
+  83 0000 0200A0E3 		mov	r0, #2
+  84 0004 FEFFFFEA 		b	r_cache_l1_d_cache_operation
+  86              		.section	.text.R_CACHE_L1DataInvalidLine,"ax",%progbits
+  87              		.align	2
+  88              		.global	R_CACHE_L1DataInvalidLine
+  89              		.syntax unified
+  90              		.arm
+  91              		.fpu neon
+  93              	R_CACHE_L1DataInvalidLine:
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96 0000 D0402DE9 		push	{r4, r6, r7, lr}
+  97 0004 006091E0 		adds	r6, r1, r0
+  98 0008 0070A0E3 		mov	r7, #0
+  99 000c 0030A0E3 		mov	r3, #0
+ 100 0010 0070A7E2 		adc	r7, r7, #0
+ 101 0014 0020E0E3 		mvn	r2, #0
+ 102 0018 030057E1 		cmp	r7, r3
+ 103 001c 02005601 		cmpeq	r6, r2
+ 104 0020 0A00008A 		bhi	.L12
+ 105 0024 1F40C0E3 		bic	r4, r0, #31
+ 106 0028 020000EA 		b	.L16
+ 107              	.L10:
+ 108 002c 0400A0E1 		mov	r0, r4
+ 109 0030 204084E2 		add	r4, r4, #32
+ 110 0034 FEFFFFEB 		bl	r_cache_l1_d_inv_mva
+ 111              	.L16:
+ 112 0038 0030A0E3 		mov	r3, #0
+ 113 003c 030057E1 		cmp	r7, r3
+ 114 0040 04005601 		cmpeq	r6, r4
+ 115 0044 F8FFFF8A 		bhi	.L10
+ 116 0048 0000A0E3 		mov	r0, #0
+ 117 004c D080BDE8 		pop	{r4, r6, r7, pc}
+ 118              	.L12:
+ 119 0050 0000E0E3 		mvn	r0, #0
+ 120 0054 D080BDE8 		pop	{r4, r6, r7, pc}
+ 122              		.section	.text.R_CACHE_L1DataCleanLine,"ax",%progbits
+ 123              		.align	2
+ 124              		.global	R_CACHE_L1DataCleanLine
+ 125              		.syntax unified
+ 126              		.arm
+ 127              		.fpu neon
+ 129              	R_CACHE_L1DataCleanLine:
+ 130              		@ args = 0, pretend = 0, frame = 0
+ 131              		@ frame_needed = 0, uses_anonymous_args = 0
+ 132 0000 D0402DE9 		push	{r4, r6, r7, lr}
+ 133 0004 006091E0 		adds	r6, r1, r0
+ 134 0008 0070A0E3 		mov	r7, #0
+ 135 000c 0030A0E3 		mov	r3, #0
+ 136 0010 0070A7E2 		adc	r7, r7, #0
+ 137 0014 0020E0E3 		mvn	r2, #0
+ 138 0018 030057E1 		cmp	r7, r3
+ 139 001c 02005601 		cmpeq	r6, r2
+ 140 0020 0A00008A 		bhi	.L23
+ 141 0024 1F40C0E3 		bic	r4, r0, #31
+ 142 0028 020000EA 		b	.L27
+ 143              	.L21:
+ 144 002c 0400A0E1 		mov	r0, r4
+ 145 0030 204084E2 		add	r4, r4, #32
+ 146 0034 FEFFFFEB 		bl	r_cache_l1_d_clean_mva
+ 147              	.L27:
+ 148 0038 0030A0E3 		mov	r3, #0
+ 149 003c 030057E1 		cmp	r7, r3
+ 150 0040 04005601 		cmpeq	r6, r4
+ 151 0044 F8FFFF8A 		bhi	.L21
+ 152 0048 0000A0E3 		mov	r0, #0
+ 153 004c D080BDE8 		pop	{r4, r6, r7, pc}
+ 154              	.L23:
+ 155 0050 0000E0E3 		mvn	r0, #0
+ 156 0054 D080BDE8 		pop	{r4, r6, r7, pc}
+ 158              		.section	.text.R_CACHE_L1DataCleanInvalidLine,"ax",%progbits
+ 159              		.align	2
+ 160              		.global	R_CACHE_L1DataCleanInvalidLine
+ 161              		.syntax unified
+ 162              		.arm
+ 163              		.fpu neon
+ 165              	R_CACHE_L1DataCleanInvalidLine:
+ 166              		@ args = 0, pretend = 0, frame = 0
+ 167              		@ frame_needed = 0, uses_anonymous_args = 0
+ 168 0000 D0402DE9 		push	{r4, r6, r7, lr}
+ 169 0004 006091E0 		adds	r6, r1, r0
+ 170 0008 0070A0E3 		mov	r7, #0
+ 171 000c 0030A0E3 		mov	r3, #0
+ 172 0010 0070A7E2 		adc	r7, r7, #0
+ 173 0014 0020E0E3 		mvn	r2, #0
+ 174 0018 030057E1 		cmp	r7, r3
+ 175 001c 02005601 		cmpeq	r6, r2
+ 176 0020 0A00008A 		bhi	.L33
+ 177 0024 1F40C0E3 		bic	r4, r0, #31
+ 178 0028 020000EA 		b	.L37
+ 179              	.L31:
+ 180 002c 0400A0E1 		mov	r0, r4
+ 181 0030 204084E2 		add	r4, r4, #32
+ 182 0034 FEFFFFEB 		bl	r_cache_l1_d_clean_inv_mva
+ 183              	.L37:
+ 184 0038 0030A0E3 		mov	r3, #0
+ 185 003c 030057E1 		cmp	r7, r3
+ 186 0040 04005601 		cmpeq	r6, r4
+ 187 0044 F8FFFF8A 		bhi	.L31
+ 188 0048 0000A0E3 		mov	r0, #0
+ 189 004c D080BDE8 		pop	{r4, r6, r7, pc}
+ 190              	.L33:
+ 191 0050 0000E0E3 		mvn	r0, #0
+ 192 0054 D080BDE8 		pop	{r4, r6, r7, pc}
+ 194              		.section	.text.R_CACHE_L1InstEnable,"ax",%progbits
+ 195              		.align	2
+ 196              		.global	R_CACHE_L1InstEnable
+ 197              		.syntax unified
+ 198              		.arm
+ 199              		.fpu neon
+ 201              	R_CACHE_L1InstEnable:
+ 202              		@ args = 0, pretend = 0, frame = 0
+ 203              		@ frame_needed = 0, uses_anonymous_args = 0
+ 204              		@ link register save eliminated.
+ 205 0000 FEFFFFEA 		b	r_cache_l1_i_enable
+ 207              		.section	.text.R_CACHE_L1InstDisable,"ax",%progbits
+ 208              		.align	2
+ 209              		.global	R_CACHE_L1InstDisable
+ 210              		.syntax unified
+ 211              		.arm
+ 212              		.fpu neon
+ 214              	R_CACHE_L1InstDisable:
+ 215              		@ args = 0, pretend = 0, frame = 0
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217              		@ link register save eliminated.
+ 218 0000 FEFFFFEA 		b	r_cache_l1_i_disable
+ 220              		.section	.text.R_CACHE_L1DataEnable,"ax",%progbits
+ 221              		.align	2
+ 222              		.global	R_CACHE_L1DataEnable
+ 223              		.syntax unified
+ 224              		.arm
+ 225              		.fpu neon
+ 227              	R_CACHE_L1DataEnable:
+ 228              		@ args = 0, pretend = 0, frame = 0
+ 229              		@ frame_needed = 0, uses_anonymous_args = 0
+ 230              		@ link register save eliminated.
+ 231 0000 FEFFFFEA 		b	r_cache_l1_d_enable
+ 233              		.section	.text.R_CACHE_L1DataDisable,"ax",%progbits
+ 234              		.align	2
+ 235              		.global	R_CACHE_L1DataDisable
+ 236              		.syntax unified
+ 237              		.arm
+ 238              		.fpu neon
+ 240              	R_CACHE_L1DataDisable:
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243              		@ link register save eliminated.
+ 244 0000 FEFFFFEA 		b	r_cache_l1_d_disable
+ 246              		.section	.text.R_CACHE_L1BtacEnable,"ax",%progbits
+ 247              		.align	2
+ 248              		.global	R_CACHE_L1BtacEnable
+ 249              		.syntax unified
+ 250              		.arm
+ 251              		.fpu neon
+ 253              	R_CACHE_L1BtacEnable:
+ 254              		@ args = 0, pretend = 0, frame = 0
+ 255              		@ frame_needed = 0, uses_anonymous_args = 0
+ 256              		@ link register save eliminated.
+ 257 0000 FEFFFFEA 		b	r_cache_l1_btac_enable
+ 259              		.section	.text.R_CACHE_L1BtacDisable,"ax",%progbits
+ 260              		.align	2
+ 261              		.global	R_CACHE_L1BtacDisable
+ 262              		.syntax unified
+ 263              		.arm
+ 264              		.fpu neon
+ 266              	R_CACHE_L1BtacDisable:
+ 267              		@ args = 0, pretend = 0, frame = 0
+ 268              		@ frame_needed = 0, uses_anonymous_args = 0
+ 269              		@ link register save eliminated.
+ 270 0000 FEFFFFEA 		b	r_cache_l1_btac_disable
+ 272              		.section	.text.R_CACHE_L1BtacInvalidate,"ax",%progbits
+ 273              		.align	2
+ 274              		.global	R_CACHE_L1BtacInvalidate
+ 275              		.syntax unified
+ 276              		.arm
+ 277              		.fpu neon
+ 279              	R_CACHE_L1BtacInvalidate:
+ 280              		@ args = 0, pretend = 0, frame = 0
+ 281              		@ frame_needed = 0, uses_anonymous_args = 0
+ 282              		@ link register save eliminated.
+ 283 0000 FEFFFFEA 		b	r_cache_l1_btac_inv
+ 285              		.section	.text.R_CACHE_L1PrefetchEnable,"ax",%progbits
+ 286              		.align	2
+ 287              		.global	R_CACHE_L1PrefetchEnable
+ 288              		.syntax unified
+ 289              		.arm
+ 290              		.fpu neon
+ 292              	R_CACHE_L1PrefetchEnable:
+ 293              		@ args = 0, pretend = 0, frame = 0
+ 294              		@ frame_needed = 0, uses_anonymous_args = 0
+ 295              		@ link register save eliminated.
+ 296 0000 FEFFFFEA 		b	r_cache_l1_prefetch_enable
+ 298              		.section	.text.R_CACHE_L1PrefetchDisable,"ax",%progbits
+ 299              		.align	2
+ 300              		.global	R_CACHE_L1PrefetchDisable
+ 301              		.syntax unified
+ 302              		.arm
+ 303              		.fpu neon
+ 305              	R_CACHE_L1PrefetchDisable:
+ 306              		@ args = 0, pretend = 0, frame = 0
+ 307              		@ frame_needed = 0, uses_anonymous_args = 0
+ 308              		@ link register save eliminated.
+ 309 0000 FEFFFFEA 		b	r_cache_l1_prefetch_disable
+ 311              		.section	.text.R_CACHE_L2Init,"ax",%progbits
+ 312              		.align	2
+ 313              		.global	R_CACHE_L2Init
+ 314              		.syntax unified
+ 315              		.arm
+ 316              		.fpu neon
+ 318              	R_CACHE_L2Init:
+ 319              		@ args = 0, pretend = 0, frame = 0
+ 320              		@ frame_needed = 0, uses_anonymous_args = 0
+ 321 0000 0020A0E3 		mov	r2, #0
+ 322 0004 310CA0E3 		mov	r0, #12544
+ 323 0008 0210A0E1 		mov	r1, r2
+ 324 000c 000F41E3 		movt	r0, 7936
+ 325 0010 0030E0E3 		mvn	r3, #0
+ 326 0014 70402DE9 		push	{r4, r5, r6, lr}
+ 327 0018 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 328 001c 0020A0E3 		mov	r2, #0
+ 329 0020 300703E3 		movw	r0, #14128
+ 330 0024 0210A0E1 		mov	r1, r2
+ 331 0028 000F41E3 		movt	r0, 7936
+ 332 002c 0030E0E3 		mvn	r3, #0
+ 333 0030 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 334              	.L48:
+ 335 0034 300703E3 		movw	r0, #14128
+ 336 0038 0020E0E3 		mvn	r2, #0
+ 337 003c 000F41E3 		movt	r0, 7936
+ 338 0040 0010A0E3 		mov	r1, #0
+ 339 0044 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 340 0048 004050E2 		subs	r4, r0, #0
+ 341 004c F8FFFF1A 		bne	.L48
+ 342 0050 600F03E3 		movw	r0, #16224
+ 343 0054 0020E0E3 		mvn	r2, #0
+ 344 0058 0410A0E1 		mov	r1, r4
+ 345 005c 000F41E3 		movt	r0, 7936
+ 346 0060 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 347 0064 0712C0E3 		bic	r1, r0, #1879048192
+ 348 0068 600F03E3 		movw	r0, #16224
+ 349 006c 000F41E3 		movt	r0, 7936
+ 350 0070 0030E0E3 		mvn	r3, #0
+ 351 0074 0420A0E1 		mov	r2, r4
+ 352 0078 305703E3 		movw	r5, #14128
+ 353 007c FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 354 0080 300703E3 		movw	r0, #14128
+ 355 0084 0030E0E3 		mvn	r3, #0
+ 356 0088 000F41E3 		movt	r0, 7936
+ 357 008c 0420A0E1 		mov	r2, r4
+ 358 0090 0410A0E1 		mov	r1, r4
+ 359 0094 005F41E3 		movt	r5, 7936
+ 360 0098 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 361              	.L49:
+ 362 009c 0020E0E3 		mvn	r2, #0
+ 363 00a0 0010A0E3 		mov	r1, #0
+ 364 00a4 0500A0E1 		mov	r0, r5
+ 365 00a8 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 366 00ac 002050E2 		subs	r2, r0, #0
+ 367 00b0 F9FFFF1A 		bne	.L49
+ 368 00b4 7C4703E3 		movw	r4, #14204
+ 369 00b8 FF30A0E3 		mov	r3, #255
+ 370 00bc 0400A0E1 		mov	r0, r4
+ 371 00c0 0310A0E1 		mov	r1, r3
+ 372 00c4 000F41E3 		movt	r0, 7936
+ 373 00c8 004F41E3 		movt	r4, 7936
+ 374 00cc FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 375              	.L50:
+ 376 00d0 FF20A0E3 		mov	r2, #255
+ 377 00d4 0010A0E3 		mov	r1, #0
+ 378 00d8 0400A0E1 		mov	r0, r4
+ 379 00dc FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 380 00e0 002050E2 		subs	r2, r0, #0
+ 381 00e4 F9FFFF1A 		bne	.L50
+ 382 00e8 300703E3 		movw	r0, #14128
+ 383 00ec 0030E0E3 		mvn	r3, #0
+ 384 00f0 000F41E3 		movt	r0, 7936
+ 385 00f4 0210A0E1 		mov	r1, r2
+ 386 00f8 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 387              	.L51:
+ 388 00fc 300703E3 		movw	r0, #14128
+ 389 0100 0020E0E3 		mvn	r2, #0
+ 390 0104 000F41E3 		movt	r0, 7936
+ 391 0108 0010A0E3 		mov	r1, #0
+ 392 010c FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 393 0110 004050E2 		subs	r4, r0, #0
+ 394 0114 F8FFFF1A 		bne	.L51
+ 395 0118 200203E3 		movw	r0, #12832
+ 396 011c 0030E0E3 		mvn	r3, #0
+ 397 0120 000F41E3 		movt	r0, 7936
+ 398 0124 0420A0E1 		mov	r2, r4
+ 399 0128 FF1100E3 		movw	r1, #511
+ 400 012c 305703E3 		movw	r5, #14128
+ 401 0130 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 402 0134 310CA0E3 		mov	r0, #12544
+ 403 0138 0030E0E3 		mvn	r3, #0
+ 404 013c 000F41E3 		movt	r0, 7936
+ 405 0140 0420A0E1 		mov	r2, r4
+ 406 0144 0110A0E3 		mov	r1, #1
+ 407 0148 005F41E3 		movt	r5, 7936
+ 408 014c FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 409 0150 300703E3 		movw	r0, #14128
+ 410 0154 0030E0E3 		mvn	r3, #0
+ 411 0158 000F41E3 		movt	r0, 7936
+ 412 015c 0420A0E1 		mov	r2, r4
+ 413 0160 0410A0E1 		mov	r1, r4
+ 414 0164 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 415              	.L52:
+ 416 0168 0020E0E3 		mvn	r2, #0
+ 417 016c 0010A0E3 		mov	r1, #0
+ 418 0170 0500A0E1 		mov	r0, r5
+ 419 0174 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 420 0178 000050E3 		cmp	r0, #0
+ 421 017c F9FFFF1A 		bne	.L52
+ 422 0180 7080BDE8 		pop	{r4, r5, r6, pc}
+ 424              		.section	.text.R_CACHE_L2CacheEnable,"ax",%progbits
+ 425              		.align	2
+ 426              		.global	R_CACHE_L2CacheEnable
+ 427              		.syntax unified
+ 428              		.arm
+ 429              		.fpu neon
+ 431              	R_CACHE_L2CacheEnable:
+ 432              		@ args = 0, pretend = 0, frame = 0
+ 433              		@ frame_needed = 0, uses_anonymous_args = 0
+ 434 0000 310CA0E3 		mov	r0, #12544
+ 435 0004 10402DE9 		push	{r4, lr}
+ 436 0008 0030E0E3 		mvn	r3, #0
+ 437 000c 000F41E3 		movt	r0, 7936
+ 438 0010 0020A0E3 		mov	r2, #0
+ 439 0014 0110A0E3 		mov	r1, #1
+ 440 0018 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 441 001c 0020A0E3 		mov	r2, #0
+ 442 0020 300703E3 		movw	r0, #14128
+ 443 0024 304703E3 		movw	r4, #14128
+ 444 0028 0210A0E1 		mov	r1, r2
+ 445 002c 000F41E3 		movt	r0, 7936
+ 446 0030 0030E0E3 		mvn	r3, #0
+ 447 0034 004F41E3 		movt	r4, 7936
+ 448 0038 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 449              	.L60:
+ 450 003c 0020E0E3 		mvn	r2, #0
+ 451 0040 0010A0E3 		mov	r1, #0
+ 452 0044 0400A0E1 		mov	r0, r4
+ 453 0048 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 454 004c 000050E3 		cmp	r0, #0
+ 455 0050 F9FFFF1A 		bne	.L60
+ 456 0054 1080BDE8 		pop	{r4, pc}
+ 458              		.section	.text.R_CACHE_L2CacheDisable,"ax",%progbits
+ 459              		.align	2
+ 460              		.global	R_CACHE_L2CacheDisable
+ 461              		.syntax unified
+ 462              		.arm
+ 463              		.fpu neon
+ 465              	R_CACHE_L2CacheDisable:
+ 466              		@ args = 0, pretend = 0, frame = 0
+ 467              		@ frame_needed = 0, uses_anonymous_args = 0
+ 468 0000 0020A0E3 		mov	r2, #0
+ 469 0004 310CA0E3 		mov	r0, #12544
+ 470 0008 0210A0E1 		mov	r1, r2
+ 471 000c 10402DE9 		push	{r4, lr}
+ 472 0010 000F41E3 		movt	r0, 7936
+ 473 0014 0030E0E3 		mvn	r3, #0
+ 474 0018 304703E3 		movw	r4, #14128
+ 475 001c FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 476 0020 0020A0E3 		mov	r2, #0
+ 477 0024 300703E3 		movw	r0, #14128
+ 478 0028 0210A0E1 		mov	r1, r2
+ 479 002c 000F41E3 		movt	r0, 7936
+ 480 0030 0030E0E3 		mvn	r3, #0
+ 481 0034 004F41E3 		movt	r4, 7936
+ 482 0038 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 483              	.L64:
+ 484 003c 0020E0E3 		mvn	r2, #0
+ 485 0040 0010A0E3 		mov	r1, #0
+ 486 0044 0400A0E1 		mov	r0, r4
+ 487 0048 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 488 004c 000050E3 		cmp	r0, #0
+ 489 0050 F9FFFF1A 		bne	.L64
+ 490 0054 1080BDE8 		pop	{r4, pc}
+ 492              		.section	.text.R_CACHE_L2PrefetchEnable,"ax",%progbits
+ 493              		.align	2
+ 494              		.global	R_CACHE_L2PrefetchEnable
+ 495              		.syntax unified
+ 496              		.arm
+ 497              		.fpu neon
+ 499              	R_CACHE_L2PrefetchEnable:
+ 500              		@ args = 0, pretend = 0, frame = 0
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502 0000 600F03E3 		movw	r0, #16224
+ 503 0004 10402DE9 		push	{r4, lr}
+ 504 0008 0020E0E3 		mvn	r2, #0
+ 505 000c 0010A0E3 		mov	r1, #0
+ 506 0010 000F41E3 		movt	r0, 7936
+ 507 0014 304703E3 		movw	r4, #14128
+ 508 0018 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 509 001c 0712C0E3 		bic	r1, r0, #1879048192
+ 510 0020 600F03E3 		movw	r0, #16224
+ 511 0024 000F41E3 		movt	r0, 7936
+ 512 0028 0030E0E3 		mvn	r3, #0
+ 513 002c 0020A0E3 		mov	r2, #0
+ 514 0030 004F41E3 		movt	r4, 7936
+ 515 0034 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 516 0038 0020A0E3 		mov	r2, #0
+ 517 003c 300703E3 		movw	r0, #14128
+ 518 0040 0210A0E1 		mov	r1, r2
+ 519 0044 000F41E3 		movt	r0, 7936
+ 520 0048 0030E0E3 		mvn	r3, #0
+ 521 004c FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 522              	.L68:
+ 523 0050 0020E0E3 		mvn	r2, #0
+ 524 0054 0010A0E3 		mov	r1, #0
+ 525 0058 0400A0E1 		mov	r0, r4
+ 526 005c FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 527 0060 000050E3 		cmp	r0, #0
+ 528 0064 F9FFFF1A 		bne	.L68
+ 529 0068 1080BDE8 		pop	{r4, pc}
+ 531              		.section	.text.R_CACHE_L2PrefetchDisable,"ax",%progbits
+ 532              		.align	2
+ 533              		.global	R_CACHE_L2PrefetchDisable
+ 534              		.syntax unified
+ 535              		.arm
+ 536              		.fpu neon
+ 538              	R_CACHE_L2PrefetchDisable:
+ 539              		@ args = 0, pretend = 0, frame = 0
+ 540              		@ frame_needed = 0, uses_anonymous_args = 0
+ 541 0000 600F03E3 		movw	r0, #16224
+ 542 0004 10402DE9 		push	{r4, lr}
+ 543 0008 0020E0E3 		mvn	r2, #0
+ 544 000c 0010A0E3 		mov	r1, #0
+ 545 0010 000F41E3 		movt	r0, 7936
+ 546 0014 304703E3 		movw	r4, #14128
+ 547 0018 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 548 001c 0712C0E3 		bic	r1, r0, #1879048192
+ 549 0020 600F03E3 		movw	r0, #16224
+ 550 0024 000F41E3 		movt	r0, 7936
+ 551 0028 0030E0E3 		mvn	r3, #0
+ 552 002c 0020A0E3 		mov	r2, #0
+ 553 0030 004F41E3 		movt	r4, 7936
+ 554 0034 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 555 0038 0020A0E3 		mov	r2, #0
+ 556 003c 300703E3 		movw	r0, #14128
+ 557 0040 0210A0E1 		mov	r1, r2
+ 558 0044 000F41E3 		movt	r0, 7936
+ 559 0048 0030E0E3 		mvn	r3, #0
+ 560 004c FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 561              	.L72:
+ 562 0050 0020E0E3 		mvn	r2, #0
+ 563 0054 0010A0E3 		mov	r1, #0
+ 564 0058 0400A0E1 		mov	r0, r4
+ 565 005c FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 566 0060 000050E3 		cmp	r0, #0
+ 567 0064 F9FFFF1A 		bne	.L72
+ 568 0068 1080BDE8 		pop	{r4, pc}
+ 570              		.section	.text.R_CACHE_L2InvalidAll,"ax",%progbits
+ 571              		.align	2
+ 572              		.global	R_CACHE_L2InvalidAll
+ 573              		.syntax unified
+ 574              		.arm
+ 575              		.fpu neon
+ 577              	R_CACHE_L2InvalidAll:
+ 578              		@ args = 0, pretend = 0, frame = 0
+ 579              		@ frame_needed = 0, uses_anonymous_args = 0
+ 580 0000 10402DE9 		push	{r4, lr}
+ 581 0004 7C4703E3 		movw	r4, #14204
+ 582 0008 0400A0E1 		mov	r0, r4
+ 583 000c FF30A0E3 		mov	r3, #255
+ 584 0010 0310A0E1 		mov	r1, r3
+ 585 0014 000F41E3 		movt	r0, 7936
+ 586 0018 0020A0E3 		mov	r2, #0
+ 587 001c 004F41E3 		movt	r4, 7936
+ 588 0020 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 589              	.L76:
+ 590 0024 FF20A0E3 		mov	r2, #255
+ 591 0028 0010A0E3 		mov	r1, #0
+ 592 002c 0400A0E1 		mov	r0, r4
+ 593 0030 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 594 0034 002050E2 		subs	r2, r0, #0
+ 595 0038 F9FFFF1A 		bne	.L76
+ 596 003c 304703E3 		movw	r4, #14128
+ 597 0040 0030E0E3 		mvn	r3, #0
+ 598 0044 0400A0E1 		mov	r0, r4
+ 599 0048 0210A0E1 		mov	r1, r2
+ 600 004c 000F41E3 		movt	r0, 7936
+ 601 0050 004F41E3 		movt	r4, 7936
+ 602 0054 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 603              	.L77:
+ 604 0058 0020E0E3 		mvn	r2, #0
+ 605 005c 0010A0E3 		mov	r1, #0
+ 606 0060 0400A0E1 		mov	r0, r4
+ 607 0064 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 608 0068 000050E3 		cmp	r0, #0
+ 609 006c F9FFFF1A 		bne	.L77
+ 610 0070 1080BDE8 		pop	{r4, pc}
+ 612              		.section	.text.R_CACHE_L2CleanAll,"ax",%progbits
+ 613              		.align	2
+ 614              		.global	R_CACHE_L2CleanAll
+ 615              		.syntax unified
+ 616              		.arm
+ 617              		.fpu neon
+ 619              	R_CACHE_L2CleanAll:
+ 620              		@ args = 0, pretend = 0, frame = 0
+ 621              		@ frame_needed = 0, uses_anonymous_args = 0
+ 622 0000 10402DE9 		push	{r4, lr}
+ 623 0004 BC4703E3 		movw	r4, #14268
+ 624 0008 0400A0E1 		mov	r0, r4
+ 625 000c FF30A0E3 		mov	r3, #255
+ 626 0010 0310A0E1 		mov	r1, r3
+ 627 0014 000F41E3 		movt	r0, 7936
+ 628 0018 0020A0E3 		mov	r2, #0
+ 629 001c 004F41E3 		movt	r4, 7936
+ 630 0020 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 631              	.L82:
+ 632 0024 FF20A0E3 		mov	r2, #255
+ 633 0028 0010A0E3 		mov	r1, #0
+ 634 002c 0400A0E1 		mov	r0, r4
+ 635 0030 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 636 0034 002050E2 		subs	r2, r0, #0
+ 637 0038 F9FFFF1A 		bne	.L82
+ 638 003c 304703E3 		movw	r4, #14128
+ 639 0040 0030E0E3 		mvn	r3, #0
+ 640 0044 0400A0E1 		mov	r0, r4
+ 641 0048 0210A0E1 		mov	r1, r2
+ 642 004c 000F41E3 		movt	r0, 7936
+ 643 0050 004F41E3 		movt	r4, 7936
+ 644 0054 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 645              	.L83:
+ 646 0058 0020E0E3 		mvn	r2, #0
+ 647 005c 0010A0E3 		mov	r1, #0
+ 648 0060 0400A0E1 		mov	r0, r4
+ 649 0064 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 650 0068 000050E3 		cmp	r0, #0
+ 651 006c F9FFFF1A 		bne	.L83
+ 652 0070 1080BDE8 		pop	{r4, pc}
+ 654              		.section	.text.R_CACHE_L2CleanInvalidAll,"ax",%progbits
+ 655              		.align	2
+ 656              		.global	R_CACHE_L2CleanInvalidAll
+ 657              		.syntax unified
+ 658              		.arm
+ 659              		.fpu neon
+ 661              	R_CACHE_L2CleanInvalidAll:
+ 662              		@ args = 0, pretend = 0, frame = 0
+ 663              		@ frame_needed = 0, uses_anonymous_args = 0
+ 664 0000 10402DE9 		push	{r4, lr}
+ 665 0004 FC4703E3 		movw	r4, #14332
+ 666 0008 0400A0E1 		mov	r0, r4
+ 667 000c FF30A0E3 		mov	r3, #255
+ 668 0010 0310A0E1 		mov	r1, r3
+ 669 0014 000F41E3 		movt	r0, 7936
+ 670 0018 0020A0E3 		mov	r2, #0
+ 671 001c 004F41E3 		movt	r4, 7936
+ 672 0020 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 673              	.L88:
+ 674 0024 FF20A0E3 		mov	r2, #255
+ 675 0028 0010A0E3 		mov	r1, #0
+ 676 002c 0400A0E1 		mov	r0, r4
+ 677 0030 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 678 0034 002050E2 		subs	r2, r0, #0
+ 679 0038 F9FFFF1A 		bne	.L88
+ 680 003c 304703E3 		movw	r4, #14128
+ 681 0040 0030E0E3 		mvn	r3, #0
+ 682 0044 0400A0E1 		mov	r0, r4
+ 683 0048 0210A0E1 		mov	r1, r2
+ 684 004c 000F41E3 		movt	r0, 7936
+ 685 0050 004F41E3 		movt	r4, 7936
+ 686 0054 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 687              	.L89:
+ 688 0058 0020E0E3 		mvn	r2, #0
+ 689 005c 0010A0E3 		mov	r1, #0
+ 690 0060 0400A0E1 		mov	r0, r4
+ 691 0064 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 692 0068 000050E3 		cmp	r0, #0
+ 693 006c F9FFFF1A 		bne	.L89
+ 694 0070 1080BDE8 		pop	{r4, pc}
+ 696              		.section	.text.R_CACHE_GetVersion,"ax",%progbits
+ 697              		.align	2
+ 698              		.global	R_CACHE_GetVersion
+ 699              		.syntax unified
+ 700              		.arm
+ 701              		.fpu neon
+ 703              	R_CACHE_GetVersion:
+ 704              		@ args = 0, pretend = 0, frame = 0
+ 705              		@ frame_needed = 0, uses_anonymous_args = 0
+ 706 0000 002000E3 		movw	r2, #:lower16:.LC0
+ 707 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 708 0008 0030A0E1 		mov	r3, r0
+ 709 000c 0010A0E3 		mov	r1, #0
+ 710 0010 002040E3 		movt	r2, #:upper16:.LC0
+ 711 0014 01E0A0E3 		mov	lr, #1
+ 712 0018 03C0A0E3 		mov	ip, #3
+ 713 001c 142080E5 		str	r2, [r0, #20]
+ 714 0020 0100A0E1 		mov	r0, r1
+ 715 0024 BEE0C3E1 		strh	lr, [r3, #14]	@ movhi
+ 716 0028 BCC0C3E1 		strh	ip, [r3, #12]	@ movhi
+ 717 002c 101083E5 		str	r1, [r3, #16]
+ 718 0030 04F09DE4 		ldr	pc, [sp], #4
+ 720              		.section	.rodata.R_CACHE_GetVersion.str1.4,"aMS",%progbits,1
+ 721              		.align	2
+ 722              	.LC0:
+ 723 0000 4C4C4420 		.ascii	"LLD EBK_RZA2M CACHE\000"
+ 723      45424B5F 
+ 723      525A4132 
+ 723      4D204341 
+ 723      43484500 
+ 724              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_cache_lld_rza2m.c
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:14     .text.R_CACHE_L1Init:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:20     .text.R_CACHE_L1Init:00000000 R_CACHE_L1Init
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:32     .text.R_CACHE_L1InstInvalidAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:38     .text.R_CACHE_L1InstInvalidAll:00000000 R_CACHE_L1InstInvalidAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:45     .text.R_CACHE_L1DataInvalidAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:51     .text.R_CACHE_L1DataInvalidAll:00000000 R_CACHE_L1DataInvalidAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:59     .text.R_CACHE_L1DataCleanAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:65     .text.R_CACHE_L1DataCleanAll:00000000 R_CACHE_L1DataCleanAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:73     .text.R_CACHE_L1DataCleanInvalidAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:79     .text.R_CACHE_L1DataCleanInvalidAll:00000000 R_CACHE_L1DataCleanInvalidAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:87     .text.R_CACHE_L1DataInvalidLine:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:93     .text.R_CACHE_L1DataInvalidLine:00000000 R_CACHE_L1DataInvalidLine
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:123    .text.R_CACHE_L1DataCleanLine:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:129    .text.R_CACHE_L1DataCleanLine:00000000 R_CACHE_L1DataCleanLine
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:159    .text.R_CACHE_L1DataCleanInvalidLine:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:165    .text.R_CACHE_L1DataCleanInvalidLine:00000000 R_CACHE_L1DataCleanInvalidLine
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:195    .text.R_CACHE_L1InstEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:201    .text.R_CACHE_L1InstEnable:00000000 R_CACHE_L1InstEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:208    .text.R_CACHE_L1InstDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:214    .text.R_CACHE_L1InstDisable:00000000 R_CACHE_L1InstDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:221    .text.R_CACHE_L1DataEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:227    .text.R_CACHE_L1DataEnable:00000000 R_CACHE_L1DataEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:234    .text.R_CACHE_L1DataDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:240    .text.R_CACHE_L1DataDisable:00000000 R_CACHE_L1DataDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:247    .text.R_CACHE_L1BtacEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:253    .text.R_CACHE_L1BtacEnable:00000000 R_CACHE_L1BtacEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:260    .text.R_CACHE_L1BtacDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:266    .text.R_CACHE_L1BtacDisable:00000000 R_CACHE_L1BtacDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:273    .text.R_CACHE_L1BtacInvalidate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:279    .text.R_CACHE_L1BtacInvalidate:00000000 R_CACHE_L1BtacInvalidate
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:286    .text.R_CACHE_L1PrefetchEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:292    .text.R_CACHE_L1PrefetchEnable:00000000 R_CACHE_L1PrefetchEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:299    .text.R_CACHE_L1PrefetchDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:305    .text.R_CACHE_L1PrefetchDisable:00000000 R_CACHE_L1PrefetchDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:312    .text.R_CACHE_L2Init:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:318    .text.R_CACHE_L2Init:00000000 R_CACHE_L2Init
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:425    .text.R_CACHE_L2CacheEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:431    .text.R_CACHE_L2CacheEnable:00000000 R_CACHE_L2CacheEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:459    .text.R_CACHE_L2CacheDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:465    .text.R_CACHE_L2CacheDisable:00000000 R_CACHE_L2CacheDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:493    .text.R_CACHE_L2PrefetchEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:499    .text.R_CACHE_L2PrefetchEnable:00000000 R_CACHE_L2PrefetchEnable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:532    .text.R_CACHE_L2PrefetchDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:538    .text.R_CACHE_L2PrefetchDisable:00000000 R_CACHE_L2PrefetchDisable
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:571    .text.R_CACHE_L2InvalidAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:577    .text.R_CACHE_L2InvalidAll:00000000 R_CACHE_L2InvalidAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:613    .text.R_CACHE_L2CleanAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:619    .text.R_CACHE_L2CleanAll:00000000 R_CACHE_L2CleanAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:655    .text.R_CACHE_L2CleanInvalidAll:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:661    .text.R_CACHE_L2CleanInvalidAll:00000000 R_CACHE_L2CleanInvalidAll
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:697    .text.R_CACHE_GetVersion:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:703    .text.R_CACHE_GetVersion:00000000 R_CACHE_GetVersion
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:722    .rodata.R_CACHE_GetVersion.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc0P63Aj.s:721    .rodata.R_CACHE_GetVersion.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+r_cache_l1_d_enable
+r_cache_l1_i_enable
+r_cache_l1_btac_enable
+r_cache_l1_prefetch_enable
+r_cache_l1_cache_init
+r_cache_l1_i_inv_all
+r_cache_l1_d_cache_operation
+r_cache_l1_d_inv_mva
+r_cache_l1_d_clean_mva
+r_cache_l1_d_clean_inv_mva
+r_cache_l1_i_disable
+r_cache_l1_d_disable
+r_cache_l1_btac_disable
+r_cache_l1_btac_inv
+r_cache_l1_prefetch_disable
+RZA_IO_RegWrite_32
+RZA_IO_RegRead_32

@@ -1,0 +1,156 @@
+/*
+ * demoBoardKeys.c
+ *
+ *  Created on: 29.01.2020
+ *      Author: a5050305
+ */
+
+/******************************************************************************
+Includes   <System Includes> , "Project Includes"
+ ******************************************************************************/
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "r_typedefs.h"
+#include "iodefine.h"
+
+#include "compiler_settings.h"
+
+#include "r_adc_drv_api.h"
+
+#include "subBoardKeysTdef.h"
+
+/******************************************************************************
+Imported global variables and functions (from other files)
+ ******************************************************************************/
+
+/******************************************************************************
+Exported global variables and functions (to be accessed by other files)
+ ******************************************************************************/
+
+switchBoardType boardSwitchInfoStruct  = { 	0,0,1,        // SW2_ModeCnt, SW2_IsModified, SW2_ModeCntMax
+											0,0,1 };      // SW3_ModeCnt, SW3_IsModified, SW3_ModeCntMax
+
+/******************************************************************************
+local global variables
+ ******************************************************************************/
+
+static int_t s_adc_handle = -1 ;
+static st_r_drv_adc_config_t adc_config;
+
+static int_t SW3_lastKey     = 1 ;
+
+static uint16_t channel_6_conversionPrev = 0 ;
+
+/******************************************************************************
+ * Function Name: nmi_callback
+ * Description  : callback for nmi ISR to handle switch press
+ * Arguments    : .
+ * Return Value : .
+ *****************************************************************************/
+static void nmi_callback(uint32_t int_sense)
+{
+	UNUSED_PARAM(int_sense);
+
+	if ( ! boardSwitchInfoStruct.SW2_IsModified ) {
+		if (boardSwitchInfoStruct.SW2_ModeCnt < boardSwitchInfoStruct.SW2_ModeCntMax ) {
+			boardSwitchInfoStruct.SW2_ModeCnt++ ;
+		} else {
+			boardSwitchInfoStruct.SW2_ModeCnt = 0 ;
+		}
+		boardSwitchInfoStruct.SW2_IsModified = 1;
+	}
+
+}
+
+/******************************************************************************
+ * Function Name: registerNmiInterrupt
+ * Description  : register the nmi interrupt function
+ * Arguments    : .
+ * Return Value : .
+ *****************************************************************************/
+static void registerNmiInterrupt ( void ) {
+	/* do something with the nmi interrut SW2 */
+	/* provide an isr function for nmi        */
+	R_INTC_RegistIntFunc(INTC_VID_NMI, nmi_callback);
+}
+
+
+/**********************************************************************************************************************
+ * Function Name: initSW3gpioRead
+ * Description  : initialization for SW3
+ * Arguments    : none
+ * Return Value : 0
+ *********************************************************************************************************************/
+
+static void initSW3gpioRead ( void ) {
+	/* SW3 Readout setting */
+	PORTJ.PMR.BIT.PMR1 = 1;
+	PORTJ.PMR.BIT.PMR1 = 0; /* SW3 peripheral function */
+	PORTJ.PDR.BIT.PDR1 = 2; /* SW-3  : input  */
+
+	PORTJ.PIDR.BIT.PIDR1;   /* Dummy read */
+}
+
+/**********************************************************************************************************************
+ * Function Name: readSW3Switch
+ * Description  : read port bit data PORTJ.PIDR.BIT.PIDR1
+ * Arguments    : none
+ * Return Value : 0
+ *********************************************************************************************************************/
+
+static void readSW3Switch ( void ) {
+	uint8_t data = PORTJ.PIDR.BIT.PIDR1;
+
+	if ( ! boardSwitchInfoStruct.SW3_IsModified && data == 0 ) {
+		if ( data != SW3_lastKey ) {
+			if (boardSwitchInfoStruct.SW3_ModeCnt < boardSwitchInfoStruct.SW3_ModeCntMax ) {
+				boardSwitchInfoStruct.SW3_ModeCnt++ ;
+			} else {
+				boardSwitchInfoStruct.SW3_ModeCnt = 0 ;
+			}
+			boardSwitchInfoStruct.SW3_IsModified = 1;
+			SW3_lastKey = data ;
+		}
+	}
+	if ( ! boardSwitchInfoStruct.SW3_IsModified ) {
+		SW3_lastKey = data ;
+	}
+	return;
+}
+
+
+/**********************************************************************************************************************
+ * global functions
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ * Function Name: initBoardSwitch
+ * Description  : initialization of AD converter, SW3 and interrupts
+ * Arguments    : none
+ * Return Value : 0
+ *********************************************************************************************************************/
+
+void initBoardSwitch ( void ) {
+	boardSwitchInfoStruct  = (switchBoardType){ 0,0,1,        // SW2_ModeCnt, SW2_IsModified, SW2_ModeCntMax
+												0,0,1 };      // SW3_ModeCnt, SW3_IsModified, SW3_ModeCntMax
+	initSW3gpioRead ( ) ;
+	registerNmiInterrupt ( ) ;
+
+}
+
+
+/**********************************************************************************************************************
+ * Function Name: readBoardSwitch
+ * Description  : read ad converter values
+ * Arguments    : none
+ * Return Value : 0
+ *********************************************************************************************************************/
+void readBoardSwitch ( void ) {
+	readSW3Switch (  ) ; // read sw3 by pin polling
+						 // sw2 is nmi interrupt controlled
+}
+

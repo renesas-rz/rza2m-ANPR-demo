@@ -1,0 +1,1252 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_bcd_ae.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.R_BCD_AeGetMode,"ax",%progbits
+  17              		.align	2
+  18              		.global	R_BCD_AeGetMode
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	R_BCD_AeGetMode:
+  24              	.LFB4:
+  25              		.file 1 "../src/renesas/application/r_bcd_ae.c"
+   1:../src/renesas/application/r_bcd_ae.c **** /**************************************************************************************************
+   2:../src/renesas/application/r_bcd_ae.c ****  * DISCLAIMER
+   3:../src/renesas/application/r_bcd_ae.c ****  * This software is supplied by Renesas Electronics Corporation and is only intended for use with R
+   4:../src/renesas/application/r_bcd_ae.c ****  * other uses are authorized. This software is owned by Renesas Electronics Corporation and is prot
+   5:../src/renesas/application/r_bcd_ae.c ****  * applicable laws, including copyright laws.
+   6:../src/renesas/application/r_bcd_ae.c ****  * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING
+   7:../src/renesas/application/r_bcd_ae.c ****  * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+   8:../src/renesas/application/r_bcd_ae.c ****  * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAI
+   9:../src/renesas/application/r_bcd_ae.c ****  * EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS A
+  10:../src/renesas/application/r_bcd_ae.c ****  * SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY R
+  11:../src/renesas/application/r_bcd_ae.c ****  * THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DA
+  12:../src/renesas/application/r_bcd_ae.c ****  * Renesas reserves the right, without notice, to make changes to this software and to discontinue 
+  13:../src/renesas/application/r_bcd_ae.c ****  * this software. By using this software, you agree to the additional terms and conditions found by
+  14:../src/renesas/application/r_bcd_ae.c ****  * following link:
+  15:../src/renesas/application/r_bcd_ae.c ****  * http://www.renesas.com/disclaimer
+  16:../src/renesas/application/r_bcd_ae.c ****  *
+  17:../src/renesas/application/r_bcd_ae.c ****  * Copyright (C) 2019 Renesas Electronics Corporation. All rights reserved.
+  18:../src/renesas/application/r_bcd_ae.c ****  **************************************************************************************************
+  19:../src/renesas/application/r_bcd_ae.c **** /*******************************************************************************
+  20:../src/renesas/application/r_bcd_ae.c **** Includes   <System Includes> , "Project Includes"
+  21:../src/renesas/application/r_bcd_ae.c **** *******************************************************************************/
+  22:../src/renesas/application/r_bcd_ae.c **** #include <stdio.h>
+  23:../src/renesas/application/r_bcd_ae.c **** #include <fcntl.h>
+  24:../src/renesas/application/r_bcd_ae.c **** 
+  25:../src/renesas/application/r_bcd_ae.c **** #include "r_typedefs.h"
+  26:../src/renesas/application/r_bcd_ae.c **** #include "iodefine.h"
+  27:../src/renesas/application/r_bcd_ae.c **** 
+  28:../src/renesas/application/r_bcd_ae.c **** #include "r_bcd_ae.h"
+  29:../src/renesas/application/r_bcd_ae.c **** #include "r_bcd_camera.h"
+  30:../src/renesas/application/r_bcd_ae.c **** #include "draw.h"
+  31:../src/renesas/application/r_bcd_ae.c **** #include "r_mmu_drv_api.h"
+  32:../src/renesas/application/r_bcd_ae.c **** #include "r_riic_drv_api.h"
+  33:../src/renesas/application/r_bcd_ae.c **** #include "r_devlink_wrapper.h"
+  34:../src/renesas/application/r_bcd_ae.c **** #include "r_riic_drv_sc_cfg.h"
+  35:../src/renesas/application/r_bcd_ae.c **** 
+  36:../src/renesas/application/r_bcd_ae.c **** 
+  37:../src/renesas/application/r_bcd_ae.c **** /*******************************************************************************
+  38:../src/renesas/application/r_bcd_ae.c **** Macro definitions
+  39:../src/renesas/application/r_bcd_ae.c **** *******************************************************************************/
+  40:../src/renesas/application/r_bcd_ae.c **** 
+  41:../src/renesas/application/r_bcd_ae.c **** 
+  42:../src/renesas/application/r_bcd_ae.c **** #define ANA
+  43:../src/renesas/application/r_bcd_ae.c **** 
+  44:../src/renesas/application/r_bcd_ae.c **** /*******************************************************************************
+  45:../src/renesas/application/r_bcd_ae.c **** Imported global variables and functions (from other files)
+  46:../src/renesas/application/r_bcd_ae.c **** *******************************************************************************/
+  47:../src/renesas/application/r_bcd_ae.c **** static uint8_t gain_set_count;
+  48:../src/renesas/application/r_bcd_ae.c **** 
+  49:../src/renesas/application/r_bcd_ae.c **** extern void R_BCD_gain_setting(uint32_t);
+  50:../src/renesas/application/r_bcd_ae.c **** extern void R_BCD_gain_table_setting(uint32_t);
+  51:../src/renesas/application/r_bcd_ae.c **** extern void R_BCD_shutter_setting(uint32_t);
+  52:../src/renesas/application/r_bcd_ae.c **** 
+  53:../src/renesas/application/r_bcd_ae.c **** /*******************************************************************************
+  54:../src/renesas/application/r_bcd_ae.c **** Private global variables and functions
+  55:../src/renesas/application/r_bcd_ae.c **** *******************************************************************************/
+  56:../src/renesas/application/r_bcd_ae.c **** 
+  57:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+  58:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeInit
+  59:../src/renesas/application/r_bcd_ae.c **** * Description  : Initialize AE
+  60:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+  61:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+  62:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+  63:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+  64:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeInit(r_bcd_ae_setting_t* pAeSet)
+  65:../src/renesas/application/r_bcd_ae.c **** {
+  66:../src/renesas/application/r_bcd_ae.c ****     uint16_t mipi_set;
+  67:../src/renesas/application/r_bcd_ae.c **** 
+  68:../src/renesas/application/r_bcd_ae.c ****     gain_set_count = 0;
+  69:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode               = R_BCD_AE_MODE_INIT;
+  70:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness         = 0;
+  71:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness_old     = 0;
+  72:../src/renesas/application/r_bcd_ae.c **** 	pAeSet->adapted            = 0 ;
+  73:../src/renesas/application/r_bcd_ae.c **** 	pAeSet->outOfRange         = 0 ;
+  74:../src/renesas/application/r_bcd_ae.c ****     pAeSet->shutter_speed      = R_BCD_AE_S_SPEED_DEFAULT;
+  75:../src/renesas/application/r_bcd_ae.c ****     pAeSet->global_gain        = R_BCD_AE_G_GAIN_DEFAULT; //R_BCD_AE_G_GAIN_DEFAULT;
+  76:../src/renesas/application/r_bcd_ae.c **** 
+  77:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_shutter_setting(pAeSet->shutter_speed) ;
+  78:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+  79:../src/renesas/application/r_bcd_ae.c **** 
+  80:../src/renesas/application/r_bcd_ae.c ****     return R_BCD_AE_MODE_INIT;
+  81:../src/renesas/application/r_bcd_ae.c **** }
+  82:../src/renesas/application/r_bcd_ae.c **** 
+  83:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+  84:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeStop
+  85:../src/renesas/application/r_bcd_ae.c **** * Description  : Stop AE
+  86:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+  87:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+  88:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+  89:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+  90:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeStop(r_bcd_ae_setting_t* pAeSet)
+  91:../src/renesas/application/r_bcd_ae.c **** {
+  92:../src/renesas/application/r_bcd_ae.c ****     uint16_t mipi_set;
+  93:../src/renesas/application/r_bcd_ae.c **** 
+  94:../src/renesas/application/r_bcd_ae.c ****     gain_set_count = 0;
+  95:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode           = R_BCD_AE_MODE_STOP;
+  96:../src/renesas/application/r_bcd_ae.c ****     pAeSet->shutter_speed  = R_BCD_AE_S_SPEED_DEFAULT;
+  97:../src/renesas/application/r_bcd_ae.c ****     pAeSet->global_gain    = R_BCD_AE_G_GAIN_DEFAULT; //R_BCD_AE_G_GAIN_DEFAULT;
+  98:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness_old = 0;
+  99:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_shutter_setting(pAeSet->shutter_speed) ;
+ 100:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 101:../src/renesas/application/r_bcd_ae.c **** 
+ 102:../src/renesas/application/r_bcd_ae.c ****     return R_BCD_AE_MODE_STOP;
+ 103:../src/renesas/application/r_bcd_ae.c **** }
+ 104:../src/renesas/application/r_bcd_ae.c **** 
+ 105:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 106:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeStart
+ 107:../src/renesas/application/r_bcd_ae.c **** * Description  : Start AE
+ 108:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 109:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 110:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+ 111:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 112:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeStart(r_bcd_ae_setting_t* pAeSet)
+ 113:../src/renesas/application/r_bcd_ae.c **** {
+ 114:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode           = R_BCD_AE_MODE_INIT;
+ 115:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 116:../src/renesas/application/r_bcd_ae.c **** 
+ 117:../src/renesas/application/r_bcd_ae.c ****     return R_BCD_AE_MODE_INIT;
+ 118:../src/renesas/application/r_bcd_ae.c **** }
+ 119:../src/renesas/application/r_bcd_ae.c **** 
+ 120:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 121:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeGetMode
+ 122:../src/renesas/application/r_bcd_ae.c **** * Description  : Get present AE mode 
+ 123:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 124:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 125:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+ 126:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 127:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeGetMode(r_bcd_ae_setting_t* pAeSet)
+ 128:../src/renesas/application/r_bcd_ae.c **** {
+  26              		.loc 1 128 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              		@ link register save eliminated.
+  31              	.LVL0:
+ 129:../src/renesas/application/r_bcd_ae.c ****     return pAeSet->mode;
+ 130:../src/renesas/application/r_bcd_ae.c **** }
+  32              		.loc 1 130 0
+  33 0000 0E00D0E5 		ldrb	r0, [r0, #14]	@ zero_extendqisi2
+  34              	.LVL1:
+  35 0004 1EFF2FE1 		bx	lr
+  36              		.cfi_endproc
+  37              	.LFE4:
+  39              		.section	.text.R_BCD_AeMakeGammaTable,"ax",%progbits
+  40              		.align	2
+  41              		.global	R_BCD_AeMakeGammaTable
+  42              		.syntax unified
+  43              		.arm
+  44              		.fpu neon
+  46              	R_BCD_AeMakeGammaTable:
+  47              	.LFB5:
+ 131:../src/renesas/application/r_bcd_ae.c **** 
+ 132:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 133:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeMakeGammaTable
+ 134:../src/renesas/application/r_bcd_ae.c **** * Description  : Make gamma table
+ 135:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 136:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 137:../src/renesas/application/r_bcd_ae.c **** *              : gamma
+ 138:../src/renesas/application/r_bcd_ae.c **** *              :   Gamma value
+ 139:../src/renesas/application/r_bcd_ae.c **** *              : pTable
+ 140:../src/renesas/application/r_bcd_ae.c **** *              :   Gamma table address
+ 141:../src/renesas/application/r_bcd_ae.c **** * Return Value : -
+ 142:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 143:../src/renesas/application/r_bcd_ae.c **** void    R_BCD_AeMakeGammaTable(r_bcd_ae_setting_t* pAeSet, double gamma, uint8_t* pTable)
+ 144:../src/renesas/application/r_bcd_ae.c **** {
+  48              		.loc 1 144 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 8
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52              	.LVL2:
+  53 0000 70402DE9 		push	{r4, r5, r6, lr}
+  54              		.cfi_def_cfa_offset 16
+  55              		.cfi_offset 4, -16
+  56              		.cfi_offset 5, -12
+  57              		.cfi_offset 6, -8
+  58              		.cfi_offset 14, -4
+  59 0004 048B2DED 		vpush.64	{d8, d9}
+  60              		.cfi_def_cfa_offset 32
+  61              		.cfi_offset 80, -32
+  62              		.cfi_offset 81, -28
+  63              		.cfi_offset 82, -24
+  64              		.cfi_offset 83, -20
+  65 0008 08D04DE2 		sub	sp, sp, #8
+  66              		.cfi_def_cfa_offset 40
+  67 000c 0060A0E1 		mov	r6, r0
+  68 0010 409BB0EE 		vmov.f64	d9, d0
+  69 0014 0150A0E1 		mov	r5, r1
+ 145:../src/renesas/application/r_bcd_ae.c ****     int32_t i;
+ 146:../src/renesas/application/r_bcd_ae.c ****     
+ 147:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness = 0;
+  70              		.loc 1 147 0
+  71 0018 0030A0E3 		mov	r3, #0
+  72 001c B030C0E1 		strh	r3, [r0]	@ movhi
+ 148:../src/renesas/application/r_bcd_ae.c ****     if (pAeSet->mode != R_BCD_AE_MODE_STOP) {
+  73              		.loc 1 148 0
+  74 0020 0E30D0E5 		ldrb	r3, [r0, #14]	@ zero_extendqisi2
+  75 0024 FF0053E3 		cmp	r3, #255
+ 149:../src/renesas/application/r_bcd_ae.c ****         pAeSet->mode = R_BCD_AE_MODE_INIT;
+  76              		.loc 1 149 0
+  77 0028 0130E013 		mvnne	r3, #1
+  78 002c 0E30C015 		strbne	r3, [r0, #14]
+  79              	.L3:
+ 144:../src/renesas/application/r_bcd_ae.c ****     int32_t i;
+  80              		.loc 1 144 0 discriminator 1
+  81 0030 0040A0E3 		mov	r4, #0
+  82 0034 000000EA 		b	.L4
+  83              	.LVL3:
+  84              	.L5:
+ 150:../src/renesas/application/r_bcd_ae.c ****     }
+ 151:../src/renesas/application/r_bcd_ae.c ****     for( i = 0; i < 256; i++ ) {
+  85              		.loc 1 151 0 discriminator 2
+  86 0038 014084E2 		add	r4, r4, #1
+  87              	.LVL4:
+  88              	.L4:
+  89              		.loc 1 151 0 is_stmt 0 discriminator 1
+  90 003c FF0054E3 		cmp	r4, #255
+  91 0040 110000CA 		bgt	.L8
+ 152:../src/renesas/application/r_bcd_ae.c ****         pTable[i] = (uint8_t)(pow((double)i / 255.0, 1.0 / gamma) * 255.0);
+  92              		.loc 1 152 0 is_stmt 1
+  93 0044 904A07EE 		vmov	s15, r4	@ int
+  94 0048 E70BB8EE 		vcvt.f64.s32	d0, s15
+  95 004c 118B9FED 		vldr.64	d8, .L9
+  96 0050 001BB7EE 		vmov.f64	d1, #1.0e+0
+  97 0054 091B81EE 		vdiv.f64	d1, d1, d9
+  98 0058 080B80EE 		vdiv.f64	d0, d0, d8
+  99 005c FEFFFFEB 		bl	pow
+ 100              	.LVL5:
+ 101 0060 080B20EE 		vmul.f64	d0, d0, d8
+ 102 0064 C07BFCEE 		vcvt.u32.f64	s15, d0
+ 103 0068 017ACDED 		vstr.32	s15, [sp, #4]	@ int
+ 104 006c 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 105 0070 0430C5E7 		strb	r3, [r5, r4]
+ 153:../src/renesas/application/r_bcd_ae.c ****         if ((pTable[i] >= BRIGHTNESS_SET) && (pAeSet->brightness == 0)) {
+ 106              		.loc 1 153 0
+ 107 0074 810053E3 		cmp	r3, #129
+ 108 0078 EEFFFF9A 		bls	.L5
+ 109              		.loc 1 153 0 is_stmt 0 discriminator 1
+ 110 007c B030D6E1 		ldrh	r3, [r6]
+ 111 0080 000053E3 		cmp	r3, #0
+ 154:../src/renesas/application/r_bcd_ae.c ****             pAeSet->brightness = (uint16_t)i;
+ 112              		.loc 1 154 0 is_stmt 1
+ 113 0084 B040C601 		strheq	r4, [r6]	@ movhi
+ 114 0088 EAFFFFEA 		b	.L5
+ 115              	.L8:
+ 155:../src/renesas/application/r_bcd_ae.c ****         }
+ 156:../src/renesas/application/r_bcd_ae.c ****     }
+ 157:../src/renesas/application/r_bcd_ae.c ****     return;
+ 158:../src/renesas/application/r_bcd_ae.c **** }
+ 116              		.loc 1 158 0
+ 117 008c 08D08DE2 		add	sp, sp, #8
+ 118              		.cfi_def_cfa_offset 32
+ 119              		@ sp needed
+ 120 0090 048BBDEC 		vldm	sp!, {d8-d9}
+ 121              		.cfi_restore 82
+ 122              		.cfi_restore 83
+ 123              		.cfi_restore 80
+ 124              		.cfi_restore 81
+ 125              		.cfi_def_cfa_offset 16
+ 126              	.LVL6:
+ 127 0094 7080BDE8 		pop	{r4, r5, r6, pc}
+ 128              	.LVL7:
+ 129              	.L10:
+ 130              		.align	3
+ 131              	.L9:
+ 132 0098 00000000 		.word	0
+ 133 009c 00E06F40 		.word	1081073664
+ 134              		.cfi_endproc
+ 135              	.LFE5:
+ 137              		.section	.text.R_BCD_AeSetShutterSpeed,"ax",%progbits
+ 138              		.align	2
+ 139              		.global	R_BCD_AeSetShutterSpeed
+ 140              		.syntax unified
+ 141              		.arm
+ 142              		.fpu neon
+ 144              	R_BCD_AeSetShutterSpeed:
+ 145              	.LFB7:
+ 159:../src/renesas/application/r_bcd_ae.c **** 
+ 160:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 161:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeRunAutoExpousure
+ 162:../src/renesas/application/r_bcd_ae.c **** * Description  : Set average luminance for AE 
+ 163:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 164:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 165:../src/renesas/application/r_bcd_ae.c **** *              : ave_lum
+ 166:../src/renesas/application/r_bcd_ae.c **** *              :   Average luminance
+ 167:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+ 168:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 169:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeRunAutoExpousure(r_bcd_ae_setting_t* pAeSet, uint16_t ave_lum)
+ 170:../src/renesas/application/r_bcd_ae.c **** {
+ 171:../src/renesas/application/r_bcd_ae.c **** 
+ 172:../src/renesas/application/r_bcd_ae.c **** 	uint16_t  shutterSpeedOld =  pAeSet-> shutter_speed ;
+ 173:../src/renesas/application/r_bcd_ae.c **** 	uint16_t  globalGainOld   =  pAeSet-> global_gain ;
+ 174:../src/renesas/application/r_bcd_ae.c ****     uint8_t   outOfRange      =  0 ;
+ 175:../src/renesas/application/r_bcd_ae.c **** 
+ 176:../src/renesas/application/r_bcd_ae.c ****     if ((ave_lum <= BRIGHTNESS_MAX) && (pAeSet->mode != R_BCD_AE_MODE_STOP)) {
+ 177:../src/renesas/application/r_bcd_ae.c **** 
+ 178:../src/renesas/application/r_bcd_ae.c ****         uint8_t nError;
+ 179:../src/renesas/application/r_bcd_ae.c ****         
+ 180:../src/renesas/application/r_bcd_ae.c ****         if (ave_lum > (pAeSet->brightness * (100 + BRIGHTNESS_TH_HIGH)) / 100)       //OverEposed
+ 181:../src/renesas/application/r_bcd_ae.c ****         {
+ 182:../src/renesas/application/r_bcd_ae.c ****             outOfRange = 1;
+ 183:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->global_gain == 0)
+ 184:../src/renesas/application/r_bcd_ae.c ****             {
+ 185:../src/renesas/application/r_bcd_ae.c ****                 nError = ave_lum - pAeSet->brightness;
+ 186:../src/renesas/application/r_bcd_ae.c ****                 if (nError > (0.45*pAeSet->brightness)) //Coarse decrease
+ 187:../src/renesas/application/r_bcd_ae.c ****                 {
+ 188:../src/renesas/application/r_bcd_ae.c **** 	                pAeSet->shutter_speed = (uint16_t)(((((uint32_t)pAeSet->shutter_speed * pAeSet->br
+ 189:../src/renesas/application/r_bcd_ae.c ****                 }
+ 190:../src/renesas/application/r_bcd_ae.c ****                 else
+ 191:../src/renesas/application/r_bcd_ae.c ****                 {
+ 192:../src/renesas/application/r_bcd_ae.c ****                     if (pAeSet->shutter_speed > R_BCD_AE_S_SPEED_GAIN) {
+ 193:../src/renesas/application/r_bcd_ae.c ****                         pAeSet->shutter_speed = pAeSet->shutter_speed - R_BCD_AE_S_SPEED_GAIN;
+ 194:../src/renesas/application/r_bcd_ae.c ****                     } else {
+ 195:../src/renesas/application/r_bcd_ae.c ****                         pAeSet->shutter_speed = pAeSet->shutter_speed = 0;
+ 196:../src/renesas/application/r_bcd_ae.c ****                     }
+ 197:../src/renesas/application/r_bcd_ae.c ****                 }
+ 198:../src/renesas/application/r_bcd_ae.c **** 
+ 199:../src/renesas/application/r_bcd_ae.c ****                 if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MIN)
+ 200:../src/renesas/application/r_bcd_ae.c ****                 {
+ 201:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->shutter_speed = R_BCD_AE_S_SPEED_MIN;
+ 202:../src/renesas/application/r_bcd_ae.c ****                 }
+ 203:../src/renesas/application/r_bcd_ae.c ****                  (void)R_BCD_AeSetShutterSpeed(pAeSet, pAeSet->shutter_speed);
+ 204:../src/renesas/application/r_bcd_ae.c ****             }
+ 205:../src/renesas/application/r_bcd_ae.c ****             else if (pAeSet->global_gain > 0)                   //Reduce gain on priority to reduce
+ 206:../src/renesas/application/r_bcd_ae.c ****             {
+ 207:../src/renesas/application/r_bcd_ae.c ****                 if (gain_set_count == 0) {
+ 208:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count = 2;
+ 209:../src/renesas/application/r_bcd_ae.c ****                 nError = ave_lum - pAeSet->brightness;
+ 210:../src/renesas/application/r_bcd_ae.c **** 
+ 211:../src/renesas/application/r_bcd_ae.c ****                 if ((nError > (0.45*pAeSet->brightness)) && (pAeSet->global_gain > 2)) //Coarse dec
+ 212:../src/renesas/application/r_bcd_ae.c ****                 {
+ 213:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->global_gain = pAeSet->global_gain - 2;
+ 214:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 215:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->global_gain = pAeSet->global_gain - 1;
+ 216:../src/renesas/application/r_bcd_ae.c ****                 }
+ 217:../src/renesas/application/r_bcd_ae.c ****                      (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 218:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 219:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count--;
+ 220:../src/renesas/application/r_bcd_ae.c ****                 }
+ 221:../src/renesas/application/r_bcd_ae.c ****             }
+ 222:../src/renesas/application/r_bcd_ae.c ****         }
+ 223:../src/renesas/application/r_bcd_ae.c ****         else if (ave_lum < (pAeSet->brightness * (100 - BRIGHTNESS_TH_LOW)) / 100)  //Underexposed
+ 224:../src/renesas/application/r_bcd_ae.c ****         {
+ 225:../src/renesas/application/r_bcd_ae.c ****         	outOfRange = 1;
+ 226:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MAX)
+ 227:../src/renesas/application/r_bcd_ae.c ****             {
+ 228:../src/renesas/application/r_bcd_ae.c ****                 nError = pAeSet->brightness - ave_lum;
+ 229:../src/renesas/application/r_bcd_ae.c ****                 if (nError > (0.45*pAeSet->brightness))
+ 230:../src/renesas/application/r_bcd_ae.c ****                 {
+ 231:../src/renesas/application/r_bcd_ae.c **** 	                pAeSet->shutter_speed = (uint16_t)(((((uint32_t)pAeSet->shutter_speed * pAeSet->br
+ 232:../src/renesas/application/r_bcd_ae.c ****                 }
+ 233:../src/renesas/application/r_bcd_ae.c ****                 else
+ 234:../src/renesas/application/r_bcd_ae.c ****                 {
+ 235:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->shutter_speed = pAeSet->shutter_speed + R_BCD_AE_S_SPEED_GAIN;
+ 236:../src/renesas/application/r_bcd_ae.c ****                 }
+ 237:../src/renesas/application/r_bcd_ae.c **** 
+ 238:../src/renesas/application/r_bcd_ae.c ****                 if (pAeSet->shutter_speed > R_BCD_AE_S_SPEED_MAX)
+ 239:../src/renesas/application/r_bcd_ae.c ****                 {
+ 240:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->shutter_speed = R_BCD_AE_S_SPEED_MAX;
+ 241:../src/renesas/application/r_bcd_ae.c ****                 }
+ 242:../src/renesas/application/r_bcd_ae.c ****                  (void)R_BCD_AeSetShutterSpeed(pAeSet, pAeSet->shutter_speed);
+ 243:../src/renesas/application/r_bcd_ae.c ****             }
+ 244:../src/renesas/application/r_bcd_ae.c ****             else if (pAeSet->global_gain < 16)
+ 245:../src/renesas/application/r_bcd_ae.c ****             {
+ 246:../src/renesas/application/r_bcd_ae.c **** 				pAeSet->brightness_old++;
+ 247:../src/renesas/application/r_bcd_ae.c ****                 if (gain_set_count == 0) {
+ 248:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count = 2;
+ 249:../src/renesas/application/r_bcd_ae.c ****                 nError = pAeSet->brightness - ave_lum;
+ 250:../src/renesas/application/r_bcd_ae.c ****                 if ((nError > (0.45*pAeSet->brightness)) && (pAeSet->global_gain < 15))
+ 251:../src/renesas/application/r_bcd_ae.c ****                 {
+ 252:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->global_gain = pAeSet->global_gain + 2;
+ 253:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 254:../src/renesas/application/r_bcd_ae.c ****                     pAeSet->global_gain = pAeSet->global_gain + 1;
+ 255:../src/renesas/application/r_bcd_ae.c ****                 }
+ 256:../src/renesas/application/r_bcd_ae.c ****                      (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 257:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 258:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count--;
+ 259:../src/renesas/application/r_bcd_ae.c ****                 }
+ 260:../src/renesas/application/r_bcd_ae.c ****             }
+ 261:../src/renesas/application/r_bcd_ae.c ****         }
+ 262:../src/renesas/application/r_bcd_ae.c **** //        pAeSet->brightness_old = ave_lum;
+ 263:../src/renesas/application/r_bcd_ae.c **** 
+ 264:../src/renesas/application/r_bcd_ae.c ****     }
+ 265:../src/renesas/application/r_bcd_ae.c **** 
+ 266:../src/renesas/application/r_bcd_ae.c **** 	if ( shutterSpeedOld != pAeSet-> shutter_speed || globalGainOld   !=  pAeSet->global_gain ) {
+ 267:../src/renesas/application/r_bcd_ae.c **** 		pAeSet -> adapted = 1 ;
+ 268:../src/renesas/application/r_bcd_ae.c **** 		outOfRange        = 0 ;
+ 269:../src/renesas/application/r_bcd_ae.c ****     } else {
+ 270:../src/renesas/application/r_bcd_ae.c **** 		pAeSet -> adapted = 0 ;
+ 271:../src/renesas/application/r_bcd_ae.c ****     }
+ 272:../src/renesas/application/r_bcd_ae.c **** 	pAeSet -> outOfRange = outOfRange ;
+ 273:../src/renesas/application/r_bcd_ae.c ****     return pAeSet->mode;
+ 274:../src/renesas/application/r_bcd_ae.c **** }
+ 275:../src/renesas/application/r_bcd_ae.c **** 
+ 276:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 277:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeSetShutterSpeed
+ 278:../src/renesas/application/r_bcd_ae.c **** * Description  : Set Camera shutter speed
+ 279:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 280:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 281:../src/renesas/application/r_bcd_ae.c **** *              : speed
+ 282:../src/renesas/application/r_bcd_ae.c **** *              :   Shutter speed
+ 283:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+ 284:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 285:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeSetShutterSpeed(r_bcd_ae_setting_t* pAeSet, uint16_t speed)
+ 286:../src/renesas/application/r_bcd_ae.c **** {
+ 146              		.loc 1 286 0
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 0
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150              	.LVL8:
+ 151 0000 10402DE9 		push	{r4, lr}
+ 152              		.cfi_def_cfa_offset 8
+ 153              		.cfi_offset 4, -8
+ 154              		.cfi_offset 14, -4
+ 155 0004 0040A0E1 		mov	r4, r0
+ 287:../src/renesas/application/r_bcd_ae.c ****     pAeSet->shutter_speed = speed;
+ 156              		.loc 1 287 0
+ 157 0008 B410C0E1 		strh	r1, [r0, #4]	@ movhi
+ 288:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_shutter_setting(speed) ;
+ 158              		.loc 1 288 0
+ 159 000c 0100A0E1 		mov	r0, r1
+ 160              	.LVL9:
+ 161 0010 FEFFFFEB 		bl	R_BCD_shutter_setting
+ 162              	.LVL10:
+ 289:../src/renesas/application/r_bcd_ae.c ****     return pAeSet->mode;
+ 290:../src/renesas/application/r_bcd_ae.c **** }
+ 163              		.loc 1 290 0
+ 164 0014 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 165 0018 1080BDE8 		pop	{r4, pc}
+ 166              		.cfi_endproc
+ 167              	.LFE7:
+ 169              		.section	.text.R_BCD_AeSetAnalogGain,"ax",%progbits
+ 170              		.align	2
+ 171              		.global	R_BCD_AeSetAnalogGain
+ 172              		.syntax unified
+ 173              		.arm
+ 174              		.fpu neon
+ 176              	R_BCD_AeSetAnalogGain:
+ 177              	.LFB8:
+ 291:../src/renesas/application/r_bcd_ae.c **** 
+ 292:../src/renesas/application/r_bcd_ae.c **** /******************************************************************************
+ 293:../src/renesas/application/r_bcd_ae.c **** * Function Name: R_BCD_AeSetAnalogGain
+ 294:../src/renesas/application/r_bcd_ae.c **** * Description  : Set Camera analog gain
+ 295:../src/renesas/application/r_bcd_ae.c **** * Arguments    : pAeSet
+ 296:../src/renesas/application/r_bcd_ae.c **** *              :   AE setting struct address
+ 297:../src/renesas/application/r_bcd_ae.c **** *              : analog_gain
+ 298:../src/renesas/application/r_bcd_ae.c **** *              :   Analog gain parameter
+ 299:../src/renesas/application/r_bcd_ae.c **** * Return Value : AE mode
+ 300:../src/renesas/application/r_bcd_ae.c **** ******************************************************************************/
+ 301:../src/renesas/application/r_bcd_ae.c **** uint8_t R_BCD_AeSetAnalogGain(r_bcd_ae_setting_t* pAeSet, uint8_t analog_gain)
+ 302:../src/renesas/application/r_bcd_ae.c **** {
+ 178              		.loc 1 302 0
+ 179              		.cfi_startproc
+ 180              		@ args = 0, pretend = 0, frame = 0
+ 181              		@ frame_needed = 0, uses_anonymous_args = 0
+ 182              	.LVL11:
+ 183 0000 10402DE9 		push	{r4, lr}
+ 184              		.cfi_def_cfa_offset 8
+ 185              		.cfi_offset 4, -8
+ 186              		.cfi_offset 14, -4
+ 187 0004 0040A0E1 		mov	r4, r0
+ 303:../src/renesas/application/r_bcd_ae.c **** 	if (analog_gain > 16) {
+ 188              		.loc 1 303 0
+ 189 0008 100051E3 		cmp	r1, #16
+ 304:../src/renesas/application/r_bcd_ae.c **** 		analog_gain = 16;
+ 190              		.loc 1 304 0
+ 191 000c 1010A083 		movhi	r1, #16
+ 192              	.LVL12:
+ 193              	.L14:
+ 305:../src/renesas/application/r_bcd_ae.c **** 	}
+ 306:../src/renesas/application/r_bcd_ae.c ****     pAeSet->global_gain = analog_gain;
+ 194              		.loc 1 306 0
+ 195 0010 BA10C4E1 		strh	r1, [r4, #10]	@ movhi
+ 307:../src/renesas/application/r_bcd_ae.c ****     
+ 308:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_gain_table_setting(analog_gain);
+ 196              		.loc 1 308 0
+ 197 0014 0100A0E1 		mov	r0, r1
+ 198              	.LVL13:
+ 199 0018 FEFFFFEB 		bl	R_BCD_gain_table_setting
+ 200              	.LVL14:
+ 309:../src/renesas/application/r_bcd_ae.c **** 
+ 310:../src/renesas/application/r_bcd_ae.c ****     return pAeSet->mode;
+ 311:../src/renesas/application/r_bcd_ae.c **** }
+ 201              		.loc 1 311 0
+ 202 001c 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 203 0020 1080BDE8 		pop	{r4, pc}
+ 204              		.cfi_endproc
+ 205              	.LFE8:
+ 207              		.section	.text.R_BCD_AeInit,"ax",%progbits
+ 208              		.align	2
+ 209              		.global	R_BCD_AeInit
+ 210              		.syntax unified
+ 211              		.arm
+ 212              		.fpu neon
+ 214              	R_BCD_AeInit:
+ 215              	.LFB1:
+  65:../src/renesas/application/r_bcd_ae.c ****     uint16_t mipi_set;
+ 216              		.loc 1 65 0
+ 217              		.cfi_startproc
+ 218              		@ args = 0, pretend = 0, frame = 0
+ 219              		@ frame_needed = 0, uses_anonymous_args = 0
+ 220              	.LVL15:
+ 221 0000 10402DE9 		push	{r4, lr}
+ 222              		.cfi_def_cfa_offset 8
+ 223              		.cfi_offset 4, -8
+ 224              		.cfi_offset 14, -4
+ 225 0004 0040A0E1 		mov	r4, r0
+  68:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode               = R_BCD_AE_MODE_INIT;
+ 226              		.loc 1 68 0
+ 227 0008 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 228 000c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 229 0010 0030A0E3 		mov	r3, #0
+ 230 0014 0030C2E5 		strb	r3, [r2]
+  69:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness         = 0;
+ 231              		.loc 1 69 0
+ 232 0018 0120E0E3 		mvn	r2, #1
+ 233 001c 0E20C0E5 		strb	r2, [r0, #14]
+  70:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness_old     = 0;
+ 234              		.loc 1 70 0
+ 235 0020 B030C0E1 		strh	r3, [r0]	@ movhi
+  71:../src/renesas/application/r_bcd_ae.c **** 	pAeSet->adapted            = 0 ;
+ 236              		.loc 1 71 0
+ 237 0024 B230C0E1 		strh	r3, [r0, #2]	@ movhi
+  72:../src/renesas/application/r_bcd_ae.c **** 	pAeSet->outOfRange         = 0 ;
+ 238              		.loc 1 72 0
+ 239 0028 0F30C0E5 		strb	r3, [r0, #15]
+  73:../src/renesas/application/r_bcd_ae.c ****     pAeSet->shutter_speed      = R_BCD_AE_S_SPEED_DEFAULT;
+ 240              		.loc 1 73 0
+ 241 002c 1030C0E5 		strb	r3, [r0, #16]
+  74:../src/renesas/application/r_bcd_ae.c ****     pAeSet->global_gain        = R_BCD_AE_G_GAIN_DEFAULT; //R_BCD_AE_G_GAIN_DEFAULT;
+ 242              		.loc 1 74 0
+ 243 0030 FA0FA0E3 		mov	r0, #1000
+ 244              	.LVL16:
+ 245 0034 B400C4E1 		strh	r0, [r4, #4]	@ movhi
+  75:../src/renesas/application/r_bcd_ae.c **** 
+ 246              		.loc 1 75 0
+ 247 0038 0630A0E3 		mov	r3, #6
+ 248 003c BA30C4E1 		strh	r3, [r4, #10]	@ movhi
+  77:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 249              		.loc 1 77 0
+ 250 0040 FEFFFFEB 		bl	R_BCD_shutter_setting
+ 251              	.LVL17:
+  78:../src/renesas/application/r_bcd_ae.c **** 
+ 252              		.loc 1 78 0
+ 253 0044 0A10D4E5 		ldrb	r1, [r4, #10]	@ zero_extendqisi2
+ 254 0048 0400A0E1 		mov	r0, r4
+ 255 004c FEFFFFEB 		bl	R_BCD_AeSetAnalogGain
+ 256              	.LVL18:
+  81:../src/renesas/application/r_bcd_ae.c **** 
+ 257              		.loc 1 81 0
+ 258 0050 FE00A0E3 		mov	r0, #254
+ 259 0054 1080BDE8 		pop	{r4, pc}
+ 260              		.cfi_endproc
+ 261              	.LFE1:
+ 263              		.section	.text.R_BCD_AeStop,"ax",%progbits
+ 264              		.align	2
+ 265              		.global	R_BCD_AeStop
+ 266              		.syntax unified
+ 267              		.arm
+ 268              		.fpu neon
+ 270              	R_BCD_AeStop:
+ 271              	.LFB2:
+  91:../src/renesas/application/r_bcd_ae.c ****     uint16_t mipi_set;
+ 272              		.loc 1 91 0
+ 273              		.cfi_startproc
+ 274              		@ args = 0, pretend = 0, frame = 0
+ 275              		@ frame_needed = 0, uses_anonymous_args = 0
+ 276              	.LVL19:
+ 277 0000 10402DE9 		push	{r4, lr}
+ 278              		.cfi_def_cfa_offset 8
+ 279              		.cfi_offset 4, -8
+ 280              		.cfi_offset 14, -4
+ 281 0004 0040A0E1 		mov	r4, r0
+  94:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode           = R_BCD_AE_MODE_STOP;
+ 282              		.loc 1 94 0
+ 283 0008 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 284 000c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 285 0010 0020A0E3 		mov	r2, #0
+ 286 0014 0020C3E5 		strb	r2, [r3]
+  95:../src/renesas/application/r_bcd_ae.c ****     pAeSet->shutter_speed  = R_BCD_AE_S_SPEED_DEFAULT;
+ 287              		.loc 1 95 0
+ 288 0018 0030E0E3 		mvn	r3, #0
+ 289 001c 0E30C0E5 		strb	r3, [r0, #14]
+  96:../src/renesas/application/r_bcd_ae.c ****     pAeSet->global_gain    = R_BCD_AE_G_GAIN_DEFAULT; //R_BCD_AE_G_GAIN_DEFAULT;
+ 290              		.loc 1 96 0
+ 291 0020 FA0FA0E3 		mov	r0, #1000
+ 292              	.LVL20:
+ 293 0024 B400C4E1 		strh	r0, [r4, #4]	@ movhi
+  97:../src/renesas/application/r_bcd_ae.c ****     pAeSet->brightness_old = 0;
+ 294              		.loc 1 97 0
+ 295 0028 0630A0E3 		mov	r3, #6
+ 296 002c BA30C4E1 		strh	r3, [r4, #10]	@ movhi
+  98:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_shutter_setting(pAeSet->shutter_speed) ;
+ 297              		.loc 1 98 0
+ 298 0030 B220C4E1 		strh	r2, [r4, #2]	@ movhi
+  99:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 299              		.loc 1 99 0
+ 300 0034 FEFFFFEB 		bl	R_BCD_shutter_setting
+ 301              	.LVL21:
+ 100:../src/renesas/application/r_bcd_ae.c **** 
+ 302              		.loc 1 100 0
+ 303 0038 0A10D4E5 		ldrb	r1, [r4, #10]	@ zero_extendqisi2
+ 304 003c 0400A0E1 		mov	r0, r4
+ 305 0040 FEFFFFEB 		bl	R_BCD_AeSetAnalogGain
+ 306              	.LVL22:
+ 103:../src/renesas/application/r_bcd_ae.c **** 
+ 307              		.loc 1 103 0
+ 308 0044 FF00A0E3 		mov	r0, #255
+ 309 0048 1080BDE8 		pop	{r4, pc}
+ 310              		.cfi_endproc
+ 311              	.LFE2:
+ 313              		.section	.text.R_BCD_AeStart,"ax",%progbits
+ 314              		.align	2
+ 315              		.global	R_BCD_AeStart
+ 316              		.syntax unified
+ 317              		.arm
+ 318              		.fpu neon
+ 320              	R_BCD_AeStart:
+ 321              	.LFB3:
+ 113:../src/renesas/application/r_bcd_ae.c ****     pAeSet->mode           = R_BCD_AE_MODE_INIT;
+ 322              		.loc 1 113 0
+ 323              		.cfi_startproc
+ 324              		@ args = 0, pretend = 0, frame = 0
+ 325              		@ frame_needed = 0, uses_anonymous_args = 0
+ 326              	.LVL23:
+ 327 0000 10402DE9 		push	{r4, lr}
+ 328              		.cfi_def_cfa_offset 8
+ 329              		.cfi_offset 4, -8
+ 330              		.cfi_offset 14, -4
+ 114:../src/renesas/application/r_bcd_ae.c ****     (void)R_BCD_AeSetAnalogGain(pAeSet, pAeSet->global_gain);
+ 331              		.loc 1 114 0
+ 332 0004 0120E0E3 		mvn	r2, #1
+ 333 0008 0E20C0E5 		strb	r2, [r0, #14]
+ 115:../src/renesas/application/r_bcd_ae.c **** 
+ 334              		.loc 1 115 0
+ 335 000c 0A10D0E5 		ldrb	r1, [r0, #10]	@ zero_extendqisi2
+ 336 0010 FEFFFFEB 		bl	R_BCD_AeSetAnalogGain
+ 337              	.LVL24:
+ 118:../src/renesas/application/r_bcd_ae.c **** 
+ 338              		.loc 1 118 0
+ 339 0014 FE00A0E3 		mov	r0, #254
+ 340 0018 1080BDE8 		pop	{r4, pc}
+ 341              		.cfi_endproc
+ 342              	.LFE3:
+ 344              		.global	__aeabi_uidiv
+ 345              		.section	.text.R_BCD_AeRunAutoExpousure,"ax",%progbits
+ 346              		.align	2
+ 347              		.global	R_BCD_AeRunAutoExpousure
+ 348              		.syntax unified
+ 349              		.arm
+ 350              		.fpu neon
+ 352              	R_BCD_AeRunAutoExpousure:
+ 353              	.LFB6:
+ 170:../src/renesas/application/r_bcd_ae.c **** 
+ 354              		.loc 1 170 0
+ 355              		.cfi_startproc
+ 356              		@ args = 0, pretend = 0, frame = 0
+ 357              		@ frame_needed = 0, uses_anonymous_args = 0
+ 358              	.LVL25:
+ 359 0000 70432DE9 		push	{r4, r5, r6, r8, r9, lr}
+ 360              		.cfi_def_cfa_offset 24
+ 361              		.cfi_offset 4, -24
+ 362              		.cfi_offset 5, -20
+ 363              		.cfi_offset 6, -16
+ 364              		.cfi_offset 8, -12
+ 365              		.cfi_offset 9, -8
+ 366              		.cfi_offset 14, -4
+ 367 0004 0040A0E1 		mov	r4, r0
+ 172:../src/renesas/application/r_bcd_ae.c **** 	uint16_t  globalGainOld   =  pAeSet-> global_gain ;
+ 368              		.loc 1 172 0
+ 369 0008 B450D0E1 		ldrh	r5, [r0, #4]
+ 370              	.LVL26:
+ 173:../src/renesas/application/r_bcd_ae.c ****     uint8_t   outOfRange      =  0 ;
+ 371              		.loc 1 173 0
+ 372 000c BA60D0E1 		ldrh	r6, [r0, #10]
+ 373              	.LVL27:
+ 176:../src/renesas/application/r_bcd_ae.c **** 
+ 374              		.loc 1 176 0
+ 375 0010 FF0051E3 		cmp	r1, #255
+ 376 0014 B300008A 		bhi	.L48
+ 176:../src/renesas/application/r_bcd_ae.c **** 
+ 377              		.loc 1 176 0 is_stmt 0 discriminator 1
+ 378 0018 0E30D0E5 		ldrb	r3, [r0, #14]	@ zero_extendqisi2
+ 379 001c FF0053E3 		cmp	r3, #255
+ 380 0020 BA00000A 		beq	.L49
+ 381              	.LBB2:
+ 180:../src/renesas/application/r_bcd_ae.c ****         {
+ 382              		.loc 1 180 0 is_stmt 1
+ 383 0024 B000D0E1 		ldrh	r0, [r0]
+ 384              	.LVL28:
+ 385 0028 803160E0 		rsb	r3, r0, r0, lsl #3
+ 386 002c 033263E0 		rsb	r3, r3, r3, lsl #4
+ 387 0030 1F8508E3 		movw	r8, #34079
+ 388 0034 EB8145E3 		movt	r8, 20971
+ 389 0038 9388C9E0 		smull	r8, r9, r3, r8
+ 390 003c C33FA0E1 		asr	r3, r3, #31
+ 391 0040 C93263E0 		rsb	r3, r3, r9, asr #5
+ 392 0044 030051E1 		cmp	r1, r3
+ 393 0048 4D0000DA 		ble	.L25
+ 394              	.LVL29:
+ 183:../src/renesas/application/r_bcd_ae.c ****             {
+ 395              		.loc 1 183 0
+ 396 004c 000056E3 		cmp	r6, #0
+ 397 0050 2400001A 		bne	.L26
+ 185:../src/renesas/application/r_bcd_ae.c ****                 if (nError > (0.45*pAeSet->brightness)) //Coarse decrease
+ 398              		.loc 1 185 0
+ 399 0054 7130EFE6 		uxtb	r3, r1
+ 400 0058 7020EFE6 		uxtb	r2, r0
+ 401 005c 023043E0 		sub	r3, r3, r2
+ 402 0060 7330EFE6 		uxtb	r3, r3
+ 403              	.LVL30:
+ 186:../src/renesas/application/r_bcd_ae.c ****                 {
+ 404              		.loc 1 186 0
+ 405 0064 903A07EE 		vmov	s15, r3	@ int
+ 406 0068 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 407 006c 900A07EE 		vmov	s15, r0	@ int
+ 408 0070 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 409 0074 B12BDFED 		vldr.64	d18, .L60
+ 410 0078 A21B61EE 		vmul.f64	d17, d17, d18
+ 411 007c E10BF4EE 		vcmpe.f64	d16, d17
+ 412 0080 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 413 0084 100000DA 		ble	.L56
+ 188:../src/renesas/application/r_bcd_ae.c ****                 }
+ 414              		.loc 1 188 0
+ 415 0088 900500E0 		mul	r0, r0, r5
+ 416 008c FEFFFFEB 		bl	__aeabi_uidiv
+ 417              	.LVL31:
+ 418 0090 800085E0 		add	r0, r5, r0, lsl #1
+ 419 0094 AB3A0AE3 		movw	r3, #43691
+ 420 0098 AA3A4AE3 		movt	r3, 43690
+ 421 009c 900381E0 		umull	r0, r1, r0, r3
+ 422 00a0 D130EFE7 		ubfx	r3, r1, #1, #16
+ 423 00a4 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 424              	.L29:
+ 199:../src/renesas/application/r_bcd_ae.c ****                 {
+ 425              		.loc 1 199 0
+ 426 00a8 B430D4E1 		ldrh	r3, [r4, #4]
+ 427 00ac 4F0053E3 		cmp	r3, #79
+ 201:../src/renesas/application/r_bcd_ae.c ****                 }
+ 428              		.loc 1 201 0
+ 429 00b0 5030A093 		movls	r3, #80
+ 430 00b4 B430C491 		strhls	r3, [r4, #4]	@ movhi
+ 431              	.L31:
+ 203:../src/renesas/application/r_bcd_ae.c ****             }
+ 432              		.loc 1 203 0
+ 433 00b8 B410D4E1 		ldrh	r1, [r4, #4]
+ 434 00bc 0400A0E1 		mov	r0, r4
+ 435 00c0 FEFFFFEB 		bl	R_BCD_AeSetShutterSpeed
+ 436              	.LVL32:
+ 182:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->global_gain == 0)
+ 437              		.loc 1 182 0
+ 438 00c4 0130A0E3 		mov	r3, #1
+ 439 00c8 870000EA 		b	.L24
+ 440              	.LVL33:
+ 441              	.L56:
+ 192:../src/renesas/application/r_bcd_ae.c ****                         pAeSet->shutter_speed = pAeSet->shutter_speed - R_BCD_AE_S_SPEED_GAIN;
+ 442              		.loc 1 192 0
+ 443 00cc 200055E3 		cmp	r5, #32
+ 193:../src/renesas/application/r_bcd_ae.c ****                     } else {
+ 444              		.loc 1 193 0
+ 445 00d0 20304582 		subhi	r3, r5, #32
+ 446              	.LVL34:
+ 447 00d4 B430C481 		strhhi	r3, [r4, #4]	@ movhi
+ 448 00d8 F2FFFF8A 		bhi	.L29
+ 449              	.LVL35:
+ 450              	.L30:
+ 195:../src/renesas/application/r_bcd_ae.c ****                     }
+ 451              		.loc 1 195 0
+ 452 00dc 0030A0E3 		mov	r3, #0
+ 453              	.LVL36:
+ 454 00e0 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 455 00e4 EFFFFFEA 		b	.L29
+ 456              	.LVL37:
+ 457              	.L26:
+ 207:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count = 2;
+ 458              		.loc 1 207 0
+ 459 00e8 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 460 00ec 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 461 00f0 0030D3E5 		ldrb	r3, [r3]	@ zero_extendqisi2
+ 462 00f4 000053E3 		cmp	r3, #0
+ 463 00f8 1B00001A 		bne	.L32
+ 208:../src/renesas/application/r_bcd_ae.c ****                 nError = ave_lum - pAeSet->brightness;
+ 464              		.loc 1 208 0
+ 465 00fc 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 466 0100 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 467 0104 0220A0E3 		mov	r2, #2
+ 468 0108 0020C3E5 		strb	r2, [r3]
+ 209:../src/renesas/application/r_bcd_ae.c **** 
+ 469              		.loc 1 209 0
+ 470 010c 7110EFE6 		uxtb	r1, r1
+ 471              	.LVL38:
+ 472 0110 7030EFE6 		uxtb	r3, r0
+ 473 0114 031041E0 		sub	r1, r1, r3
+ 474 0118 7110EFE6 		uxtb	r1, r1
+ 475              	.LVL39:
+ 211:../src/renesas/application/r_bcd_ae.c ****                 {
+ 476              		.loc 1 211 0
+ 477 011c 901A07EE 		vmov	s15, r1	@ int
+ 478 0120 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 479 0124 900A07EE 		vmov	s15, r0	@ int
+ 480 0128 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 481 012c 832BDFED 		vldr.64	d18, .L60
+ 482 0130 A21B61EE 		vmul.f64	d17, d17, d18
+ 483 0134 E10BF4EE 		vcmpe.f64	d16, d17
+ 484 0138 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 485 013c 030000DA 		ble	.L33
+ 211:../src/renesas/application/r_bcd_ae.c ****                 {
+ 486              		.loc 1 211 0 is_stmt 0 discriminator 1
+ 487 0140 020056E1 		cmp	r6, r2
+ 213:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 488              		.loc 1 213 0 is_stmt 1
+ 489 0144 02304682 		subhi	r3, r6, #2
+ 490 0148 BA30C481 		strhhi	r3, [r4, #10]	@ movhi
+ 491 014c 0100008A 		bhi	.L35
+ 492              	.L33:
+ 215:../src/renesas/application/r_bcd_ae.c ****                 }
+ 493              		.loc 1 215 0
+ 494 0150 013046E2 		sub	r3, r6, #1
+ 495 0154 BA30C4E1 		strh	r3, [r4, #10]	@ movhi
+ 496              	.L35:
+ 217:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 497              		.loc 1 217 0
+ 498 0158 0A10D4E5 		ldrb	r1, [r4, #10]	@ zero_extendqisi2
+ 499              	.LVL40:
+ 500 015c 0400A0E1 		mov	r0, r4
+ 501 0160 FEFFFFEB 		bl	R_BCD_AeSetAnalogGain
+ 502              	.LVL41:
+ 182:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->global_gain == 0)
+ 503              		.loc 1 182 0
+ 504 0164 0130A0E3 		mov	r3, #1
+ 505 0168 5F0000EA 		b	.L24
+ 506              	.LVL42:
+ 507              	.L32:
+ 219:../src/renesas/application/r_bcd_ae.c ****                 }
+ 508              		.loc 1 219 0
+ 509 016c 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 510 0170 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 511 0174 013043E2 		sub	r3, r3, #1
+ 512 0178 0030C2E5 		strb	r3, [r2]
+ 182:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->global_gain == 0)
+ 513              		.loc 1 182 0
+ 514 017c 0130A0E3 		mov	r3, #1
+ 515 0180 590000EA 		b	.L24
+ 516              	.LVL43:
+ 517              	.L25:
+ 223:../src/renesas/application/r_bcd_ae.c ****         {
+ 518              		.loc 1 223 0
+ 519 0184 5AC0A0E3 		mov	ip, #90
+ 520 0188 9C000CE0 		mul	ip, ip, r0
+ 521 018c 1F2508E3 		movw	r2, #34079
+ 522 0190 EB2145E3 		movt	r2, 20971
+ 523 0194 9C22C3E0 		smull	r2, r3, ip, r2
+ 524 0198 CCCFA0E1 		asr	ip, ip, #31
+ 525 019c C3C26CE0 		rsb	ip, ip, r3, asr #5
+ 526 01a0 0C0051E1 		cmp	r1, ip
+ 527 01a4 5B0000AA 		bge	.L50
+ 528              	.LVL44:
+ 226:../src/renesas/application/r_bcd_ae.c ****             {
+ 529              		.loc 1 226 0
+ 530 01a8 873301E3 		movw	r3, #4999
+ 531 01ac 030055E1 		cmp	r5, r3
+ 532 01b0 2000008A 		bhi	.L36
+ 228:../src/renesas/application/r_bcd_ae.c ****                 if (nError > (0.45*pAeSet->brightness))
+ 533              		.loc 1 228 0
+ 534 01b4 7030EFE6 		uxtb	r3, r0
+ 535 01b8 7120EFE6 		uxtb	r2, r1
+ 536 01bc 023043E0 		sub	r3, r3, r2
+ 537 01c0 7330EFE6 		uxtb	r3, r3
+ 538              	.LVL45:
+ 229:../src/renesas/application/r_bcd_ae.c ****                 {
+ 539              		.loc 1 229 0
+ 540 01c4 903A07EE 		vmov	s15, r3	@ int
+ 541 01c8 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 542 01cc 900A07EE 		vmov	s15, r0	@ int
+ 543 01d0 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 544 01d4 592BDFED 		vldr.64	d18, .L60
+ 545 01d8 A21B61EE 		vmul.f64	d17, d17, d18
+ 546 01dc E10BF4EE 		vcmpe.f64	d16, d17
+ 547 01e0 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 548 01e4 100000DA 		ble	.L57
+ 231:../src/renesas/application/r_bcd_ae.c ****                 }
+ 549              		.loc 1 231 0
+ 550 01e8 900500E0 		mul	r0, r0, r5
+ 551 01ec FEFFFFEB 		bl	__aeabi_uidiv
+ 552              	.LVL46:
+ 553 01f0 800085E0 		add	r0, r5, r0, lsl #1
+ 554 01f4 AB3A0AE3 		movw	r3, #43691
+ 555 01f8 AA3A4AE3 		movt	r3, 43690
+ 556 01fc 900381E0 		umull	r0, r1, r0, r3
+ 557 0200 D130EFE7 		ubfx	r3, r1, #1, #16
+ 558 0204 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 559              	.L39:
+ 238:../src/renesas/application/r_bcd_ae.c ****                 {
+ 560              		.loc 1 238 0
+ 561 0208 B420D4E1 		ldrh	r2, [r4, #4]
+ 562 020c 883301E3 		movw	r3, #5000
+ 563 0210 030052E1 		cmp	r2, r3
+ 240:../src/renesas/application/r_bcd_ae.c ****                 }
+ 564              		.loc 1 240 0
+ 565 0214 B430C481 		strhhi	r3, [r4, #4]	@ movhi
+ 566              	.L40:
+ 242:../src/renesas/application/r_bcd_ae.c ****             }
+ 567              		.loc 1 242 0
+ 568 0218 B410D4E1 		ldrh	r1, [r4, #4]
+ 569 021c 0400A0E1 		mov	r0, r4
+ 570 0220 FEFFFFEB 		bl	R_BCD_AeSetShutterSpeed
+ 571              	.LVL47:
+ 225:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MAX)
+ 572              		.loc 1 225 0
+ 573 0224 0130A0E3 		mov	r3, #1
+ 574 0228 2F0000EA 		b	.L24
+ 575              	.LVL48:
+ 576              	.L57:
+ 235:../src/renesas/application/r_bcd_ae.c ****                 }
+ 577              		.loc 1 235 0
+ 578 022c 203085E2 		add	r3, r5, #32
+ 579              	.LVL49:
+ 580 0230 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 581 0234 F3FFFFEA 		b	.L39
+ 582              	.LVL50:
+ 583              	.L36:
+ 244:../src/renesas/application/r_bcd_ae.c ****             {
+ 584              		.loc 1 244 0
+ 585 0238 0F0056E3 		cmp	r6, #15
+ 586 023c 3700008A 		bhi	.L51
+ 246:../src/renesas/application/r_bcd_ae.c ****                 if (gain_set_count == 0) {
+ 587              		.loc 1 246 0
+ 588 0240 B230D4E1 		ldrh	r3, [r4, #2]
+ 589 0244 013083E2 		add	r3, r3, #1
+ 590 0248 B230C4E1 		strh	r3, [r4, #2]	@ movhi
+ 247:../src/renesas/application/r_bcd_ae.c ****                     gain_set_count = 2;
+ 591              		.loc 1 247 0
+ 592 024c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 593 0250 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 594 0254 0030D3E5 		ldrb	r3, [r3]	@ zero_extendqisi2
+ 595 0258 000053E3 		cmp	r3, #0
+ 596 025c 1B00001A 		bne	.L41
+ 248:../src/renesas/application/r_bcd_ae.c ****                 nError = pAeSet->brightness - ave_lum;
+ 597              		.loc 1 248 0
+ 598 0260 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 599 0264 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 600 0268 0220A0E3 		mov	r2, #2
+ 601 026c 0020C3E5 		strb	r2, [r3]
+ 249:../src/renesas/application/r_bcd_ae.c ****                 if ((nError > (0.45*pAeSet->brightness)) && (pAeSet->global_gain < 15))
+ 602              		.loc 1 249 0
+ 603 0270 7030EFE6 		uxtb	r3, r0
+ 604 0274 7110EFE6 		uxtb	r1, r1
+ 605              	.LVL51:
+ 606 0278 011043E0 		sub	r1, r3, r1
+ 607 027c 7110EFE6 		uxtb	r1, r1
+ 608              	.LVL52:
+ 250:../src/renesas/application/r_bcd_ae.c ****                 {
+ 609              		.loc 1 250 0
+ 610 0280 901A07EE 		vmov	s15, r1	@ int
+ 611 0284 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 612 0288 900A07EE 		vmov	s15, r0	@ int
+ 613 028c E70BF8EE 		vcvt.f64.s32	d16, s15
+ 614 0290 2A2BDFED 		vldr.64	d18, .L60
+ 615 0294 A20B60EE 		vmul.f64	d16, d16, d18
+ 616 0298 E01BF4EE 		vcmpe.f64	d17, d16
+ 617 029c 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 618 02a0 030000DA 		ble	.L42
+ 250:../src/renesas/application/r_bcd_ae.c ****                 {
+ 619              		.loc 1 250 0 is_stmt 0 discriminator 1
+ 620 02a4 0E0056E3 		cmp	r6, #14
+ 252:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 621              		.loc 1 252 0 is_stmt 1
+ 622 02a8 02308690 		addls	r3, r6, r2
+ 623 02ac BA30C491 		strhls	r3, [r4, #10]	@ movhi
+ 624 02b0 0100009A 		bls	.L44
+ 625              	.L42:
+ 254:../src/renesas/application/r_bcd_ae.c ****                 }
+ 626              		.loc 1 254 0
+ 627 02b4 013086E2 		add	r3, r6, #1
+ 628 02b8 BA30C4E1 		strh	r3, [r4, #10]	@ movhi
+ 629              	.L44:
+ 256:../src/renesas/application/r_bcd_ae.c ****                 } else {
+ 630              		.loc 1 256 0
+ 631 02bc 0A10D4E5 		ldrb	r1, [r4, #10]	@ zero_extendqisi2
+ 632              	.LVL53:
+ 633 02c0 0400A0E1 		mov	r0, r4
+ 634 02c4 FEFFFFEB 		bl	R_BCD_AeSetAnalogGain
+ 635              	.LVL54:
+ 225:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MAX)
+ 636              		.loc 1 225 0
+ 637 02c8 0130A0E3 		mov	r3, #1
+ 638 02cc 060000EA 		b	.L24
+ 639              	.LVL55:
+ 640              	.L41:
+ 258:../src/renesas/application/r_bcd_ae.c ****                 }
+ 641              		.loc 1 258 0
+ 642 02d0 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 643 02d4 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 644 02d8 013043E2 		sub	r3, r3, #1
+ 645 02dc 0030C2E5 		strb	r3, [r2]
+ 225:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MAX)
+ 646              		.loc 1 225 0
+ 647 02e0 0130A0E3 		mov	r3, #1
+ 648 02e4 000000EA 		b	.L24
+ 649              	.LVL56:
+ 650              	.L48:
+ 651              	.LBE2:
+ 174:../src/renesas/application/r_bcd_ae.c **** 
+ 652              		.loc 1 174 0
+ 653 02e8 0030A0E3 		mov	r3, #0
+ 654              	.LVL57:
+ 655              	.L24:
+ 266:../src/renesas/application/r_bcd_ae.c **** 		pAeSet -> adapted = 1 ;
+ 656              		.loc 1 266 0
+ 657 02ec B420D4E1 		ldrh	r2, [r4, #4]
+ 658 02f0 020055E1 		cmp	r5, r2
+ 659 02f4 0B00000A 		beq	.L59
+ 660              	.L45:
+ 267:../src/renesas/application/r_bcd_ae.c **** 		outOfRange        = 0 ;
+ 661              		.loc 1 267 0
+ 662 02f8 0130A0E3 		mov	r3, #1
+ 663              	.LVL58:
+ 664 02fc 0F30C4E5 		strb	r3, [r4, #15]
+ 665              	.LVL59:
+ 268:../src/renesas/application/r_bcd_ae.c ****     } else {
+ 666              		.loc 1 268 0
+ 667 0300 0030A0E3 		mov	r3, #0
+ 668              	.LVL60:
+ 669              	.L47:
+ 272:../src/renesas/application/r_bcd_ae.c ****     return pAeSet->mode;
+ 670              		.loc 1 272 0
+ 671 0304 1030C4E5 		strb	r3, [r4, #16]
+ 274:../src/renesas/application/r_bcd_ae.c **** 
+ 672              		.loc 1 274 0
+ 673 0308 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 674 030c 7083BDE8 		pop	{r4, r5, r6, r8, r9, pc}
+ 675              	.LVL61:
+ 676              	.L49:
+ 174:../src/renesas/application/r_bcd_ae.c **** 
+ 677              		.loc 1 174 0
+ 678 0310 0030A0E3 		mov	r3, #0
+ 679 0314 F4FFFFEA 		b	.L24
+ 680              	.LVL62:
+ 681              	.L50:
+ 682 0318 0030A0E3 		mov	r3, #0
+ 683 031c F2FFFFEA 		b	.L24
+ 684              	.LVL63:
+ 685              	.L51:
+ 686              	.LBB3:
+ 225:../src/renesas/application/r_bcd_ae.c ****             if (pAeSet->shutter_speed < R_BCD_AE_S_SPEED_MAX)
+ 687              		.loc 1 225 0
+ 688 0320 0130A0E3 		mov	r3, #1
+ 689 0324 F0FFFFEA 		b	.L24
+ 690              	.LVL64:
+ 691              	.L59:
+ 692              	.LBE3:
+ 266:../src/renesas/application/r_bcd_ae.c **** 		pAeSet -> adapted = 1 ;
+ 693              		.loc 1 266 0 discriminator 1
+ 694 0328 BA20D4E1 		ldrh	r2, [r4, #10]
+ 695 032c 020056E1 		cmp	r6, r2
+ 696 0330 F0FFFF1A 		bne	.L45
+ 270:../src/renesas/application/r_bcd_ae.c ****     }
+ 697              		.loc 1 270 0
+ 698 0334 0020A0E3 		mov	r2, #0
+ 699 0338 0F20C4E5 		strb	r2, [r4, #15]
+ 700 033c F0FFFFEA 		b	.L47
+ 701              	.L61:
+ 702              		.align	3
+ 703              	.L60:
+ 704 0340 CDCCCCCC 		.word	-858993459
+ 705 0344 CCCCDC3F 		.word	1071434956
+ 706              		.cfi_endproc
+ 707              	.LFE6:
+ 709              		.section	.bss.gain_set_count,"aw",%nobits
+ 710              		.set	.LANCHOR0,. + 0
+ 713              	gain_set_count:
+ 714 0000 00       		.space	1
+ 715              		.text
+ 716              	.Letext0:
+ 717              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 718              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 719              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 720              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 721              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 722              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 723              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 724              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 725              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/system/inc/r_ty
+ 726              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/renesas/application/
+ 727              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/renesas/application/
+ 728              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 729              		.file 14 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/system/inc/driv
+ 730              		.file 15 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_mmu/i
+ 731              		.file 16 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/sc_drivers/r_ri
+ 732              		.file 17 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/sc_drivers/r_ri
+ 733              		.file 18 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_gpio/
+ 734              		.file 19 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_gpio/
+ 735              		.file 20 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_gpio/
+ 736              		.file 21 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/sc_drivers/r_ri
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_bcd_ae.c
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:17     .text.R_BCD_AeGetMode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:23     .text.R_BCD_AeGetMode:00000000 R_BCD_AeGetMode
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:40     .text.R_BCD_AeMakeGammaTable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:46     .text.R_BCD_AeMakeGammaTable:00000000 R_BCD_AeMakeGammaTable
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:132    .text.R_BCD_AeMakeGammaTable:00000098 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:138    .text.R_BCD_AeSetShutterSpeed:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:144    .text.R_BCD_AeSetShutterSpeed:00000000 R_BCD_AeSetShutterSpeed
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:170    .text.R_BCD_AeSetAnalogGain:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:176    .text.R_BCD_AeSetAnalogGain:00000000 R_BCD_AeSetAnalogGain
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:208    .text.R_BCD_AeInit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:214    .text.R_BCD_AeInit:00000000 R_BCD_AeInit
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:710    .bss.gain_set_count:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:264    .text.R_BCD_AeStop:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:270    .text.R_BCD_AeStop:00000000 R_BCD_AeStop
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:314    .text.R_BCD_AeStart:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:320    .text.R_BCD_AeStart:00000000 R_BCD_AeStart
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:346    .text.R_BCD_AeRunAutoExpousure:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:352    .text.R_BCD_AeRunAutoExpousure:00000000 R_BCD_AeRunAutoExpousure
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:704    .text.R_BCD_AeRunAutoExpousure:00000340 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:713    .bss.gain_set_count:00000000 gain_set_count
+C:\Users\a5050395\AppData\Local\Temp\ccEkZo9N.s:714    .bss.gain_set_count:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.5cdadbb3efe495d1c9e38350b8c376c7
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.stddef.h.187.2ff233552538c6ff9b8575ca8ea52cb3
+                           .group:00000000 wm4.cdefs.h.47.e658329a094974ebad41b40c60502de7
+                           .group:00000000 wm4.stddef.h.39.ec95e8feac892e292b69dc7ae75b0d64
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:00000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:00000000 wm4._timeval.h.30.0e8bfd94e85db17dda3286ee81496fe6
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.30.bbece7fa40993a78092dcc5805132560
+                           .group:00000000 wm4.types.h.69.ed3eae3cf73030a737515151ebcab7a1
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.8188691c2279eac7a223caa50f6694b9
+                           .group:00000000 wm4._default_fcntl.h.6.b13d56891b95175b639f824a0fd1ed77
+                           .group:00000000 wm4.time.h.8.db4619001f026d0b4874c029fef0e91f
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.25.0e6a0fdbc9955f5707ed54246ed2e089
+                           .group:00000000 wm4.time.h.162.d096f2f5887c52e271c4dc33d795dc64
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+                           .group:00000000 wm4.fcntl.h.9.9336f33d7f5028f694c75e6e224e0cf7
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.r_typedefs.h.38.e90d9de5300d9ae020e5db8c5af88b3e
+                           .group:00000000 wm4.adc_iodefine.h.29.14c6f50dce37432a7d004e4b1ce33da7
+                           .group:00000000 wm4.bsc_iodefine.h.29.9281d1f3639266933964d6d0c2d42c4f
+                           .group:00000000 wm4.ceu_iodefine.h.29.2a669d0b46fdde030a50db9e3c307fbf
+                           .group:00000000 wm4.cpg_iodefine.h.29.d6fdc9cb4798723afd88b251d64c2ce2
+                           .group:00000000 wm4.csi2link_iodefine.h.29.221c4531636a409f24d307b16341ada8
+                           .group:00000000 wm4.dmac_iodefine.h.29.578fccc2cc1da886ec95a029bf874f01
+                           .group:00000000 wm4.drpk_iodefine.h.29.580eb8588a2b2d43d2726fbe791e513f
+                           .group:00000000 wm4.drw_iodefine.h.29.df30f4a4a34a79f6a86c4df91353dffe
+                           .group:00000000 wm4.edmac_iodefine.h.29.33e8759349004a722f42f5429c1353f6
+                           .group:00000000 wm4.eptpc_iodefine.h.29.74d8f9fab0f5549b56097fb9e937dde8
+                           .group:00000000 wm4.etherc_iodefine.h.29.14602750383a574f1c21f994ad33a366
+                           .group:00000000 wm4.gpio_iodefine.h.29.3d0b021c56839cee4ae5149903684e4b
+                           .group:00000000 wm4.gpt_iodefine.h.29.557ead75d7b0585b898d3898b64c7f87
+                           .group:00000000 wm4.hyper_iodefine.h.29.000caadbb74d881e97db55b39b432154
+                           .group:00000000 wm4.imr_iodefine.h.29.77c022f017e711c4d51cc0145db1dad3
+                           .group:00000000 wm4.intc_iodefine.h.29.b68f5799a35a7495d63b4cd458e1ba57
+                           .group:00000000 wm4.irda_iodefine.h.29.37e67bd2005173d68a74d1cc937d8444
+                           .group:00000000 wm4.jcu_iodefine.h.29.3aca452908962e7a7ccf26164751feda
+                           .group:00000000 wm4.lvds_iodefine.h.29.c11cbe1900e5209c8dcc76c2336c16bc
+                           .group:00000000 wm4.mtu_iodefine.h.29.5498fb974bb53caf05aa143c2deec781
+                           .group:00000000 wm4.nandc_iodefine.h.29.e0b343306750f017ee86e169ad98efe9
+                           .group:00000000 wm4.octa_iodefine.h.29.4cb0d62e4b9633e173858000dc1c626c
+                           .group:00000000 wm4.ostm_iodefine.h.29.6914f7e330a1cf0008b34219adcdfed4
+                           .group:00000000 wm4.pl_iodefine.h.29.abbb6d725aed990aa8343242bfe31416
+                           .group:00000000 wm4.pmg_iodefine.h.29.8bcfbc4771a6f9b7dd4d6f504427219e
+                           .group:00000000 wm4.poeg_iodefine.h.29.0d8e258d10986260cbc70cfb8c0ef273
+                           .group:00000000 wm4.poe_iodefine.h.29.fe74e55e7b6b4afbe3596c74ba035e98
+                           .group:00000000 wm4.prr_iodefine.h.29.c1f15576f7a27b9c83aa3b40f5b2f988
+                           .group:00000000 wm4.ptpedmac_iodefine.h.29.cd24a93374ce35cebc41e26889d619ef
+                           .group:00000000 wm4.rcanfd_iodefine.h.29.532dd48b82fcb61d63538aba4b6f1289
+                           .group:00000000 wm4.rcan_iodefine.h.29.a47a89db1b35c12b54af48fa1956acba
+                           .group:00000000 wm4.riic_iodefine.h.29.f96943d49800d297612c4af3bba5c943
+                           .group:00000000 wm4.rspi_iodefine.h.29.7efa041fe34a7d27db66a7b337879dfe
+                           .group:00000000 wm4.rtc_iodefine.h.29.6dc76be5ca3df69cecb5a81d06cc46b5
+                           .group:00000000 wm4.scifa_iodefine.h.29.b04ccd664d71baaf31c75761c45b9c4d
+                           .group:00000000 wm4.scim_iodefine.h.29.87d0760abf94446b00d826c797bf0ff2
+                           .group:00000000 wm4.sdmmc_iodefine.h.29.e67e9815445e8057a3262d1566bea0db
+                           .group:00000000 wm4.spdif_iodefine.h.29.59f5d70150fa200a4d8ee50be1ee34c8
+                           .group:00000000 wm4.spibsc_iodefine.h.29.f4930f8b8da1140200204513a363c76f
+                           .group:00000000 wm4.sprite_iodefine.h.29.55796d1fa083a2457fea4ece974a192e
+                           .group:00000000 wm4.ssif_iodefine.h.29.054ec6d95f487f631f16aee39c85c47a
+                           .group:00000000 wm4.usb_iodefine.h.29.6dc44ea388ba227e8fdcfb33c315887b
+                           .group:00000000 wm4.vdc_iodefine.h.29.db282ded1f052d8567fbbd3b61ce8f7a
+                           .group:00000000 wm4.vin_iodefine.h.29.9b392e5601347d53e64be3272934e170
+                           .group:00000000 wm4.wdt_iodefine.h.29.ed07bb44b797072f8c28b41c64fdca30
+                           .group:00000000 wm4.r_bcd_ae.h.38.af3bed6679bcbac13250a48bd4c81358
+                           .group:00000000 wm4.r_mipi_user.h.32.80935d64668479eae19d7b52f81717b2
+                           .group:00000000 wm4.camera_imx219_b.h.30.89fe11224905224f001ad85e8ce59745
+                           .group:00000000 wm4.r_bcd_ae.h.48.ba92bf6c6056d2daecdb2bc024decc65
+                           .group:00000000 wm4.mipi_camera.h.25.be6225dfafda6e2e1c67275eaeb708d4
+                           .group:00000000 wm4.r_bcd_camera.h.41.19e74d7c12a905cea1aa20b891adaf9f
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.r_vdc_user.h.32.3f3db05b07a24f5c3abdea3809348418
+                           .group:00000000 wm4.r_vdc.h.31.7a8e28d4a80bfb6c6b4be0ab3890da8f
+                           .group:00000000 wm4.draw.h.34.3b63c627b5e51ee31fb2cfec889e2237
+                           .group:00000000 wm4.driver.h.34.180df73e0731406f5e50150641059ede
+                           .group:00000000 wm4.r_mmu_lld_rza2m.h.39.be55e997d8665d00d9f529dbd893c422
+                           .group:00000000 wm4.reent.h.91.b3ea049ebc5486622b61409b78486f84
+                           .group:00000000 wm4.r_devlink_wrapper.h.72.ad1de4c851513efa3aed0532ebca7ca2
+                           .group:00000000 wm4.r_rza2m_riic_lld_cfg.h.34.420dadece52c9d581310a82d03ef7a9c
+                           .group:00000000 wm4.r_rza2m_riic_lld_api.h.36.fbae5305df069aab4ee8737f6b4cc155
+                           .group:00000000 wm4.r_riic_drv_api.h.81.8cfa166374387345d2e15a569d3903b9
+                           .group:00000000 wm4.r_gpio_lld_rza2m.h.35.fd76d0816769697a06dd6f4a61c03021
+                           .group:00000000 wm4.r_gpio_drv_api.h.82.9514441e942567d0eb0b23efaff62239
+                           .group:00000000 wm4.r_riic_drv_sc_cfg.h.61.5b602d36b67415ece823db1792791a3e
+
+UNDEFINED SYMBOLS
+pow
+R_BCD_shutter_setting
+R_BCD_gain_table_setting
+__aeabi_uidiv

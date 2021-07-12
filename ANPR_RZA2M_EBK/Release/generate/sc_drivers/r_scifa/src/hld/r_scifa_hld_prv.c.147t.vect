@@ -1,0 +1,992 @@
+
+;; Function RXI_handler (RXI_handler, funcdef_no=22, decl_uid=72415, cgraph_uid=22, symbol_order=35)
+
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1294:13: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1294:13: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1294:13: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1294:13: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1329
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1329:17: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1329:17: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1329:17: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1329:17: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1306
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1306:23: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1306:23: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1306:23: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1306:23: note: bad loop form.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1294:13: note: vectorized 0 loops in function.
+RXI_handler (uint32_t sense)
+{
+  bool_t fifo_empty;
+  uint8_t received_data;
+  int8_t active_int;
+  scifa_interrupting_state_t channel_state;
+  r_channel_t channel;
+  sizetype _1;
+  unsigned char ivtmp_6;
+  unsigned char channel.2_11;
+  unsigned char _12;
+  int _14;
+  struct st_scifa_rx_error_t * _15;
+  int _17;
+  int _19;
+  unsigned int fifo_empty.4_20;
+  int _22;
+  struct _cbuff_t * _24;
+  long int _26;
+  struct _cbuff_t * _28;
+  unsigned char received_data.3_29;
+  long int _32;
+  long int _33;
+  sizetype _43;
+  unsigned char ivtmp_46;
+  sizetype _47;
+
+  <bb 2>:
+
+  <bb 3>:
+  # channel_49 = PHI <channel_13(5), 0(2)>
+  # ivtmp_6 = PHI <ivtmp_46(5), 5(2)>
+  channel_state_10 = R_SCIFA_GetRXIState (channel_49);
+  if (channel_state_10 == 1)
+    goto <bb 17>;
+  else
+    goto <bb 4>;
+
+  <bb 4>:
+  channel.2_11 = (unsigned char) channel_49;
+  _12 = channel.2_11 + 1;
+  channel_13 = (r_channel_t) _12;
+  ivtmp_46 = ivtmp_6 - 1;
+  if (ivtmp_46 != 0)
+    goto <bb 5>;
+  else
+    goto <bb 19>;
+
+  <bb 5>:
+  goto <bb 3>;
+
+  <bb 6>:
+  _22 = R_SCIFA_GetByte (channel_48, &received_data);
+  if (_22 == 0)
+    goto <bb 8>;
+  else
+    goto <bb 7>;
+
+  <bb 7>:
+  goto <bb 13>;
+
+  <bb 8>:
+  _24 = gs_ch_ctrl[_14].p_rx_cbuff;
+  _26 = cbFree (_24);
+  if (_26 > 0)
+    goto <bb 9>;
+  else
+    goto <bb 10>;
+
+  <bb 9>:
+  _28 = gs_ch_ctrl[_14].p_rx_cbuff;
+  received_data.3_29 = received_data;
+  cbPut (_28, received_data.3_29);
+  goto <bb 11>;
+
+  <bb 10>:
+  _32 = gs_ch_ctrl[_14].buffer_overflow_count;
+  _33 = _32 + 1;
+  gs_ch_ctrl[_14].buffer_overflow_count = _33;
+
+  <bb 11>:
+
+  <bb 12>:
+
+  <bb 13>:
+  _19 = R_SCIFA_IsRxFifoEmpty (channel_48, &fifo_empty);
+  if (_19 == 0)
+    goto <bb 15>;
+  else
+    goto <bb 14>;
+
+  <bb 14>:
+  R_SCIFA_ClearRXIFlags (channel_48);
+  received_data ={v} {CLOBBER};
+  fifo_empty ={v} {CLOBBER};
+  goto <bb 16>;
+
+  <bb 15>:
+  fifo_empty.4_20 = fifo_empty;
+  if (fifo_empty.4_20 == 0)
+    goto <bb 6>;
+  else
+    goto <bb 14>;
+
+  <bb 16>:
+  return;
+
+  <bb 17>:
+  # channel_48 = PHI <channel_49(3)>
+  _14 = (int) channel_48;
+  _1 = (sizetype) _14;
+  _43 = _1 * 120;
+  _47 = _43 + 56;
+  _15 = &gs_ch_ctrl + _47;
+  _17 = R_SCIFA_CheckRXIError (channel_48, _15);
+  if (_17 == 0)
+    goto <bb 18>;
+  else
+    goto <bb 14>;
+
+  <bb 18>:
+  goto <bb 12>;
+
+  <bb 19>:
+  received_data ={v} {CLOBBER};
+  fifo_empty ={v} {CLOBBER};
+  goto <bb 16>;
+
+}
+
+
+
+;; Function TXI_handler (TXI_handler, funcdef_no=21, decl_uid=72413, cgraph_uid=21, symbol_order=34)
+
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1222:13: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1222:13: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1222:13: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1222:13: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1263
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1263:13: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1263:13: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1263:13: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1263:13: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1234
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1234:57: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1234:57: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1234:57: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1234:57: note: bad loop form.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1222:13: note: vectorized 0 loops in function.
+TXI_handler (uint32_t sense)
+{
+  bool_t fifo_full;
+  uint8_t data_to_send;
+  r_channel_t active_int;
+  scifa_interrupting_state_t channel_state;
+  r_channel_t channel;
+  unsigned char ivtmp_7;
+  unsigned char ivtmp_9;
+  int _11;
+  e_scifa_tx_dt_mode _12;
+  unsigned char channel.6_13;
+  unsigned char _14;
+  int _20;
+  unsigned int fifo_full.8_21;
+  struct _cbuff_t * _23;
+  long int _25;
+  struct _cbuff_t * _27;
+  int _29;
+  unsigned char data_to_send.7_30;
+  struct _cbuff_t * _33;
+  long int _35;
+  int _45;
+
+  <bb 2>:
+
+  <bb 3>:
+  # channel_51 = PHI <channel_15(6), 0(2)>
+  # ivtmp_9 = PHI <ivtmp_7(6), 5(2)>
+  _11 = (int) channel_51;
+  _12 = gs_ch_ctrl[_11].cfg.tx_dt_mode;
+  if (_12 == 3)
+    goto <bb 4>;
+  else
+    goto <bb 5>;
+
+  <bb 4>:
+  channel.6_13 = (unsigned char) channel_51;
+  _14 = channel.6_13 + 1;
+  channel_15 = (r_channel_t) _14;
+  ivtmp_7 = ivtmp_9 - 1;
+  if (ivtmp_7 != 0)
+    goto <bb 6>;
+  else
+    goto <bb 16>;
+
+  <bb 5>:
+  channel_state_17 = R_SCIFA_GetTXIState (channel_51);
+  if (channel_state_17 == 1)
+    goto <bb 17>;
+  else
+    goto <bb 4>;
+
+  <bb 6>:
+  goto <bb 3>;
+
+  <bb 7>:
+  _27 = gs_ch_ctrl[_45].p_tx_cbuff;
+  _29 = cbGet (_27, &data_to_send);
+  if (_29 != 0)
+    goto <bb 9>;
+  else
+    goto <bb 8>;
+
+  <bb 8>:
+  goto <bb 11>;
+
+  <bb 9>:
+  data_to_send.7_30 = data_to_send;
+  R_SCIFA_PutByte (channel_32, data_to_send.7_30);
+
+  <bb 10>:
+
+  <bb 11>:
+  _20 = R_SCIFA_IsTxFifoFull (channel_32, &fifo_full);
+  if (_20 == 0)
+    goto <bb 13>;
+  else
+    goto <bb 12>;
+
+  <bb 12>:
+  _33 = gs_ch_ctrl[_45].p_tx_cbuff;
+  _35 = cbUsed (_33);
+  if (_35 == 0)
+    goto <bb 15>;
+  else
+    goto <bb 16>;
+
+  <bb 13>:
+  fifo_full.8_21 = fifo_full;
+  if (fifo_full.8_21 == 0)
+    goto <bb 14>;
+  else
+    goto <bb 12>;
+
+  <bb 14>:
+  _23 = gs_ch_ctrl[_45].p_tx_cbuff;
+  _25 = cbUsed (_23);
+  if (_25 > 0)
+    goto <bb 7>;
+  else
+    goto <bb 12>;
+
+  <bb 15>:
+  R_SCIFA_StopTXI (channel_32);
+  gs_ch_ctrl[_45].tx_state = 2;
+
+  <bb 16>:
+  data_to_send ={v} {CLOBBER};
+  fifo_full ={v} {CLOBBER};
+  return;
+
+  <bb 17>:
+  # _45 = PHI <_11(5)>
+  # channel_32 = PHI <channel_51(5)>
+  R_SCIFA_ClearTXIFlags (channel_32);
+  goto <bb 10>;
+
+}
+
+
+
+;; Function TXEI_handler (TXEI_handler, funcdef_no=20, decl_uid=72411, cgraph_uid=20, symbol_order=33)
+
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1198
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1198:35: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1198:35: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1198:35: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1198:35: note: bad loop form.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1190:13: note: vectorized 0 loops in function.
+TXEI_handler (uint32_t sense)
+{
+  r_channel_t active_int;
+  r_channel_t channel;
+  unsigned char ivtmp_1;
+  <unnamed type> _8;
+  unsigned char channel.10_9;
+  unsigned char _10;
+  unsigned char ivtmp_20;
+
+  <bb 2>:
+
+  <bb 3>:
+  # channel_22 = PHI <channel_11(5), 0(2)>
+  # ivtmp_1 = PHI <ivtmp_20(5), 5(2)>
+  _8 = R_SCIFA_GetTXEIState (channel_22);
+  if (_8 == 1)
+    goto <bb 7>;
+  else
+    goto <bb 4>;
+
+  <bb 4>:
+  channel.10_9 = (unsigned char) channel_22;
+  _10 = channel.10_9 + 1;
+  channel_11 = (r_channel_t) _10;
+  ivtmp_20 = ivtmp_1 - 1;
+  if (ivtmp_20 != 0)
+    goto <bb 5>;
+  else
+    goto <bb 6>;
+
+  <bb 5>:
+  goto <bb 3>;
+
+  <bb 6>:
+  return;
+
+  <bb 7>:
+  # channel_16 = PHI <channel_22(3)>
+  R_SCIFA_StopTransmit (channel_16);
+  goto <bb 6>;
+
+}
+
+
+
+;; Function start_tx (start_tx, funcdef_no=19, decl_uid=72409, cgraph_uid=19, symbol_order=32)
+
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1143
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1143:15: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1143:15: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1143:15: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1143:15: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153:23: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153:23: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153:23: note: === get_loop_niters ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153:23: note: not vectorized: number of iterations cannot be computed.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1153:23: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128:5: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128:5: note: === vect_analyze_loop_form ===
+split exit edge.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128:5: note: === get_loop_niters ===
+Analyzing # of iterations of loop 1
+  exit condition [1, + , 1](no_overflow) < _64
+  bounds on difference of bases: 0 ... 2147483646
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+  result:
+    # of iterations (unsigned int) _64 + 4294967295, bounded by 2147483646
+Applying pattern match.pd:1047, generic-match.c:4821
+Applying pattern match.pd:83, generic-match.c:9008
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128:5: note: Symbolic number of iterations is (unsigned int) _64
+Creating dr for gs_ch_ctrl[_13].p_tx_cbuff
+analyze_innermost: Applying pattern match.pd:1495, generic-match.c:7223
+Applying pattern match.pd:83, generic-match.c:9008
+success.
+	base_address: &gs_ch_ctrl
+	offset from base address: (ssizetype) ((sizetype) channel_11(D) * 120)
+	constant offset from base address: 80
+	step: 0
+	aligned to: 8
+	base_object: gs_ch_ctrl
+	Access function 0: 640
+	Access function 1: _13
+Creating dr for *_24
+analyze_innermost: success.
+	base_address: p_buffer_23(D)
+	offset from base address: 0
+	constant offset from base address: 0
+	step: 1
+	aligned to: 64
+	base_object: *p_buffer_23(D)
+	Access function 0: {0B, +, 1}_1
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1128:5: note: not vectorized: loop contains function calls or data references that cannot be analyzed
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1116:16: note: vectorized 0 loops in function.
+start_tx (r_channel_t channel, const uint8_t * p_buffer, int32_t ui_count)
+{
+  int32_t bytes_written;
+  int32_t free_space;
+  int _13;
+  struct _cbuff_t * _14;
+  struct _cbuff_t * _21;
+  sizetype bytes_written.17_22;
+  const uint8_t * _24;
+  unsigned char _25;
+  <unnamed type> _31;
+  struct _cbuff_t * _34;
+  _Bool _37;
+  _Bool _38;
+  _Bool _39;
+  struct _cbuff_t * _40;
+  sizetype bytes_written.17_41;
+  const uint8_t * _42;
+  unsigned char _43;
+  long int _64;
+  long int _76;
+
+  <bb 2>:
+  R_SCIFA_DisableTxInterrupt (channel_11(D));
+  _13 = (int) channel_11(D);
+  _14 = gs_ch_ctrl[_13].p_tx_cbuff;
+  free_space_16 = cbFree (_14);
+  _64 = MIN_EXPR <free_space_16, ui_count_18(D)>;
+  if (_64 > 0)
+    goto <bb 3>;
+  else
+    goto <bb 6>;
+
+  <bb 3>:
+
+  <bb 4>:
+  # bytes_written_66 = PHI <0(3), bytes_written_27(5)>
+  _21 = gs_ch_ctrl[_13].p_tx_cbuff;
+  bytes_written.17_22 = (sizetype) bytes_written_66;
+  _24 = p_buffer_23(D) + bytes_written.17_22;
+  _25 = *_24;
+  cbPut (_21, _25);
+  bytes_written_27 = bytes_written_66 + 1;
+  if (bytes_written_27 < _64)
+    goto <bb 5>;
+  else
+    goto <bb 21>;
+
+  <bb 5>:
+  goto <bb 4>;
+
+  <bb 21>:
+  # _76 = PHI <_64(4)>
+
+  <bb 6>:
+  # bytes_written_67 = PHI <_76(21), 0(2)>
+  R_SCIFA_EnableTxInterrupt (channel_11(D));
+  R_SCIFA_StartTXI (channel_11(D));
+  _31 = gs_ch_ctrl[_13].cfg.write_blocking_mode;
+  if (_31 == 0)
+    goto <bb 7>;
+  else
+    goto <bb 20>;
+
+  <bb 7>:
+  if (ui_count_18(D) > bytes_written_67)
+    goto <bb 8>;
+  else
+    goto <bb 20>;
+
+  <bb 8>:
+
+  <bb 9>:
+  # bytes_written_70 = PHI <bytes_written_67(8), bytes_written_53(18)>
+  R_SCIFA_DisableTxInterrupt (channel_11(D));
+  _34 = gs_ch_ctrl[_13].p_tx_cbuff;
+  free_space_36 = cbFree (_34);
+  if (free_space_36 > 0)
+    goto <bb 10>;
+  else
+    goto <bb 16>;
+
+  <bb 10>:
+  if (ui_count_18(D) > bytes_written_70)
+    goto <bb 11>;
+  else
+    goto <bb 15>;
+
+  <bb 11>:
+
+  <bb 12>:
+  # free_space_65 = PHI <free_space_36(11), free_space_46(13)>
+  # bytes_written_68 = PHI <bytes_written_70(11), bytes_written_45(13)>
+  _40 = gs_ch_ctrl[_13].p_tx_cbuff;
+  bytes_written.17_41 = (sizetype) bytes_written_68;
+  _42 = p_buffer_23(D) + bytes_written.17_41;
+  _43 = *_42;
+  cbPut (_40, _43);
+  bytes_written_45 = bytes_written_68 + 1;
+  free_space_46 = free_space_65 + -1;
+  _37 = ui_count_18(D) > bytes_written_45;
+  _38 = free_space_46 > 0;
+  _39 = _37 & _38;
+  if (_39 != 0)
+    goto <bb 13>;
+  else
+    goto <bb 14>;
+
+  <bb 13>:
+  goto <bb 12>;
+
+  <bb 14>:
+  # bytes_written_63 = PHI <bytes_written_45(12)>
+
+  <bb 15>:
+  # bytes_written_69 = PHI <bytes_written_63(14), bytes_written_70(10)>
+  R_SCIFA_EnableTxInterrupt (channel_11(D));
+  R_SCIFA_StartTXI (channel_11(D));
+  goto <bb 17>;
+
+  <bb 16>:
+  R_SCIFA_EnableTxInterrupt (channel_11(D));
+  R_OS_TaskSleep (5);
+
+  <bb 17>:
+  # bytes_written_53 = PHI <bytes_written_70(16), bytes_written_69(15)>
+  if (ui_count_18(D) > bytes_written_53)
+    goto <bb 18>;
+  else
+    goto <bb 19>;
+
+  <bb 18>:
+  goto <bb 9>;
+
+  <bb 19>:
+  # bytes_written_62 = PHI <bytes_written_53(17)>
+
+  <bb 20>:
+  # bytes_written_5 = PHI <bytes_written_67(6), bytes_written_62(19), bytes_written_67(7)>
+  return bytes_written_5;
+
+}
+
+
+
+;; Function r_scifa_hld_prv_read (r_scifa_hld_prv_read, funcdef_no=11, decl_uid=71766, cgraph_uid=11, symbol_order=24)
+
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:540
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:540:5: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:540:5: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:540:5: note: not vectorized: multiple nested loops.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:540:5: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:570
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:570:17: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:570:17: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:570:17: note: not vectorized: control flow in loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:570:17: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558:13: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558:13: note: === vect_analyze_loop_form ===
+split exit edge.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558:13: note: === get_loop_niters ===
+Analyzing # of iterations of loop 3
+  exit condition [1, + , 1](no_overflow) < _43
+  bounds on difference of bases: 0 ... 2147483646
+Applying pattern match.pd:695, generic-match.c:64
+Applying pattern match.pd:732, generic-match.c:10709
+  result:
+    # of iterations (unsigned int) _43 + 4294967295, bounded by 2147483646
+Applying pattern match.pd:1047, generic-match.c:4821
+Applying pattern match.pd:83, generic-match.c:9008
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558:13: note: Symbolic number of iterations is (unsigned int) _43
+Creating dr for gs_ch_ctrl[_73].p_rx_cbuff
+analyze_innermost: Applying pattern match.pd:1495, generic-match.c:7223
+Applying pattern match.pd:83, generic-match.c:9008
+success.
+	base_address: &gs_ch_ctrl
+	offset from base address: (ssizetype) ((sizetype) channel_10 * 120)
+	constant offset from base address: 76
+	step: 0
+	aligned to: 8
+	base_object: gs_ch_ctrl
+	Access function 0: 608
+	Access function 1: _73
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:558:13: note: not vectorized: loop contains function calls or data references that cannot be analyzed
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:606:9: note: vectorized 0 loops in function.
+r_scifa_hld_prv_read (r_sc_index_t sc_config_index, uint8_t * p_buffer, int32_t max_count)
+{
+  int32_t stored_data_length;
+  int32_t bytes_read;
+  uint8_t data;
+  bool_t fifo_empty;
+  int32_t D.73102;
+  bool_t looping;
+  r_channel_t channel;
+  int32_t ret;
+  int32_t _2;
+  int iftmp.11_3;
+  <unnamed type> _18;
+  void * _22;
+  e_scifa_rx_dt_mode _23;
+  struct _cbuff_t * _24;
+  struct _cbuff_t * _26;
+  sizetype bytes_read.12_28;
+  uint8_t * _29;
+  unsigned int fifo_empty.13_33;
+  sizetype bytes_read.12_35;
+  uint8_t * _36;
+  unsigned char data.14_37;
+  long int _39;
+  unsigned int fifo_empty.13_40;
+  long int _43;
+  int _44;
+  int _73;
+  void * _76;
+  e_scifa_rx_dt_mode _80;
+  void * _86;
+  e_scifa_rx_dt_mode _90;
+  _Bool _92;
+
+  <bb 2>:
+  channel_10 = R_SCIFA_GetChannel (sc_config_index_8(D));
+  if (channel_10 == -1)
+    goto <bb 25>;
+  else
+    goto <bb 3>;
+
+  <bb 3>:
+  _73 = (int) channel_10;
+
+  <bb 4>:
+  _22 = gs_ch_ctrl[_73].rx_mutex;
+  R_OS_MutexAcquire (_22);
+  _23 = gs_ch_ctrl[_73].cfg.rx_dt_mode;
+  if (_23 == 3)
+    goto <bb 5>;
+  else
+    goto <bb 7>;
+
+  <bb 5>:
+  R_SCIFA_EnableRxInterrupt (channel_10);
+  _76 = gs_ch_ctrl[_73].rx_mutex;
+  R_OS_MutexRelease (_76);
+  data ={v} {CLOBBER};
+  fifo_empty ={v} {CLOBBER};
+  _80 = gs_ch_ctrl[_73].cfg.rx_dt_mode;
+  if (_80 == 3)
+    goto <bb 25>;
+  else
+    goto <bb 6>;
+
+  <bb 6>:
+  _18 = gs_ch_ctrl[_73].cfg.read_blocking_mode;
+  _92 = _18 == 0;
+  _44 = (int) _92;
+  goto <bb 22>;
+
+  <bb 7>:
+  R_SCIFA_DisableRxInterrupt (channel_10);
+  _24 = gs_ch_ctrl[_73].p_rx_cbuff;
+  stored_data_length_25 = cbUsed (_24);
+  if (stored_data_length_25 > 0)
+    goto <bb 8>;
+  else
+    goto <bb 12>;
+
+  <bb 8>:
+  _43 = MIN_EXPR <max_count_12(D), stored_data_length_25>;
+  if (_43 > 0)
+    goto <bb 9>;
+  else
+    goto <bb 12>;
+
+  <bb 9>:
+
+  <bb 10>:
+  # bytes_read_61 = PHI <0(9), bytes_read_30(11)>
+  _26 = gs_ch_ctrl[_73].p_rx_cbuff;
+  bytes_read.12_28 = (sizetype) bytes_read_61;
+  _29 = p_buffer_11(D) + bytes_read.12_28;
+  cbGet (_26, _29);
+  bytes_read_30 = bytes_read_61 + 1;
+  if (bytes_read_30 < _43)
+    goto <bb 11>;
+  else
+    goto <bb 28>;
+
+  <bb 11>:
+  goto <bb 10>;
+
+  <bb 28>:
+  # _39 = PHI <_43(10)>
+
+  <bb 12>:
+  # bytes_read_32 = PHI <0(8), _39(28), 0(7)>
+  if (max_count_12(D) > bytes_read_32)
+    goto <bb 13>;
+  else
+    goto <bb 26>;
+
+  <bb 13>:
+
+  <bb 14>:
+  # bytes_read_34 = PHI <bytes_read_32(13), bytes_read_38(20)>
+  R_SCIFA_IsRxFifoEmpty (channel_10, &fifo_empty);
+  fifo_empty.13_33 = fifo_empty;
+  if (fifo_empty.13_33 == 0)
+    goto <bb 16>;
+  else
+    goto <bb 15>;
+
+  <bb 15>:
+  # bytes_read_31 = PHI <bytes_read_34(14)>
+  goto <bb 26>;
+
+  <bb 16>:
+  R_SCIFA_GetByte (channel_10, &data);
+  bytes_read.12_35 = (sizetype) bytes_read_34;
+  _36 = p_buffer_11(D) + bytes_read.12_35;
+  data.14_37 = data;
+  *_36 = data.14_37;
+  bytes_read_38 = bytes_read_34 + 1;
+  if (max_count_12(D) > bytes_read_38)
+    goto <bb 18>;
+  else
+    goto <bb 17>;
+
+  <bb 17>:
+  # bytes_read_27 = PHI <bytes_read_38(16)>
+  goto <bb 26>;
+
+  <bb 18>:
+  fifo_empty.13_40 = fifo_empty;
+  if (fifo_empty.13_40 == 0)
+    goto <bb 20>;
+  else
+    goto <bb 19>;
+
+  <bb 19>:
+  # bytes_read_17 = PHI <bytes_read_38(18)>
+  goto <bb 26>;
+
+  <bb 20>:
+  goto <bb 14>;
+
+  <bb 21>:
+  if (bytes_read_83 == 0)
+    goto <bb 6>;
+  else
+    goto <bb 22>;
+
+  <bb 22>:
+  # iftmp.11_3 = PHI <_44(6), 0(21)>
+  # bytes_read_95 = PHI <0(6), bytes_read_83(21)>
+  if (iftmp.11_3 != 0)
+    goto <bb 24>;
+  else
+    goto <bb 23>;
+
+  <bb 23>:
+  # bytes_read_60 = PHI <bytes_read_95(22)>
+  goto <bb 25>;
+
+  <bb 24>:
+  R_OS_TaskSleep (1);
+  goto <bb 4>;
+
+  <bb 25>:
+  # _2 = PHI <-1(2), bytes_read_60(23), bytes_read_14(27), 0(5)>
+  return _2;
+
+  <bb 26>:
+  # bytes_read_83 = PHI <bytes_read_27(17), bytes_read_32(12), bytes_read_17(19), bytes_read_31(15)>
+  R_SCIFA_EnableRxInterrupt (channel_10);
+  _86 = gs_ch_ctrl[_73].rx_mutex;
+  R_OS_MutexRelease (_86);
+  data ={v} {CLOBBER};
+  fifo_empty ={v} {CLOBBER};
+  _90 = gs_ch_ctrl[_73].cfg.rx_dt_mode;
+  if (_90 == 3)
+    goto <bb 27>;
+  else
+    goto <bb 21>;
+
+  <bb 27>:
+  # bytes_read_14 = PHI <bytes_read_83(26)>
+  goto <bb 25>;
+
+}
+
+
+
+;; Function r_scifa_hld_prv_write (r_scifa_hld_prv_write, funcdef_no=15, decl_uid=71770, cgraph_uid=15, symbol_order=28)
+
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: === get_loop_niters ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: not vectorized: number of iterations cannot be computed.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: not vectorized: Bad inner loop.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:791:5: note: bad loop form.
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797:9: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797:9: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797:9: note: === get_loop_niters ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797:9: note: not vectorized: number of iterations cannot be computed.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:797:9: note: bad loop form.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:819:9: note: vectorized 0 loops in function.
+r_scifa_hld_prv_write (r_sc_index_t sc_config_index, const uint8_t * p_buffer, int32_t count)
+{
+  int32_t i;
+  bool_t p_fifo_full;
+  int32_t ret;
+  r_channel_t channel;
+  int32_t _2;
+  unsigned int _10;
+  int _14;
+  void * _15;
+  e_scifa_tx_dt_mode _17;
+  e_scifa_tx_status _18;
+  void * _25;
+  unsigned int p_fifo_full.15_27;
+  sizetype i.16_29;
+  const uint8_t * _30;
+  unsigned char _31;
+  void * _47;
+
+  <bb 2>:
+  channel_8 = R_SCIFA_GetChannel (sc_config_index_6(D));
+  if (channel_8 == -1)
+    goto <bb 20>;
+  else
+    goto <bb 3>;
+
+  <bb 3>:
+  _10 = R_OS_Running ();
+  if (_10 == 0)
+    goto <bb 4>;
+  else
+    goto <bb 13>;
+
+  <bb 4>:
+  if (count_12(D) > 0)
+    goto <bb 6>;
+  else
+    goto <bb 5>;
+
+  <bb 5>:
+  p_fifo_full ={v} {CLOBBER};
+  goto <bb 20>;
+
+  <bb 6>:
+
+  <bb 7>:
+  # i_45 = PHI <0(6), i_32(12)>
+
+  <bb 8>:
+  R_SCIFA_IsTxFifoFull (channel_8, &p_fifo_full);
+  p_fifo_full.15_27 = p_fifo_full;
+  if (p_fifo_full.15_27 != 0)
+    goto <bb 9>;
+  else
+    goto <bb 10>;
+
+  <bb 9>:
+  goto <bb 8>;
+
+  <bb 10>:
+  i.16_29 = (sizetype) i_45;
+  _30 = p_buffer_11(D) + i.16_29;
+  _31 = *_30;
+  R_SCIFA_PutByte (channel_8, _31);
+  i_32 = i_45 + 1;
+  if (count_12(D) > i_32)
+    goto <bb 12>;
+  else
+    goto <bb 11>;
+
+  <bb 11>:
+  goto <bb 5>;
+
+  <bb 12>:
+  goto <bb 7>;
+
+  <bb 13>:
+  _14 = (int) channel_8;
+  _15 = gs_ch_ctrl[_14].tx_mutex;
+  R_OS_MutexAcquire (_15);
+  _17 = gs_ch_ctrl[_14].cfg.tx_dt_mode;
+  if (_17 == 3)
+    goto <bb 18> (<L17>);
+  else
+    goto <bb 14>;
+
+  <bb 14>:
+  _18 = gs_ch_ctrl[_14].tx_state;
+  switch (_18) <default: <L18>, case 2: <L9>, case 3: <L7>, case 4: <L16>>
+
+<L7>:
+  gs_ch_ctrl[_14].tx_state = 3;
+  ret_21 = start_tx (channel_8, p_buffer_11(D), count_12(D));
+  goto <bb 18> (<L17>);
+
+<L16>:
+  __asm__ __volatile__("nop");
+  goto <bb 21> (<L18>);
+
+<L9>:
+  gs_ch_ctrl[_14].tx_state = 3;
+  ret_24 = start_tx (channel_8, p_buffer_11(D), count_12(D));
+
+  # ret_1 = PHI <count_12(D)(13), ret_24(17), ret_21(15)>
+<L17>:
+  _25 = gs_ch_ctrl[_14].tx_mutex;
+  R_OS_MutexRelease (_25);
+  if (ret_1 == 0)
+    goto <bb 19>;
+  else
+    goto <bb 20>;
+
+  <bb 19>:
+
+  <bb 20>:
+  # _2 = PHI <-1(2), count_12(D)(5), count_12(D)(19), -1(21), ret_1(18)>
+  return _2;
+
+<L18>:
+  _47 = gs_ch_ctrl[_14].tx_mutex;
+  R_OS_MutexRelease (_47);
+  goto <bb 20>;
+
+}
+
+
+
+;; Function r_scifa_hld_tx_flush (r_scifa_hld_tx_flush, funcdef_no=25, decl_uid=71778, cgraph_uid=25, symbol_order=38)
+
+
+Analyzing loop at ../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1473
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1473:12: note: ===== analyze_loop_nest =====
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1473:12: note: === vect_analyze_loop_form ===
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1473:12: note: not vectorized: latch block not empty.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1473:12: note: bad loop form.
+../generate/sc_drivers/r_scifa/src/hld/r_scifa_hld_prv.c:1448:7: note: vectorized 0 loops in function.
+r_scifa_hld_tx_flush (r_sc_index_t sc_config_index)
+{
+  size_t remaining_bytes;
+  r_channel_t channel;
+  int_t _1;
+  struct _cbuff_t * _12;
+  long int _14;
+  int _22;
+
+  <bb 2>:
+  channel_8 = R_SCIFA_GetChannel (sc_config_index_6(D));
+  if (channel_8 == -1)
+    goto <bb 6>;
+  else
+    goto <bb 3>;
+
+  <bb 3>:
+  _22 = (int) channel_8;
+
+  <bb 4>:
+  R_SCIFA_DisableTxInterrupt (channel_8);
+  _12 = gs_ch_ctrl[_22].p_tx_cbuff;
+  _14 = cbUsed (_12);
+  R_SCIFA_EnableTxInterrupt (channel_8);
+  if (_14 != 0)
+    goto <bb 5>;
+  else
+    goto <bb 6>;
+
+  <bb 5>:
+  R_OS_TaskSleep (1);
+  goto <bb 4>;
+
+  <bb 6>:
+  # _1 = PHI <-1(2), 0(4)>
+  return _1;
+
+}
+
+

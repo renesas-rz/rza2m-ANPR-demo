@@ -1,0 +1,201 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"freertos_tick_config.c"
+  13              		.section	.text.vConfigureTickInterrupt,"ax",%progbits
+  14              		.align	2
+  15              		.global	vConfigureTickInterrupt
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	vConfigureTickInterrupt:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 004000E3 		movw	r4, #:lower16:.LANCHOR0
+  25 0008 004040E3 		movt	r4, #:upper16:.LANCHOR0
+  26 000c 003094E5 		ldr	r3, [r4]
+  27 0010 010073E3 		cmn	r3, #1
+  28 0014 1080BD18 		popne	{r4, pc}
+  29 0018 000000E3 		movw	r0, #:lower16:.LC0
+  30 001c 0210A0E3 		mov	r1, #2
+  31 0020 000040E3 		movt	r0, #:upper16:.LC0
+  32 0024 FEFFFFEB 		bl	open
+  33 0028 010070E3 		cmn	r0, #1
+  34 002c 000084E5 		str	r0, [r4]
+  35 0030 0300000A 		beq	.L6
+  36 0034 0020A0E3 		mov	r2, #0
+  37 0038 1040BDE8 		pop	{r4, lr}
+  38 003c 0210A0E1 		mov	r1, r2
+  39 0040 FEFFFFEA 		b	control
+  40              	.L6:
+  41 0044 000000E3 		movw	r0, #:lower16:.LC1
+  42 0048 4010A0E3 		mov	r1, #64
+  43 004c 000040E3 		movt	r0, #:upper16:.LC1
+  44 0050 1040BDE8 		pop	{r4, lr}
+  45 0054 FEFFFFEA 		b	R_OS_AssertCalled
+  47              		.section	.text.ulGetRunTimeCounterValue,"ax",%progbits
+  48              		.align	2
+  49              		.global	ulGetRunTimeCounterValue
+  50              		.syntax unified
+  51              		.arm
+  52              		.fpu neon
+  54              	ulGetRunTimeCounterValue:
+  55              		@ args = 0, pretend = 0, frame = 8
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  58 0004 04E02DE5 		str	lr, [sp, #-4]!
+  59 0008 003040E3 		movt	r3, #:upper16:.LANCHOR1
+  60 000c 0CD04DE2 		sub	sp, sp, #12
+  61 0010 0020A0E3 		mov	r2, #0
+  62 0014 000093E5 		ldr	r0, [r3]
+  63 0018 04208DE5 		str	r2, [sp, #4]
+  64 001c 010070E3 		cmn	r0, #1
+  65 0020 1400000A 		beq	.L13
+  66 0024 04208DE2 		add	r2, sp, #4
+  67 0028 0310A0E3 		mov	r1, #3
+  68 002c FEFFFFEB 		bl	control
+  69              	.L9:
+  70 0030 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  71 0034 04009DE5 		ldr	r0, [sp, #4]
+  72 0038 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  73 003c 003092E5 		ldr	r3, [r2]
+  74 0040 000082E5 		str	r0, [r2]
+  75 0044 030050E1 		cmp	r0, r3
+  76 0048 00300023 		movwcs	r3, #:lower16:.LANCHOR3
+  77 004c 00100033 		movwcc	r1, #:lower16:.LANCHOR3
+  78 0050 00304023 		movtcs	r3, #:upper16:.LANCHOR3
+  79 0054 00104033 		movtcc	r1, #:upper16:.LANCHOR3
+  80 0058 00309135 		ldrcc	r3, [r1]
+  81 005c 00309325 		ldrcs	r3, [r3]
+  82 0060 01308332 		addcc	r3, r3, #1
+  83 0064 00308135 		strcc	r3, [r1]
+  84 0068 833BA0E1 		lsl	r3, r3, #23
+  85 006c A00483E0 		add	r0, r3, r0, lsr #9
+  86 0070 0CD08DE2 		add	sp, sp, #12
+  87              		@ sp needed
+  88 0074 04F09DE4 		ldr	pc, [sp], #4
+  89              	.L13:
+  90 0078 000000E3 		movw	r0, #:lower16:.LC1
+  91 007c 5510A0E3 		mov	r1, #85
+  92 0080 000040E3 		movt	r0, #:upper16:.LC1
+  93 0084 FEFFFFEB 		bl	R_OS_AssertCalled
+  94 0088 E8FFFFEA 		b	.L9
+  96              		.section	.text.vInitialiseRunTimeStats,"ax",%progbits
+  97              		.align	2
+  98              		.global	vInitialiseRunTimeStats
+  99              		.syntax unified
+ 100              		.arm
+ 101              		.fpu neon
+ 103              	vInitialiseRunTimeStats:
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106 0000 10402DE9 		push	{r4, lr}
+ 107 0004 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 108 0008 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 109 000c 003094E5 		ldr	r3, [r4]
+ 110 0010 010073E3 		cmn	r3, #1
+ 111 0014 1080BD18 		popne	{r4, pc}
+ 112 0018 000000E3 		movw	r0, #:lower16:.LC2
+ 113 001c 0210A0E3 		mov	r1, #2
+ 114 0020 000040E3 		movt	r0, #:upper16:.LC2
+ 115 0024 FEFFFFEB 		bl	open
+ 116 0028 010070E3 		cmn	r0, #1
+ 117 002c 000084E5 		str	r0, [r4]
+ 118 0030 0300000A 		beq	.L18
+ 119 0034 0020A0E3 		mov	r2, #0
+ 120 0038 1040BDE8 		pop	{r4, lr}
+ 121 003c 0210A0E1 		mov	r1, r2
+ 122 0040 FEFFFFEA 		b	control
+ 123              	.L18:
+ 124 0044 000000E3 		movw	r0, #:lower16:.LC1
+ 125 0048 7310A0E3 		mov	r1, #115
+ 126 004c 000040E3 		movt	r0, #:upper16:.LC1
+ 127 0050 1040BDE8 		pop	{r4, lr}
+ 128 0054 FEFFFFEA 		b	R_OS_AssertCalled
+ 130              		.section	.bss.ulLastCounterValue.71081,"aw",%nobits
+ 131              		.align	2
+ 132              		.set	.LANCHOR2,. + 0
+ 135              	ulLastCounterValue.71081:
+ 136 0000 00000000 		.space	4
+ 137              		.section	.bss.ulOverflows.71082,"aw",%nobits
+ 138              		.align	2
+ 139              		.set	.LANCHOR3,. + 0
+ 142              	ulOverflows.71082:
+ 143 0000 00000000 		.space	4
+ 144              		.section	.data.s_runtime_stats_timer_handle,"aw",%progbits
+ 145              		.align	2
+ 146              		.set	.LANCHOR1,. + 0
+ 149              	s_runtime_stats_timer_handle:
+ 150 0000 FFFFFFFF 		.word	-1
+ 151              		.section	.data.s_tick_timer_handle,"aw",%progbits
+ 152              		.align	2
+ 153              		.set	.LANCHOR0,. + 0
+ 156              	s_tick_timer_handle:
+ 157 0000 FFFFFFFF 		.word	-1
+ 158              		.section	.rodata.vConfigureTickInterrupt.str1.4,"aMS",%progbits,1
+ 159              		.align	2
+ 160              	.LC0:
+ 161 0000 5C5C2E5C 		.ascii	"\\\\.\\ostm_reserved\000"
+ 161      6F73746D 
+ 161      5F726573 
+ 161      65727665 
+ 161      6400
+ 162 0012 0000     		.space	2
+ 163              	.LC1:
+ 164 0014 2E2E2F73 		.ascii	"../src/FreeRTOS/portable/GCC/ARM_CA9_RZA2M/freertos"
+ 164      72632F46 
+ 164      72656552 
+ 164      544F532F 
+ 164      706F7274 
+ 165 0047 5F746963 		.ascii	"_tick_config.c\000"
+ 165      6B5F636F 
+ 165      6E666967 
+ 165      2E6300
+ 166              		.section	.rodata.vInitialiseRunTimeStats.str1.4,"aMS",%progbits,1
+ 167              		.align	2
+ 168              	.LC2:
+ 169 0000 5C5C2E5C 		.ascii	"\\\\.\\runtime_stats_timer\000"
+ 169      72756E74 
+ 169      696D655F 
+ 169      73746174 
+ 169      735F7469 
+ 170              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 freertos_tick_config.c
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:14     .text.vConfigureTickInterrupt:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:20     .text.vConfigureTickInterrupt:00000000 vConfigureTickInterrupt
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:153    .data.s_tick_timer_handle:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:160    .rodata.vConfigureTickInterrupt.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:163    .rodata.vConfigureTickInterrupt.str1.4:00000014 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:48     .text.ulGetRunTimeCounterValue:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:54     .text.ulGetRunTimeCounterValue:00000000 ulGetRunTimeCounterValue
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:146    .data.s_runtime_stats_timer_handle:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:132    .bss.ulLastCounterValue.71081:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:139    .bss.ulOverflows.71082:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:97     .text.vInitialiseRunTimeStats:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:103    .text.vInitialiseRunTimeStats:00000000 vInitialiseRunTimeStats
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:168    .rodata.vInitialiseRunTimeStats.str1.4:00000000 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:131    .bss.ulLastCounterValue.71081:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:135    .bss.ulLastCounterValue.71081:00000000 ulLastCounterValue.71081
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:138    .bss.ulOverflows.71082:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:142    .bss.ulOverflows.71082:00000000 ulOverflows.71082
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:145    .data.s_runtime_stats_timer_handle:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:149    .data.s_runtime_stats_timer_handle:00000000 s_runtime_stats_timer_handle
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:152    .data.s_tick_timer_handle:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:156    .data.s_tick_timer_handle:00000000 s_tick_timer_handle
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:159    .rodata.vConfigureTickInterrupt.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccEmdI4e.s:167    .rodata.vInitialiseRunTimeStats.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+open
+control
+R_OS_AssertCalled

@@ -1,0 +1,322 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_scifa_drv_api.c"
+  13              		.section	.text.scifa_hld_get_version,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	scifa_hld_get_version:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 003000E3 		movw	r3, #:lower16:.LC0
+  23 0004 10402DE9 		push	{r4, lr}
+  24 0008 0120A0E3 		mov	r2, #1
+  25 000c 003040E3 		movt	r3, #:upper16:.LC0
+  26 0010 0040A0E3 		mov	r4, #0
+  27 0014 0200A0E3 		mov	r0, #2
+  28 0018 B200C1E1 		strh	r0, [r1, #2]	@ movhi
+  29 001c 0100A0E1 		mov	r0, r1
+  30 0020 B020C1E1 		strh	r2, [r1]	@ movhi
+  31 0024 083081E5 		str	r3, [r1, #8]
+  32 0028 044081E5 		str	r4, [r1, #4]
+  33 002c FEFFFFEB 		bl	R_SCIFA_GetVersion
+  34 0030 0400A0E1 		mov	r0, r4
+  35 0034 1080BDE8 		pop	{r4, pc}
+  37              		.section	.text.scifa_hld_control,"ax",%progbits
+  38              		.align	2
+  39              		.syntax unified
+  40              		.arm
+  41              		.fpu neon
+  43              	scifa_hld_control:
+  44              		@ args = 0, pretend = 0, frame = 0
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46 0000 000050E3 		cmp	r0, #0
+  47 0004 3F00000A 		beq	.L33
+  48 0008 70402DE9 		push	{r4, r5, r6, lr}
+  49 000c 0250A0E1 		mov	r5, r2
+  50 0010 1C60D0E5 		ldrb	r6, [r0, #28]	@ zero_extendqisi2
+  51 0014 0140A0E1 		mov	r4, r1
+  52 0018 0600A0E1 		mov	r0, r6
+  53 001c FEFFFFEB 		bl	R_SCIFA_GetChannel
+  54 0020 010070E3 		cmn	r0, #1
+  55 0024 3500000A 		beq	.L3
+  56 0028 0130A0E3 		mov	r3, #1
+  57 002c 1300A0E1 		lsl	r0, r3, r0
+  58 0030 020950E3 		cmp	r0, #32768
+  59 0034 310000CA 		bgt	.L3
+  60 0038 1F0010E3 		tst	r0, #31
+  61 003c 2F00000A 		beq	.L3
+  62 0040 4D3844E2 		sub	r3, r4, #5046272
+  63 0044 060053E3 		cmp	r3, #6
+  64 0048 03F19F97 		ldrls	pc, [pc, r3, asl #2]
+  65 004c 270000EA 		b	.L15
+  66              	.L16:
+  67 0050 78000000 		.word	.L8
+  68 0054 90000000 		.word	.L9
+  69 0058 A8000000 		.word	.L10
+  70 005c B4000000 		.word	.L11
+  71 0060 C0000000 		.word	.L13
+  72 0064 D8000000 		.word	.L12
+  73 0068 6C000000 		.word	.L14
+  74              	.L14:
+  75 006c 0600A0E1 		mov	r0, r6
+  76 0070 7040BDE8 		pop	{r4, r5, r6, lr}
+  77 0074 FEFFFFEA 		b	r_scifa_hld_tx_flush
+  78              	.L8:
+  79 0078 000055E3 		cmp	r5, #0
+  80 007c 1F00000A 		beq	.L3
+  81 0080 0510A0E1 		mov	r1, r5
+  82 0084 0600A0E1 		mov	r0, r6
+  83 0088 7040BDE8 		pop	{r4, r5, r6, lr}
+  84 008c FEFFFFEA 		b	r_scifa_hld_prv_set_config
+  85              	.L9:
+  86 0090 000055E3 		cmp	r5, #0
+  87 0094 1900000A 		beq	.L3
+  88 0098 0510A0E1 		mov	r1, r5
+  89 009c 0600A0E1 		mov	r0, r6
+  90 00a0 7040BDE8 		pop	{r4, r5, r6, lr}
+  91 00a4 FEFFFFEA 		b	r_scifa_hld_prv_get_config
+  92              	.L10:
+  93 00a8 0600A0E1 		mov	r0, r6
+  94 00ac 7040BDE8 		pop	{r4, r5, r6, lr}
+  95 00b0 FEFFFFEA 		b	r_scifa_hld_dma_read_abort
+  96              	.L11:
+  97 00b4 0600A0E1 		mov	r0, r6
+  98 00b8 7040BDE8 		pop	{r4, r5, r6, lr}
+  99 00bc FEFFFFEA 		b	r_scifa_hld_dma_write_abort
+ 100              	.L13:
+ 101 00c0 000055E3 		cmp	r5, #0
+ 102 00c4 0D00000A 		beq	.L3
+ 103 00c8 0510A0E1 		mov	r1, r5
+ 104 00cc 0600A0E1 		mov	r0, r6
+ 105 00d0 7040BDE8 		pop	{r4, r5, r6, lr}
+ 106 00d4 FEFFFFEA 		b	r_scifa_hld_dma_write_next
+ 107              	.L12:
+ 108 00d8 000055E3 		cmp	r5, #0
+ 109 00dc 0700000A 		beq	.L3
+ 110 00e0 0510A0E1 		mov	r1, r5
+ 111 00e4 0600A0E1 		mov	r0, r6
+ 112 00e8 7040BDE8 		pop	{r4, r5, r6, lr}
+ 113 00ec FEFFFFEA 		b	r_scifa_hld_dma_read_next
+ 114              	.L15:
+ 115 00f0 000000E3 		movw	r0, #:lower16:.LC1
+ 116 00f4 0410A0E1 		mov	r1, r4
+ 117 00f8 000040E3 		movt	r0, #:upper16:.LC1
+ 118 00fc FEFFFFEB 		bl	printf
+ 119              	.L3:
+ 120 0100 0000E0E3 		mvn	r0, #0
+ 121 0104 7080BDE8 		pop	{r4, r5, r6, pc}
+ 122              	.L33:
+ 123 0108 0000E0E3 		mvn	r0, #0
+ 124 010c 1EFF2FE1 		bx	lr
+ 126              		.section	.text.scifa_hld_close,"ax",%progbits
+ 127              		.align	2
+ 128              		.syntax unified
+ 129              		.arm
+ 130              		.fpu neon
+ 132              	scifa_hld_close:
+ 133              		@ args = 0, pretend = 0, frame = 0
+ 134              		@ frame_needed = 0, uses_anonymous_args = 0
+ 135 0000 000050E3 		cmp	r0, #0
+ 136 0004 10402DE9 		push	{r4, lr}
+ 137 0008 0D00000A 		beq	.L40
+ 138 000c 1C40D0E5 		ldrb	r4, [r0, #28]	@ zero_extendqisi2
+ 139 0010 0400A0E1 		mov	r0, r4
+ 140 0014 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 141 0018 010070E3 		cmn	r0, #1
+ 142 001c 0800000A 		beq	.L40
+ 143 0020 0130A0E3 		mov	r3, #1
+ 144 0024 1300A0E1 		lsl	r0, r3, r0
+ 145 0028 020950E3 		cmp	r0, #32768
+ 146 002c 040000CA 		bgt	.L40
+ 147 0030 1F0010E3 		tst	r0, #31
+ 148 0034 0200000A 		beq	.L40
+ 149 0038 0400A0E1 		mov	r0, r4
+ 150 003c 1040BDE8 		pop	{r4, lr}
+ 151 0040 FEFFFFEA 		b	r_scifa_hld_prv_close
+ 152              	.L40:
+ 153 0044 0040E0E3 		mvn	r4, #0
+ 154 0048 0400A0E1 		mov	r0, r4
+ 155 004c 1040BDE8 		pop	{r4, lr}
+ 156 0050 FEFFFFEA 		b	r_scifa_hld_prv_close
+ 158              		.section	.text.scifa_hld_read,"ax",%progbits
+ 159              		.align	2
+ 160              		.syntax unified
+ 161              		.arm
+ 162              		.fpu neon
+ 164              	scifa_hld_read:
+ 165              		@ args = 0, pretend = 0, frame = 0
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167 0000 000050E3 		cmp	r0, #0
+ 168 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 169 0008 0150A0E1 		mov	r5, r1
+ 170 000c 0260A0E1 		mov	r6, r2
+ 171 0010 0F00000A 		beq	.L51
+ 172 0014 1C40D0E5 		ldrb	r4, [r0, #28]	@ zero_extendqisi2
+ 173 0018 0400A0E1 		mov	r0, r4
+ 174 001c FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 175 0020 010070E3 		cmn	r0, #1
+ 176 0024 0A00000A 		beq	.L51
+ 177 0028 0130A0E3 		mov	r3, #1
+ 178 002c 1300A0E1 		lsl	r0, r3, r0
+ 179 0030 020950E3 		cmp	r0, #32768
+ 180 0034 060000CA 		bgt	.L51
+ 181 0038 1F0010E3 		tst	r0, #31
+ 182 003c 0400000A 		beq	.L51
+ 183              	.L50:
+ 184 0040 0620A0E1 		mov	r2, r6
+ 185 0044 0510A0E1 		mov	r1, r5
+ 186 0048 0400A0E1 		mov	r0, r4
+ 187 004c 7040BDE8 		pop	{r4, r5, r6, lr}
+ 188 0050 FEFFFFEA 		b	r_scifa_hld_prv_read
+ 189              	.L51:
+ 190 0054 0040E0E3 		mvn	r4, #0
+ 191 0058 F8FFFFEA 		b	.L50
+ 193              		.section	.text.scifa_hld_write,"ax",%progbits
+ 194              		.align	2
+ 195              		.syntax unified
+ 196              		.arm
+ 197              		.fpu neon
+ 199              	scifa_hld_write:
+ 200              		@ args = 0, pretend = 0, frame = 0
+ 201              		@ frame_needed = 0, uses_anonymous_args = 0
+ 202 0000 000050E3 		cmp	r0, #0
+ 203 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 204 0008 0150A0E1 		mov	r5, r1
+ 205 000c 0260A0E1 		mov	r6, r2
+ 206 0010 0F00000A 		beq	.L62
+ 207 0014 1C40D0E5 		ldrb	r4, [r0, #28]	@ zero_extendqisi2
+ 208 0018 0400A0E1 		mov	r0, r4
+ 209 001c FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 210 0020 010070E3 		cmn	r0, #1
+ 211 0024 0A00000A 		beq	.L62
+ 212 0028 0130A0E3 		mov	r3, #1
+ 213 002c 1300A0E1 		lsl	r0, r3, r0
+ 214 0030 020950E3 		cmp	r0, #32768
+ 215 0034 060000CA 		bgt	.L62
+ 216 0038 1F0010E3 		tst	r0, #31
+ 217 003c 0400000A 		beq	.L62
+ 218              	.L61:
+ 219 0040 0620A0E1 		mov	r2, r6
+ 220 0044 0510A0E1 		mov	r1, r5
+ 221 0048 0400A0E1 		mov	r0, r4
+ 222 004c 7040BDE8 		pop	{r4, r5, r6, lr}
+ 223 0050 FEFFFFEA 		b	r_scifa_hld_prv_write
+ 224              	.L62:
+ 225 0054 0040E0E3 		mvn	r4, #0
+ 226 0058 F8FFFFEA 		b	.L61
+ 228              		.section	.text.scifa_hld_open,"ax",%progbits
+ 229              		.align	2
+ 230              		.syntax unified
+ 231              		.arm
+ 232              		.fpu neon
+ 234              	scifa_hld_open:
+ 235              		@ args = 0, pretend = 0, frame = 0
+ 236              		@ frame_needed = 0, uses_anonymous_args = 0
+ 237 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 238 0004 005050E2 		subs	r5, r0, #0
+ 239 0008 0E00000A 		beq	.L73
+ 240 000c 1C40D5E5 		ldrb	r4, [r5, #28]	@ zero_extendqisi2
+ 241 0010 0400A0E1 		mov	r0, r4
+ 242 0014 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 243 0018 010070E3 		cmn	r0, #1
+ 244 001c 0900000A 		beq	.L73
+ 245 0020 0130A0E3 		mov	r3, #1
+ 246 0024 1300A0E1 		lsl	r0, r3, r0
+ 247 0028 020950E3 		cmp	r0, #32768
+ 248 002c 050000CA 		bgt	.L73
+ 249 0030 1F0010E3 		tst	r0, #31
+ 250 0034 0300000A 		beq	.L73
+ 251 0038 141095E5 		ldr	r1, [r5, #20]
+ 252 003c 0400A0E1 		mov	r0, r4
+ 253 0040 7040BDE8 		pop	{r4, r5, r6, lr}
+ 254 0044 FEFFFFEA 		b	r_scifa_hld_prv_open
+ 255              	.L73:
+ 256 0048 0040E0E3 		mvn	r4, #0
+ 257 004c 141095E5 		ldr	r1, [r5, #20]
+ 258 0050 0400A0E1 		mov	r0, r4
+ 259 0054 7040BDE8 		pop	{r4, r5, r6, lr}
+ 260 0058 FEFFFFEA 		b	r_scifa_hld_prv_open
+ 262              		.global	g_scifa_driver
+ 263              		.section	.rodata.g_scifa_driver,"a",%progbits
+ 264              		.align	2
+ 267              	g_scifa_driver:
+ 268 0000 00000000 		.word	.LC2
+ 269 0004 00000000 		.word	scifa_hld_open
+ 270 0008 00000000 		.word	scifa_hld_close
+ 271 000c 00000000 		.word	scifa_hld_read
+ 272 0010 00000000 		.word	scifa_hld_write
+ 273 0014 00000000 		.word	scifa_hld_control
+ 274 0018 00000000 		.word	scifa_hld_get_version
+ 275              		.section	.rodata.scifa_hld_control.str1.4,"aMS",%progbits,1
+ 276              		.align	2
+ 277              	.LC1:
+ 278 0000 53434946 		.ascii	"SCIFA Driver: Unknown control code %ld\015\012\000"
+ 278      41204472 
+ 278      69766572 
+ 278      3A20556E 
+ 278      6B6E6F77 
+ 279              		.section	.rodata.scifa_hld_get_version.str1.4,"aMS",%progbits,1
+ 280              		.align	2
+ 281              	.LC0:
+ 282 0000 484C4420 		.ascii	"HLD SCIFA\000"
+ 282      53434946 
+ 282      4100
+ 283              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 284              		.align	2
+ 285              	.LC2:
+ 286 0000 53434946 		.ascii	"SCIFA Device Driver\000"
+ 286      41204465 
+ 286      76696365 
+ 286      20447269 
+ 286      76657200 
+ 287              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_scifa_drv_api.c
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:14     .text.scifa_hld_get_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:19     .text.scifa_hld_get_version:00000000 scifa_hld_get_version
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:281    .rodata.scifa_hld_get_version.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:38     .text.scifa_hld_control:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:43     .text.scifa_hld_control:00000000 scifa_hld_control
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:67     .text.scifa_hld_control:00000050 $d
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:75     .text.scifa_hld_control:0000006c $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:277    .rodata.scifa_hld_control.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:127    .text.scifa_hld_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:132    .text.scifa_hld_close:00000000 scifa_hld_close
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:159    .text.scifa_hld_read:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:164    .text.scifa_hld_read:00000000 scifa_hld_read
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:194    .text.scifa_hld_write:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:199    .text.scifa_hld_write:00000000 scifa_hld_write
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:229    .text.scifa_hld_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:234    .text.scifa_hld_open:00000000 scifa_hld_open
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:267    .rodata.g_scifa_driver:00000000 g_scifa_driver
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:264    .rodata.g_scifa_driver:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:276    .rodata.scifa_hld_control.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:280    .rodata.scifa_hld_get_version.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc3XWdSD.s:284    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_SCIFA_GetVersion
+R_SCIFA_GetChannel
+r_scifa_hld_tx_flush
+r_scifa_hld_prv_set_config
+r_scifa_hld_prv_get_config
+r_scifa_hld_dma_read_abort
+r_scifa_hld_dma_write_abort
+r_scifa_hld_dma_write_next
+r_scifa_hld_dma_read_next
+printf
+r_scifa_hld_prv_close
+r_scifa_hld_prv_read
+r_scifa_hld_prv_write
+r_scifa_hld_prv_open

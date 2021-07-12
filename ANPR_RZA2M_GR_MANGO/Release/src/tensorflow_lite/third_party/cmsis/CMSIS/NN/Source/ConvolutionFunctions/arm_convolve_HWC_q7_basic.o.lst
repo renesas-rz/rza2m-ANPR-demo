@@ -1,0 +1,340 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_convolve_HWC_q7_basic.c"
+  13              		.section	.text.arm_convolve_HWC_q7_basic,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_convolve_HWC_q7_basic
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_convolve_HWC_q7_basic:
+  21              		@ args = 44, pretend = 0, frame = 88
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  24 0004 6CD04DE2 		sub	sp, sp, #108
+  25 0008 50308DE5 		str	r3, [sp, #80]
+  26 000c B039DDE1 		ldrh	r3, [sp, #144]
+  27 0010 B0CBDDE1 		ldrh	ip, [sp, #176]
+  28 0014 1C008DE5 		str	r0, [sp, #28]
+  29 0018 54308DE5 		str	r3, [sp, #84]
+  30 001c B439DDE1 		ldrh	r3, [sp, #148]
+  31 0020 00005CE3 		cmp	ip, #0
+  32 0024 34C08DE5 		str	ip, [sp, #52]
+  33 0028 18208DE5 		str	r2, [sp, #24]
+  34 002c 2C308DE5 		str	r3, [sp, #44]
+  35 0030 B839DDE1 		ldrh	r3, [sp, #152]
+  36 0034 30308DE5 		str	r3, [sp, #48]
+  37 0038 BC39DDE1 		ldrh	r3, [sp, #156]
+  38 003c 24308DE5 		str	r3, [sp, #36]
+  39 0040 B43ADDE1 		ldrh	r3, [sp, #164]
+  40 0044 58308DE5 		str	r3, [sp, #88]
+  41 0048 B83ADDE1 		ldrh	r3, [sp, #168]
+  42 004c 44308DE5 		str	r3, [sp, #68]
+  43 0050 D100000A 		beq	.L27
+  44 0054 2C009DE5 		ldr	r0, [sp, #44]
+  45 0058 8290A0E1 		lsl	r9, r2, #1
+  46 005c 30309DE5 		ldr	r3, [sp, #48]
+  47 0060 02C0A0E1 		mov	ip, r2
+  48 0064 01B0A0E1 		mov	fp, r1
+  49 0068 B4A09DE5 		ldr	r10, [sp, #180]
+  50 006c 002063E2 		rsb	r2, r3, #0
+  51 0070 900901E0 		mul	r1, r0, r9
+  52 0074 7220FFE6 		uxth	r2, r2
+  53 0078 800063E1 		smulbb	r3, r0, r0
+  54 007c 02E0A0E1 		mov	lr, r2
+  55 0080 5C208DE5 		str	r2, [sp, #92]
+  56 0084 900101E0 		mul	r1, r0, r1
+  57 0088 0020A0E3 		mov	r2, #0
+  58 008c 40E08DE5 		str	lr, [sp, #64]
+  59 0090 830C63E1 		smulbb	r3, r3, ip
+  60 0094 4C208DE5 		str	r2, [sp, #76]
+  61 0098 7330FFE6 		uxth	r3, r3
+  62 009c 48308DE5 		str	r3, [sp, #72]
+  63 00a0 81308AE0 		add	r3, r10, r1, lsl #1
+  64 00a4 3C308DE5 		str	r3, [sp, #60]
+  65              	.L14:
+  66 00a8 F034DDE1 		ldrsh	r3, [sp, #64]
+  67 00ac 0010A0E3 		mov	r1, #0
+  68 00b0 2C009DE5 		ldr	r0, [sp, #44]
+  69 00b4 28108DE5 		str	r1, [sp, #40]
+  70 00b8 38308DE5 		str	r3, [sp, #56]
+  71 00bc 24309DE5 		ldr	r3, [sp, #36]
+  72 00c0 930222E0 		mla	r2, r3, r2, r0
+  73 00c4 5C309DE5 		ldr	r3, [sp, #92]
+  74 00c8 20308DE5 		str	r3, [sp, #32]
+  75 00cc 30309DE5 		ldr	r3, [sp, #48]
+  76 00d0 033042E0 		sub	r3, r2, r3
+  77 00d4 14308DE5 		str	r3, [sp, #20]
+  78              	.L13:
+  79 00d8 38709DE5 		ldr	r7, [sp, #56]
+  80 00dc 14209DE5 		ldr	r2, [sp, #20]
+  81 00e0 020057E1 		cmp	r7, r2
+  82 00e4 390000AA 		bge	.L3
+  83 00e8 24209DE5 		ldr	r2, [sp, #36]
+  84 00ec 0760A0E1 		mov	r6, r7
+  85 00f0 2C009DE5 		ldr	r0, [sp, #44]
+  86 00f4 30309DE5 		ldr	r3, [sp, #48]
+  87 00f8 F082DDE1 		ldrsh	r8, [sp, #32]
+  88 00fc 920121E0 		mla	r1, r2, r1, r0
+  89 0100 035041E0 		sub	r5, r1, r3
+  90              	.L11:
+  91 0104 050058E1 		cmp	r8, r5
+  92 0108 2A0000AA 		bge	.L4
+  93 010c 9B0603E0 		mul	r3, fp, r6
+  94 0110 000057E3 		cmp	r7, #0
+  95 0114 10308DE5 		str	r3, [sp, #16]
+  96 0118 1C0000BA 		blt	.L5
+  97 011c 08E0A0E1 		mov	lr, r8
+  98 0120 0840A0E1 		mov	r4, r8
+  99 0124 060000EA 		b	.L6
+ 100              	.L44:
+ 101 0128 FEFFFFEB 		bl	memset
+ 102              	.L39:
+ 103 012c 014084E2 		add	r4, r4, #1
+ 104 0130 09A08AE0 		add	r10, r10, r9
+ 105 0134 7440BFE6 		sxth	r4, r4
+ 106 0138 050054E1 		cmp	r4, r5
+ 107 013c 04E0A0E1 		mov	lr, r4
+ 108 0140 1C0000AA 		bge	.L4
+ 109              	.L6:
+ 110 0144 A43FA0E1 		lsr	r3, r4, #31
+ 111 0148 0010A0E3 		mov	r1, #0
+ 112 014c 0A00A0E1 		mov	r0, r10
+ 113 0150 0E005BE1 		cmp	fp, lr
+ 114 0154 013083D3 		orrle	r3, r3, #1
+ 115 0158 0920A0E1 		mov	r2, r9
+ 116 015c 06005BE1 		cmp	fp, r6
+ 117 0160 013083D3 		orrle	r3, r3, #1
+ 118 0164 010053E1 		cmp	r3, r1
+ 119 0168 EEFFFF1A 		bne	.L44
+ 120 016c 10309DE5 		ldr	r3, [sp, #16]
+ 121 0170 1C109DE5 		ldr	r1, [sp, #28]
+ 122 0174 0E0083E0 		add	r0, r3, lr
+ 123 0178 18309DE5 		ldr	r3, [sp, #24]
+ 124 017c 0320A0E1 		mov	r2, r3
+ 125 0180 931020E0 		mla	r0, r3, r0, r1
+ 126 0184 0A10A0E1 		mov	r1, r10
+ 127 0188 FEFFFFEB 		bl	arm_q7_to_q15_no_shift
+ 128 018c E6FFFFEA 		b	.L39
+ 129              	.L5:
+ 130 0190 0840A0E1 		mov	r4, r8
+ 131              	.L10:
+ 132 0194 014084E2 		add	r4, r4, #1
+ 133 0198 0A00A0E1 		mov	r0, r10
+ 134 019c 7440BFE6 		sxth	r4, r4
+ 135 01a0 0920A0E1 		mov	r2, r9
+ 136 01a4 0010A0E3 		mov	r1, #0
+ 137 01a8 FEFFFFEB 		bl	memset
+ 138 01ac 050054E1 		cmp	r4, r5
+ 139 01b0 09A08AE0 		add	r10, r10, r9
+ 140 01b4 F6FFFFBA 		blt	.L10
+ 141              	.L4:
+ 142 01b8 017087E2 		add	r7, r7, #1
+ 143 01bc 14309DE5 		ldr	r3, [sp, #20]
+ 144 01c0 7770BFE6 		sxth	r7, r7
+ 145 01c4 030057E1 		cmp	r7, r3
+ 146 01c8 0760A0E1 		mov	r6, r7
+ 147 01cc CCFFFFBA 		blt	.L11
+ 148              	.L3:
+ 149 01d0 3C309DE5 		ldr	r3, [sp, #60]
+ 150 01d4 03005AE1 		cmp	r10, r3
+ 151 01d8 7200000A 		beq	.L45
+ 152              	.L12:
+ 153 01dc 28309DE5 		ldr	r3, [sp, #40]
+ 154 01e0 20209DE5 		ldr	r2, [sp, #32]
+ 155 01e4 011083E2 		add	r1, r3, #1
+ 156 01e8 24309DE5 		ldr	r3, [sp, #36]
+ 157 01ec 022083E0 		add	r2, r3, r2
+ 158 01f0 7130BFE6 		sxth	r3, r1
+ 159 01f4 7220FFE6 		uxth	r2, r2
+ 160 01f8 28308DE5 		str	r3, [sp, #40]
+ 161 01fc 0310A0E1 		mov	r1, r3
+ 162 0200 20208DE5 		str	r2, [sp, #32]
+ 163 0204 34209DE5 		ldr	r2, [sp, #52]
+ 164 0208 020053E1 		cmp	r3, r2
+ 165 020c B1FFFFBA 		blt	.L13
+ 166 0210 4C309DE5 		ldr	r3, [sp, #76]
+ 167 0214 40209DE5 		ldr	r2, [sp, #64]
+ 168 0218 011083E2 		add	r1, r3, #1
+ 169 021c 24309DE5 		ldr	r3, [sp, #36]
+ 170 0220 022083E0 		add	r2, r3, r2
+ 171 0224 7130BFE6 		sxth	r3, r1
+ 172 0228 7220FFE6 		uxth	r2, r2
+ 173 022c 4C308DE5 		str	r3, [sp, #76]
+ 174 0230 40208DE5 		str	r2, [sp, #64]
+ 175 0234 34209DE5 		ldr	r2, [sp, #52]
+ 176 0238 020053E1 		cmp	r3, r2
+ 177 023c 0320A0E1 		mov	r2, r3
+ 178 0240 98FFFFBA 		blt	.L14
+ 179 0244 B4309DE5 		ldr	r3, [sp, #180]
+ 180 0248 03005AE1 		cmp	r10, r3
+ 181 024c 5200000A 		beq	.L27
+ 182 0250 54109DE5 		ldr	r1, [sp, #84]
+ 183 0254 000051E3 		cmp	r1, #0
+ 184 0258 4F00000A 		beq	.L27
+ 185 025c 2C009DE5 		ldr	r0, [sp, #44]
+ 186 0260 18209DE5 		ldr	r2, [sp, #24]
+ 187 0264 44C09DE5 		ldr	ip, [sp, #68]
+ 188 0268 50609DE5 		ldr	r6, [sp, #80]
+ 189 026c 900203E0 		mul	r3, r0, r2
+ 190 0270 48209DE5 		ldr	r2, [sp, #72]
+ 191 0274 039002E2 		and	r9, r2, #3
+ 192 0278 0120A0E3 		mov	r2, #1
+ 193 027c 900303E0 		mul	r3, r0, r3
+ 194 0280 122CA0E1 		lsl	r2, r2, ip
+ 195 0284 AC009DE5 		ldr	r0, [sp, #172]
+ 196 0288 01B049E2 		sub	fp, r9, #1
+ 197 028c A220A0E1 		lsr	r2, r2, #1
+ 198 0290 7BB0FFE6 		uxth	fp, fp
+ 199 0294 28908DE5 		str	r9, [sp, #40]
+ 200 0298 5331EFE7 		ubfx	r3, r3, #2, #16
+ 201 029c 14208DE5 		str	r2, [sp, #20]
+ 202 02a0 18308DE5 		str	r3, [sp, #24]
+ 203 02a4 013043E2 		sub	r3, r3, #1
+ 204 02a8 A0209DE5 		ldr	r2, [sp, #160]
+ 205 02ac 7330FFE6 		uxth	r3, r3
+ 206 02b0 24B08DE5 		str	fp, [sp, #36]
+ 207 02b4 013083E2 		add	r3, r3, #1
+ 208 02b8 01A042E2 		sub	r10, r2, #1
+ 209 02bc 012080E0 		add	r2, r0, r1
+ 210 02c0 20208DE5 		str	r2, [sp, #32]
+ 211 02c4 0321A0E1 		lsl	r2, r3, #2
+ 212 02c8 1C208DE5 		str	r2, [sp, #28]
+ 213 02cc B4209DE5 		ldr	r2, [sp, #180]
+ 214 02d0 833182E0 		add	r3, r2, r3, lsl #3
+ 215 02d4 10308DE5 		str	r3, [sp, #16]
+ 216              	.L22:
+ 217 02d8 18309DE5 		ldr	r3, [sp, #24]
+ 218 02dc D140FAE1 		ldrsb	r4, [r10, #1]!
+ 219 02e0 58209DE5 		ldr	r2, [sp, #88]
+ 220 02e4 000053E3 		cmp	r3, #0
+ 221 02e8 14309DE5 		ldr	r3, [sp, #20]
+ 222 02ec 144283E0 		add	r4, r3, r4, lsl r2
+ 223 02f0 4700000A 		beq	.L24
+ 224 02f4 1C309DE5 		ldr	r3, [sp, #28]
+ 225 02f8 B4709DE5 		ldr	r7, [sp, #180]
+ 226 02fc 038086E0 		add	r8, r6, r3
+ 227              	.L18:
+ 228 0300 0420A0E3 		mov	r2, #4
+ 229 0304 0610A0E1 		mov	r1, r6
+ 230 0308 64008DE2 		add	r0, sp, #100
+ 231 030c 026086E0 		add	r6, r6, r2
+ 232 0310 FEFFFFEB 		bl	memcpy
+ 233 0314 64309DE5 		ldr	r3, [sp, #100]
+ 234 0318 0420A0E3 		mov	r2, #4
+ 235 031c 0710A0E1 		mov	r1, r7
+ 236 0320 64008DE2 		add	r0, sp, #100
+ 237              		.syntax divided
+ 238              	@ 1983 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+ 239 0324 73C08FE6 		sxtb16 ip, r3
+ 240              	@ 0 "" 2
+ 241              		.arm
+ 242              		.syntax unified
+ 243 0328 6334A0E1 		ror	r3, r3, #8
+ 244              		.syntax divided
+ 245              	@ 1983 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+ 246 032c 73308FE6 		sxtb16 r3, r3
+ 247              	@ 0 "" 2
+ 248              	@ 578 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/thi
+ 249 0330 5C5883E6 		pkhtb r5, r3, ip, asr #16
+ 250              	@ 0 "" 2
+ 251              	@ 579 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/thi
+ 252 0334 13988CE6 		pkhbt r9, ip, r3, lsl #16
+ 253              	@ 0 "" 2
+ 254              		.arm
+ 255              		.syntax unified
+ 256 0338 FEFFFFEB 		bl	memcpy
+ 257 033c 64309DE5 		ldr	r3, [sp, #100]
+ 258              		.syntax divided
+ 259              	@ 2038 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+ 260 0340 194304E7 		smlad r4, r9, r3, r4
+ 261              	@ 0 "" 2
+ 262              		.arm
+ 263              		.syntax unified
+ 264 0344 0420A0E3 		mov	r2, #4
+ 265 0348 64008DE2 		add	r0, sp, #100
+ 266 034c 021087E0 		add	r1, r7, r2
+ 267 0350 087087E2 		add	r7, r7, #8
+ 268 0354 FEFFFFEB 		bl	memcpy
+ 269 0358 64309DE5 		ldr	r3, [sp, #100]
+ 270              		.syntax divided
+ 271              	@ 2038 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/th
+ 272 035c 154304E7 		smlad r4, r5, r3, r4
+ 273              	@ 0 "" 2
+ 274              		.arm
+ 275              		.syntax unified
+ 276 0360 080056E1 		cmp	r6, r8
+ 277 0364 E5FFFF1A 		bne	.L18
+ 278 0368 10309DE5 		ldr	r3, [sp, #16]
+ 279              	.L17:
+ 280 036c 28209DE5 		ldr	r2, [sp, #40]
+ 281 0370 000052E3 		cmp	r2, #0
+ 282 0374 1B00001A 		bne	.L46
+ 283              	.L19:
+ 284 0378 44309DE5 		ldr	r3, [sp, #68]
+ 285 037c 20209DE5 		ldr	r2, [sp, #32]
+ 286 0380 5443A0E1 		asr	r4, r4, r3
+ 287 0384 AC309DE5 		ldr	r3, [sp, #172]
+ 288 0388 1440A7E6 		ssat	r4, #8, r4
+ 289 038c 0140C3E4 		strb	r4, [r3], #1
+ 290 0390 020053E1 		cmp	r3, r2
+ 291 0394 AC308DE5 		str	r3, [sp, #172]
+ 292 0398 CEFFFF1A 		bne	.L22
+ 293              	.L27:
+ 294 039c 0000A0E3 		mov	r0, #0
+ 295 03a0 6CD08DE2 		add	sp, sp, #108
+ 296              		@ sp needed
+ 297 03a4 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 298              	.L45:
+ 299 03a8 AC309DE5 		ldr	r3, [sp, #172]
+ 300 03ac A0209DE5 		ldr	r2, [sp, #160]
+ 301 03b0 44109DE5 		ldr	r1, [sp, #68]
+ 302 03b4 58009DE5 		ldr	r0, [sp, #88]
+ 303 03b8 0C308DE5 		str	r3, [sp, #12]
+ 304 03bc 08208DE5 		str	r2, [sp, #8]
+ 305 03c0 04108DE5 		str	r1, [sp, #4]
+ 306 03c4 00008DE5 		str	r0, [sp]
+ 307 03c8 48309DE5 		ldr	r3, [sp, #72]
+ 308 03cc 54209DE5 		ldr	r2, [sp, #84]
+ 309 03d0 B4109DE5 		ldr	r1, [sp, #180]
+ 310 03d4 50009DE5 		ldr	r0, [sp, #80]
+ 311 03d8 FEFFFFEB 		bl	arm_nn_mat_mult_kernel_q7_q15
+ 312 03dc B4A09DE5 		ldr	r10, [sp, #180]
+ 313 03e0 AC008DE5 		str	r0, [sp, #172]
+ 314 03e4 7CFFFFEA 		b	.L12
+ 315              	.L46:
+ 316 03e8 24109DE5 		ldr	r1, [sp, #36]
+ 317 03ec 012046E2 		sub	r2, r6, #1
+ 318 03f0 011086E0 		add	r1, r6, r1
+ 319              	.L20:
+ 320 03f4 D100F2E1 		ldrsb	r0, [r2, #1]!
+ 321 03f8 B2C0D3E0 		ldrh	ip, [r3], #2
+ 322 03fc 020051E1 		cmp	r1, r2
+ 323 0400 8C4004E1 		smlabb	r4, ip, r0, r4
+ 324 0404 FAFFFF1A 		bne	.L20
+ 325 0408 01308BE2 		add	r3, fp, #1
+ 326 040c 036086E0 		add	r6, r6, r3
+ 327 0410 D8FFFFEA 		b	.L19
+ 328              	.L24:
+ 329 0414 B4309DE5 		ldr	r3, [sp, #180]
+ 330 0418 D3FFFFEA 		b	.L17
+ 332              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_convolve_HWC_q7_basic.c
+C:\Users\a5050395\AppData\Local\Temp\ccRB2BKC.s:14     .text.arm_convolve_HWC_q7_basic:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccRB2BKC.s:20     .text.arm_convolve_HWC_q7_basic:00000000 arm_convolve_HWC_q7_basic
+
+UNDEFINED SYMBOLS
+memset
+arm_q7_to_q15_no_shift
+memcpy
+arm_nn_mat_mult_kernel_q7_q15

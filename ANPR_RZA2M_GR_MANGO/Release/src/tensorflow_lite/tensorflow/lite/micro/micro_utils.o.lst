@@ -1,0 +1,441 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"micro_utils.cc"
+  13              		.section	.text._ZN6tflite12ElementCountERK14TfLiteIntArray,"ax",%progbits
+  14              		.align	2
+  15              		.global	_ZN6tflite12ElementCountERK14TfLiteIntArray
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	_ZN6tflite12ElementCountERK14TfLiteIntArray:
+  21              		.fnstart
+  22              	.LFB1050:
+  23              		@ args = 0, pretend = 0, frame = 0
+  24              		@ frame_needed = 0, uses_anonymous_args = 0
+  25 0000 00C090E5 		ldr	ip, [r0]
+  26 0004 00005CE3 		cmp	ip, #0
+  27 0008 5C0000DA 		ble	.L13
+  28 000c 043080E2 		add	r3, r0, #4
+  29 0010 70402DE9 		push	{r4, r5, r6, lr}
+  30 0014 5331A0E7 		sbfx	r3, r3, #2, #1
+  31 0018 033003E2 		and	r3, r3, #3
+  32 001c 0C0053E1 		cmp	r3, ip
+  33 0020 0C30A021 		movcs	r3, ip
+  34 0024 08005CE3 		cmp	ip, #8
+  35 0028 0C30A0D1 		movle	r3, ip
+  36 002c 4E0000CA 		bgt	.L29
+  37              	.L3:
+  38 0030 010053E3 		cmp	r3, #1
+  39 0034 041090E5 		ldr	r1, [r0, #4]
+  40 0038 4900000A 		beq	.L22
+  41 003c 082090E5 		ldr	r2, [r0, #8]
+  42 0040 020053E3 		cmp	r3, #2
+  43 0044 920101E0 		mul	r1, r2, r1
+  44 0048 4500000A 		beq	.L22
+  45 004c 0C2090E5 		ldr	r2, [r0, #12]
+  46 0050 030053E3 		cmp	r3, #3
+  47 0054 920101E0 		mul	r1, r2, r1
+  48 0058 4100000A 		beq	.L22
+  49 005c 102090E5 		ldr	r2, [r0, #16]
+  50 0060 040053E3 		cmp	r3, #4
+  51 0064 920101E0 		mul	r1, r2, r1
+  52 0068 3D00000A 		beq	.L22
+  53 006c 142090E5 		ldr	r2, [r0, #20]
+  54 0070 050053E3 		cmp	r3, #5
+  55 0074 920101E0 		mul	r1, r2, r1
+  56 0078 3900000A 		beq	.L22
+  57 007c 182090E5 		ldr	r2, [r0, #24]
+  58 0080 060053E3 		cmp	r3, #6
+  59 0084 920101E0 		mul	r1, r2, r1
+  60 0088 3500000A 		beq	.L22
+  61 008c 1C2090E5 		ldr	r2, [r0, #28]
+  62 0090 070053E3 		cmp	r3, #7
+  63 0094 920101E0 		mul	r1, r2, r1
+  64 0098 3100000A 		beq	.L22
+  65 009c 202090E5 		ldr	r2, [r0, #32]
+  66 00a0 08E0A0E3 		mov	lr, #8
+  67 00a4 920101E0 		mul	r1, r2, r1
+  68              	.L5:
+  69 00a8 03005CE1 		cmp	ip, r3
+  70 00ac 2A00000A 		beq	.L1
+  71              	.L4:
+  72 00b0 03504CE0 		sub	r5, ip, r3
+  73 00b4 01404CE2 		sub	r4, ip, #1
+  74 00b8 042045E2 		sub	r2, r5, #4
+  75 00bc 034044E0 		sub	r4, r4, r3
+  76 00c0 2221A0E1 		lsr	r2, r2, #2
+  77 00c4 020054E3 		cmp	r4, #2
+  78 00c8 012082E2 		add	r2, r2, #1
+  79 00cc 0261A0E1 		lsl	r6, r2, #2
+  80 00d0 1300009A 		bls	.L7
+  81 00d4 013083E2 		add	r3, r3, #1
+  82 00d8 5100C0F2 		vmov.i32	q8, #1  @ v4si
+  83 00dc 033180E0 		add	r3, r0, r3, lsl #2
+  84 00e0 0040A0E3 		mov	r4, #0
+  85              	.L9:
+  86 00e4 014084E2 		add	r4, r4, #1
+  87 00e8 DF2A63F4 		vld1.64	{d18-d19}, [r3:64]
+  88 00ec 040052E1 		cmp	r2, r4
+  89 00f0 103083E2 		add	r3, r3, #16
+  90 00f4 F20960F2 		vmul.i32	q8, q8, q9
+  91 00f8 F9FFFF8A 		bhi	.L9
+  92 00fc 060055E1 		cmp	r5, r6
+  93 0100 06E08EE0 		add	lr, lr, r6
+  94 0104 5020C0F2 		vmov.i32	q9, #0  @ v4si
+  95 0108 E248F0F2 		vext.32	q10, q8, q9, #2
+  96 010c F40960F2 		vmul.i32	q8, q8, q10
+  97 0110 E224F0F2 		vext.32	q9, q8, q9, #1
+  98 0114 F20960F2 		vmul.i32	q8, q8, q9
+  99 0118 902B10EE 		vmov.32	r2, d16[0]
+ 100 011c 920101E0 		mul	r1, r2, r1
+ 101 0120 0D00000A 		beq	.L1
+ 102              	.L7:
+ 103 0124 0E2180E0 		add	r2, r0, lr, lsl #2
+ 104 0128 01308EE2 		add	r3, lr, #1
+ 105 012c 042092E5 		ldr	r2, [r2, #4]
+ 106 0130 0C0053E1 		cmp	r3, ip
+ 107 0134 920101E0 		mul	r1, r2, r1
+ 108 0138 070000AA 		bge	.L1
+ 109 013c 032180E0 		add	r2, r0, r3, lsl #2
+ 110 0140 02308EE2 		add	r3, lr, #2
+ 111 0144 042092E5 		ldr	r2, [r2, #4]
+ 112 0148 03005CE1 		cmp	ip, r3
+ 113 014c 920101E0 		mul	r1, r2, r1
+ 114 0150 033180C0 		addgt	r3, r0, r3, lsl #2
+ 115 0154 043093C5 		ldrgt	r3, [r3, #4]
+ 116 0158 930101C0 		mulgt	r1, r3, r1
+ 117              	.L1:
+ 118 015c 0100A0E1 		mov	r0, r1
+ 119 0160 7080BDE8 		pop	{r4, r5, r6, pc}
+ 120              	.L22:
+ 121 0164 03E0A0E1 		mov	lr, r3
+ 122 0168 CEFFFFEA 		b	.L5
+ 123              	.L29:
+ 124 016c 000053E3 		cmp	r3, #0
+ 125 0170 03E0A001 		moveq	lr, r3
+ 126 0174 0110A003 		moveq	r1, #1
+ 127 0178 CCFFFF0A 		beq	.L4
+ 128 017c ABFFFFEA 		b	.L3
+ 129              	.L13:
+ 130 0180 0110A0E3 		mov	r1, #1
+ 131 0184 0100A0E1 		mov	r0, r1
+ 132 0188 1EFF2FE1 		bx	lr
+ 133              		.cantunwind
+ 134              		.fnend
+ 136              		.global	__aeabi_idiv
+ 137              		.section	.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf,"ax",%progb
+ 138              		.align	2
+ 139              		.global	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+ 140              		.syntax unified
+ 141              		.arm
+ 142              		.fpu neon
+ 144              	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:
+ 145              		.fnstart
+ 146              	.LFB1051:
+ 147              		@ args = 4, pretend = 0, frame = 40
+ 148              		@ frame_needed = 0, uses_anonymous_args = 0
+ 149 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 150              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 151 0004 0040A0E1 		mov	r4, r0
+ 152 0008 00E091E5 		ldr	lr, [r1]
+ 153 000c 0260A0E1 		mov	r6, r2
+ 154 0010 0350A0E1 		mov	r5, r3
+ 155 0014 068B2DED 		vpush.64	{d8, d9, d10}
+ 156              		.vsave {d8, d9, d10}
+ 157              		.pad #44
+ 158 0018 2CD04DE2 		sub	sp, sp, #44
+ 159 001c 00005EE3 		cmp	lr, #0
+ 160 0020 C90000DA 		ble	.L52
+ 161 0024 04C081E2 		add	ip, r1, #4
+ 162 0028 5CC1A0E7 		sbfx	ip, ip, #2, #1
+ 163 002c 03C00CE2 		and	ip, ip, #3
+ 164 0030 0E005CE1 		cmp	ip, lr
+ 165 0034 0EC0A021 		movcs	ip, lr
+ 166 0038 08005EE3 		cmp	lr, #8
+ 167 003c 0EC0A0D1 		movle	ip, lr
+ 168 0040 BC0000CA 		bgt	.L67
+ 169              	.L32:
+ 170 0044 01005CE3 		cmp	ip, #1
+ 171 0048 040091E5 		ldr	r0, [r1, #4]
+ 172 004c B300000A 		beq	.L61
+ 173 0050 083091E5 		ldr	r3, [r1, #8]
+ 174 0054 02005CE3 		cmp	ip, #2
+ 175 0058 930000E0 		mul	r0, r3, r0
+ 176 005c AF00000A 		beq	.L61
+ 177 0060 0C3091E5 		ldr	r3, [r1, #12]
+ 178 0064 03005CE3 		cmp	ip, #3
+ 179 0068 930000E0 		mul	r0, r3, r0
+ 180 006c AB00000A 		beq	.L61
+ 181 0070 103091E5 		ldr	r3, [r1, #16]
+ 182 0074 04005CE3 		cmp	ip, #4
+ 183 0078 930000E0 		mul	r0, r3, r0
+ 184 007c A700000A 		beq	.L61
+ 185 0080 143091E5 		ldr	r3, [r1, #20]
+ 186 0084 05005CE3 		cmp	ip, #5
+ 187 0088 930000E0 		mul	r0, r3, r0
+ 188 008c A300000A 		beq	.L61
+ 189 0090 183091E5 		ldr	r3, [r1, #24]
+ 190 0094 06005CE3 		cmp	ip, #6
+ 191 0098 930000E0 		mul	r0, r3, r0
+ 192 009c 9F00000A 		beq	.L61
+ 193 00a0 1C3091E5 		ldr	r3, [r1, #28]
+ 194 00a4 07005CE3 		cmp	ip, #7
+ 195 00a8 930000E0 		mul	r0, r3, r0
+ 196 00ac 9B00000A 		beq	.L61
+ 197 00b0 203091E5 		ldr	r3, [r1, #32]
+ 198 00b4 0820A0E3 		mov	r2, #8
+ 199 00b8 930000E0 		mul	r0, r3, r0
+ 200              	.L34:
+ 201 00bc 0C005EE1 		cmp	lr, ip
+ 202 00c0 2A00000A 		beq	.L31
+ 203              	.L33:
+ 204 00c4 0C804EE0 		sub	r8, lr, ip
+ 205 00c8 01304EE2 		sub	r3, lr, #1
+ 206 00cc 047048E2 		sub	r7, r8, #4
+ 207 00d0 0C3043E0 		sub	r3, r3, ip
+ 208 00d4 2771A0E1 		lsr	r7, r7, #2
+ 209 00d8 020053E3 		cmp	r3, #2
+ 210 00dc 017087E2 		add	r7, r7, #1
+ 211 00e0 0791A0E1 		lsl	r9, r7, #2
+ 212 00e4 1300009A 		bls	.L36
+ 213 00e8 01308CE2 		add	r3, ip, #1
+ 214 00ec 5100C0F2 		vmov.i32	q8, #1  @ v4si
+ 215 00f0 033181E0 		add	r3, r1, r3, lsl #2
+ 216 00f4 00C0A0E3 		mov	ip, #0
+ 217              	.L38:
+ 218 00f8 01C08CE2 		add	ip, ip, #1
+ 219 00fc DF2A63F4 		vld1.64	{d18-d19}, [r3:64]
+ 220 0100 0C0057E1 		cmp	r7, ip
+ 221 0104 103083E2 		add	r3, r3, #16
+ 222 0108 F20960F2 		vmul.i32	q8, q8, q9
+ 223 010c F9FFFF8A 		bhi	.L38
+ 224 0110 080059E1 		cmp	r9, r8
+ 225 0114 092082E0 		add	r2, r2, r9
+ 226 0118 5020C0F2 		vmov.i32	q9, #0  @ v4si
+ 227 011c E248F0F2 		vext.32	q10, q8, q9, #2
+ 228 0120 F40960F2 		vmul.i32	q8, q8, q10
+ 229 0124 E224F0F2 		vext.32	q9, q8, q9, #1
+ 230 0128 F20960F2 		vmul.i32	q8, q8, q9
+ 231 012c 903B10EE 		vmov.32	r3, d16[0]
+ 232 0130 930000E0 		mul	r0, r3, r0
+ 233 0134 0D00000A 		beq	.L31
+ 234              	.L36:
+ 235 0138 02C181E0 		add	ip, r1, r2, lsl #2
+ 236 013c 013082E2 		add	r3, r2, #1
+ 237 0140 04C09CE5 		ldr	ip, [ip, #4]
+ 238 0144 03005EE1 		cmp	lr, r3
+ 239 0148 9C0000E0 		mul	r0, ip, r0
+ 240 014c 070000DA 		ble	.L31
+ 241 0150 033181E0 		add	r3, r1, r3, lsl #2
+ 242 0154 022082E2 		add	r2, r2, #2
+ 243 0158 043093E5 		ldr	r3, [r3, #4]
+ 244 015c 0E0052E1 		cmp	r2, lr
+ 245 0160 930000E0 		mul	r0, r3, r0
+ 246 0164 022181B0 		addlt	r2, r1, r2, lsl #2
+ 247 0168 043092B5 		ldrlt	r3, [r2, #4]
+ 248 016c 930000B0 		mullt	r0, r3, r0
+ 249              	.L31:
+ 250 0170 063181E0 		add	r3, r1, r6, lsl #2
+ 251 0174 043093E5 		ldr	r3, [r3, #4]
+ 252 0178 0310A0E1 		mov	r1, r3
+ 253 017c 14308DE5 		str	r3, [sp, #20]
+ 254 0180 FEFFFFEB 		bl	__aeabi_idiv
+ 255 0184 000056E3 		cmp	r6, #0
+ 256 0188 0080A0E1 		mov	r8, r0
+ 257 018c 6500000A 		beq	.L62
+ 258 0190 030056E3 		cmp	r6, #3
+ 259 0194 6E00001A 		bne	.L68
+ 260 0198 14B09DE5 		ldr	fp, [sp, #20]
+ 261 019c 0130A0E3 		mov	r3, #1
+ 262 01a0 18308DE5 		str	r3, [sp, #24]
+ 263 01a4 0B30A0E1 		mov	r3, fp
+ 264              	.L42:
+ 265 01a8 000053E3 		cmp	r3, #0
+ 266 01ac 550000DA 		ble	.L30
+ 267 01b0 18309DE5 		ldr	r3, [sp, #24]
+ 268 01b4 8B908BE0 		add	r9, fp, fp, lsl #1
+ 269 01b8 769ADFED 		vldr.32	s19, .L69
+ 270 01bc 0B61A0E1 		lsl	r6, fp, #2
+ 271 01c0 75AA9FED 		vldr.32	s20, .L69+4
+ 272 01c4 68709DE5 		ldr	r7, [sp, #104]
+ 273 01c8 0331A0E1 		lsl	r3, r3, #2
+ 274 01cc 30008DE9 		stmib	sp, {r4, r5}
+ 275 01d0 1C308DE5 		str	r3, [sp, #28]
+ 276 01d4 8931A0E1 		lsl	r3, r9, #3
+ 277 01d8 24308DE5 		str	r3, [sp, #36]
+ 278 01dc 0B32A0E1 		lsl	r3, fp, #4
+ 279 01e0 20308DE5 		str	r3, [sp, #32]
+ 280 01e4 0030A0E3 		mov	r3, #0
+ 281 01e8 0C308DE5 		str	r3, [sp, #12]
+ 282              	.L49:
+ 283 01ec 000058E3 		cmp	r8, #0
+ 284 01f0 470000DA 		ble	.L44
+ 285 01f4 699A9FED 		vldr.32	s18, .L69+8
+ 286 01f8 0040A0E3 		mov	r4, #0
+ 287 01fc 04509DE5 		ldr	r5, [sp, #4]
+ 288 0200 24909DE5 		ldr	r9, [sp, #36]
+ 289 0204 498AF0EE 		vmov.f32	s17, s18
+ 290              	.L46:
+ 291 0208 008A95ED 		vldr.32	s16, [r5]
+ 292 020c 014084E2 		add	r4, r4, #1
+ 293 0210 680AB0EE 		vmov.f32	s0, s17
+ 294 0214 05F0D9F7 		pld	[r9, r5]
+ 295 0218 065085E0 		add	r5, r5, r6
+ 296 021c 480AF0EE 		vmov.f32	s1, s16
+ 297 0220 FEFFFFEB 		bl	fminf
+ 298 0224 408AF0EE 		vmov.f32	s17, s0
+ 299 0228 480AF0EE 		vmov.f32	s1, s16
+ 300 022c 490AB0EE 		vmov.f32	s0, s18
+ 301 0230 FEFFFFEB 		bl	fmaxf
+ 302 0234 040058E1 		cmp	r8, r4
+ 303 0238 409AB0EE 		vmov.f32	s18, s0
+ 304 023c F1FFFF1A 		bne	.L46
+ 305 0240 C00AF0EE 		vabs.f32	s1, s0
+ 306 0244 0090A0E3 		mov	r9, #0
+ 307 0248 E80AB0EE 		vabs.f32	s0, s17
+ 308 024c FEFFFFEB 		bl	fmaxf
+ 309 0250 290A80EE 		vdiv.f32	s0, s0, s19
+ 310 0254 10808DE5 		str	r8, [sp, #16]
+ 311 0258 0780A0E1 		mov	r8, r7
+ 312 025c 08509DE5 		ldr	r5, [sp, #8]
+ 313 0260 04A09DE5 		ldr	r10, [sp, #4]
+ 314 0264 000A87ED 		vstr.32	s0, [r7]
+ 315 0268 0670A0E1 		mov	r7, r6
+ 316 026c 20609DE5 		ldr	r6, [sp, #32]
+ 317 0270 000000EA 		b	.L50
+ 318              	.L47:
+ 319 0274 000A98ED 		vldr.32	s0, [r8]
+ 320              	.L50:
+ 321 0278 007ADAED 		vldr.32	s15, [r10]
+ 322 027c 019089E2 		add	r9, r9, #1
+ 323 0280 0AF0D6F7 		pld	[r6, r10]
+ 324 0284 07A08AE0 		add	r10, r10, r7
+ 325 0288 800A87EE 		vdiv.f32	s0, s15, s0
+ 326 028c FEFFFFEB 		bl	roundf
+ 327 0290 C00AFDEE 		vcvt.s32.f32	s1, s0
+ 328 0294 4A0AB0EE 		vmov.f32	s0, s20
+ 329 0298 E00AF8EE 		vcvt.f32.s32	s1, s1
+ 330 029c FEFFFFEB 		bl	fmaxf
+ 331 02a0 400AF0EE 		vmov.f32	s1, s0
+ 332 02a4 690AB0EE 		vmov.f32	s0, s19
+ 333 02a8 FEFFFFEB 		bl	fminf
+ 334 02ac C07AFDEE 		vcvt.s32.f32	s15, s0
+ 335 02b0 090054E1 		cmp	r4, r9
+ 336 02b4 903A17EE 		vmov	r3, s15	@ int
+ 337 02b8 0B30C5E6 		strb	r3, [r5], fp
+ 338 02bc ECFFFF1A 		bne	.L47
+ 339 02c0 0760A0E1 		mov	r6, r7
+ 340 02c4 0870A0E1 		mov	r7, r8
+ 341 02c8 10809DE5 		ldr	r8, [sp, #16]
+ 342              	.L51:
+ 343 02cc 04209DE5 		ldr	r2, [sp, #4]
+ 344 02d0 047087E2 		add	r7, r7, #4
+ 345 02d4 1C109DE5 		ldr	r1, [sp, #28]
+ 346 02d8 0C309DE5 		ldr	r3, [sp, #12]
+ 347 02dc 012082E0 		add	r2, r2, r1
+ 348 02e0 04208DE5 		str	r2, [sp, #4]
+ 349 02e4 013083E2 		add	r3, r3, #1
+ 350 02e8 14209DE5 		ldr	r2, [sp, #20]
+ 351 02ec 0C308DE5 		str	r3, [sp, #12]
+ 352 02f0 030052E1 		cmp	r2, r3
+ 353 02f4 08309DE5 		ldr	r3, [sp, #8]
+ 354 02f8 18209DE5 		ldr	r2, [sp, #24]
+ 355 02fc 023083E0 		add	r3, r3, r2
+ 356 0300 08308DE5 		str	r3, [sp, #8]
+ 357 0304 B8FFFF1A 		bne	.L49
+ 358              	.L30:
+ 359 0308 2CD08DE2 		add	sp, sp, #44
+ 360              		@ sp needed
+ 361 030c 068BBDEC 		vldm	sp!, {d8-d10}
+ 362 0310 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 363              	.L44:
+ 364 0314 217ADFED 		vldr.32	s15, .L69+8
+ 365 0318 007AC7ED 		vstr.32	s15, [r7]
+ 366 031c EAFFFFEA 		b	.L51
+ 367              	.L61:
+ 368 0320 0C20A0E1 		mov	r2, ip
+ 369 0324 64FFFFEA 		b	.L34
+ 370              	.L62:
+ 371 0328 18008DE5 		str	r0, [sp, #24]
+ 372 032c 01B0A0E3 		mov	fp, #1
+ 373 0330 14309DE5 		ldr	r3, [sp, #20]
+ 374 0334 9BFFFFEA 		b	.L42
+ 375              	.L67:
+ 376 0338 00005CE3 		cmp	ip, #0
+ 377 033c 0100A003 		moveq	r0, #1
+ 378 0340 0C20A001 		moveq	r2, ip
+ 379 0344 5EFFFF0A 		beq	.L33
+ 380 0348 3DFFFFEA 		b	.L32
+ 381              	.L52:
+ 382 034c 0100A0E3 		mov	r0, #1
+ 383 0350 86FFFFEA 		b	.L31
+ 384              	.L68:
+ 385 0354 004000E3 		movw	r4, #:lower16:_impure_ptr
+ 386 0358 000000E3 		movw	r0, #:lower16:.LC0
+ 387 035c 004040E3 		movt	r4, #:upper16:_impure_ptr
+ 388 0360 2220A0E3 		mov	r2, #34
+ 389 0364 003094E5 		ldr	r3, [r4]
+ 390 0368 0110A0E3 		mov	r1, #1
+ 391 036c 000040E3 		movt	r0, #:upper16:.LC0
+ 392 0370 0C3093E5 		ldr	r3, [r3, #12]
+ 393 0374 FEFFFFEB 		bl	fwrite
+ 394 0378 003094E5 		ldr	r3, [r4]
+ 395 037c 000000E3 		movw	r0, #:lower16:.LC1
+ 396 0380 0720A0E3 		mov	r2, #7
+ 397 0384 0110A0E3 		mov	r1, #1
+ 398 0388 000040E3 		movt	r0, #:upper16:.LC1
+ 399 038c 0C3093E5 		ldr	r3, [r3, #12]
+ 400 0390 FEFFFFEB 		bl	fwrite
+ 401 0394 FEFFFFEB 		bl	abort
+ 402              	.L70:
+ 403              		.align	2
+ 404              	.L69:
+ 405 0398 0000FE42 		.word	1123942400
+ 406 039c 0000FEC2 		.word	-1023541248
+ 407 03a0 00000000 		.word	0
+ 408              		.fnend
+ 410              		.section	.rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4,"a
+ 411              		.align	2
+ 412              	.LC0:
+ 413 0000 7175616E 		.ascii	"quantized dimension must be 0 or 3\000"
+ 413      74697A65 
+ 413      64206469 
+ 413      6D656E73 
+ 413      696F6E20 
+ 414 0023 00       		.space	1
+ 415              	.LC1:
+ 416 0024 0A464154 		.ascii	"\012FATAL\012\000"
+ 416      414C0A00 
+ 417              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 micro_utils.cc
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:14     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:20     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 _ZN6tflite12ElementCountERK14TfLiteIntArray
+.ARM.exidx.text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:138    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:144    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 _ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:412    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:415    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000024 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:405    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000398 $d
+.ARM.extab.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+.ARM.exidx.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccD8Xaqd.s:411    .rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_idiv
+fminf
+fmaxf
+roundf
+_impure_ptr
+fwrite
+abort
+__aeabi_unwind_cpp_pr1

@@ -1,0 +1,165 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_rvapi_mipi.c"
+  13              		.section	.text.R_RVAPI_InitializeMIPI,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_RVAPI_InitializeMIPI
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_RVAPI_InitializeMIPI:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23              		@ link register save eliminated.
+  24 0000 000000E3 		movw	r0, #:lower16:R_MIPI_OnInitialize
+  25 0004 0010A0E3 		mov	r1, #0
+  26 0008 000040E3 		movt	r0, #:upper16:R_MIPI_OnInitialize
+  27 000c FEFFFFEA 		b	R_MIPI_Initialize
+  29              		.section	.text.R_RVAPI_TerminateMIPI,"ax",%progbits
+  30              		.align	2
+  31              		.global	R_RVAPI_TerminateMIPI
+  32              		.syntax unified
+  33              		.arm
+  34              		.fpu neon
+  36              	R_RVAPI_TerminateMIPI:
+  37              		@ args = 0, pretend = 0, frame = 0
+  38              		@ frame_needed = 0, uses_anonymous_args = 0
+  39 0000 10402DE9 		push	{r4, lr}
+  40 0004 FEFFFFEB 		bl	R_MIPI_InterruptDisable
+  41 0008 000000E3 		movw	r0, #:lower16:R_MIPI_OnFinalize
+  42 000c 0010A0E3 		mov	r1, #0
+  43 0010 000040E3 		movt	r0, #:upper16:R_MIPI_OnFinalize
+  44 0014 1040BDE8 		pop	{r4, lr}
+  45 0018 FEFFFFEA 		b	R_MIPI_Close
+  47              		.section	.text.R_RVAPI_OpenMIPI,"ax",%progbits
+  48              		.align	2
+  49              		.global	R_RVAPI_OpenMIPI
+  50              		.syntax unified
+  51              		.arm
+  52              		.fpu neon
+  54              	R_RVAPI_OpenMIPI:
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57 0000 000050E3 		cmp	r0, #0
+  58 0004 0300000A 		beq	.L6
+  59 0008 10402DE9 		push	{r4, lr}
+  60 000c FEFFFFEB 		bl	R_MIPI_Open
+  61 0010 0000A0E3 		mov	r0, #0
+  62 0014 1080BDE8 		pop	{r4, pc}
+  63              	.L6:
+  64 0018 0200A0E3 		mov	r0, #2
+  65 001c 1EFF2FE1 		bx	lr
+  67              		.section	.text.R_RVAPI_InterruptEnableMIPI,"ax",%progbits
+  68              		.align	2
+  69              		.global	R_RVAPI_InterruptEnableMIPI
+  70              		.syntax unified
+  71              		.arm
+  72              		.fpu neon
+  74              	R_RVAPI_InterruptEnableMIPI:
+  75              		@ args = 0, pretend = 0, frame = 0
+  76              		@ frame_needed = 0, uses_anonymous_args = 0
+  77 0000 000050E3 		cmp	r0, #0
+  78 0004 0300000A 		beq	.L14
+  79 0008 10402DE9 		push	{r4, lr}
+  80 000c FEFFFFEB 		bl	R_MIPI_InterruptEnable
+  81 0010 0000A0E3 		mov	r0, #0
+  82 0014 1080BDE8 		pop	{r4, pc}
+  83              	.L14:
+  84 0018 0200A0E3 		mov	r0, #2
+  85 001c 1EFF2FE1 		bx	lr
+  87              		.section	.text.R_RVAPI_SetupMIPI,"ax",%progbits
+  88              		.align	2
+  89              		.global	R_RVAPI_SetupMIPI
+  90              		.syntax unified
+  91              		.arm
+  92              		.fpu neon
+  94              	R_RVAPI_SetupMIPI:
+  95              		@ args = 0, pretend = 0, frame = 0
+  96              		@ frame_needed = 0, uses_anonymous_args = 0
+  97              		@ link register save eliminated.
+  98 0000 000050E3 		cmp	r0, #0
+  99 0004 0000000A 		beq	.L20
+ 100 0008 FEFFFFEA 		b	R_MIPI_Setup
+ 101              	.L20:
+ 102 000c 0200A0E3 		mov	r0, #2
+ 103 0010 1EFF2FE1 		bx	lr
+ 105              		.section	.text.R_RVAPI_SetBufferMIPI,"ax",%progbits
+ 106              		.align	2
+ 107              		.global	R_RVAPI_SetBufferMIPI
+ 108              		.syntax unified
+ 109              		.arm
+ 110              		.fpu neon
+ 112              	R_RVAPI_SetBufferMIPI:
+ 113              		@ args = 0, pretend = 0, frame = 0
+ 114              		@ frame_needed = 0, uses_anonymous_args = 0
+ 115              		@ link register save eliminated.
+ 116 0000 000051E3 		cmp	r1, #0
+ 117 0004 0000000A 		beq	.L22
+ 118 0008 FEFFFFEA 		b	R_MIPI_SetBufferAdr
+ 119              	.L22:
+ 120 000c 0200A0E3 		mov	r0, #2
+ 121 0010 1EFF2FE1 		bx	lr
+ 123              		.section	.text.R_RVAPI_CaptureStartMIPI,"ax",%progbits
+ 124              		.align	2
+ 125              		.global	R_RVAPI_CaptureStartMIPI
+ 126              		.syntax unified
+ 127              		.arm
+ 128              		.fpu neon
+ 130              	R_RVAPI_CaptureStartMIPI:
+ 131              		@ args = 0, pretend = 0, frame = 0
+ 132              		@ frame_needed = 0, uses_anonymous_args = 0
+ 133              		@ link register save eliminated.
+ 134 0000 0100A0E3 		mov	r0, #1
+ 135 0004 FEFFFFEA 		b	R_MIPI_CaptureStart
+ 137              		.section	.text.R_RVAPI_CaptureStopMIPI,"ax",%progbits
+ 138              		.align	2
+ 139              		.global	R_RVAPI_CaptureStopMIPI
+ 140              		.syntax unified
+ 141              		.arm
+ 142              		.fpu neon
+ 144              	R_RVAPI_CaptureStopMIPI:
+ 145              		@ args = 0, pretend = 0, frame = 0
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147              		@ link register save eliminated.
+ 148 0000 FEFFFFEA 		b	R_MIPI_CaptureStop
+ 150              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_rvapi_mipi.c
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:14     .text.R_RVAPI_InitializeMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:20     .text.R_RVAPI_InitializeMIPI:00000000 R_RVAPI_InitializeMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:30     .text.R_RVAPI_TerminateMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:36     .text.R_RVAPI_TerminateMIPI:00000000 R_RVAPI_TerminateMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:48     .text.R_RVAPI_OpenMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:54     .text.R_RVAPI_OpenMIPI:00000000 R_RVAPI_OpenMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:68     .text.R_RVAPI_InterruptEnableMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:74     .text.R_RVAPI_InterruptEnableMIPI:00000000 R_RVAPI_InterruptEnableMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:88     .text.R_RVAPI_SetupMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:94     .text.R_RVAPI_SetupMIPI:00000000 R_RVAPI_SetupMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:106    .text.R_RVAPI_SetBufferMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:112    .text.R_RVAPI_SetBufferMIPI:00000000 R_RVAPI_SetBufferMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:124    .text.R_RVAPI_CaptureStartMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:130    .text.R_RVAPI_CaptureStartMIPI:00000000 R_RVAPI_CaptureStartMIPI
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:138    .text.R_RVAPI_CaptureStopMIPI:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc09uMiE.s:144    .text.R_RVAPI_CaptureStopMIPI:00000000 R_RVAPI_CaptureStopMIPI
+
+UNDEFINED SYMBOLS
+R_MIPI_OnInitialize
+R_MIPI_Initialize
+R_MIPI_InterruptDisable
+R_MIPI_OnFinalize
+R_MIPI_Close
+R_MIPI_Open
+R_MIPI_InterruptEnable
+R_MIPI_Setup
+R_MIPI_SetBufferAdr
+R_MIPI_CaptureStart
+R_MIPI_CaptureStop

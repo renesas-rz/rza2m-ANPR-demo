@@ -1,0 +1,595 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"cpuBoardLed.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.initCpuBoardLed,"ax",%progbits
+  17              		.align	2
+  18              		.global	initCpuBoardLed
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	initCpuBoardLed:
+  24              	.LFB4:
+  25              		.file 1 "../src/renesas/application/subBoard/src/cpuBoardLed.c"
+   1:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /*
+   2:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * cpuBoardLed.c
+   3:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  *
+   4:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  *  Created on: 29.01.2020
+   5:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  *      Author: a5050305
+   6:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  */
+   7:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+   8:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /******************************************************************************
+   9:../src/renesas/application/subBoard/src/cpuBoardLed.c **** Includes   <System Includes> , "Project Includes"
+  10:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  ******************************************************************************/
+  11:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  12:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include <stdio.h>
+  13:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include <fcntl.h>
+  14:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include <string.h>
+  15:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include <unistd.h>
+  16:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  17:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include "r_typedefs.h"
+  18:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include "iodefine.h"
+  19:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  20:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include "compiler_settings.h"
+  21:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  22:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include "r_gpio_drv_api.h"
+  23:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  24:../src/renesas/application/subBoard/src/cpuBoardLed.c **** #include "cpuBoardLed.h"
+  25:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  26:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  27:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /******************************************************************************
+  28:../src/renesas/application/subBoard/src/cpuBoardLed.c **** Imported global variables and functions (from other files)
+  29:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  ******************************************************************************/
+  30:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  31:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /******************************************************************************
+  32:../src/renesas/application/subBoard/src/cpuBoardLed.c **** Exported global variables and functions (to be accessed by other files)
+  33:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  ******************************************************************************/
+  34:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  35:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /******************************************************************************
+  36:../src/renesas/application/subBoard/src/cpuBoardLed.c **** local global variables
+  37:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  ******************************************************************************/
+  38:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  39:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  40:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /**************************************************************************************************
+  41:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  Private global variables and functions
+  42:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  **************************************************************************************************
+  43:../src/renesas/application/subBoard/src/cpuBoardLed.c **** //static uint32_t s_main_led_flg;      /* LED lighting/turning off */
+  44:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static int_t s_my_gpio_handle;
+  45:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  46:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static st_r_drv_gpio_pin_rw_t s_p60_on =
+  47:../src/renesas/application/subBoard/src/cpuBoardLed.c **** {
+  48:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_PORT_6_PIN_0,
+  49:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_LEVEL_HIGH,
+  50:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_SUCCESS
+  51:../src/renesas/application/subBoard/src/cpuBoardLed.c **** };
+  52:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  53:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static st_r_drv_gpio_pin_rw_t s_p60_off =
+  54:../src/renesas/application/subBoard/src/cpuBoardLed.c **** {
+  55:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_PORT_6_PIN_0,
+  56:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_LEVEL_LOW,
+  57:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_SUCCESS
+  58:../src/renesas/application/subBoard/src/cpuBoardLed.c **** };
+  59:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  60:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  61:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static st_r_drv_gpio_pin_rw_t s_pC1_on =
+  62:../src/renesas/application/subBoard/src/cpuBoardLed.c **** {
+  63:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	GPIO_PORT_C_PIN_1,
+  64:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_LEVEL_HIGH,
+  65:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_SUCCESS
+  66:../src/renesas/application/subBoard/src/cpuBoardLed.c **** };
+  67:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  68:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static st_r_drv_gpio_pin_rw_t s_pC1_off =
+  69:../src/renesas/application/subBoard/src/cpuBoardLed.c **** {
+  70:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	GPIO_PORT_C_PIN_1,
+  71:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_LEVEL_LOW,
+  72:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_SUCCESS
+  73:../src/renesas/application/subBoard/src/cpuBoardLed.c **** };
+  74:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  75:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static const r_gpio_port_pin_t s_led_pin_list[] =
+  76:../src/renesas/application/subBoard/src/cpuBoardLed.c **** {
+  77:../src/renesas/application/subBoard/src/cpuBoardLed.c ****     GPIO_PORT_6_PIN_0,
+  78:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	GPIO_PORT_C_PIN_1,
+  79:../src/renesas/application/subBoard/src/cpuBoardLed.c **** };
+  80:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  81:../src/renesas/application/subBoard/src/cpuBoardLed.c **** static st_r_drv_gpio_pin_list_t pin_led ;
+  82:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  83:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  84:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /**************************************************************************************************
+  85:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * global functions
+  86:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  **************************************************************************************************
+  87:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  88:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /**************************************************************************************************
+  89:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Function Name: initCpuLed
+  90:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Description  : initialize the gpio driver andport pins PC_1, P6_0
+  91:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Arguments    : none
+  92:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Return Value : 0
+  93:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  **************************************************************************************************
+  94:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  95:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  void initCpuBoardLed(void) {
+  26              		.loc 1 95 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30 0000 10402DE9 		push	{r4, lr}
+  31              		.cfi_def_cfa_offset 8
+  32              		.cfi_offset 4, -8
+  33              		.cfi_offset 14, -4
+  96:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           int_t err;
+  97:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+  98:../src/renesas/application/subBoard/src/cpuBoardLed.c ****          /* For information only
+  99:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           * Use stdio calls to open drivers once  the kernel is initialised
+ 100:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           *
+ 101:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           * i.e.
+ 102:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           * int_t ostm3_handle;
+ 103:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           * ostm3_handle = open (DEVICE_INDENTIFIER "ostm2", O_RDWR);
+ 104:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           * close (ostm3_handle);
+ 105:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           */
+ 106:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 107:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           s_my_gpio_handle = open(DEVICE_INDENTIFIER "gpio", O_RDWR);
+  34              		.loc 1 107 0
+  35 0004 0210A0E3 		mov	r1, #2
+  36 0008 000000E3 		movw	r0, #:lower16:.LC0
+  37 000c 000040E3 		movt	r0, #:upper16:.LC0
+  38 0010 FEFFFFEB 		bl	open
+  39              	.LVL0:
+  40 0014 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  41 0018 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  42 001c 000083E5 		str	r0, [r3]
+ 108:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 109:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           /* On error */
+ 110:../src/renesas/application/subBoard/src/cpuBoardLed.c ****           if (s_my_gpio_handle < 0) {
+  43              		.loc 1 110 0
+  44 0020 000050E3 		cmp	r0, #0
+  45 0024 010000AA 		bge	.L2
+  46              	.L3:
+  47              	.LBB6:
+  48              	.LBB7:
+  49              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc/r_c
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** /**************************************************************************************************
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * DISCLAIMER
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * This software is supplied by Renesas Electronics Corporation and is only intended for use with R
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * other uses are authorized. This software is owned by Renesas Electronics Corporation and is prot
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * applicable laws, including copyright laws.
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAI
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS A
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY R
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Renesas reserves the right, without notice, to make changes to this software and to discontinue 
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * this software. By using this software, you agree to the additional terms and conditions found by
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * following link:
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * http://www.renesas.com/disclaimer
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  *
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Copyright (C) 2020 Renesas Electronics Corporation. All rights reserved.
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  **************************************************************************************************
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** /**************************************************************************************************
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * File Name    : r_compiler_abstraction_api.h
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Description  : Provides a common API for frequently used compiler specific operations
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  **************************************************************************************************
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** #include  "r_typedefs.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** 
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** #ifndef SRC_PRV_RENESAS_COMPILER_INC_R_COMPILER_ABSTRACTION_API_H_
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** #define SRC_PRV_RENESAS_COMPILER_INC_R_COMPILER_ABSTRACTION_API_H_
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** 
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** /* Macro is used to declare linkage to a function as weak so that it can be overridden by a normall
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Update this when using a different compiler. */
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** #define R_COMPILER_WEAK __attribute__((weak))
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** 
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** #define R_COMPILER_INLINE static inline
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** 
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** extern void __enable_irq (void);
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** extern uint32_t __disable_irq (void);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** extern void __enable_fiq (void);
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** extern void __disable_fiq (void);
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** 
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** /**************************************************************************************************
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Function Name: R_COMPILER_Nop
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Description  : Abstracting a compiler No Operation opcode into a C function. Update this when us
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  *                compiler.
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  * Return Value : None.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****  **************************************************************************************************
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h **** R_COMPILER_INLINE void R_COMPILER_Nop (void)
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****     {
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc\r_compiler_abstraction_api.h ****         __asm volatile ("nop");
+  50              		.loc 2 47 0 discriminator 1
+  51              		.syntax divided
+  52              	@ 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc/r_compi
+  53 0028 00F020E3 		nop
+  54              	@ 0 "" 2
+  55              		.arm
+  56              		.syntax unified
+  57 002c FDFFFFEA 		b	.L3
+  58              	.L2:
+  59              	.LBE7:
+  60              	.LBE6:
+ 111:../src/renesas/application/subBoard/src/cpuBoardLed.c ****              /* stop execute */
+ 112:../src/renesas/application/subBoard/src/cpuBoardLed.c ****              while (1) {
+ 113:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                  R_COMPILER_Nop();
+ 114:../src/renesas/application/subBoard/src/cpuBoardLed.c ****              }
+ 115:../src/renesas/application/subBoard/src/cpuBoardLed.c ****            }
+ 116:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 117:../src/renesas/application/subBoard/src/cpuBoardLed.c ****            pin_led.p_pin_list = s_led_pin_list;
+  61              		.loc 1 117 0
+  62 0030 002000E3 		movw	r2, #:lower16:.LANCHOR1
+  63 0034 002040E3 		movt	r2, #:upper16:.LANCHOR1
+  64 0038 003000E3 		movw	r3, #:lower16:.LANCHOR2
+  65 003c 003040E3 		movt	r3, #:upper16:.LANCHOR2
+  66 0040 003082E5 		str	r3, [r2]
+ 118:../src/renesas/application/subBoard/src/cpuBoardLed.c ****            pin_led.count = (sizeof(s_led_pin_list)) / (sizeof(s_led_pin_list[0]));
+  67              		.loc 1 118 0
+  68 0044 0210A0E3 		mov	r1, #2
+  69 0048 041082E5 		str	r1, [r2, #4]
+ 119:../src/renesas/application/subBoard/src/cpuBoardLed.c ****            err = direct_control(s_my_gpio_handle, CTL_GPIO_INIT_BY_PIN_LIST, &pin_led);
+  70              		.loc 1 119 0
+  71 004c FEFFFFEB 		bl	direct_control
+  72              	.LVL1:
+ 120:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 121:../src/renesas/application/subBoard/src/cpuBoardLed.c ****            /* On error */
+ 122:../src/renesas/application/subBoard/src/cpuBoardLed.c ****             if (err < 0)
+  73              		.loc 1 122 0
+  74 0050 000050E3 		cmp	r0, #0
+  75 0054 1080BDA8 		popge	{r4, pc}
+  76              	.L5:
+  77              	.LBB8:
+  78              	.LBB9:
+  79              		.loc 2 47 0 discriminator 1
+  80              		.syntax divided
+  81              	@ 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc/r_compi
+  82 0058 00F020E3 		nop
+  83              	@ 0 "" 2
+  84              		.arm
+  85              		.syntax unified
+  86 005c FDFFFFEA 		b	.L5
+  87              	.LBE9:
+  88              	.LBE8:
+  89              		.cfi_endproc
+  90              	.LFE4:
+  92              		.section	.text.cpuBoardLedGreen,"ax",%progbits
+  93              		.align	2
+  94              		.global	cpuBoardLedGreen
+  95              		.syntax unified
+  96              		.arm
+  97              		.fpu neon
+  99              	cpuBoardLedGreen:
+ 100              	.LFB5:
+ 123:../src/renesas/application/subBoard/src/cpuBoardLed.c ****             {
+ 124:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                 /* stop execute */
+ 125:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                 while (1)
+ 126:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                 {
+ 127:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                     R_COMPILER_Nop();
+ 128:../src/renesas/application/subBoard/src/cpuBoardLed.c ****                 }
+ 129:../src/renesas/application/subBoard/src/cpuBoardLed.c ****             }
+ 130:../src/renesas/application/subBoard/src/cpuBoardLed.c ****         }
+ 131:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 132:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 133:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 134:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /**************************************************************************************************
+ 135:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Function Name: cpuBoardLedGreen
+ 136:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Description  : switch the green LED on/off (if the red LED is on the green LED looks like yellow
+ 137:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Arguments    : drive (0-off, 1-on)
+ 138:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Return Value : -
+ 139:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  **************************************************************************************************
+ 140:../src/renesas/application/subBoard/src/cpuBoardLed.c **** void cpuBoardLedGreen ( int_t drive ) {
+ 101              		.loc 1 140 0
+ 102              		.cfi_startproc
+ 103              		@ args = 0, pretend = 0, frame = 0
+ 104              		@ frame_needed = 0, uses_anonymous_args = 0
+ 105              	.LVL2:
+ 106 0000 10402DE9 		push	{r4, lr}
+ 107              		.cfi_def_cfa_offset 8
+ 108              		.cfi_offset 4, -8
+ 109              		.cfi_offset 14, -4
+ 141:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	if ( drive ) {
+ 110              		.loc 1 141 0
+ 111 0004 000050E3 		cmp	r0, #0
+ 112 0008 0700001A 		bne	.L11
+ 142:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_pC1_on);
+ 143:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	} else {
+ 144:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_pC1_off);
+ 113              		.loc 1 144 0
+ 114 000c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 115 0010 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 116 0014 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 117 0018 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 118 001c 0810A0E3 		mov	r1, #8
+ 119 0020 000093E5 		ldr	r0, [r3]
+ 120              	.LVL3:
+ 121 0024 FEFFFFEB 		bl	direct_control
+ 122              	.LVL4:
+ 123 0028 1080BDE8 		pop	{r4, pc}
+ 124              	.LVL5:
+ 125              	.L11:
+ 142:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_pC1_on);
+ 126              		.loc 1 142 0
+ 127 002c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 128 0030 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 129 0034 002000E3 		movw	r2, #:lower16:.LANCHOR3
+ 130 0038 002040E3 		movt	r2, #:upper16:.LANCHOR3
+ 131 003c 0810A0E3 		mov	r1, #8
+ 132 0040 000093E5 		ldr	r0, [r3]
+ 133              	.LVL6:
+ 134 0044 FEFFFFEB 		bl	direct_control
+ 135              	.LVL7:
+ 136 0048 1080BDE8 		pop	{r4, pc}
+ 137              		.cfi_endproc
+ 138              	.LFE5:
+ 140              		.section	.text.cpuBoardLedRed,"ax",%progbits
+ 141              		.align	2
+ 142              		.global	cpuBoardLedRed
+ 143              		.syntax unified
+ 144              		.arm
+ 145              		.fpu neon
+ 147              	cpuBoardLedRed:
+ 148              	.LFB6:
+ 145:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	}
+ 146:../src/renesas/application/subBoard/src/cpuBoardLed.c **** }
+ 147:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 148:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 
+ 149:../src/renesas/application/subBoard/src/cpuBoardLed.c **** /**************************************************************************************************
+ 150:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Function Name: cpuBoardLedRed
+ 151:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Description  : switch the red LED on/off
+ 152:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Arguments    : drive (0-off, 1-on)
+ 153:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  * Return Value : -
+ 154:../src/renesas/application/subBoard/src/cpuBoardLed.c ****  **************************************************************************************************
+ 155:../src/renesas/application/subBoard/src/cpuBoardLed.c **** void cpuBoardLedRed ( int_t drive ) {
+ 149              		.loc 1 155 0
+ 150              		.cfi_startproc
+ 151              		@ args = 0, pretend = 0, frame = 0
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153              	.LVL8:
+ 154 0000 10402DE9 		push	{r4, lr}
+ 155              		.cfi_def_cfa_offset 8
+ 156              		.cfi_offset 4, -8
+ 157              		.cfi_offset 14, -4
+ 156:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	if ( drive ) {
+ 158              		.loc 1 156 0
+ 159 0004 000050E3 		cmp	r0, #0
+ 160 0008 0700001A 		bne	.L16
+ 157:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_p60_on);
+ 158:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 	} else {
+ 159:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_p60_off);
+ 161              		.loc 1 159 0
+ 162 000c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 163 0010 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 164 0014 002000E3 		movw	r2, #:lower16:.LANCHOR6
+ 165 0018 002040E3 		movt	r2, #:upper16:.LANCHOR6
+ 166 001c 0810A0E3 		mov	r1, #8
+ 167 0020 000093E5 		ldr	r0, [r3]
+ 168              	.LVL9:
+ 169 0024 FEFFFFEB 		bl	direct_control
+ 170              	.LVL10:
+ 171 0028 1080BDE8 		pop	{r4, pc}
+ 172              	.LVL11:
+ 173              	.L16:
+ 157:../src/renesas/application/subBoard/src/cpuBoardLed.c **** 		direct_control(s_my_gpio_handle, CTL_GPIO_PIN_WRITE, &s_p60_on);
+ 174              		.loc 1 157 0
+ 175 002c 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 176 0030 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 177 0034 002000E3 		movw	r2, #:lower16:.LANCHOR5
+ 178 0038 002040E3 		movt	r2, #:upper16:.LANCHOR5
+ 179 003c 0810A0E3 		mov	r1, #8
+ 180 0040 000093E5 		ldr	r0, [r3]
+ 181              	.LVL12:
+ 182 0044 FEFFFFEB 		bl	direct_control
+ 183              	.LVL13:
+ 184 0048 1080BDE8 		pop	{r4, pc}
+ 185              		.cfi_endproc
+ 186              	.LFE6:
+ 188              		.section	.bss.pin_led,"aw",%nobits
+ 189              		.align	2
+ 190              		.set	.LANCHOR1,. + 0
+ 193              	pin_led:
+ 194 0000 00000000 		.space	12
+ 194      00000000 
+ 194      00000000 
+ 195              		.section	.bss.s_my_gpio_handle,"aw",%nobits
+ 196              		.align	2
+ 197              		.set	.LANCHOR0,. + 0
+ 200              	s_my_gpio_handle:
+ 201 0000 00000000 		.space	4
+ 202              		.section	.data.s_p60_off,"aw",%progbits
+ 203              		.align	2
+ 204              		.set	.LANCHOR6,. + 0
+ 207              	s_p60_off:
+ 208 0000 0006     		.short	1536
+ 209 0002 01       		.byte	1
+ 210 0003 00       		.byte	0
+ 211              		.section	.data.s_p60_on,"aw",%progbits
+ 212              		.align	2
+ 213              		.set	.LANCHOR5,. + 0
+ 216              	s_p60_on:
+ 217 0000 0006     		.short	1536
+ 218 0002 02       		.byte	2
+ 219 0003 00       		.byte	0
+ 220              		.section	.data.s_pC1_off,"aw",%progbits
+ 221              		.align	2
+ 222              		.set	.LANCHOR4,. + 0
+ 225              	s_pC1_off:
+ 226 0000 010C     		.short	3073
+ 227 0002 01       		.byte	1
+ 228 0003 00       		.byte	0
+ 229              		.section	.data.s_pC1_on,"aw",%progbits
+ 230              		.align	2
+ 231              		.set	.LANCHOR3,. + 0
+ 234              	s_pC1_on:
+ 235 0000 010C     		.short	3073
+ 236 0002 02       		.byte	2
+ 237 0003 00       		.byte	0
+ 238              		.section	.rodata.initCpuBoardLed.str1.4,"aMS",%progbits,1
+ 239              		.align	2
+ 240              	.LC0:
+ 241 0000 5C5C2E5C 		.ascii	"\\\\.\\gpio\000"
+ 241      6770696F 
+ 241      00
+ 242              		.section	.rodata.s_led_pin_list,"a",%progbits
+ 243              		.align	2
+ 244              		.set	.LANCHOR2,. + 0
+ 247              	s_led_pin_list:
+ 248 0000 0006     		.short	1536
+ 249 0002 010C     		.short	3073
+ 250              		.text
+ 251              	.Letext0:
+ 252              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 253              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 254              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 255              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 256              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 257              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 258              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 259              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 260              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 261              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/system/inc/r_ty
+ 262              		.file 13 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/system/inc/driv
+ 263              		.file 14 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/os_abstraction/
+ 264              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 265              		.file 16 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_gpio/
+ 266              		.file 17 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/drivers/r_gpio/
+ 267              		.file 18 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/system/inc/r_de
+ 268              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 cpuBoardLed.c
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:17     .text.initCpuBoardLed:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:23     .text.initCpuBoardLed:00000000 initCpuBoardLed
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:240    .rodata.initCpuBoardLed.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:197    .bss.s_my_gpio_handle:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:190    .bss.pin_led:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:244    .rodata.s_led_pin_list:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:93     .text.cpuBoardLedGreen:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:99     .text.cpuBoardLedGreen:00000000 cpuBoardLedGreen
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:222    .data.s_pC1_off:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:231    .data.s_pC1_on:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:141    .text.cpuBoardLedRed:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:147    .text.cpuBoardLedRed:00000000 cpuBoardLedRed
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:204    .data.s_p60_off:00000000 .LANCHOR6
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:213    .data.s_p60_on:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:189    .bss.pin_led:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:193    .bss.pin_led:00000000 pin_led
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:196    .bss.s_my_gpio_handle:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:200    .bss.s_my_gpio_handle:00000000 s_my_gpio_handle
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:203    .data.s_p60_off:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:207    .data.s_p60_off:00000000 s_p60_off
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:212    .data.s_p60_on:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:216    .data.s_p60_on:00000000 s_p60_on
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:221    .data.s_pC1_off:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:225    .data.s_pC1_off:00000000 s_pC1_off
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:230    .data.s_pC1_on:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:234    .data.s_pC1_on:00000000 s_pC1_on
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:239    .rodata.initCpuBoardLed.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:243    .rodata.s_led_pin_list:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccJPvDpa.s:247    .rodata.s_led_pin_list:00000000 s_led_pin_list
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.5cdadbb3efe495d1c9e38350b8c376c7
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.stddef.h.187.2ff233552538c6ff9b8575ca8ea52cb3
+                           .group:00000000 wm4.cdefs.h.47.e658329a094974ebad41b40c60502de7
+                           .group:00000000 wm4.stddef.h.39.ec95e8feac892e292b69dc7ae75b0d64
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:00000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:00000000 wm4._timeval.h.30.0e8bfd94e85db17dda3286ee81496fe6
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.30.bbece7fa40993a78092dcc5805132560
+                           .group:00000000 wm4.types.h.69.ed3eae3cf73030a737515151ebcab7a1
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.8188691c2279eac7a223caa50f6694b9
+                           .group:00000000 wm4._default_fcntl.h.6.b13d56891b95175b639f824a0fd1ed77
+                           .group:00000000 wm4.time.h.8.db4619001f026d0b4874c029fef0e91f
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.25.0e6a0fdbc9955f5707ed54246ed2e089
+                           .group:00000000 wm4.time.h.162.d096f2f5887c52e271c4dc33d795dc64
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+                           .group:00000000 wm4.fcntl.h.9.9336f33d7f5028f694c75e6e224e0cf7
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.unistd.h.2.39165d5b7784d1815ef4b0c4be6df560
+                           .group:00000000 wm4.unistd.h.156.614f0202926a9fae83688cfc56e25f59
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.r_typedefs.h.38.e90d9de5300d9ae020e5db8c5af88b3e
+                           .group:00000000 wm4.adc_iodefine.h.29.14c6f50dce37432a7d004e4b1ce33da7
+                           .group:00000000 wm4.bsc_iodefine.h.29.9281d1f3639266933964d6d0c2d42c4f
+                           .group:00000000 wm4.ceu_iodefine.h.29.2a669d0b46fdde030a50db9e3c307fbf
+                           .group:00000000 wm4.cpg_iodefine.h.29.d6fdc9cb4798723afd88b251d64c2ce2
+                           .group:00000000 wm4.csi2link_iodefine.h.29.221c4531636a409f24d307b16341ada8
+                           .group:00000000 wm4.dmac_iodefine.h.29.578fccc2cc1da886ec95a029bf874f01
+                           .group:00000000 wm4.drpk_iodefine.h.29.580eb8588a2b2d43d2726fbe791e513f
+                           .group:00000000 wm4.drw_iodefine.h.29.df30f4a4a34a79f6a86c4df91353dffe
+                           .group:00000000 wm4.edmac_iodefine.h.29.33e8759349004a722f42f5429c1353f6
+                           .group:00000000 wm4.eptpc_iodefine.h.29.74d8f9fab0f5549b56097fb9e937dde8
+                           .group:00000000 wm4.etherc_iodefine.h.29.14602750383a574f1c21f994ad33a366
+                           .group:00000000 wm4.gpio_iodefine.h.29.3d0b021c56839cee4ae5149903684e4b
+                           .group:00000000 wm4.gpt_iodefine.h.29.557ead75d7b0585b898d3898b64c7f87
+                           .group:00000000 wm4.hyper_iodefine.h.29.000caadbb74d881e97db55b39b432154
+                           .group:00000000 wm4.imr_iodefine.h.29.77c022f017e711c4d51cc0145db1dad3
+                           .group:00000000 wm4.intc_iodefine.h.29.b68f5799a35a7495d63b4cd458e1ba57
+                           .group:00000000 wm4.irda_iodefine.h.29.37e67bd2005173d68a74d1cc937d8444
+                           .group:00000000 wm4.jcu_iodefine.h.29.3aca452908962e7a7ccf26164751feda
+                           .group:00000000 wm4.lvds_iodefine.h.29.c11cbe1900e5209c8dcc76c2336c16bc
+                           .group:00000000 wm4.mtu_iodefine.h.29.5498fb974bb53caf05aa143c2deec781
+                           .group:00000000 wm4.nandc_iodefine.h.29.e0b343306750f017ee86e169ad98efe9
+                           .group:00000000 wm4.octa_iodefine.h.29.4cb0d62e4b9633e173858000dc1c626c
+                           .group:00000000 wm4.ostm_iodefine.h.29.6914f7e330a1cf0008b34219adcdfed4
+                           .group:00000000 wm4.pl_iodefine.h.29.abbb6d725aed990aa8343242bfe31416
+                           .group:00000000 wm4.pmg_iodefine.h.29.8bcfbc4771a6f9b7dd4d6f504427219e
+                           .group:00000000 wm4.poeg_iodefine.h.29.0d8e258d10986260cbc70cfb8c0ef273
+                           .group:00000000 wm4.poe_iodefine.h.29.fe74e55e7b6b4afbe3596c74ba035e98
+                           .group:00000000 wm4.prr_iodefine.h.29.c1f15576f7a27b9c83aa3b40f5b2f988
+                           .group:00000000 wm4.ptpedmac_iodefine.h.29.cd24a93374ce35cebc41e26889d619ef
+                           .group:00000000 wm4.rcanfd_iodefine.h.29.532dd48b82fcb61d63538aba4b6f1289
+                           .group:00000000 wm4.rcan_iodefine.h.29.a47a89db1b35c12b54af48fa1956acba
+                           .group:00000000 wm4.riic_iodefine.h.29.f96943d49800d297612c4af3bba5c943
+                           .group:00000000 wm4.rspi_iodefine.h.29.7efa041fe34a7d27db66a7b337879dfe
+                           .group:00000000 wm4.rtc_iodefine.h.29.6dc76be5ca3df69cecb5a81d06cc46b5
+                           .group:00000000 wm4.scifa_iodefine.h.29.b04ccd664d71baaf31c75761c45b9c4d
+                           .group:00000000 wm4.scim_iodefine.h.29.87d0760abf94446b00d826c797bf0ff2
+                           .group:00000000 wm4.sdmmc_iodefine.h.29.e67e9815445e8057a3262d1566bea0db
+                           .group:00000000 wm4.spdif_iodefine.h.29.59f5d70150fa200a4d8ee50be1ee34c8
+                           .group:00000000 wm4.spibsc_iodefine.h.29.f4930f8b8da1140200204513a363c76f
+                           .group:00000000 wm4.sprite_iodefine.h.29.55796d1fa083a2457fea4ece974a192e
+                           .group:00000000 wm4.ssif_iodefine.h.29.054ec6d95f487f631f16aee39c85c47a
+                           .group:00000000 wm4.usb_iodefine.h.29.6dc44ea388ba227e8fdcfb33c315887b
+                           .group:00000000 wm4.vdc_iodefine.h.29.db282ded1f052d8567fbbd3b61ce8f7a
+                           .group:00000000 wm4.vin_iodefine.h.29.9b392e5601347d53e64be3272934e170
+                           .group:00000000 wm4.wdt_iodefine.h.29.ed07bb44b797072f8c28b41c64fdca30
+                           .group:00000000 wm4.r_startup_config.h.28.41a2bd9676f9208cac4163ceb2eb9006
+                           .group:00000000 wm4.r_compiler_abstraction_api.h.26.bb21b39b83806cb7bb8838b6f825dcff
+                           .group:00000000 wm4.driver.h.34.180df73e0731406f5e50150641059ede
+                           .group:00000000 wm4.r_os_abstraction_api.h.53.c40489f97d2474c70b40d43822d1406c
+                           .group:00000000 wm4.compiler_settings.h.55.412db3588640e7e83336e77c1cd11233
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.reent.h.91.b3ea049ebc5486622b61409b78486f84
+                           .group:00000000 wm4.r_devlink_wrapper.h.72.ad1de4c851513efa3aed0532ebca7ca2
+                           .group:00000000 wm4.r_gpio_lld_rza2m.h.35.fd76d0816769697a06dd6f4a61c03021
+                           .group:00000000 wm4.r_gpio_drv_api.h.82.9514441e942567d0eb0b23efaff62239
+
+UNDEFINED SYMBOLS
+open
+direct_control

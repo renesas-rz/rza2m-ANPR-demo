@@ -1,0 +1,963 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_vdc.c"
+  13              		.section	.text.R_VDC_Initialize,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_VDC_Initialize
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_VDC_Initialize:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  24 0004 0260A0E1 		mov	r6, r2
+  25 0008 0370A0E1 		mov	r7, r3
+  26 000c 0140A0E1 		mov	r4, r1
+  27 0010 FEFFFFEB 		bl	VDC_InitializeCheckPrm
+  28 0014 005050E2 		subs	r5, r0, #0
+  29 0018 0100000A 		beq	.L17
+  30              	.L7:
+  31 001c 0500A0E1 		mov	r0, r5
+  32 0020 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  33              	.L17:
+  34 0024 FEFFFFEB 		bl	VDC_ShrdPrmInit
+  35 0028 0400A0E3 		mov	r0, #4
+  36 002c FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+  37 0030 000050E3 		cmp	r0, #0
+  38 0034 1300001A 		bne	.L18
+  39              	.L3:
+  40 0038 0400A0E1 		mov	r0, r4
+  41 003c FEFFFFEB 		bl	VDC_ShrdPrmSetInitParam
+  42 0040 000056E3 		cmp	r6, #0
+  43 0044 0100000A 		beq	.L5
+  44 0048 0700A0E1 		mov	r0, r7
+  45 004c 36FF2FE1 		blx	r6
+  46              	.L5:
+  47 0050 0400A0E1 		mov	r0, r4
+  48 0054 FEFFFFEB 		bl	VDC_Initialize
+  49 0058 FEFFFFEB 		bl	VDC_Int_Disable
+  50 005c 0110A0E3 		mov	r1, #1
+  51 0060 0000A0E3 		mov	r0, #0
+  52 0064 FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+  53 0068 043094E5 		ldr	r3, [r4, #4]
+  54 006c 000053E3 		cmp	r3, #0
+  55 0070 E9FFFF0A 		beq	.L7
+  56 0074 0110A0E3 		mov	r1, #1
+  57 0078 0400A0E3 		mov	r0, #4
+  58 007c FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+  59 0080 0500A0E1 		mov	r0, r5
+  60 0084 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  61              	.L18:
+  62 0088 043094E5 		ldr	r3, [r4, #4]
+  63 008c 000053E3 		cmp	r3, #0
+  64 0090 0D50A013 		movne	r5, #13
+  65 0094 E7FFFF0A 		beq	.L3
+  66 0098 0500A0E1 		mov	r0, r5
+  67 009c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  69              		.section	.text.R_VDC_Terminate,"ax",%progbits
+  70              		.align	2
+  71              		.global	R_VDC_Terminate
+  72              		.syntax unified
+  73              		.arm
+  74              		.fpu neon
+  76              	R_VDC_Terminate:
+  77              		@ args = 0, pretend = 0, frame = 0
+  78              		@ frame_needed = 0, uses_anonymous_args = 0
+  79 0000 70402DE9 		push	{r4, r5, r6, lr}
+  80 0004 0150A0E1 		mov	r5, r1
+  81 0008 0260A0E1 		mov	r6, r2
+  82 000c FEFFFFEB 		bl	VDC_TerminateCheckPrm
+  83 0010 004050E2 		subs	r4, r0, #0
+  84 0014 0100000A 		beq	.L28
+  85              	.L21:
+  86 0018 0400A0E1 		mov	r0, r4
+  87 001c 7080BDE8 		pop	{r4, r5, r6, pc}
+  88              	.L28:
+  89 0020 FEFFFFEB 		bl	VDC_ShrdPrmSetTerminate
+  90 0024 FEFFFFEB 		bl	VDC_Int_Disable
+  91 0028 FEFFFFEB 		bl	VDC_Terminate
+  92 002c 0410A0E1 		mov	r1, r4
+  93 0030 0400A0E1 		mov	r0, r4
+  94 0034 FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+  95 0038 FEFFFFEB 		bl	VDC_ShrdPrmGetLvdsClkRef
+  96 003c 000050E3 		cmp	r0, #0
+  97 0040 0500000A 		beq	.L29
+  98              	.L22:
+  99 0044 000055E3 		cmp	r5, #0
+ 100 0048 F2FFFF0A 		beq	.L21
+ 101 004c 0600A0E1 		mov	r0, r6
+ 102 0050 35FF2FE1 		blx	r5
+ 103 0054 0400A0E1 		mov	r0, r4
+ 104 0058 7080BDE8 		pop	{r4, r5, r6, pc}
+ 105              	.L29:
+ 106 005c 0410A0E1 		mov	r1, r4
+ 107 0060 0400A0E3 		mov	r0, #4
+ 108 0064 FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+ 109 0068 F5FFFFEA 		b	.L22
+ 111              		.section	.text.R_VDC_VideoInput,"ax",%progbits
+ 112              		.align	2
+ 113              		.global	R_VDC_VideoInput
+ 114              		.syntax unified
+ 115              		.arm
+ 116              		.fpu neon
+ 118              	R_VDC_VideoInput:
+ 119              		@ args = 0, pretend = 0, frame = 0
+ 120              		@ frame_needed = 0, uses_anonymous_args = 0
+ 121 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 122 0004 0150A0E1 		mov	r5, r1
+ 123 0008 FEFFFFEB 		bl	VDC_VideoInputCheckPrm
+ 124 000c 004050E2 		subs	r4, r0, #0
+ 125 0010 0600001A 		bne	.L31
+ 126 0014 0500A0E1 		mov	r0, r5
+ 127 0018 FEFFFFEB 		bl	VDC_ShrdPrmSetInputParam
+ 128 001c 0500A0E1 		mov	r0, r5
+ 129 0020 FEFFFFEB 		bl	VDC_VideoInput
+ 130 0024 0110A0E3 		mov	r1, #1
+ 131 0028 0100A0E1 		mov	r0, r1
+ 132 002c FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+ 133              	.L31:
+ 134 0030 0400A0E1 		mov	r0, r4
+ 135 0034 7080BDE8 		pop	{r4, r5, r6, pc}
+ 137              		.section	.text.R_VDC_SyncControl,"ax",%progbits
+ 138              		.align	2
+ 139              		.global	R_VDC_SyncControl
+ 140              		.syntax unified
+ 141              		.arm
+ 142              		.fpu neon
+ 144              	R_VDC_SyncControl:
+ 145              		@ args = 0, pretend = 0, frame = 0
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 148 0004 0150A0E1 		mov	r5, r1
+ 149 0008 FEFFFFEB 		bl	VDC_SyncControlCheckPrm
+ 150 000c 004050E2 		subs	r4, r0, #0
+ 151 0010 0100000A 		beq	.L46
+ 152              	.L40:
+ 153 0014 0400A0E1 		mov	r0, r4
+ 154 0018 7080BDE8 		pop	{r4, r5, r6, pc}
+ 155              	.L46:
+ 156 001c FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 157 0020 010050E3 		cmp	r0, #1
+ 158 0024 0940A013 		movne	r4, #9
+ 159 0028 F9FFFF1A 		bne	.L40
+ 160 002c 0030D5E5 		ldrb	r3, [r5]	@ zero_extendqisi2
+ 161 0030 000053E3 		cmp	r3, #0
+ 162 0034 0600000A 		beq	.L47
+ 163              	.L37:
+ 164 0038 0500A0E1 		mov	r0, r5
+ 165 003c FEFFFFEB 		bl	VDC_SyncControl
+ 166 0040 0110A0E3 		mov	r1, #1
+ 167 0044 0200A0E3 		mov	r0, #2
+ 168 0048 FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+ 169 004c 0400A0E1 		mov	r0, r4
+ 170 0050 7080BDE8 		pop	{r4, r5, r6, pc}
+ 171              	.L47:
+ 172 0054 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 173 0058 010050E3 		cmp	r0, #1
+ 174 005c 0B40A013 		movne	r4, #11
+ 175 0060 F4FFFF0A 		beq	.L37
+ 176 0064 0400A0E1 		mov	r0, r4
+ 177 0068 7080BDE8 		pop	{r4, r5, r6, pc}
+ 179              		.section	.text.R_VDC_DisplayOutput,"ax",%progbits
+ 180              		.align	2
+ 181              		.global	R_VDC_DisplayOutput
+ 182              		.syntax unified
+ 183              		.arm
+ 184              		.fpu neon
+ 186              	R_VDC_DisplayOutput:
+ 187              		@ args = 0, pretend = 0, frame = 0
+ 188              		@ frame_needed = 0, uses_anonymous_args = 0
+ 189 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 190 0004 0150A0E1 		mov	r5, r1
+ 191 0008 FEFFFFEB 		bl	VDC_DisplayOutputCheckPrm
+ 192 000c 004050E2 		subs	r4, r0, #0
+ 193 0010 0100000A 		beq	.L54
+ 194              	.L52:
+ 195 0014 0400A0E1 		mov	r0, r4
+ 196 0018 7080BDE8 		pop	{r4, r5, r6, pc}
+ 197              	.L54:
+ 198 001c FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 199 0020 010050E3 		cmp	r0, #1
+ 200 0024 0940A013 		movne	r4, #9
+ 201 0028 F9FFFF1A 		bne	.L52
+ 202 002c 0200A0E3 		mov	r0, #2
+ 203 0030 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 204 0034 010050E3 		cmp	r0, #1
+ 205 0038 0060A0E1 		mov	r6, r0
+ 206 003c 0A40A013 		movne	r4, #10
+ 207 0040 F3FFFF1A 		bne	.L52
+ 208 0044 0500A0E1 		mov	r0, r5
+ 209 0048 FEFFFFEB 		bl	VDC_ShrdPrmSetOutputParam
+ 210 004c 0500A0E1 		mov	r0, r5
+ 211 0050 FEFFFFEB 		bl	VDC_DisplayOutput
+ 212 0054 0610A0E1 		mov	r1, r6
+ 213 0058 0300A0E3 		mov	r0, #3
+ 214 005c FEFFFFEB 		bl	VDC_ShrdPrmSetResource
+ 215 0060 0400A0E1 		mov	r0, r4
+ 216 0064 7080BDE8 		pop	{r4, r5, r6, pc}
+ 218              		.section	.text.R_VDC_CallbackISR,"ax",%progbits
+ 219              		.align	2
+ 220              		.global	R_VDC_CallbackISR
+ 221              		.syntax unified
+ 222              		.arm
+ 223              		.fpu neon
+ 225              	R_VDC_CallbackISR:
+ 226              		@ args = 0, pretend = 0, frame = 0
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 229 0004 0150A0E1 		mov	r5, r1
+ 230 0008 FEFFFFEB 		bl	VDC_CallbackISRCheckPrm
+ 231 000c 004050E2 		subs	r4, r0, #0
+ 232 0010 0100000A 		beq	.L61
+ 233              	.L59:
+ 234 0014 0400A0E1 		mov	r0, r4
+ 235 0018 7080BDE8 		pop	{r4, r5, r6, pc}
+ 236              	.L61:
+ 237 001c FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 238 0020 010050E3 		cmp	r0, #1
+ 239 0024 0940A013 		movne	r4, #9
+ 240 0028 F9FFFF1A 		bne	.L59
+ 241 002c 0200A0E3 		mov	r0, #2
+ 242 0030 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 243 0034 010050E3 		cmp	r0, #1
+ 244 0038 0A40A013 		movne	r4, #10
+ 245 003c F4FFFF1A 		bne	.L59
+ 246 0040 0500A0E1 		mov	r0, r5
+ 247 0044 FEFFFFEB 		bl	VDC_Int_SetInterrupt
+ 248 0048 0400A0E1 		mov	r0, r4
+ 249 004c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 251              		.section	.text.R_VDC_WriteDataControl,"ax",%progbits
+ 252              		.align	2
+ 253              		.global	R_VDC_WriteDataControl
+ 254              		.syntax unified
+ 255              		.arm
+ 256              		.fpu neon
+ 258              	R_VDC_WriteDataControl:
+ 259              		@ args = 0, pretend = 0, frame = 0
+ 260              		@ frame_needed = 0, uses_anonymous_args = 0
+ 261 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 262 0004 0160A0E1 		mov	r6, r1
+ 263 0008 0250A0E1 		mov	r5, r2
+ 264 000c FEFFFFEB 		bl	VDC_WriteDataControlCheckPrm
+ 265 0010 004050E2 		subs	r4, r0, #0
+ 266 0014 0100000A 		beq	.L68
+ 267              	.L66:
+ 268 0018 0400A0E1 		mov	r0, r4
+ 269 001c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 270              	.L68:
+ 271 0020 0600A0E1 		mov	r0, r6
+ 272 0024 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 273 0028 000050E3 		cmp	r0, #0
+ 274 002c 0E40A013 		movne	r4, #14
+ 275 0030 F8FFFF1A 		bne	.L66
+ 276 0034 0100A0E3 		mov	r0, #1
+ 277 0038 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 278 003c 010050E3 		cmp	r0, #1
+ 279 0040 0070A0E1 		mov	r7, r0
+ 280 0044 0B40A013 		movne	r4, #11
+ 281 0048 F2FFFF1A 		bne	.L66
+ 282 004c 0500A0E1 		mov	r0, r5
+ 283 0050 FEFFFFEB 		bl	VDC_ShrdPrmSetWriteParam
+ 284 0054 0500A0E1 		mov	r0, r5
+ 285 0058 FEFFFFEB 		bl	VDC_WriteDataControl
+ 286 005c 0600A0E1 		mov	r0, r6
+ 287 0060 0710A0E1 		mov	r1, r7
+ 288 0064 FEFFFFEB 		bl	VDC_ShrdPrmSetLayerResource
+ 289 0068 0400A0E1 		mov	r0, r4
+ 290 006c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 292              		.section	.text.R_VDC_ChangeWriteProcess,"ax",%progbits
+ 293              		.align	2
+ 294              		.global	R_VDC_ChangeWriteProcess
+ 295              		.syntax unified
+ 296              		.arm
+ 297              		.fpu neon
+ 299              	R_VDC_ChangeWriteProcess:
+ 300              		@ args = 0, pretend = 0, frame = 0
+ 301              		@ frame_needed = 0, uses_anonymous_args = 0
+ 302 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 303 0004 0160A0E1 		mov	r6, r1
+ 304 0008 0250A0E1 		mov	r5, r2
+ 305 000c FEFFFFEB 		bl	VDC_ChangeWriteProcessCheckPrm
+ 306 0010 004050E2 		subs	r4, r0, #0
+ 307 0014 0100000A 		beq	.L74
+ 308              	.L72:
+ 309 0018 0400A0E1 		mov	r0, r4
+ 310 001c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 311              	.L74:
+ 312 0020 0600A0E1 		mov	r0, r6
+ 313 0024 FEFFFFEB 		bl	VDC_ShrdPrmGetRwProcEnabled
+ 314 0028 000050E3 		cmp	r0, #0
+ 315 002c 0E40A003 		moveq	r4, #14
+ 316 0030 F8FFFF0A 		beq	.L72
+ 317 0034 0500A0E1 		mov	r0, r5
+ 318 0038 FEFFFFEB 		bl	VDC_ShrdPrmSetChgWriteParam
+ 319 003c 0500A0E1 		mov	r0, r5
+ 320 0040 FEFFFFEB 		bl	VDC_ChangeWriteProcess
+ 321 0044 0400A0E1 		mov	r0, r4
+ 322 0048 7080BDE8 		pop	{r4, r5, r6, pc}
+ 324              		.section	.text.R_VDC_ReadDataControl,"ax",%progbits
+ 325              		.align	2
+ 326              		.global	R_VDC_ReadDataControl
+ 327              		.syntax unified
+ 328              		.arm
+ 329              		.fpu neon
+ 331              	R_VDC_ReadDataControl:
+ 332              		@ args = 0, pretend = 0, frame = 0
+ 333              		@ frame_needed = 0, uses_anonymous_args = 0
+ 334 0000 013041E2 		sub	r3, r1, #1
+ 335 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 336 0008 7330EFE6 		uxtb	r3, r3
+ 337 000c 0260A0E1 		mov	r6, r2
+ 338 0010 0140A0E1 		mov	r4, r1
+ 339 0014 020053E3 		cmp	r3, #2
+ 340 0018 00200093 		movwls	r2, #:lower16:.LANCHOR0
+ 341 001c 0350A083 		movhi	r5, #3
+ 342 0020 00204093 		movtls	r2, #:upper16:.LANCHOR0
+ 343 0024 0350D297 		ldrbls	r5, [r2, r3]	@ zero_extendqisi2
+ 344 0028 0630A0E1 		mov	r3, r6
+ 345 002c 0520A0E1 		mov	r2, r5
+ 346 0030 FEFFFFEB 		bl	VDC_ReadDataControlCheckPrm
+ 347 0034 007050E2 		subs	r7, r0, #0
+ 348 0038 0100000A 		beq	.L82
+ 349              	.L80:
+ 350 003c 0700A0E1 		mov	r0, r7
+ 351 0040 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 352              	.L82:
+ 353 0044 0400A0E1 		mov	r0, r4
+ 354 0048 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 355 004c 000050E3 		cmp	r0, #0
+ 356 0050 0E70A013 		movne	r7, #14
+ 357 0054 F8FFFF1A 		bne	.L80
+ 358 0058 0610A0E1 		mov	r1, r6
+ 359 005c 0500A0E1 		mov	r0, r5
+ 360 0060 FEFFFFEB 		bl	VDC_ShrdPrmSetReadParam
+ 361 0064 0610A0E1 		mov	r1, r6
+ 362 0068 0500A0E1 		mov	r0, r5
+ 363 006c FEFFFFEB 		bl	VDC_ReadDataControl
+ 364 0070 0400A0E1 		mov	r0, r4
+ 365 0074 0110A0E3 		mov	r1, #1
+ 366 0078 FEFFFFEB 		bl	VDC_ShrdPrmSetLayerResource
+ 367 007c 0700A0E1 		mov	r0, r7
+ 368 0080 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 370              		.section	.text.R_VDC_ChangeReadProcess,"ax",%progbits
+ 371              		.align	2
+ 372              		.global	R_VDC_ChangeReadProcess
+ 373              		.syntax unified
+ 374              		.arm
+ 375              		.fpu neon
+ 377              	R_VDC_ChangeReadProcess:
+ 378              		@ args = 0, pretend = 0, frame = 0
+ 379              		@ frame_needed = 0, uses_anonymous_args = 0
+ 380 0000 013041E2 		sub	r3, r1, #1
+ 381 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 382 0008 7330EFE6 		uxtb	r3, r3
+ 383 000c 0250A0E1 		mov	r5, r2
+ 384 0010 0140A0E1 		mov	r4, r1
+ 385 0014 020053E3 		cmp	r3, #2
+ 386 0018 00200093 		movwls	r2, #:lower16:.LANCHOR0
+ 387 001c 0370A083 		movhi	r7, #3
+ 388 0020 00204093 		movtls	r2, #:upper16:.LANCHOR0
+ 389 0024 0370D297 		ldrbls	r7, [r2, r3]	@ zero_extendqisi2
+ 390 0028 0520A0E1 		mov	r2, r5
+ 391 002c FEFFFFEB 		bl	VDC_ChangeReadProcessCheckPrm
+ 392 0030 006050E2 		subs	r6, r0, #0
+ 393 0034 0100000A 		beq	.L90
+ 394              	.L88:
+ 395 0038 0600A0E1 		mov	r0, r6
+ 396 003c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 397              	.L90:
+ 398 0040 0400A0E1 		mov	r0, r4
+ 399 0044 FEFFFFEB 		bl	VDC_ShrdPrmGetRwProcEnabled
+ 400 0048 000050E3 		cmp	r0, #0
+ 401 004c 0E60A003 		moveq	r6, #14
+ 402 0050 F8FFFF0A 		beq	.L88
+ 403 0054 0510A0E1 		mov	r1, r5
+ 404 0058 0700A0E1 		mov	r0, r7
+ 405 005c FEFFFFEB 		bl	VDC_ShrdPrmSetChgReadParam
+ 406 0060 0700A0E1 		mov	r0, r7
+ 407 0064 0510A0E1 		mov	r1, r5
+ 408 0068 FEFFFFEB 		bl	VDC_ChangeReadProcess
+ 409 006c 0600A0E1 		mov	r0, r6
+ 410 0070 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 412              		.section	.text.R_VDC_StartProcess,"ax",%progbits
+ 413              		.align	2
+ 414              		.global	R_VDC_StartProcess
+ 415              		.syntax unified
+ 416              		.arm
+ 417              		.fpu neon
+ 419              	R_VDC_StartProcess:
+ 420              		@ args = 0, pretend = 0, frame = 0
+ 421              		@ frame_needed = 0, uses_anonymous_args = 0
+ 422 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 423 0004 0150A0E1 		mov	r5, r1
+ 424 0008 0260A0E1 		mov	r6, r2
+ 425 000c FEFFFFEB 		bl	VDC_StartProcessCheckPrm
+ 426 0010 004050E2 		subs	r4, r0, #0
+ 427 0014 0600001A 		bne	.L94
+ 428 0018 010075E3 		cmn	r5, #1
+ 429 001c 0600000A 		beq	.L93
+ 430 0020 0500A0E1 		mov	r0, r5
+ 431 0024 FEFFFFEB 		bl	VDC_ShrdPrmGetRwProcReady
+ 432 0028 000050E3 		cmp	r0, #0
+ 433 002c 0E40A003 		moveq	r4, #14
+ 434 0030 0100001A 		bne	.L93
+ 435              	.L94:
+ 436 0034 0400A0E1 		mov	r0, r4
+ 437 0038 7080BDE8 		pop	{r4, r5, r6, pc}
+ 438              	.L93:
+ 439 003c 0500A0E1 		mov	r0, r5
+ 440 0040 0610A0E1 		mov	r1, r6
+ 441 0044 FEFFFFEB 		bl	VDC_StartProcess
+ 442 0048 0400A0E1 		mov	r0, r4
+ 443 004c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 445              		.section	.text.R_VDC_StopProcess,"ax",%progbits
+ 446              		.align	2
+ 447              		.global	R_VDC_StopProcess
+ 448              		.syntax unified
+ 449              		.arm
+ 450              		.fpu neon
+ 452              	R_VDC_StopProcess:
+ 453              		@ args = 0, pretend = 0, frame = 0
+ 454              		@ frame_needed = 0, uses_anonymous_args = 0
+ 455 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 456 0004 0150A0E1 		mov	r5, r1
+ 457 0008 FEFFFFEB 		bl	VDC_StopProcessCheckPrm
+ 458 000c 004050E2 		subs	r4, r0, #0
+ 459 0010 0600001A 		bne	.L102
+ 460 0014 010075E3 		cmn	r5, #1
+ 461 0018 0600000A 		beq	.L101
+ 462 001c 0500A0E1 		mov	r0, r5
+ 463 0020 FEFFFFEB 		bl	VDC_ShrdPrmGetRwProcEnabled
+ 464 0024 000050E3 		cmp	r0, #0
+ 465 0028 0E40A003 		moveq	r4, #14
+ 466 002c 0100001A 		bne	.L101
+ 467              	.L102:
+ 468 0030 0400A0E1 		mov	r0, r4
+ 469 0034 7080BDE8 		pop	{r4, r5, r6, pc}
+ 470              	.L101:
+ 471 0038 0500A0E1 		mov	r0, r5
+ 472 003c FEFFFFEB 		bl	VDC_StopProcess
+ 473 0040 0400A0E1 		mov	r0, r4
+ 474 0044 7080BDE8 		pop	{r4, r5, r6, pc}
+ 476              		.section	.text.R_VDC_ReleaseDataControl,"ax",%progbits
+ 477              		.align	2
+ 478              		.global	R_VDC_ReleaseDataControl
+ 479              		.syntax unified
+ 480              		.arm
+ 481              		.fpu neon
+ 483              	R_VDC_ReleaseDataControl:
+ 484              		@ args = 0, pretend = 0, frame = 0
+ 485              		@ frame_needed = 0, uses_anonymous_args = 0
+ 486 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 487 0004 0150A0E1 		mov	r5, r1
+ 488 0008 FEFFFFEB 		bl	VDC_ReleaseDataControlCheckPrm
+ 489 000c 004050E2 		subs	r4, r0, #0
+ 490 0010 0600001A 		bne	.L110
+ 491 0014 010075E3 		cmn	r5, #1
+ 492 0018 0600000A 		beq	.L109
+ 493 001c 0500A0E1 		mov	r0, r5
+ 494 0020 FEFFFFEB 		bl	VDC_ShrdPrmGetRwProcReady
+ 495 0024 000050E3 		cmp	r0, #0
+ 496 0028 0E40A003 		moveq	r4, #14
+ 497 002c 0100001A 		bne	.L109
+ 498              	.L110:
+ 499 0030 0400A0E1 		mov	r0, r4
+ 500 0034 7080BDE8 		pop	{r4, r5, r6, pc}
+ 501              	.L109:
+ 502 0038 0500A0E1 		mov	r0, r5
+ 503 003c 0010A0E3 		mov	r1, #0
+ 504 0040 FEFFFFEB 		bl	VDC_ShrdPrmSetLayerResource
+ 505 0044 0400A0E1 		mov	r0, r4
+ 506 0048 7080BDE8 		pop	{r4, r5, r6, pc}
+ 508              		.section	.text.R_VDC_VideoNoiseReduction,"ax",%progbits
+ 509              		.align	2
+ 510              		.global	R_VDC_VideoNoiseReduction
+ 511              		.syntax unified
+ 512              		.arm
+ 513              		.fpu neon
+ 515              	R_VDC_VideoNoiseReduction:
+ 516              		@ args = 0, pretend = 0, frame = 0
+ 517              		@ frame_needed = 0, uses_anonymous_args = 0
+ 518 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 519 0004 0160A0E1 		mov	r6, r1
+ 520 0008 0210A0E1 		mov	r1, r2
+ 521 000c 0240A0E1 		mov	r4, r2
+ 522 0010 FEFFFFEB 		bl	VDC_VideoNoiseReductCheckPrm
+ 523 0014 005050E2 		subs	r5, r0, #0
+ 524 0018 0100000A 		beq	.L120
+ 525              	.L118:
+ 526 001c 0500A0E1 		mov	r0, r5
+ 527 0020 7080BDE8 		pop	{r4, r5, r6, pc}
+ 528              	.L120:
+ 529 0024 0100A0E3 		mov	r0, #1
+ 530 0028 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 531 002c 010050E3 		cmp	r0, #1
+ 532 0030 0B50A013 		movne	r5, #11
+ 533 0034 F8FFFF1A 		bne	.L118
+ 534 0038 0600A0E1 		mov	r0, r6
+ 535 003c 0410A0E1 		mov	r1, r4
+ 536 0040 FEFFFFEB 		bl	VDC_VideoNoiseReduction
+ 537 0044 0500A0E1 		mov	r0, r5
+ 538 0048 7080BDE8 		pop	{r4, r5, r6, pc}
+ 540              		.section	.text.R_VDC_ImageColorMatrix,"ax",%progbits
+ 541              		.align	2
+ 542              		.global	R_VDC_ImageColorMatrix
+ 543              		.syntax unified
+ 544              		.arm
+ 545              		.fpu neon
+ 547              	R_VDC_ImageColorMatrix:
+ 548              		@ args = 0, pretend = 0, frame = 0
+ 549              		@ frame_needed = 0, uses_anonymous_args = 0
+ 550 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 551 0004 0150A0E1 		mov	r5, r1
+ 552 0008 FEFFFFEB 		bl	VDC_ImageColorMatrixCheckPrm
+ 553 000c 004050E2 		subs	r4, r0, #0
+ 554 0010 0600001A 		bne	.L126
+ 555 0014 0030D5E5 		ldrb	r3, [r5]	@ zero_extendqisi2
+ 556 0018 000053E3 		cmp	r3, #0
+ 557 001c 0100A013 		movne	r0, #1
+ 558 0020 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 559 0024 000050E3 		cmp	r0, #0
+ 560 0028 0E40A003 		moveq	r4, #14
+ 561 002c 0100001A 		bne	.L129
+ 562              	.L126:
+ 563 0030 0400A0E1 		mov	r0, r4
+ 564 0034 7080BDE8 		pop	{r4, r5, r6, pc}
+ 565              	.L129:
+ 566 0038 0500A0E1 		mov	r0, r5
+ 567 003c FEFFFFEB 		bl	VDC_ImageColorMatrix
+ 568 0040 0400A0E1 		mov	r0, r4
+ 569 0044 7080BDE8 		pop	{r4, r5, r6, pc}
+ 571              		.section	.text.R_VDC_ImageEnhancement,"ax",%progbits
+ 572              		.align	2
+ 573              		.global	R_VDC_ImageEnhancement
+ 574              		.syntax unified
+ 575              		.arm
+ 576              		.fpu neon
+ 578              	R_VDC_ImageEnhancement:
+ 579              		@ args = 12, pretend = 0, frame = 0
+ 580              		@ frame_needed = 0, uses_anonymous_args = 0
+ 581 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 582 0004 0CD04DE2 		sub	sp, sp, #12
+ 583 0008 0340A0E1 		mov	r4, r3
+ 584 000c 0260A0E1 		mov	r6, r2
+ 585 0010 0320A0E1 		mov	r2, r3
+ 586 0014 28309DE5 		ldr	r3, [sp, #40]
+ 587 0018 2070DDE5 		ldrb	r7, [sp, #32]	@ zero_extendqisi2
+ 588 001c FEFFFFEB 		bl	VDC_ImageEnhancementCheckPrm
+ 589 0020 005050E2 		subs	r5, r0, #0
+ 590 0024 0200000A 		beq	.L136
+ 591              	.L134:
+ 592 0028 0500A0E1 		mov	r0, r5
+ 593 002c 0CD08DE2 		add	sp, sp, #12
+ 594              		@ sp needed
+ 595 0030 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 596              	.L136:
+ 597 0034 0100A0E3 		mov	r0, #1
+ 598 0038 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 599 003c 000050E3 		cmp	r0, #0
+ 600 0040 0E50A003 		moveq	r5, #14
+ 601 0044 F7FFFF0A 		beq	.L134
+ 602 0048 0500A0E1 		mov	r0, r5
+ 603 004c FEFFFFEB 		bl	VDC_ShrdPrmGetColorSpaceFbRd
+ 604 0050 000050E3 		cmp	r0, #0
+ 605 0054 0850A003 		moveq	r5, #8
+ 606 0058 F2FFFF0A 		beq	.L134
+ 607 005c 28309DE5 		ldr	r3, [sp, #40]
+ 608 0060 0600A0E1 		mov	r0, r6
+ 609 0064 0720A0E1 		mov	r2, r7
+ 610 0068 0410A0E1 		mov	r1, r4
+ 611 006c 00308DE5 		str	r3, [sp]
+ 612 0070 24309DE5 		ldr	r3, [sp, #36]
+ 613 0074 FEFFFFEB 		bl	VDC_ImageEnhancement
+ 614 0078 0500A0E1 		mov	r0, r5
+ 615 007c 0CD08DE2 		add	sp, sp, #12
+ 616              		@ sp needed
+ 617 0080 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 619              		.section	.text.R_VDC_ImageBlackStretch,"ax",%progbits
+ 620              		.align	2
+ 621              		.global	R_VDC_ImageBlackStretch
+ 622              		.syntax unified
+ 623              		.arm
+ 624              		.fpu neon
+ 626              	R_VDC_ImageBlackStretch:
+ 627              		@ args = 0, pretend = 0, frame = 0
+ 628              		@ frame_needed = 0, uses_anonymous_args = 0
+ 629 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 630 0004 0260A0E1 		mov	r6, r2
+ 631 0008 0320A0E1 		mov	r2, r3
+ 632 000c 0340A0E1 		mov	r4, r3
+ 633 0010 FEFFFFEB 		bl	VDC_ImageBlackStretchCheckPrm
+ 634 0014 005050E2 		subs	r5, r0, #0
+ 635 0018 0100000A 		beq	.L143
+ 636              	.L141:
+ 637 001c 0500A0E1 		mov	r0, r5
+ 638 0020 7080BDE8 		pop	{r4, r5, r6, pc}
+ 639              	.L143:
+ 640 0024 0100A0E3 		mov	r0, #1
+ 641 0028 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 642 002c 000050E3 		cmp	r0, #0
+ 643 0030 0E50A003 		moveq	r5, #14
+ 644 0034 F8FFFF0A 		beq	.L141
+ 645 0038 0500A0E1 		mov	r0, r5
+ 646 003c FEFFFFEB 		bl	VDC_ShrdPrmGetColorSpaceFbRd
+ 647 0040 000050E3 		cmp	r0, #0
+ 648 0044 0850A003 		moveq	r5, #8
+ 649 0048 F3FFFF0A 		beq	.L141
+ 650 004c 0600A0E1 		mov	r0, r6
+ 651 0050 0410A0E1 		mov	r1, r4
+ 652 0054 FEFFFFEB 		bl	VDC_ImageBlackStretch
+ 653 0058 0500A0E1 		mov	r0, r5
+ 654 005c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 656              		.section	.text.R_VDC_AlphaBlending,"ax",%progbits
+ 657              		.align	2
+ 658              		.global	R_VDC_AlphaBlending
+ 659              		.syntax unified
+ 660              		.arm
+ 661              		.fpu neon
+ 663              	R_VDC_AlphaBlending:
+ 664              		@ args = 0, pretend = 0, frame = 0
+ 665              		@ frame_needed = 0, uses_anonymous_args = 0
+ 666 0000 013041E2 		sub	r3, r1, #1
+ 667 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 668 0008 7330EFE6 		uxtb	r3, r3
+ 669 000c 0250A0E1 		mov	r5, r2
+ 670 0010 0140A0E1 		mov	r4, r1
+ 671 0014 020053E3 		cmp	r3, #2
+ 672 0018 00200093 		movwls	r2, #:lower16:.LANCHOR0
+ 673 001c 0370A083 		movhi	r7, #3
+ 674 0020 00204093 		movtls	r2, #:upper16:.LANCHOR0
+ 675 0024 0370D297 		ldrbls	r7, [r2, r3]	@ zero_extendqisi2
+ 676 0028 0520A0E1 		mov	r2, r5
+ 677 002c FEFFFFEB 		bl	VDC_AlphaBlendingCheckPrm
+ 678 0030 006050E2 		subs	r6, r0, #0
+ 679 0034 0100000A 		beq	.L151
+ 680              	.L149:
+ 681 0038 0600A0E1 		mov	r0, r6
+ 682 003c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 683              	.L151:
+ 684 0040 0400A0E1 		mov	r0, r4
+ 685 0044 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 686 0048 000050E3 		cmp	r0, #0
+ 687 004c 0E60A003 		moveq	r6, #14
+ 688 0050 F8FFFF0A 		beq	.L149
+ 689 0054 0700A0E1 		mov	r0, r7
+ 690 0058 0510A0E1 		mov	r1, r5
+ 691 005c FEFFFFEB 		bl	VDC_AlphaBlending
+ 692 0060 0600A0E1 		mov	r0, r6
+ 693 0064 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 695              		.section	.text.R_VDC_AlphaBlendingRect,"ax",%progbits
+ 696              		.align	2
+ 697              		.global	R_VDC_AlphaBlendingRect
+ 698              		.syntax unified
+ 699              		.arm
+ 700              		.fpu neon
+ 702              	R_VDC_AlphaBlendingRect:
+ 703              		@ args = 0, pretend = 0, frame = 0
+ 704              		@ frame_needed = 0, uses_anonymous_args = 0
+ 705 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 706 0004 0140A0E1 		mov	r4, r1
+ 707 0008 011041E2 		sub	r1, r1, #1
+ 708 000c 0270A0E1 		mov	r7, r2
+ 709 0010 7120EFE6 		uxtb	r2, r1
+ 710 0014 0350A0E1 		mov	r5, r3
+ 711 0018 0410A0E1 		mov	r1, r4
+ 712 001c 020052E3 		cmp	r2, #2
+ 713 0020 00300093 		movwls	r3, #:lower16:.LANCHOR0
+ 714 0024 0380A083 		movhi	r8, #3
+ 715 0028 00304093 		movtls	r3, #:upper16:.LANCHOR0
+ 716 002c 0280D397 		ldrbls	r8, [r3, r2]	@ zero_extendqisi2
+ 717 0030 0520A0E1 		mov	r2, r5
+ 718 0034 FEFFFFEB 		bl	VDC_AlphaBlendingRectCheckPrm
+ 719 0038 006050E2 		subs	r6, r0, #0
+ 720 003c 0100000A 		beq	.L159
+ 721              	.L157:
+ 722 0040 0600A0E1 		mov	r0, r6
+ 723 0044 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 724              	.L159:
+ 725 0048 0400A0E1 		mov	r0, r4
+ 726 004c FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 727 0050 000050E3 		cmp	r0, #0
+ 728 0054 0E60A003 		moveq	r6, #14
+ 729 0058 F8FFFF0A 		beq	.L157
+ 730 005c 0800A0E1 		mov	r0, r8
+ 731 0060 0520A0E1 		mov	r2, r5
+ 732 0064 0710A0E1 		mov	r1, r7
+ 733 0068 FEFFFFEB 		bl	VDC_AlphaBlendingRect
+ 734 006c 0600A0E1 		mov	r0, r6
+ 735 0070 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 737              		.section	.text.R_VDC_Chromakey,"ax",%progbits
+ 738              		.align	2
+ 739              		.global	R_VDC_Chromakey
+ 740              		.syntax unified
+ 741              		.arm
+ 742              		.fpu neon
+ 744              	R_VDC_Chromakey:
+ 745              		@ args = 0, pretend = 0, frame = 0
+ 746              		@ frame_needed = 0, uses_anonymous_args = 0
+ 747 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 748 0004 0140A0E1 		mov	r4, r1
+ 749 0008 011041E2 		sub	r1, r1, #1
+ 750 000c 0280A0E1 		mov	r8, r2
+ 751 0010 7120EFE6 		uxtb	r2, r1
+ 752 0014 0360A0E1 		mov	r6, r3
+ 753 0018 0410A0E1 		mov	r1, r4
+ 754 001c 020052E3 		cmp	r2, #2
+ 755 0020 00300093 		movwls	r3, #:lower16:.LANCHOR0
+ 756 0024 0350A083 		movhi	r5, #3
+ 757 0028 00304093 		movtls	r3, #:upper16:.LANCHOR0
+ 758 002c 0250D397 		ldrbls	r5, [r3, r2]	@ zero_extendqisi2
+ 759 0030 0630A0E1 		mov	r3, r6
+ 760 0034 0520A0E1 		mov	r2, r5
+ 761 0038 FEFFFFEB 		bl	VDC_ChromakeyCheckPrm
+ 762 003c 007050E2 		subs	r7, r0, #0
+ 763 0040 0100000A 		beq	.L168
+ 764              	.L166:
+ 765 0044 0700A0E1 		mov	r0, r7
+ 766 0048 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 767              	.L168:
+ 768 004c 0400A0E1 		mov	r0, r4
+ 769 0050 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 770 0054 000050E3 		cmp	r0, #0
+ 771 0058 0E70A003 		moveq	r7, #14
+ 772 005c F8FFFF0A 		beq	.L166
+ 773 0060 0500A0E1 		mov	r0, r5
+ 774 0064 FEFFFFEB 		bl	VDC_ShrdPrmGetColorSpaceFbRd
+ 775 0068 010050E3 		cmp	r0, #1
+ 776 006c 0870A003 		moveq	r7, #8
+ 777 0070 F3FFFF0A 		beq	.L166
+ 778 0074 0500A0E1 		mov	r0, r5
+ 779 0078 0620A0E1 		mov	r2, r6
+ 780 007c 0810A0E1 		mov	r1, r8
+ 781 0080 FEFFFFEB 		bl	VDC_Chromakey
+ 782 0084 0700A0E1 		mov	r0, r7
+ 783 0088 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 785              		.section	.text.R_VDC_CLUT,"ax",%progbits
+ 786              		.align	2
+ 787              		.global	R_VDC_CLUT
+ 788              		.syntax unified
+ 789              		.arm
+ 790              		.fpu neon
+ 792              	R_VDC_CLUT:
+ 793              		@ args = 0, pretend = 0, frame = 0
+ 794              		@ frame_needed = 0, uses_anonymous_args = 0
+ 795 0000 013041E2 		sub	r3, r1, #1
+ 796 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 797 0008 7330EFE6 		uxtb	r3, r3
+ 798 000c 0260A0E1 		mov	r6, r2
+ 799 0010 0140A0E1 		mov	r4, r1
+ 800 0014 020053E3 		cmp	r3, #2
+ 801 0018 00200093 		movwls	r2, #:lower16:.LANCHOR0
+ 802 001c 0350A083 		movhi	r5, #3
+ 803 0020 00204093 		movtls	r2, #:upper16:.LANCHOR0
+ 804 0024 0350D297 		ldrbls	r5, [r2, r3]	@ zero_extendqisi2
+ 805 0028 0630A0E1 		mov	r3, r6
+ 806 002c 0520A0E1 		mov	r2, r5
+ 807 0030 FEFFFFEB 		bl	VDC_CLUTCheckPrm
+ 808 0034 007050E2 		subs	r7, r0, #0
+ 809 0038 0100000A 		beq	.L176
+ 810              	.L174:
+ 811 003c 0700A0E1 		mov	r0, r7
+ 812 0040 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 813              	.L176:
+ 814 0044 0400A0E1 		mov	r0, r4
+ 815 0048 FEFFFFEB 		bl	VDC_ShrdPrmGetLayerResource
+ 816 004c 000050E3 		cmp	r0, #0
+ 817 0050 0E70A003 		moveq	r7, #14
+ 818 0054 F8FFFF0A 		beq	.L174
+ 819 0058 0500A0E1 		mov	r0, r5
+ 820 005c 0610A0E1 		mov	r1, r6
+ 821 0060 FEFFFFEB 		bl	VDC_CLUT
+ 822 0064 0700A0E1 		mov	r0, r7
+ 823 0068 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 825              		.section	.text.R_VDC_DisplayCalibration,"ax",%progbits
+ 826              		.align	2
+ 827              		.global	R_VDC_DisplayCalibration
+ 828              		.syntax unified
+ 829              		.arm
+ 830              		.fpu neon
+ 832              	R_VDC_DisplayCalibration:
+ 833              		@ args = 0, pretend = 0, frame = 0
+ 834              		@ frame_needed = 0, uses_anonymous_args = 0
+ 835 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 836 0004 0150A0E1 		mov	r5, r1
+ 837 0008 FEFFFFEB 		bl	VDC_DisplayCalibrationCheckPrm
+ 838 000c 004050E2 		subs	r4, r0, #0
+ 839 0010 0100000A 		beq	.L182
+ 840              	.L180:
+ 841 0014 0400A0E1 		mov	r0, r4
+ 842 0018 7080BDE8 		pop	{r4, r5, r6, pc}
+ 843              	.L182:
+ 844 001c 0300A0E3 		mov	r0, #3
+ 845 0020 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 846 0024 010050E3 		cmp	r0, #1
+ 847 0028 0C40A013 		movne	r4, #12
+ 848 002c F8FFFF1A 		bne	.L180
+ 849 0030 0500A0E1 		mov	r0, r5
+ 850 0034 FEFFFFEB 		bl	VDC_DisplayCalibration
+ 851 0038 0400A0E1 		mov	r0, r4
+ 852 003c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 854              		.section	.text.R_VDC_GammaCorrection,"ax",%progbits
+ 855              		.align	2
+ 856              		.global	R_VDC_GammaCorrection
+ 857              		.syntax unified
+ 858              		.arm
+ 859              		.fpu neon
+ 861              	R_VDC_GammaCorrection:
+ 862              		@ args = 0, pretend = 0, frame = 0
+ 863              		@ frame_needed = 0, uses_anonymous_args = 0
+ 864 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 865 0004 0160A0E1 		mov	r6, r1
+ 866 0008 0210A0E1 		mov	r1, r2
+ 867 000c 0240A0E1 		mov	r4, r2
+ 868 0010 FEFFFFEB 		bl	VDC_GammaCorrectionCheckPrm
+ 869 0014 005050E2 		subs	r5, r0, #0
+ 870 0018 0100000A 		beq	.L188
+ 871              	.L186:
+ 872 001c 0500A0E1 		mov	r0, r5
+ 873 0020 7080BDE8 		pop	{r4, r5, r6, pc}
+ 874              	.L188:
+ 875 0024 0300A0E3 		mov	r0, #3
+ 876 0028 FEFFFFEB 		bl	VDC_ShrdPrmGetResource
+ 877 002c 010050E3 		cmp	r0, #1
+ 878 0030 0C50A013 		movne	r5, #12
+ 879 0034 F8FFFF1A 		bne	.L186
+ 880 0038 0600A0E1 		mov	r0, r6
+ 881 003c 0410A0E1 		mov	r1, r4
+ 882 0040 FEFFFFEB 		bl	VDC_GammaCorrection
+ 883 0044 0500A0E1 		mov	r0, r5
+ 884 0048 7080BDE8 		pop	{r4, r5, r6, pc}
+ 886              		.section	.rodata.CSWTCH.1,"a",%progbits
+ 887              		.align	3
+ 888              		.set	.LANCHOR0,. + 0
+ 891              	CSWTCH.1:
+ 892 0000 00       		.byte	0
+ 893 0001 01       		.byte	1
+ 894 0002 02       		.byte	2
+ 895              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_vdc.c
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:14     .text.R_VDC_Initialize:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:20     .text.R_VDC_Initialize:00000000 R_VDC_Initialize
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:70     .text.R_VDC_Terminate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:76     .text.R_VDC_Terminate:00000000 R_VDC_Terminate
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:112    .text.R_VDC_VideoInput:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:118    .text.R_VDC_VideoInput:00000000 R_VDC_VideoInput
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:138    .text.R_VDC_SyncControl:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:144    .text.R_VDC_SyncControl:00000000 R_VDC_SyncControl
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:180    .text.R_VDC_DisplayOutput:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:186    .text.R_VDC_DisplayOutput:00000000 R_VDC_DisplayOutput
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:219    .text.R_VDC_CallbackISR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:225    .text.R_VDC_CallbackISR:00000000 R_VDC_CallbackISR
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:252    .text.R_VDC_WriteDataControl:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:258    .text.R_VDC_WriteDataControl:00000000 R_VDC_WriteDataControl
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:293    .text.R_VDC_ChangeWriteProcess:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:299    .text.R_VDC_ChangeWriteProcess:00000000 R_VDC_ChangeWriteProcess
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:325    .text.R_VDC_ReadDataControl:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:331    .text.R_VDC_ReadDataControl:00000000 R_VDC_ReadDataControl
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:888    .rodata.CSWTCH.1:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:371    .text.R_VDC_ChangeReadProcess:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:377    .text.R_VDC_ChangeReadProcess:00000000 R_VDC_ChangeReadProcess
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:413    .text.R_VDC_StartProcess:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:419    .text.R_VDC_StartProcess:00000000 R_VDC_StartProcess
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:446    .text.R_VDC_StopProcess:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:452    .text.R_VDC_StopProcess:00000000 R_VDC_StopProcess
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:477    .text.R_VDC_ReleaseDataControl:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:483    .text.R_VDC_ReleaseDataControl:00000000 R_VDC_ReleaseDataControl
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:509    .text.R_VDC_VideoNoiseReduction:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:515    .text.R_VDC_VideoNoiseReduction:00000000 R_VDC_VideoNoiseReduction
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:541    .text.R_VDC_ImageColorMatrix:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:547    .text.R_VDC_ImageColorMatrix:00000000 R_VDC_ImageColorMatrix
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:572    .text.R_VDC_ImageEnhancement:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:578    .text.R_VDC_ImageEnhancement:00000000 R_VDC_ImageEnhancement
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:620    .text.R_VDC_ImageBlackStretch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:626    .text.R_VDC_ImageBlackStretch:00000000 R_VDC_ImageBlackStretch
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:657    .text.R_VDC_AlphaBlending:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:663    .text.R_VDC_AlphaBlending:00000000 R_VDC_AlphaBlending
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:696    .text.R_VDC_AlphaBlendingRect:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:702    .text.R_VDC_AlphaBlendingRect:00000000 R_VDC_AlphaBlendingRect
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:738    .text.R_VDC_Chromakey:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:744    .text.R_VDC_Chromakey:00000000 R_VDC_Chromakey
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:786    .text.R_VDC_CLUT:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:792    .text.R_VDC_CLUT:00000000 R_VDC_CLUT
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:826    .text.R_VDC_DisplayCalibration:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:832    .text.R_VDC_DisplayCalibration:00000000 R_VDC_DisplayCalibration
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:855    .text.R_VDC_GammaCorrection:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:861    .text.R_VDC_GammaCorrection:00000000 R_VDC_GammaCorrection
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:887    .rodata.CSWTCH.1:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccNH4bUa.s:891    .rodata.CSWTCH.1:00000000 CSWTCH.1
+
+UNDEFINED SYMBOLS
+VDC_InitializeCheckPrm
+VDC_ShrdPrmInit
+VDC_ShrdPrmGetResource
+VDC_ShrdPrmSetInitParam
+VDC_Initialize
+VDC_Int_Disable
+VDC_ShrdPrmSetResource
+VDC_TerminateCheckPrm
+VDC_ShrdPrmSetTerminate
+VDC_Terminate
+VDC_ShrdPrmGetLvdsClkRef
+VDC_VideoInputCheckPrm
+VDC_ShrdPrmSetInputParam
+VDC_VideoInput
+VDC_SyncControlCheckPrm
+VDC_SyncControl
+VDC_DisplayOutputCheckPrm
+VDC_ShrdPrmSetOutputParam
+VDC_DisplayOutput
+VDC_CallbackISRCheckPrm
+VDC_Int_SetInterrupt
+VDC_WriteDataControlCheckPrm
+VDC_ShrdPrmGetLayerResource
+VDC_ShrdPrmSetWriteParam
+VDC_WriteDataControl
+VDC_ShrdPrmSetLayerResource
+VDC_ChangeWriteProcessCheckPrm
+VDC_ShrdPrmGetRwProcEnabled
+VDC_ShrdPrmSetChgWriteParam
+VDC_ChangeWriteProcess
+VDC_ReadDataControlCheckPrm
+VDC_ShrdPrmSetReadParam
+VDC_ReadDataControl
+VDC_ChangeReadProcessCheckPrm
+VDC_ShrdPrmSetChgReadParam
+VDC_ChangeReadProcess
+VDC_StartProcessCheckPrm
+VDC_ShrdPrmGetRwProcReady
+VDC_StartProcess
+VDC_StopProcessCheckPrm
+VDC_StopProcess
+VDC_ReleaseDataControlCheckPrm
+VDC_VideoNoiseReductCheckPrm
+VDC_VideoNoiseReduction
+VDC_ImageColorMatrixCheckPrm
+VDC_ImageColorMatrix
+VDC_ImageEnhancementCheckPrm
+VDC_ShrdPrmGetColorSpaceFbRd
+VDC_ImageEnhancement
+VDC_ImageBlackStretchCheckPrm
+VDC_ImageBlackStretch
+VDC_AlphaBlendingCheckPrm
+VDC_AlphaBlending
+VDC_AlphaBlendingRectCheckPrm
+VDC_AlphaBlendingRect
+VDC_ChromakeyCheckPrm
+VDC_Chromakey
+VDC_CLUTCheckPrm
+VDC_CLUT
+VDC_DisplayCalibrationCheckPrm
+VDC_DisplayCalibration
+VDC_GammaCorrectionCheckPrm
+VDC_GammaCorrection

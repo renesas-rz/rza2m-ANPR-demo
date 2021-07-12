@@ -1,0 +1,1531 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_riic_hld_prv.c"
+  13              		.section	.text.riic_write,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	riic_write:
+  20              		@ args = 0, pretend = 0, frame = 8
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  23 0004 00B052E2 		subs	fp, r2, #0
+  24 0008 0CD04DE2 		sub	sp, sp, #12
+  25 000c 4A00000A 		beq	.L17
+  26 0010 0060A0E3 		mov	r6, #0
+  27 0014 009000E3 		movw	r9, #:lower16:.LANCHOR0
+  28 0018 005000E3 		movw	r5, #:lower16:.LANCHOR1
+  29 001c 007000E3 		movw	r7, #:lower16:.LANCHOR2
+  30 0020 04108DE5 		str	r1, [sp, #4]
+  31 0024 0040A0E1 		mov	r4, r0
+  32 0028 0680A0E1 		mov	r8, r6
+  33 002c 009040E3 		movt	r9, #:upper16:.LANCHOR0
+  34 0030 005040E3 		movt	r5, #:upper16:.LANCHOR1
+  35 0034 007040E3 		movt	r7, #:upper16:.LANCHOR2
+  36 0038 050000EA 		b	.L11
+  37              	.L40:
+  38 003c 0B60A0E1 		mov	r6, fp
+  39 0040 0030E0E3 		mvn	r3, #0
+  40 0044 0480C9E7 		strb	r8, [r9, r4]
+  41              	.L5:
+  42 0048 016086E2 		add	r6, r6, #1
+  43 004c 06005BE1 		cmp	fp, r6
+  44 0050 1C00009A 		bls	.L39
+  45              	.L11:
+  46 0054 0430D9E7 		ldrb	r3, [r9, r4]	@ zero_extendqisi2
+  47 0058 FF3013E2 		ands	r3, r3, #255
+  48 005c F6FFFF1A 		bne	.L40
+  49 0060 04209DE5 		ldr	r2, [sp, #4]
+  50 0064 0400A0E1 		mov	r0, r4
+  51 0068 06A0D2E7 		ldrb	r10, [r2, r6]	@ zero_extendqisi2
+  52 006c 0430C5E7 		strb	r3, [r5, r4]
+  53 0070 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+  54 0074 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+  55 0078 000053E3 		cmp	r3, #0
+  56 007c 0600001A 		bne	.L8
+  57              	.L7:
+  58 0080 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+  59 0084 FF3013E2 		ands	r3, r3, #255
+  60 0088 1300001A 		bne	.L6
+  61 008c 0430C5E7 		strb	r3, [r5, r4]
+  62 0090 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+  63 0094 000053E3 		cmp	r3, #0
+  64 0098 F8FFFF0A 		beq	.L7
+  65              	.L8:
+  66 009c 0400A0E1 		mov	r0, r4
+  67 00a0 0480C5E7 		strb	r8, [r5, r4]
+  68 00a4 016086E2 		add	r6, r6, #1
+  69 00a8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+  70 00ac 0A10A0E1 		mov	r1, r10
+  71 00b0 0400A0E1 		mov	r0, r4
+  72 00b4 0480C7E7 		strb	r8, [r7, r4]
+  73 00b8 FEFFFFEB 		bl	R_RIIC_WriteByte
+  74 00bc 06005BE1 		cmp	fp, r6
+  75 00c0 0030A0E3 		mov	r3, #0
+  76 00c4 E2FFFF8A 		bhi	.L11
+  77              	.L39:
+  78 00c8 000053E3 		cmp	r3, #0
+  79 00cc 1D00000A 		beq	.L41
+  80 00d0 0000E0E3 		mvn	r0, #0
+  81              	.L45:
+  82 00d4 0CD08DE2 		add	sp, sp, #12
+  83              		@ sp needed
+  84 00d8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+  85              	.L6:
+  86 00dc 0480C5E7 		strb	r8, [r5, r4]
+  87 00e0 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+  88 00e4 FF3013E2 		ands	r3, r3, #255
+  89 00e8 3100001A 		bne	.L42
+  90 00ec 0400A0E1 		mov	r0, r4
+  91 00f0 0430C5E7 		strb	r3, [r5, r4]
+  92 00f4 0B60A0E1 		mov	r6, fp
+  93 00f8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+  94 00fc 0030E0E3 		mvn	r3, #0
+  95 0100 D0FFFFEA 		b	.L5
+  96              	.L13:
+  97 0104 0430C5E7 		strb	r3, [r5, r4]
+  98 0108 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+  99 010c 000053E3 		cmp	r3, #0
+ 100 0110 1800000A 		beq	.L16
+ 101              	.L12:
+ 102 0114 0400A0E1 		mov	r0, r4
+ 103 0118 0070A0E3 		mov	r7, #0
+ 104 011c FEFFFFEB 		bl	R_RIIC_DisableTransEndIntr
+ 105 0120 0400A0E1 		mov	r0, r4
+ 106 0124 0470C5E7 		strb	r7, [r5, r4]
+ 107 0128 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 108 012c 0470C6E7 		strb	r7, [r6, r4]
+ 109 0130 0430D9E7 		ldrb	r3, [r9, r4]	@ zero_extendqisi2
+ 110 0134 070053E1 		cmp	r3, r7
+ 111 0138 2A00001A 		bne	.L43
+ 112              	.L17:
+ 113 013c 0000A0E3 		mov	r0, #0
+ 114              	.L1:
+ 115 0140 0CD08DE2 		add	sp, sp, #12
+ 116              		@ sp needed
+ 117 0144 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 118              	.L41:
+ 119 0148 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 120 014c 0400A0E1 		mov	r0, r4
+ 121 0150 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 122 0154 006000E3 		movw	r6, #:lower16:.LANCHOR3
+ 123 0158 0430C5E7 		strb	r3, [r5, r4]
+ 124 015c 006040E3 		movt	r6, #:upper16:.LANCHOR3
+ 125 0160 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 126 0164 0400A0E1 		mov	r0, r4
+ 127 0168 FEFFFFEB 		bl	R_RIIC_EnableTransEndIntr
+ 128 016c 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 129 0170 000053E3 		cmp	r3, #0
+ 130 0174 E6FFFF1A 		bne	.L12
+ 131              	.L16:
+ 132 0178 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 133 017c FF3013E2 		ands	r3, r3, #255
+ 134 0180 DFFFFF0A 		beq	.L13
+ 135 0184 0070A0E3 		mov	r7, #0
+ 136 0188 0470C5E7 		strb	r7, [r5, r4]
+ 137 018c 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 138 0190 FF6013E2 		ands	r6, r3, #255
+ 139 0194 0C00001A 		bne	.L44
+ 140 0198 0400A0E1 		mov	r0, r4
+ 141 019c FEFFFFEB 		bl	R_RIIC_DisableTransEndIntr
+ 142 01a0 0400A0E1 		mov	r0, r4
+ 143 01a4 0460C5E7 		strb	r6, [r5, r4]
+ 144 01a8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 145 01ac 0000E0E3 		mvn	r0, #0
+ 146 01b0 C7FFFFEA 		b	.L45
+ 147              	.L42:
+ 148 01b4 0400A0E1 		mov	r0, r4
+ 149 01b8 0480C5E7 		strb	r8, [r5, r4]
+ 150 01bc 0B60A0E1 		mov	r6, fp
+ 151 01c0 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 152 01c4 0030E0E3 		mvn	r3, #0
+ 153 01c8 9EFFFFEA 		b	.L5
+ 154              	.L44:
+ 155 01cc 0400A0E1 		mov	r0, r4
+ 156 01d0 FEFFFFEB 		bl	R_RIIC_DisableTransEndIntr
+ 157 01d4 0400A0E1 		mov	r0, r4
+ 158 01d8 0470C5E7 		strb	r7, [r5, r4]
+ 159 01dc FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 160 01e0 0000E0E3 		mvn	r0, #0
+ 161 01e4 D5FFFFEA 		b	.L1
+ 162              	.L43:
+ 163 01e8 0470C9E7 		strb	r7, [r9, r4]
+ 164 01ec 0000E0E3 		mvn	r0, #0
+ 165 01f0 D2FFFFEA 		b	.L1
+ 167              		.section	.text.riic_single_write.constprop.6,"ax",%progbits
+ 168              		.align	2
+ 169              		.syntax unified
+ 170              		.arm
+ 171              		.fpu neon
+ 173              	riic_single_write.constprop.6:
+ 174              		@ args = 0, pretend = 0, frame = 0
+ 175              		@ frame_needed = 0, uses_anonymous_args = 0
+ 176 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 177 0004 007000E3 		movw	r7, #:lower16:.LANCHOR0
+ 178 0008 007040E3 		movt	r7, #:upper16:.LANCHOR0
+ 179 000c 0040A0E1 		mov	r4, r0
+ 180 0010 0030D7E7 		ldrb	r3, [r7, r0]	@ zero_extendqisi2
+ 181 0014 FF3013E2 		ands	r3, r3, #255
+ 182 0018 0300000A 		beq	.L47
+ 183 001c 0030A0E3 		mov	r3, #0
+ 184 0020 0000E0E3 		mvn	r0, #0
+ 185 0024 0430C7E7 		strb	r3, [r7, r4]
+ 186 0028 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 187              	.L47:
+ 188 002c 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 189 0030 006000E3 		movw	r6, #:lower16:.LANCHOR2
+ 190 0034 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 191 0038 006040E3 		movt	r6, #:upper16:.LANCHOR2
+ 192 003c 0030C5E7 		strb	r3, [r5, r0]
+ 193 0040 0180A0E1 		mov	r8, r1
+ 194 0044 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 195 0048 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 196 004c 000053E3 		cmp	r3, #0
+ 197 0050 0600001A 		bne	.L51
+ 198              	.L50:
+ 199 0054 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 200 0058 FF3013E2 		ands	r3, r3, #255
+ 201 005c 2000001A 		bne	.L49
+ 202 0060 0430C5E7 		strb	r3, [r5, r4]
+ 203 0064 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 204 0068 000053E3 		cmp	r3, #0
+ 205 006c F8FFFF0A 		beq	.L50
+ 206              	.L51:
+ 207 0070 0090A0E3 		mov	r9, #0
+ 208 0074 0400A0E1 		mov	r0, r4
+ 209 0078 0490C5E7 		strb	r9, [r5, r4]
+ 210 007c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 211 0080 0810A0E1 		mov	r1, r8
+ 212 0084 0400A0E1 		mov	r0, r4
+ 213 0088 0490C6E7 		strb	r9, [r6, r4]
+ 214 008c FEFFFFEB 		bl	R_RIIC_WriteByte
+ 215 0090 0400A0E1 		mov	r0, r4
+ 216 0094 0490C5E7 		strb	r9, [r5, r4]
+ 217 0098 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 218 009c 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 219 00a0 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 220 00a4 0430D2E7 		ldrb	r3, [r2, r4]	@ zero_extendqisi2
+ 221 00a8 090053E1 		cmp	r3, r9
+ 222 00ac 1A00001A 		bne	.L58
+ 223              	.L57:
+ 224 00b0 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 225 00b4 FF3013E2 		ands	r3, r3, #255
+ 226 00b8 1300000A 		beq	.L54
+ 227 00bc 0010A0E3 		mov	r1, #0
+ 228 00c0 0410C5E7 		strb	r1, [r5, r4]
+ 229 00c4 0430D2E7 		ldrb	r3, [r2, r4]	@ zero_extendqisi2
+ 230 00c8 FF3013E2 		ands	r3, r3, #255
+ 231 00cc 0900000A 		beq	.L55
+ 232 00d0 0400A0E1 		mov	r0, r4
+ 233 00d4 0410C5E7 		strb	r1, [r5, r4]
+ 234 00d8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 235 00dc 0000E0E3 		mvn	r0, #0
+ 236 00e0 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 237              	.L49:
+ 238 00e4 0020A0E3 		mov	r2, #0
+ 239 00e8 0420C5E7 		strb	r2, [r5, r4]
+ 240 00ec 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 241 00f0 FF3013E2 		ands	r3, r3, #255
+ 242 00f4 1200001A 		bne	.L76
+ 243              	.L55:
+ 244 00f8 0400A0E1 		mov	r0, r4
+ 245 00fc 0430C5E7 		strb	r3, [r5, r4]
+ 246 0100 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 247 0104 0000E0E3 		mvn	r0, #0
+ 248 0108 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 249              	.L54:
+ 250 010c 0430C5E7 		strb	r3, [r5, r4]
+ 251 0110 0430D2E7 		ldrb	r3, [r2, r4]	@ zero_extendqisi2
+ 252 0114 000053E3 		cmp	r3, #0
+ 253 0118 E4FFFF0A 		beq	.L57
+ 254              	.L58:
+ 255 011c 0400A0E1 		mov	r0, r4
+ 256 0120 0060A0E3 		mov	r6, #0
+ 257 0124 0460C5E7 		strb	r6, [r5, r4]
+ 258 0128 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 259 012c 0400D7E7 		ldrb	r0, [r7, r4]	@ zero_extendqisi2
+ 260 0130 FF0010E2 		ands	r0, r0, #255
+ 261 0134 F087BD08 		popeq	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 262 0138 0460C7E7 		strb	r6, [r7, r4]
+ 263 013c 0000E0E3 		mvn	r0, #0
+ 264 0140 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 265              	.L76:
+ 266 0144 0400A0E1 		mov	r0, r4
+ 267 0148 0420C5E7 		strb	r2, [r5, r4]
+ 268 014c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 269 0150 0000E0E3 		mvn	r0, #0
+ 270 0154 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 272              		.section	.text.riic_read.part.4,"ax",%progbits
+ 273              		.align	2
+ 274              		.syntax unified
+ 275              		.arm
+ 276              		.fpu neon
+ 278              	riic_read.part.4:
+ 279              		@ args = 0, pretend = 0, frame = 0
+ 280              		@ frame_needed = 0, uses_anonymous_args = 0
+ 281 0000 010052E3 		cmp	r2, #1
+ 282 0004 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 283 0008 0160A0E1 		mov	r6, r1
+ 284 000c 0040A0E1 		mov	r4, r0
+ 285 0010 BD00000A 		beq	.L168
+ 286 0014 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 287 0018 020052E3 		cmp	r2, #2
+ 288 001c 00A000E3 		movw	r10, #:lower16:.LANCHOR4
+ 289 0020 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 290 0024 0030A0E3 		mov	r3, #0
+ 291 0028 0280A0E1 		mov	r8, r2
+ 292 002c 00A040E3 		movt	r10, #:upper16:.LANCHOR4
+ 293 0030 0030C5E7 		strb	r3, [r5, r0]
+ 294 0034 7200000A 		beq	.L169
+ 295 0038 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 296 003c 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 297 0040 000053E3 		cmp	r3, #0
+ 298 0044 0600001A 		bne	.L95
+ 299              	.L97:
+ 300 0048 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 301 004c FF3013E2 		ands	r3, r3, #255
+ 302 0050 5A00001A 		bne	.L165
+ 303 0054 0430C5E7 		strb	r3, [r5, r4]
+ 304 0058 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 305 005c 000053E3 		cmp	r3, #0
+ 306 0060 F8FFFF0A 		beq	.L97
+ 307              	.L95:
+ 308 0064 0070A0E3 		mov	r7, #0
+ 309 0068 0400A0E1 		mov	r0, r4
+ 310 006c 0470C5E7 		strb	r7, [r5, r4]
+ 311 0070 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 312 0074 0400A0E1 		mov	r0, r4
+ 313 0078 0470CAE7 		strb	r7, [r10, r4]
+ 314 007c FEFFFFEB 		bl	R_RIIC_TransmitAck
+ 315 0080 0400A0E1 		mov	r0, r4
+ 316 0084 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 317 0088 020058E3 		cmp	r8, #2
+ 318 008c 0000C6E5 		strb	r0, [r6]
+ 319 0090 03904882 		subhi	r9, r8, #3
+ 320 0094 02804882 		subhi	r8, r8, #2
+ 321 0098 09908680 		addhi	r9, r6, r9
+ 322 009c 08808680 		addhi	r8, r6, r8
+ 323 00a0 1900009A 		bls	.L126
+ 324              	.L128:
+ 325 00a4 090056E1 		cmp	r6, r9
+ 326 00a8 D300000A 		beq	.L170
+ 327 00ac 0400A0E1 		mov	r0, r4
+ 328 00b0 0470C5E7 		strb	r7, [r5, r4]
+ 329 00b4 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 330 00b8 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 331 00bc 000053E3 		cmp	r3, #0
+ 332 00c0 0600001A 		bne	.L106
+ 333              	.L108:
+ 334 00c4 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 335 00c8 FF3013E2 		ands	r3, r3, #255
+ 336 00cc 3B00001A 		bne	.L165
+ 337 00d0 0430C5E7 		strb	r3, [r5, r4]
+ 338 00d4 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 339 00d8 000053E3 		cmp	r3, #0
+ 340 00dc F8FFFF0A 		beq	.L108
+ 341              	.L106:
+ 342 00e0 0400A0E1 		mov	r0, r4
+ 343 00e4 0470C5E7 		strb	r7, [r5, r4]
+ 344 00e8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 345 00ec 0400A0E1 		mov	r0, r4
+ 346 00f0 0470CAE7 		strb	r7, [r10, r4]
+ 347 00f4 FEFFFFEB 		bl	R_RIIC_TransmitAck
+ 348 00f8 0400A0E1 		mov	r0, r4
+ 349 00fc FEFFFFEB 		bl	R_RIIC_ReadByte
+ 350 0100 0100C6E4 		strb	r0, [r6], #1
+ 351 0104 080056E1 		cmp	r6, r8
+ 352 0108 E5FFFF1A 		bne	.L128
+ 353              	.L126:
+ 354 010c 0030A0E3 		mov	r3, #0
+ 355 0110 0400A0E1 		mov	r0, r4
+ 356 0114 0430C5E7 		strb	r3, [r5, r4]
+ 357 0118 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 358 011c 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 359 0120 000053E3 		cmp	r3, #0
+ 360 0124 0600001A 		bne	.L111
+ 361              	.L115:
+ 362 0128 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 363 012c FF3013E2 		ands	r3, r3, #255
+ 364 0130 2200001A 		bne	.L165
+ 365 0134 0430C5E7 		strb	r3, [r5, r4]
+ 366 0138 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 367 013c 000053E3 		cmp	r3, #0
+ 368 0140 F8FFFF0A 		beq	.L115
+ 369              	.L111:
+ 370 0144 0070A0E3 		mov	r7, #0
+ 371 0148 0400A0E1 		mov	r0, r4
+ 372 014c 0470C5E7 		strb	r7, [r5, r4]
+ 373 0150 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 374 0154 0400A0E1 		mov	r0, r4
+ 375 0158 0470CAE7 		strb	r7, [r10, r4]
+ 376 015c FEFFFFEB 		bl	R_RIIC_TransmitNack
+ 377 0160 0400A0E1 		mov	r0, r4
+ 378 0164 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 379 0168 0000C6E5 		strb	r0, [r6]
+ 380 016c 0400A0E1 		mov	r0, r4
+ 381 0170 0470C5E7 		strb	r7, [r5, r4]
+ 382 0174 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 383 0178 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 384 017c 070053E1 		cmp	r3, r7
+ 385 0180 3900001A 		bne	.L129
+ 386              	.L119:
+ 387 0184 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 388 0188 FF3013E2 		ands	r3, r3, #255
+ 389 018c 3200000A 		beq	.L116
+ 390 0190 0020A0E3 		mov	r2, #0
+ 391 0194 0420C5E7 		strb	r2, [r5, r4]
+ 392 0198 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 393 019c FF3013E2 		ands	r3, r3, #255
+ 394 01a0 9100001A 		bne	.L171
+ 395 01a4 0400A0E1 		mov	r0, r4
+ 396 01a8 0430C5E7 		strb	r3, [r5, r4]
+ 397 01ac FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 398              	.L130:
+ 399 01b0 0400A0E1 		mov	r0, r4
+ 400 01b4 0060E0E3 		mvn	r6, #0
+ 401 01b8 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 402 01bc 080000EA 		b	.L77
+ 403              	.L165:
+ 404 01c0 0020A0E3 		mov	r2, #0
+ 405 01c4 0420C5E7 		strb	r2, [r5, r4]
+ 406 01c8 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 407 01cc FF3013E2 		ands	r3, r3, #255
+ 408 01d0 0500001A 		bne	.L172
+ 409 01d4 0400A0E1 		mov	r0, r4
+ 410 01d8 0430C5E7 		strb	r3, [r5, r4]
+ 411 01dc 0060E0E3 		mvn	r6, #0
+ 412 01e0 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 413              	.L77:
+ 414 01e4 0600A0E1 		mov	r0, r6
+ 415 01e8 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 416              	.L172:
+ 417 01ec 0400A0E1 		mov	r0, r4
+ 418 01f0 0060E0E3 		mvn	r6, #0
+ 419 01f4 0420C5E7 		strb	r2, [r5, r4]
+ 420 01f8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 421 01fc 0600A0E1 		mov	r0, r6
+ 422 0200 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 423              	.L169:
+ 424 0204 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 425 0208 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 426 020c 000053E3 		cmp	r3, #0
+ 427 0210 0600001A 		bne	.L90
+ 428              	.L92:
+ 429 0214 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 430 0218 FF3013E2 		ands	r3, r3, #255
+ 431 021c E7FFFF1A 		bne	.L165
+ 432 0220 0430C5E7 		strb	r3, [r5, r4]
+ 433 0224 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 434 0228 000053E3 		cmp	r3, #0
+ 435 022c F8FFFF0A 		beq	.L92
+ 436              	.L90:
+ 437 0230 0070A0E3 		mov	r7, #0
+ 438 0234 0400A0E1 		mov	r0, r4
+ 439 0238 0470C5E7 		strb	r7, [r5, r4]
+ 440 023c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 441 0240 0400A0E1 		mov	r0, r4
+ 442 0244 0470CAE7 		strb	r7, [r10, r4]
+ 443 0248 FEFFFFEB 		bl	R_RIIC_AssertLowHold
+ 444 024c 0400A0E1 		mov	r0, r4
+ 445 0250 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 446 0254 0000C6E5 		strb	r0, [r6]
+ 447 0258 ABFFFFEA 		b	.L126
+ 448              	.L116:
+ 449 025c 0430C5E7 		strb	r3, [r5, r4]
+ 450 0260 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 451 0264 000053E3 		cmp	r3, #0
+ 452 0268 C5FFFF0A 		beq	.L119
+ 453              	.L129:
+ 454 026c 0080A0E3 		mov	r8, #0
+ 455 0270 0400A0E1 		mov	r0, r4
+ 456 0274 007000E3 		movw	r7, #:lower16:.LANCHOR5
+ 457 0278 0480C5E7 		strb	r8, [r5, r4]
+ 458 027c 007040E3 		movt	r7, #:upper16:.LANCHOR5
+ 459 0280 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 460 0284 0400A0E1 		mov	r0, r4
+ 461 0288 0480CAE7 		strb	r8, [r10, r4]
+ 462 028c 0480C7E7 		strb	r8, [r7, r4]
+ 463 0290 FEFFFFEB 		bl	R_RIIC_TransmitStop
+ 464 0294 0400A0E1 		mov	r0, r4
+ 465 0298 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 466 029c 0100C6E5 		strb	r0, [r6, #1]
+ 467              	.L120:
+ 468 02a0 0400A0E1 		mov	r0, r4
+ 469 02a4 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 470 02a8 0030A0E3 		mov	r3, #0
+ 471 02ac 0400A0E1 		mov	r0, r4
+ 472 02b0 0430C5E7 		strb	r3, [r5, r4]
+ 473 02b4 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 474 02b8 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+ 475 02bc 000053E3 		cmp	r3, #0
+ 476 02c0 0F00001A 		bne	.L125
+ 477              	.L123:
+ 478 02c4 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 479 02c8 FF3013E2 		ands	r3, r3, #255
+ 480 02cc 0800000A 		beq	.L121
+ 481 02d0 0030A0E3 		mov	r3, #0
+ 482 02d4 0060E0E3 		mvn	r6, #0
+ 483 02d8 0430C5E7 		strb	r3, [r5, r4]
+ 484 02dc 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+ 485              	.L122:
+ 486 02e0 0030A0E3 		mov	r3, #0
+ 487 02e4 0400A0E1 		mov	r0, r4
+ 488 02e8 0430C5E7 		strb	r3, [r5, r4]
+ 489 02ec FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 490 02f0 BBFFFFEA 		b	.L77
+ 491              	.L121:
+ 492 02f4 0430C5E7 		strb	r3, [r5, r4]
+ 493 02f8 0430D7E7 		ldrb	r3, [r7, r4]	@ zero_extendqisi2
+ 494 02fc 000053E3 		cmp	r3, #0
+ 495 0300 EFFFFF0A 		beq	.L123
+ 496              	.L125:
+ 497 0304 0060A0E3 		mov	r6, #0
+ 498 0308 F4FFFFEA 		b	.L122
+ 499              	.L168:
+ 500 030c 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 501 0310 00A000E3 		movw	r10, #:lower16:.LANCHOR4
+ 502 0314 FEFFFFEB 		bl	R_RIIC_AssertLowHold
+ 503 0318 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 504 031c 0030A0E3 		mov	r3, #0
+ 505 0320 00A040E3 		movt	r10, #:upper16:.LANCHOR4
+ 506 0324 0400A0E1 		mov	r0, r4
+ 507 0328 0430C5E7 		strb	r3, [r5, r4]
+ 508 032c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 509 0330 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 510 0334 000053E3 		cmp	r3, #0
+ 511 0338 0600001A 		bne	.L79
+ 512              	.L81:
+ 513 033c 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 514 0340 FF3013E2 		ands	r3, r3, #255
+ 515 0344 9DFFFF1A 		bne	.L165
+ 516 0348 0430C5E7 		strb	r3, [r5, r4]
+ 517 034c 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 518 0350 000053E3 		cmp	r3, #0
+ 519 0354 F8FFFF0A 		beq	.L81
+ 520              	.L79:
+ 521 0358 0070A0E3 		mov	r7, #0
+ 522 035c 0400A0E1 		mov	r0, r4
+ 523 0360 0470C5E7 		strb	r7, [r5, r4]
+ 524 0364 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 525 0368 0400A0E1 		mov	r0, r4
+ 526 036c 0470CAE7 		strb	r7, [r10, r4]
+ 527 0370 FEFFFFEB 		bl	R_RIIC_TransmitNack
+ 528 0374 0400A0E1 		mov	r0, r4
+ 529 0378 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 530 037c 0000C6E5 		strb	r0, [r6]
+ 531 0380 0400A0E1 		mov	r0, r4
+ 532 0384 0470C5E7 		strb	r7, [r5, r4]
+ 533 0388 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 534 038c 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 535 0390 070053E1 		cmp	r3, r7
+ 536 0394 0600001A 		bne	.L86
+ 537              	.L85:
+ 538 0398 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 539 039c FF3013E2 		ands	r3, r3, #255
+ 540 03a0 86FFFF1A 		bne	.L165
+ 541 03a4 0430C5E7 		strb	r3, [r5, r4]
+ 542 03a8 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 543 03ac 000053E3 		cmp	r3, #0
+ 544 03b0 F8FFFF0A 		beq	.L85
+ 545              	.L86:
+ 546 03b4 0080A0E3 		mov	r8, #0
+ 547 03b8 0400A0E1 		mov	r0, r4
+ 548 03bc 007000E3 		movw	r7, #:lower16:.LANCHOR5
+ 549 03c0 0480C5E7 		strb	r8, [r5, r4]
+ 550 03c4 007040E3 		movt	r7, #:upper16:.LANCHOR5
+ 551 03c8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 552 03cc 0400A0E1 		mov	r0, r4
+ 553 03d0 0480CAE7 		strb	r8, [r10, r4]
+ 554 03d4 0480C7E7 		strb	r8, [r7, r4]
+ 555 03d8 FEFFFFEB 		bl	R_RIIC_TransmitStop
+ 556 03dc 0400A0E1 		mov	r0, r4
+ 557 03e0 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 558 03e4 0000C6E5 		strb	r0, [r6]
+ 559 03e8 ACFFFFEA 		b	.L120
+ 560              	.L171:
+ 561 03ec 0400A0E1 		mov	r0, r4
+ 562 03f0 0420C5E7 		strb	r2, [r5, r4]
+ 563 03f4 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 564 03f8 6CFFFFEA 		b	.L130
+ 565              	.L170:
+ 566 03fc 0030A0E3 		mov	r3, #0
+ 567 0400 0400A0E1 		mov	r0, r4
+ 568 0404 0430C5E7 		strb	r3, [r5, r4]
+ 569 0408 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 570 040c 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 571 0410 000053E3 		cmp	r3, #0
+ 572 0414 0600001A 		bne	.L101
+ 573              	.L103:
+ 574 0418 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 575 041c FF3013E2 		ands	r3, r3, #255
+ 576 0420 66FFFF1A 		bne	.L165
+ 577 0424 0430C5E7 		strb	r3, [r5, r4]
+ 578 0428 0430DAE7 		ldrb	r3, [r10, r4]	@ zero_extendqisi2
+ 579 042c 000053E3 		cmp	r3, #0
+ 580 0430 F8FFFF0A 		beq	.L103
+ 581              	.L101:
+ 582 0434 0070A0E3 		mov	r7, #0
+ 583 0438 0400A0E1 		mov	r0, r4
+ 584 043c 0470C5E7 		strb	r7, [r5, r4]
+ 585 0440 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 586 0444 0400A0E1 		mov	r0, r4
+ 587 0448 0470CAE7 		strb	r7, [r10, r4]
+ 588 044c FEFFFFEB 		bl	R_RIIC_AssertLowHold
+ 589 0450 0400A0E1 		mov	r0, r4
+ 590 0454 FEFFFFEB 		bl	R_RIIC_ReadByte
+ 591 0458 0100C6E4 		strb	r0, [r6], #1
+ 592 045c 2AFFFFEA 		b	.L126
+ 594              		.section	.text.open_channel,"ax",%progbits
+ 595              		.align	2
+ 596              		.global	open_channel
+ 597              		.syntax unified
+ 598              		.arm
+ 599              		.fpu neon
+ 601              	open_channel:
+ 602              		@ args = 0, pretend = 0, frame = 0
+ 603              		@ frame_needed = 0, uses_anonymous_args = 0
+ 604 0000 010050E3 		cmp	r0, #1
+ 605 0004 0100000A 		beq	.L174
+ 606 0008 0000E0E3 		mvn	r0, #0
+ 607 000c 1EFF2FE1 		bx	lr
+ 608              	.L174:
+ 609 0010 000000E3 		movw	r0, #:lower16:.LC0
+ 610 0014 70402DE9 		push	{r4, r5, r6, lr}
+ 611 0018 0010A0E3 		mov	r1, #0
+ 612 001c 000040E3 		movt	r0, #:upper16:.LC0
+ 613 0020 FEFFFFEB 		bl	direct_open
+ 614 0024 010070E3 		cmn	r0, #1
+ 615 0028 0040A0E1 		mov	r4, r0
+ 616 002c 0400000A 		beq	.L177
+ 617 0030 78209FE5 		ldr	r2, .L181
+ 618 0034 0410A0E3 		mov	r1, #4
+ 619 0038 FEFFFFEB 		bl	direct_control
+ 620 003c 0400A0E1 		mov	r0, r4
+ 621 0040 FEFFFFEB 		bl	direct_close
+ 622              	.L177:
+ 623 0044 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 624 0048 0030A0E3 		mov	r3, #0
+ 625 004c 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 626 0050 005000E3 		movw	r5, #:lower16:.LANCHOR2
+ 627 0054 0130C2E5 		strb	r3, [r2, #1]
+ 628 0058 000000E3 		movw	r0, #:lower16:.LANCHOR3
+ 629 005c 004000E3 		movw	r4, #:lower16:.LANCHOR5
+ 630 0060 00E000E3 		movw	lr, #:lower16:.LANCHOR7
+ 631 0064 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 632 0068 001000E3 		movw	r1, #:lower16:.LANCHOR8
+ 633 006c 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 634 0070 005040E3 		movt	r5, #:upper16:.LANCHOR2
+ 635 0074 000040E3 		movt	r0, #:upper16:.LANCHOR3
+ 636 0078 004040E3 		movt	r4, #:upper16:.LANCHOR5
+ 637 007c 00E040E3 		movt	lr, #:upper16:.LANCHOR7
+ 638 0080 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 639 0084 001040E3 		movt	r1, #:upper16:.LANCHOR8
+ 640 0088 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 641 008c 0130C5E5 		strb	r3, [r5, #1]
+ 642 0090 0130C0E5 		strb	r3, [r0, #1]
+ 643 0094 0300A0E1 		mov	r0, r3
+ 644 0098 0130C4E5 		strb	r3, [r4, #1]
+ 645 009c 0130CEE5 		strb	r3, [lr, #1]
+ 646 00a0 0130CCE5 		strb	r3, [ip, #1]
+ 647 00a4 0130C1E5 		strb	r3, [r1, #1]
+ 648 00a8 0130C2E5 		strb	r3, [r2, #1]
+ 649 00ac 7080BDE8 		pop	{r4, r5, r6, pc}
+ 650              	.L182:
+ 651              		.align	2
+ 652              	.L181:
+ 653 00b0 38000000 		.word	.LANCHOR6+56
+ 655              		.section	.text.close_channel,"ax",%progbits
+ 656              		.align	2
+ 657              		.global	close_channel
+ 658              		.syntax unified
+ 659              		.arm
+ 660              		.fpu neon
+ 662              	close_channel:
+ 663              		@ args = 0, pretend = 0, frame = 0
+ 664              		@ frame_needed = 0, uses_anonymous_args = 0
+ 665 0000 10402DE9 		push	{r4, lr}
+ 666 0004 0040A0E1 		mov	r4, r0
+ 667 0008 FEFFFFEB 		bl	validate_channel
+ 668 000c 002050E2 		subs	r2, r0, #0
+ 669 0010 1080BD18 		popne	{r4, pc}
+ 670 0014 003000E3 		movw	r3, #:lower16:.LANCHOR9
+ 671 0018 0400A0E1 		mov	r0, r4
+ 672 001c 003040E3 		movt	r3, #:upper16:.LANCHOR9
+ 673 0020 042183E7 		str	r2, [r3, r4, lsl #2]
+ 674 0024 1040BDE8 		pop	{r4, lr}
+ 675 0028 FEFFFFEA 		b	R_RIIC_CloseChannel
+ 677              		.section	.text.read_data,"ax",%progbits
+ 678              		.align	2
+ 679              		.global	read_data
+ 680              		.syntax unified
+ 681              		.arm
+ 682              		.fpu neon
+ 684              	read_data:
+ 685              		@ args = 0, pretend = 0, frame = 16
+ 686              		@ frame_needed = 0, uses_anonymous_args = 0
+ 687 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 688 0004 0160A0E1 		mov	r6, r1
+ 689 0008 14D04DE2 		sub	sp, sp, #20
+ 690 000c 0040A0E1 		mov	r4, r0
+ 691 0010 FEFFFFEB 		bl	validate_channel
+ 692 0014 0230D6E5 		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 693 0018 030053E3 		cmp	r3, #3
+ 694 001c 9500008A 		bhi	.L211
+ 695 0020 000050E3 		cmp	r0, #0
+ 696 0024 0080A0E1 		mov	r8, r0
+ 697 0028 8900001A 		bne	.L202
+ 698 002c 000053E3 		cmp	r3, #0
+ 699 0030 0020D6E5 		ldrb	r2, [r6]	@ zero_extendqisi2
+ 700 0034 0170A003 		moveq	r7, #1
+ 701 0038 0700000A 		beq	.L191
+ 702 003c 010053E3 		cmp	r3, #1
+ 703 0040 0110C2E3 		bic	r1, r2, #1
+ 704 0044 0410CDE5 		strb	r1, [sp, #4]
+ 705 0048 9800001A 		bne	.L190
+ 706 004c 043096E5 		ldr	r3, [r6, #4]
+ 707 0050 0280A0E3 		mov	r8, #2
+ 708 0054 0370A0E3 		mov	r7, #3
+ 709 0058 0530CDE5 		strb	r3, [sp, #5]
+ 710              	.L191:
+ 711 005c 10308DE2 		add	r3, sp, #16
+ 712 0060 012082E3 		orr	r2, r2, #1
+ 713 0064 088083E0 		add	r8, r3, r8
+ 714 0068 0400A0E1 		mov	r0, r4
+ 715 006c 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 716 0070 0C2048E5 		strb	r2, [r8, #-12]
+ 717 0074 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 718 0078 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 719 007c 0030A0E3 		mov	r3, #0
+ 720 0080 0400A0E1 		mov	r0, r4
+ 721 0084 0430C5E7 		strb	r3, [r5, r4]
+ 722 0088 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 723 008c 0400A0E1 		mov	r0, r4
+ 724 0090 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 725 0094 010050E3 		cmp	r0, #1
+ 726 0098 0700001A 		bne	.L193
+ 727              	.L195:
+ 728 009c 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 729 00a0 0400A0E1 		mov	r0, r4
+ 730 00a4 FF3013E2 		ands	r3, r3, #255
+ 731 00a8 6100001A 		bne	.L194
+ 732 00ac 0430C5E7 		strb	r3, [r5, r4]
+ 733 00b0 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 734 00b4 010050E3 		cmp	r0, #1
+ 735 00b8 F7FFFF0A 		beq	.L195
+ 736              	.L193:
+ 737 00bc 0080A0E3 		mov	r8, #0
+ 738 00c0 0400A0E1 		mov	r0, r4
+ 739 00c4 0480C5E7 		strb	r8, [r5, r4]
+ 740 00c8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 741 00cc 0400A0E1 		mov	r0, r4
+ 742 00d0 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 743 00d4 0400A0E1 		mov	r0, r4
+ 744 00d8 0480C5E7 		strb	r8, [r5, r4]
+ 745 00dc FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 746 00e0 0400A0E1 		mov	r0, r4
+ 747 00e4 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 748 00e8 010050E3 		cmp	r0, #1
+ 749 00ec 0700001A 		bne	.L209
+ 750              	.L197:
+ 751 00f0 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 752 00f4 0400A0E1 		mov	r0, r4
+ 753 00f8 FF3013E2 		ands	r3, r3, #255
+ 754 00fc 5F00001A 		bne	.L196
+ 755 0100 0430C5E7 		strb	r3, [r5, r4]
+ 756 0104 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 757 0108 010050E3 		cmp	r0, #1
+ 758 010c F7FFFF0A 		beq	.L197
+ 759              	.L209:
+ 760 0110 0080A0E3 		mov	r8, #0
+ 761 0114 0400A0E1 		mov	r0, r4
+ 762 0118 0480C5E7 		strb	r8, [r5, r4]
+ 763 011c 00B000E3 		movw	fp, #:lower16:.LANCHOR4
+ 764 0120 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 765 0124 00A000E3 		movw	r10, #:lower16:.LANCHOR2
+ 766 0128 0400A0E1 		mov	r0, r4
+ 767 012c 009000E3 		movw	r9, #:lower16:.LANCHOR3
+ 768 0130 0480C5E7 		strb	r8, [r5, r4]
+ 769 0134 00B040E3 		movt	fp, #:upper16:.LANCHOR4
+ 770 0138 00A040E3 		movt	r10, #:upper16:.LANCHOR2
+ 771 013c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 772 0140 009040E3 		movt	r9, #:upper16:.LANCHOR3
+ 773 0144 0400A0E1 		mov	r0, r4
+ 774 0148 0480CBE7 		strb	r8, [fp, r4]
+ 775 014c 0480CAE7 		strb	r8, [r10, r4]
+ 776 0150 0480C9E7 		strb	r8, [r9, r4]
+ 777 0154 FEFFFFEB 		bl	R_RIIC_TransmitStart
+ 778 0158 0230D6E5 		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 779 015c 080053E1 		cmp	r3, r8
+ 780 0160 7300000A 		beq	.L228
+ 781 0164 017047E2 		sub	r7, r7, #1
+ 782 0168 04108DE2 		add	r1, sp, #4
+ 783 016c 0720A0E1 		mov	r2, r7
+ 784 0170 0400A0E1 		mov	r0, r4
+ 785 0174 FEFFFFEB 		bl	riic_write
+ 786 0178 008050E2 		subs	r8, r0, #0
+ 787 017c 3400001A 		bne	.L202
+ 788 0180 0400A0E1 		mov	r0, r4
+ 789 0184 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 790 0188 0400A0E1 		mov	r0, r4
+ 791 018c 0480C5E7 		strb	r8, [r5, r4]
+ 792 0190 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 793 0194 0400A0E1 		mov	r0, r4
+ 794 0198 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 795 019c 000050E3 		cmp	r0, #0
+ 796 01a0 0700001A 		bne	.L203
+ 797              	.L205:
+ 798 01a4 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 799 01a8 0400A0E1 		mov	r0, r4
+ 800 01ac FF3013E2 		ands	r3, r3, #255
+ 801 01b0 4700001A 		bne	.L204
+ 802 01b4 0430C5E7 		strb	r3, [r5, r4]
+ 803 01b8 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 804 01bc 000050E3 		cmp	r0, #0
+ 805 01c0 F7FFFF0A 		beq	.L205
+ 806              	.L203:
+ 807 01c4 0080A0E3 		mov	r8, #0
+ 808 01c8 0400A0E1 		mov	r0, r4
+ 809 01cc 0480C5E7 		strb	r8, [r5, r4]
+ 810 01d0 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 811 01d4 0400A0E1 		mov	r0, r4
+ 812 01d8 0480C5E7 		strb	r8, [r5, r4]
+ 813 01dc FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 814 01e0 0400A0E1 		mov	r0, r4
+ 815 01e4 0480CBE7 		strb	r8, [fp, r4]
+ 816 01e8 0480CAE7 		strb	r8, [r10, r4]
+ 817 01ec 0480C9E7 		strb	r8, [r9, r4]
+ 818 01f0 FEFFFFEB 		bl	R_RIIC_TransmitRestart
+ 819              	.L210:
+ 820 01f4 10308DE2 		add	r3, sp, #16
+ 821 01f8 0400A0E1 		mov	r0, r4
+ 822 01fc 077083E0 		add	r7, r3, r7
+ 823 0200 0C1057E5 		ldrb	r1, [r7, #-12]	@ zero_extendqisi2
+ 824 0204 FEFFFFEB 		bl	riic_single_write.constprop.6
+ 825 0208 008050E2 		subs	r8, r0, #0
+ 826 020c 1000001A 		bne	.L202
+ 827 0210 082096E5 		ldr	r2, [r6, #8]
+ 828 0214 000052E3 		cmp	r2, #0
+ 829 0218 1300000A 		beq	.L187
+ 830 021c 0C1096E5 		ldr	r1, [r6, #12]
+ 831 0220 0400A0E1 		mov	r0, r4
+ 832 0224 FEFFFFEB 		bl	riic_read.part.4
+ 833 0228 0800A0E1 		mov	r0, r8
+ 834 022c 14D08DE2 		add	sp, sp, #20
+ 835              		@ sp needed
+ 836 0230 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 837              	.L194:
+ 838 0234 0060A0E3 		mov	r6, #0
+ 839 0238 0400A0E1 		mov	r0, r4
+ 840 023c 0460C5E7 		strb	r6, [r5, r4]
+ 841 0240 0080E0E3 		mvn	r8, #0
+ 842 0244 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 843 0248 0400A0E1 		mov	r0, r4
+ 844 024c 0460C5E7 		strb	r6, [r5, r4]
+ 845 0250 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 846              	.L202:
+ 847 0254 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 848 0258 0020A0E3 		mov	r2, #0
+ 849 025c 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 850 0260 0400A0E1 		mov	r0, r4
+ 851 0264 0420C3E7 		strb	r2, [r3, r4]
+ 852 0268 FEFFFFEB 		bl	R_RIIC_TransmitStop
+ 853              	.L187:
+ 854 026c 0800A0E1 		mov	r0, r8
+ 855 0270 14D08DE2 		add	sp, sp, #20
+ 856              		@ sp needed
+ 857 0274 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 858              	.L211:
+ 859 0278 0080E0E3 		mvn	r8, #0
+ 860 027c F4FFFFEA 		b	.L202
+ 861              	.L196:
+ 862 0280 0060A0E3 		mov	r6, #0
+ 863 0284 0400A0E1 		mov	r0, r4
+ 864 0288 0460C5E7 		strb	r6, [r5, r4]
+ 865 028c FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 866              	.L225:
+ 867 0290 0400A0E1 		mov	r0, r4
+ 868 0294 0460C5E7 		strb	r6, [r5, r4]
+ 869 0298 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 870 029c 0400A0E1 		mov	r0, r4
+ 871 02a0 0460C5E7 		strb	r6, [r5, r4]
+ 872 02a4 0080E0E3 		mvn	r8, #0
+ 873 02a8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 874 02ac E8FFFFEA 		b	.L202
+ 875              	.L190:
+ 876 02b0 020053E3 		cmp	r3, #2
+ 877 02b4 043096E5 		ldr	r3, [r6, #4]
+ 878 02b8 1300001A 		bne	.L192
+ 879 02bc 0630CDE5 		strb	r3, [sp, #6]
+ 880 02c0 2334A0E1 		lsr	r3, r3, #8
+ 881 02c4 0380A0E3 		mov	r8, #3
+ 882 02c8 0470A0E3 		mov	r7, #4
+ 883 02cc 0530CDE5 		strb	r3, [sp, #5]
+ 884 02d0 61FFFFEA 		b	.L191
+ 885              	.L204:
+ 886 02d4 0060A0E3 		mov	r6, #0
+ 887 02d8 0400A0E1 		mov	r0, r4
+ 888 02dc 0460C5E7 		strb	r6, [r5, r4]
+ 889 02e0 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 890 02e4 007050E2 		subs	r7, r0, #0
+ 891 02e8 E8FFFF1A 		bne	.L225
+ 892 02ec 0400A0E1 		mov	r0, r4
+ 893 02f0 0470C5E7 		strb	r7, [r5, r4]
+ 894 02f4 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 895 02f8 0400A0E1 		mov	r0, r4
+ 896 02fc 0470C5E7 		strb	r7, [r5, r4]
+ 897 0300 0080E0E3 		mvn	r8, #0
+ 898 0304 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 899 0308 D1FFFFEA 		b	.L202
+ 900              	.L192:
+ 901 030c 230CA0E1 		lsr	r0, r3, #24
+ 902 0310 2318A0E1 		lsr	r1, r3, #16
+ 903 0314 0830CDE5 		strb	r3, [sp, #8]
+ 904 0318 2334A0E1 		lsr	r3, r3, #8
+ 905 031c 0580A0E3 		mov	r8, #5
+ 906 0320 0500CDE5 		strb	r0, [sp, #5]
+ 907 0324 0670A0E3 		mov	r7, #6
+ 908 0328 0610CDE5 		strb	r1, [sp, #6]
+ 909 032c 0730CDE5 		strb	r3, [sp, #7]
+ 910 0330 49FFFFEA 		b	.L191
+ 911              	.L228:
+ 912 0334 017047E2 		sub	r7, r7, #1
+ 913 0338 ADFFFFEA 		b	.L210
+ 915              		.section	.text.read_next_data,"ax",%progbits
+ 916              		.align	2
+ 917              		.global	read_next_data
+ 918              		.syntax unified
+ 919              		.arm
+ 920              		.fpu neon
+ 922              	read_next_data:
+ 923              		@ args = 0, pretend = 0, frame = 0
+ 924              		@ frame_needed = 0, uses_anonymous_args = 0
+ 925 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 926 0004 0170A0E1 		mov	r7, r1
+ 927 0008 0260A0E1 		mov	r6, r2
+ 928 000c 0380A0E1 		mov	r8, r3
+ 929 0010 0040A0E1 		mov	r4, r0
+ 930 0014 FEFFFFEB 		bl	validate_channel
+ 931 0018 009050E2 		subs	r9, r0, #0
+ 932 001c 0700000A 		beq	.L252
+ 933              	.L230:
+ 934 0020 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 935 0024 0020A0E3 		mov	r2, #0
+ 936 0028 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 937 002c 0400A0E1 		mov	r0, r4
+ 938 0030 0420C3E7 		strb	r2, [r3, r4]
+ 939 0034 FEFFFFEB 		bl	R_RIIC_TransmitStop
+ 940              	.L229:
+ 941 0038 0900A0E1 		mov	r0, r9
+ 942 003c F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 943              	.L252:
+ 944 0040 0400A0E1 		mov	r0, r4
+ 945 0044 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 946 0048 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 947 004c 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 948 0050 0400A0E1 		mov	r0, r4
+ 949 0054 0490C5E7 		strb	r9, [r5, r4]
+ 950 0058 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 951 005c 0400A0E1 		mov	r0, r4
+ 952 0060 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 953 0064 010050E3 		cmp	r0, #1
+ 954 0068 0700001A 		bne	.L231
+ 955              	.L233:
+ 956 006c 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 957 0070 0400A0E1 		mov	r0, r4
+ 958 0074 FF3013E2 		ands	r3, r3, #255
+ 959 0078 3700001A 		bne	.L232
+ 960 007c 0430C5E7 		strb	r3, [r5, r4]
+ 961 0080 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 962 0084 010050E3 		cmp	r0, #1
+ 963 0088 F7FFFF0A 		beq	.L233
+ 964              	.L231:
+ 965 008c 0090A0E3 		mov	r9, #0
+ 966 0090 0400A0E1 		mov	r0, r4
+ 967 0094 0490C5E7 		strb	r9, [r5, r4]
+ 968 0098 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 969 009c 0400A0E1 		mov	r0, r4
+ 970 00a0 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 971 00a4 0400A0E1 		mov	r0, r4
+ 972 00a8 0490C5E7 		strb	r9, [r5, r4]
+ 973 00ac FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 974 00b0 0400A0E1 		mov	r0, r4
+ 975 00b4 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 976 00b8 010050E3 		cmp	r0, #1
+ 977 00bc 0700001A 		bne	.L240
+ 978              	.L235:
+ 979 00c0 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 980 00c4 0400A0E1 		mov	r0, r4
+ 981 00c8 FF3013E2 		ands	r3, r3, #255
+ 982 00cc 2B00001A 		bne	.L234
+ 983 00d0 0430C5E7 		strb	r3, [r5, r4]
+ 984 00d4 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 985 00d8 010050E3 		cmp	r0, #1
+ 986 00dc F7FFFF0A 		beq	.L235
+ 987              	.L240:
+ 988 00e0 0090A0E3 		mov	r9, #0
+ 989 00e4 0400A0E1 		mov	r0, r4
+ 990 00e8 0490C5E7 		strb	r9, [r5, r4]
+ 991 00ec FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 992 00f0 0400A0E1 		mov	r0, r4
+ 993 00f4 0490C5E7 		strb	r9, [r5, r4]
+ 994 00f8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 995 00fc 001000E3 		movw	r1, #:lower16:.LANCHOR4
+ 996 0100 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 997 0104 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 998 0108 001040E3 		movt	r1, #:upper16:.LANCHOR4
+ 999 010c 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 1000 0110 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 1001 0114 0400A0E1 		mov	r0, r4
+ 1002 0118 0490C1E7 		strb	r9, [r1, r4]
+ 1003 011c 0490C2E7 		strb	r9, [r2, r4]
+ 1004 0120 0490C3E7 		strb	r9, [r3, r4]
+ 1005 0124 FEFFFFEB 		bl	R_RIIC_TransmitStart
+ 1006 0128 011087E3 		orr	r1, r7, #1
+ 1007 012c 0400A0E1 		mov	r0, r4
+ 1008 0130 FEFFFFEB 		bl	riic_single_write.constprop.6
+ 1009 0134 009050E2 		subs	r9, r0, #0
+ 1010 0138 B8FFFF1A 		bne	.L230
+ 1011 013c 000056E3 		cmp	r6, #0
+ 1012 0140 BCFFFF0A 		beq	.L229
+ 1013 0144 0620A0E1 		mov	r2, r6
+ 1014 0148 0810A0E1 		mov	r1, r8
+ 1015 014c 0400A0E1 		mov	r0, r4
+ 1016 0150 FEFFFFEB 		bl	riic_read.part.4
+ 1017 0154 0900A0E1 		mov	r0, r9
+ 1018 0158 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 1019              	.L232:
+ 1020 015c 0060A0E3 		mov	r6, #0
+ 1021 0160 0400A0E1 		mov	r0, r4
+ 1022 0164 0460C5E7 		strb	r6, [r5, r4]
+ 1023 0168 0090E0E3 		mvn	r9, #0
+ 1024 016c FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1025 0170 0400A0E1 		mov	r0, r4
+ 1026 0174 0460C5E7 		strb	r6, [r5, r4]
+ 1027 0178 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1028 017c A7FFFFEA 		b	.L230
+ 1029              	.L234:
+ 1030 0180 0060A0E3 		mov	r6, #0
+ 1031 0184 0400A0E1 		mov	r0, r4
+ 1032 0188 0460C5E7 		strb	r6, [r5, r4]
+ 1033 018c 0090E0E3 		mvn	r9, #0
+ 1034 0190 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1035 0194 0400A0E1 		mov	r0, r4
+ 1036 0198 0460C5E7 		strb	r6, [r5, r4]
+ 1037 019c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1038 01a0 0400A0E1 		mov	r0, r4
+ 1039 01a4 0460C5E7 		strb	r6, [r5, r4]
+ 1040 01a8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1041 01ac 9BFFFFEA 		b	.L230
+ 1043              		.section	.text.write_data,"ax",%progbits
+ 1044              		.align	2
+ 1045              		.global	write_data
+ 1046              		.syntax unified
+ 1047              		.arm
+ 1048              		.fpu neon
+ 1050              	write_data:
+ 1051              		@ args = 0, pretend = 0, frame = 16
+ 1052              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1053 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 1054 0004 0160A0E1 		mov	r6, r1
+ 1055 0008 10D04DE2 		sub	sp, sp, #16
+ 1056 000c 0040A0E1 		mov	r4, r0
+ 1057 0010 FEFFFFEB 		bl	validate_channel
+ 1058 0014 0230D6E5 		ldrb	r3, [r6, #2]	@ zero_extendqisi2
+ 1059 0018 030053E3 		cmp	r3, #3
+ 1060 001c 7A00008A 		bhi	.L271
+ 1061 0020 000050E3 		cmp	r0, #0
+ 1062 0024 0070A0E1 		mov	r7, r0
+ 1063 0028 00500013 		movwne	r5, #:lower16:.LANCHOR1
+ 1064 002c 00504013 		movtne	r5, #:upper16:.LANCHOR1
+ 1065 0030 5700001A 		bne	.L254
+ 1066 0034 B020D6E1 		ldrh	r2, [r6]
+ 1067 0038 010053E3 		cmp	r3, #1
+ 1068 003c 0120C2E3 		bic	r2, r2, #1
+ 1069 0040 0420CDE5 		strb	r2, [sp, #4]
+ 1070 0044 8900000A 		beq	.L288
+ 1071 0048 020053E3 		cmp	r3, #2
+ 1072 004c 8B00000A 		beq	.L289
+ 1073 0050 030053E3 		cmp	r3, #3
+ 1074 0054 04309605 		ldreq	r3, [r6, #4]
+ 1075 0058 0570A003 		moveq	r7, #5
+ 1076 005c 0170A013 		movne	r7, #1
+ 1077 0060 0830CD05 		strbeq	r3, [sp, #8]
+ 1078 0064 231CA001 		lsreq	r1, r3, #24
+ 1079 0068 2328A001 		lsreq	r2, r3, #16
+ 1080 006c 2334A001 		lsreq	r3, r3, #8
+ 1081 0070 0510CD05 		strbeq	r1, [sp, #5]
+ 1082 0074 0620CD05 		strbeq	r2, [sp, #6]
+ 1083 0078 0730CD05 		strbeq	r3, [sp, #7]
+ 1084              	.L256:
+ 1085 007c 0400A0E1 		mov	r0, r4
+ 1086 0080 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 1087 0084 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 1088 0088 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 1089 008c 0030A0E3 		mov	r3, #0
+ 1090 0090 0400A0E1 		mov	r0, r4
+ 1091 0094 0430C5E7 		strb	r3, [r5, r4]
+ 1092 0098 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1093 009c 0400A0E1 		mov	r0, r4
+ 1094 00a0 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1095 00a4 010050E3 		cmp	r0, #1
+ 1096 00a8 0700001A 		bne	.L258
+ 1097              	.L260:
+ 1098 00ac 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 1099 00b0 0400A0E1 		mov	r0, r4
+ 1100 00b4 FF3013E2 		ands	r3, r3, #255
+ 1101 00b8 5700001A 		bne	.L259
+ 1102 00bc 0430C5E7 		strb	r3, [r5, r4]
+ 1103 00c0 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1104 00c4 010050E3 		cmp	r0, #1
+ 1105 00c8 F7FFFF0A 		beq	.L260
+ 1106              	.L258:
+ 1107 00cc 0080A0E3 		mov	r8, #0
+ 1108 00d0 0400A0E1 		mov	r0, r4
+ 1109 00d4 0480C5E7 		strb	r8, [r5, r4]
+ 1110 00d8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1111 00dc 0400A0E1 		mov	r0, r4
+ 1112 00e0 FEFFFFEB 		bl	R_RIIC_ReleaseLowHold
+ 1113 00e4 0400A0E1 		mov	r0, r4
+ 1114 00e8 0480C5E7 		strb	r8, [r5, r4]
+ 1115 00ec FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1116 00f0 0400A0E1 		mov	r0, r4
+ 1117 00f4 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1118 00f8 010050E3 		cmp	r0, #1
+ 1119 00fc 0700001A 		bne	.L270
+ 1120              	.L262:
+ 1121 0100 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 1122 0104 0400A0E1 		mov	r0, r4
+ 1123 0108 FF3013E2 		ands	r3, r3, #255
+ 1124 010c 4B00001A 		bne	.L261
+ 1125 0110 0430C5E7 		strb	r3, [r5, r4]
+ 1126 0114 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1127 0118 010050E3 		cmp	r0, #1
+ 1128 011c F7FFFF0A 		beq	.L262
+ 1129              	.L270:
+ 1130 0120 0080A0E3 		mov	r8, #0
+ 1131 0124 0400A0E1 		mov	r0, r4
+ 1132 0128 0480C5E7 		strb	r8, [r5, r4]
+ 1133 012c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1134 0130 0400A0E1 		mov	r0, r4
+ 1135 0134 0480C5E7 		strb	r8, [r5, r4]
+ 1136 0138 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1137 013c 001000E3 		movw	r1, #:lower16:.LANCHOR4
+ 1138 0140 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 1139 0144 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 1140 0148 001040E3 		movt	r1, #:upper16:.LANCHOR4
+ 1141 014c 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 1142 0150 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 1143 0154 0400A0E1 		mov	r0, r4
+ 1144 0158 0480C1E7 		strb	r8, [r1, r4]
+ 1145 015c 0480C2E7 		strb	r8, [r2, r4]
+ 1146 0160 0480C3E7 		strb	r8, [r3, r4]
+ 1147 0164 FEFFFFEB 		bl	R_RIIC_TransmitStart
+ 1148 0168 0720A0E1 		mov	r2, r7
+ 1149 016c 04108DE2 		add	r1, sp, #4
+ 1150 0170 0400A0E1 		mov	r0, r4
+ 1151 0174 FEFFFFEB 		bl	riic_write
+ 1152 0178 007050E2 		subs	r7, r0, #0
+ 1153 017c 0400001A 		bne	.L254
+ 1154 0180 082096E5 		ldr	r2, [r6, #8]
+ 1155 0184 0400A0E1 		mov	r0, r4
+ 1156 0188 0C1096E5 		ldr	r1, [r6, #12]
+ 1157 018c FEFFFFEB 		bl	riic_write
+ 1158 0190 0070A0E1 		mov	r7, r0
+ 1159              	.L254:
+ 1160 0194 006000E3 		movw	r6, #:lower16:.LANCHOR5
+ 1161 0198 0080A0E3 		mov	r8, #0
+ 1162 019c 006040E3 		movt	r6, #:upper16:.LANCHOR5
+ 1163 01a0 0400A0E1 		mov	r0, r4
+ 1164 01a4 0480C6E7 		strb	r8, [r6, r4]
+ 1165 01a8 FEFFFFEB 		bl	R_RIIC_TransmitStop
+ 1166 01ac 0400A0E1 		mov	r0, r4
+ 1167 01b0 0480C5E7 		strb	r8, [r5, r4]
+ 1168 01b4 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1169 01b8 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 1170 01bc 080053E1 		cmp	r3, r8
+ 1171 01c0 0500001A 		bne	.L267
+ 1172              	.L266:
+ 1173 01c4 0430D5E7 		ldrb	r3, [r5, r4]	@ zero_extendqisi2
+ 1174 01c8 FF3013E2 		ands	r3, r3, #255
+ 1175 01cc 0900000A 		beq	.L268
+ 1176 01d0 0030A0E3 		mov	r3, #0
+ 1177 01d4 0430C5E7 		strb	r3, [r5, r4]
+ 1178 01d8 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 1179              	.L267:
+ 1180 01dc 0030A0E3 		mov	r3, #0
+ 1181 01e0 0400A0E1 		mov	r0, r4
+ 1182 01e4 0430C5E7 		strb	r3, [r5, r4]
+ 1183 01e8 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1184 01ec 0700A0E1 		mov	r0, r7
+ 1185 01f0 10D08DE2 		add	sp, sp, #16
+ 1186              		@ sp needed
+ 1187 01f4 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 1188              	.L268:
+ 1189 01f8 0430C5E7 		strb	r3, [r5, r4]
+ 1190 01fc 0430D6E7 		ldrb	r3, [r6, r4]	@ zero_extendqisi2
+ 1191 0200 000053E3 		cmp	r3, #0
+ 1192 0204 EEFFFF0A 		beq	.L266
+ 1193 0208 F3FFFFEA 		b	.L267
+ 1194              	.L271:
+ 1195 020c 005000E3 		movw	r5, #:lower16:.LANCHOR1
+ 1196 0210 0070E0E3 		mvn	r7, #0
+ 1197 0214 005040E3 		movt	r5, #:upper16:.LANCHOR1
+ 1198 0218 DDFFFFEA 		b	.L254
+ 1199              	.L259:
+ 1200 021c 0060A0E3 		mov	r6, #0
+ 1201 0220 0400A0E1 		mov	r0, r4
+ 1202 0224 0460C5E7 		strb	r6, [r5, r4]
+ 1203 0228 0070E0E3 		mvn	r7, #0
+ 1204 022c FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1205 0230 0400A0E1 		mov	r0, r4
+ 1206 0234 0460C5E7 		strb	r6, [r5, r4]
+ 1207 0238 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1208 023c D4FFFFEA 		b	.L254
+ 1209              	.L261:
+ 1210 0240 0060A0E3 		mov	r6, #0
+ 1211 0244 0400A0E1 		mov	r0, r4
+ 1212 0248 0460C5E7 		strb	r6, [r5, r4]
+ 1213 024c 0070E0E3 		mvn	r7, #0
+ 1214 0250 FEFFFFEB 		bl	R_RIIC_IsBusBusy
+ 1215 0254 0400A0E1 		mov	r0, r4
+ 1216 0258 0460C5E7 		strb	r6, [r5, r4]
+ 1217 025c FEFFFFEB 		bl	R_RIIC_DetectTimeoutStop
+ 1218 0260 0400A0E1 		mov	r0, r4
+ 1219 0264 0460C5E7 		strb	r6, [r5, r4]
+ 1220 0268 FEFFFFEB 		bl	R_RIIC_DetectTimeoutStart
+ 1221 026c C8FFFFEA 		b	.L254
+ 1222              	.L288:
+ 1223 0270 043096E5 		ldr	r3, [r6, #4]
+ 1224 0274 0270A0E3 		mov	r7, #2
+ 1225 0278 0530CDE5 		strb	r3, [sp, #5]
+ 1226 027c 7EFFFFEA 		b	.L256
+ 1227              	.L289:
+ 1228 0280 043096E5 		ldr	r3, [r6, #4]
+ 1229 0284 0370A0E3 		mov	r7, #3
+ 1230 0288 0630CDE5 		strb	r3, [sp, #6]
+ 1231 028c 2334A0E1 		lsr	r3, r3, #8
+ 1232 0290 0530CDE5 		strb	r3, [sp, #5]
+ 1233 0294 78FFFFEA 		b	.L256
+ 1235              		.section	.text.r_riic_hld_set_rx_full,"ax",%progbits
+ 1236              		.align	2
+ 1237              		.global	r_riic_hld_set_rx_full
+ 1238              		.syntax unified
+ 1239              		.arm
+ 1240              		.fpu neon
+ 1242              	r_riic_hld_set_rx_full:
+ 1243              		@ args = 0, pretend = 0, frame = 0
+ 1244              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1245              		@ link register save eliminated.
+ 1246 0000 003000E3 		movw	r3, #:lower16:.LANCHOR4
+ 1247 0004 0120A0E3 		mov	r2, #1
+ 1248 0008 003040E3 		movt	r3, #:upper16:.LANCHOR4
+ 1249 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1250 0010 1EFF2FE1 		bx	lr
+ 1252              		.section	.text.r_riic_hld_set_tx_empty,"ax",%progbits
+ 1253              		.align	2
+ 1254              		.global	r_riic_hld_set_tx_empty
+ 1255              		.syntax unified
+ 1256              		.arm
+ 1257              		.fpu neon
+ 1259              	r_riic_hld_set_tx_empty:
+ 1260              		@ args = 0, pretend = 0, frame = 0
+ 1261              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1262              		@ link register save eliminated.
+ 1263 0000 003000E3 		movw	r3, #:lower16:.LANCHOR2
+ 1264 0004 0120A0E3 		mov	r2, #1
+ 1265 0008 003040E3 		movt	r3, #:upper16:.LANCHOR2
+ 1266 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1267 0010 1EFF2FE1 		bx	lr
+ 1269              		.section	.text.r_riic_hld_set_tx_end,"ax",%progbits
+ 1270              		.align	2
+ 1271              		.global	r_riic_hld_set_tx_end
+ 1272              		.syntax unified
+ 1273              		.arm
+ 1274              		.fpu neon
+ 1276              	r_riic_hld_set_tx_end:
+ 1277              		@ args = 0, pretend = 0, frame = 0
+ 1278              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1279              		@ link register save eliminated.
+ 1280 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 1281 0004 0120A0E3 		mov	r2, #1
+ 1282 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 1283 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1284 0010 1EFF2FE1 		bx	lr
+ 1286              		.section	.text.r_riic_hld_set_stop_asserted,"ax",%progbits
+ 1287              		.align	2
+ 1288              		.global	r_riic_hld_set_stop_asserted
+ 1289              		.syntax unified
+ 1290              		.arm
+ 1291              		.fpu neon
+ 1293              	r_riic_hld_set_stop_asserted:
+ 1294              		@ args = 0, pretend = 0, frame = 0
+ 1295              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1296              		@ link register save eliminated.
+ 1297 0000 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 1298 0004 0120A0E3 		mov	r2, #1
+ 1299 0008 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 1300 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1301 0010 1EFF2FE1 		bx	lr
+ 1303              		.section	.text.r_riic_hld_set_start_asserted,"ax",%progbits
+ 1304              		.align	2
+ 1305              		.global	r_riic_hld_set_start_asserted
+ 1306              		.syntax unified
+ 1307              		.arm
+ 1308              		.fpu neon
+ 1310              	r_riic_hld_set_start_asserted:
+ 1311              		@ args = 0, pretend = 0, frame = 0
+ 1312              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1313              		@ link register save eliminated.
+ 1314 0000 003000E3 		movw	r3, #:lower16:.LANCHOR7
+ 1315 0004 0120A0E3 		mov	r2, #1
+ 1316 0008 003040E3 		movt	r3, #:upper16:.LANCHOR7
+ 1317 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1318 0010 1EFF2FE1 		bx	lr
+ 1320              		.section	.text.r_riic_hld_set_nack_asserted,"ax",%progbits
+ 1321              		.align	2
+ 1322              		.global	r_riic_hld_set_nack_asserted
+ 1323              		.syntax unified
+ 1324              		.arm
+ 1325              		.fpu neon
+ 1327              	r_riic_hld_set_nack_asserted:
+ 1328              		@ args = 0, pretend = 0, frame = 0
+ 1329              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1330              		@ link register save eliminated.
+ 1331 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 1332 0004 0120A0E3 		mov	r2, #1
+ 1333 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 1334 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1335 0010 1EFF2FE1 		bx	lr
+ 1337              		.section	.text.r_riic_hld_set_arbitrate_assert,"ax",%progbits
+ 1338              		.align	2
+ 1339              		.global	r_riic_hld_set_arbitrate_assert
+ 1340              		.syntax unified
+ 1341              		.arm
+ 1342              		.fpu neon
+ 1344              	r_riic_hld_set_arbitrate_assert:
+ 1345              		@ args = 0, pretend = 0, frame = 0
+ 1346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1347              		@ link register save eliminated.
+ 1348 0000 003000E3 		movw	r3, #:lower16:.LANCHOR8
+ 1349 0004 0120A0E3 		mov	r2, #1
+ 1350 0008 003040E3 		movt	r3, #:upper16:.LANCHOR8
+ 1351 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1352 0010 1EFF2FE1 		bx	lr
+ 1354              		.section	.text.r_riic_hld_set_timeout_asserted,"ax",%progbits
+ 1355              		.align	2
+ 1356              		.global	r_riic_hld_set_timeout_asserted
+ 1357              		.syntax unified
+ 1358              		.arm
+ 1359              		.fpu neon
+ 1361              	r_riic_hld_set_timeout_asserted:
+ 1362              		@ args = 0, pretend = 0, frame = 0
+ 1363              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1364              		@ link register save eliminated.
+ 1365 0000 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 1366 0004 0120A0E3 		mov	r2, #1
+ 1367 0008 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 1368 000c 0020C3E7 		strb	r2, [r3, r0]
+ 1369 0010 1EFF2FE1 		bx	lr
+ 1371              		.section	.bss.gs_channel_initialise_state,"aw",%nobits
+ 1372              		.align	3
+ 1373              		.set	.LANCHOR9,. + 0
+ 1376              	gs_channel_initialise_state:
+ 1377 0000 00000000 		.space	16
+ 1377      00000000 
+ 1377      00000000 
+ 1377      00000000 
+ 1378              		.section	.bss.gs_riic_arbitration_flg,"aw",%nobits
+ 1379              		.align	3
+ 1380              		.set	.LANCHOR8,. + 0
+ 1383              	gs_riic_arbitration_flg:
+ 1384 0000 00000000 		.space	4
+ 1385              		.section	.bss.gs_riic_nack_flg,"aw",%nobits
+ 1386              		.align	3
+ 1387              		.set	.LANCHOR0,. + 0
+ 1390              	gs_riic_nack_flg:
+ 1391 0000 00000000 		.space	4
+ 1392              		.section	.bss.gs_riic_receive_full_flg,"aw",%nobits
+ 1393              		.align	3
+ 1394              		.set	.LANCHOR4,. + 0
+ 1397              	gs_riic_receive_full_flg:
+ 1398 0000 00000000 		.space	4
+ 1399              		.section	.bss.gs_riic_start_flg,"aw",%nobits
+ 1400              		.align	3
+ 1401              		.set	.LANCHOR7,. + 0
+ 1404              	gs_riic_start_flg:
+ 1405 0000 00000000 		.space	4
+ 1406              		.section	.bss.gs_riic_stop_flg,"aw",%nobits
+ 1407              		.align	3
+ 1408              		.set	.LANCHOR5,. + 0
+ 1411              	gs_riic_stop_flg:
+ 1412 0000 00000000 		.space	4
+ 1413              		.section	.bss.gs_riic_timeout_flg,"aw",%nobits
+ 1414              		.align	3
+ 1415              		.set	.LANCHOR1,. + 0
+ 1418              	gs_riic_timeout_flg:
+ 1419 0000 00000000 		.space	4
+ 1420              		.section	.bss.gs_riic_transmit_empty_flg,"aw",%nobits
+ 1421              		.align	3
+ 1422              		.set	.LANCHOR2,. + 0
+ 1425              	gs_riic_transmit_empty_flg:
+ 1426 0000 00000000 		.space	4
+ 1427              		.section	.bss.gs_riic_transmit_end_flg,"aw",%nobits
+ 1428              		.align	3
+ 1429              		.set	.LANCHOR3,. + 0
+ 1432              	gs_riic_transmit_end_flg:
+ 1433 0000 00000000 		.space	4
+ 1434              		.section	.rodata.GPIO_SC_TABLE_riic1,"a",%progbits
+ 1435              		.align	2
+ 1438              	GPIO_SC_TABLE_riic1:
+ 1439 0000 020D     		.short	3330
+ 1440 0002 07       		.byte	7
+ 1441 0003 01       		.byte	1
+ 1442 0004 05       		.byte	5
+ 1443 0005 00       		.space	1
+ 1444 0006 030D     		.short	3331
+ 1445 0008 07       		.byte	7
+ 1446 0009 01       		.byte	1
+ 1447 000a 05       		.byte	5
+ 1448 000b 00       		.space	1
+ 1449              		.section	.rodata.RIIC_SC_TABLE,"a",%progbits
+ 1450              		.align	2
+ 1451              		.set	.LANCHOR6,. + 0
+ 1454              	RIIC_SC_TABLE:
+ 1455 0000 01000000 		.word	1
+ 1456 0004 00       		.byte	0
+ 1457 0005 000000   		.space	3
+ 1458 0008 01000000 		.word	1
+ 1459 000c 00000000 		.word	0
+ 1460 0010 00000000 		.word	0
+ 1461 0014 0100     		.short	1
+ 1462 0016 0100     		.short	1
+ 1463 0018 0100     		.short	1
+ 1464 001a 00       		.byte	0
+ 1465 001b 00       		.byte	0
+ 1466 001c 00       		.byte	0
+ 1467 001d 00       		.byte	0
+ 1468 001e 04       		.byte	4
+ 1469 001f 00       		.space	1
+ 1470 0020 00000000 		.word	0
+ 1471 0024 00000000 		.word	0
+ 1472 0028 00       		.byte	0
+ 1473 0029 00       		.byte	0
+ 1474 002a 00       		.byte	0
+ 1475 002b 00       		.space	1
+ 1476 002c 00000000 		.word	0
+ 1477 0030 09       		.byte	9
+ 1478 0031 09       		.byte	9
+ 1479 0032 09       		.byte	9
+ 1480 0033 09       		.byte	9
+ 1481 0034 09       		.byte	9
+ 1482 0035 09       		.byte	9
+ 1483 0036 09       		.byte	9
+ 1484 0037 09       		.byte	9
+ 1485 0038 00000000 		.word	GPIO_SC_TABLE_riic1
+ 1486 003c 02000000 		.word	2
+ 1487 0040 00000000 		.space	4
+ 1488              		.section	.rodata.open_channel.str1.4,"aMS",%progbits,1
+ 1489              		.align	2
+ 1490              	.LC0:
+ 1491 0000 6770696F 		.ascii	"gpio\000"
+ 1491      00
+ 1492              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_riic_hld_prv.c
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:14     .text.riic_write:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:19     .text.riic_write:00000000 riic_write
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1387   .bss.gs_riic_nack_flg:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1415   .bss.gs_riic_timeout_flg:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1422   .bss.gs_riic_transmit_empty_flg:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1429   .bss.gs_riic_transmit_end_flg:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:168    .text.riic_single_write.constprop.6:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:173    .text.riic_single_write.constprop.6:00000000 riic_single_write.constprop.6
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1394   .bss.gs_riic_receive_full_flg:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:273    .text.riic_read.part.4:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:278    .text.riic_read.part.4:00000000 riic_read.part.4
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1408   .bss.gs_riic_stop_flg:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:595    .text.open_channel:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:601    .text.open_channel:00000000 open_channel
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1490   .rodata.open_channel.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1401   .bss.gs_riic_start_flg:00000000 .LANCHOR7
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1380   .bss.gs_riic_arbitration_flg:00000000 .LANCHOR8
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:653    .text.open_channel:000000b0 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:656    .text.close_channel:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:662    .text.close_channel:00000000 close_channel
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1373   .bss.gs_channel_initialise_state:00000000 .LANCHOR9
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:678    .text.read_data:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:684    .text.read_data:00000000 read_data
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:916    .text.read_next_data:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:922    .text.read_next_data:00000000 read_next_data
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1044   .text.write_data:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1050   .text.write_data:00000000 write_data
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1236   .text.r_riic_hld_set_rx_full:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1242   .text.r_riic_hld_set_rx_full:00000000 r_riic_hld_set_rx_full
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1253   .text.r_riic_hld_set_tx_empty:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1259   .text.r_riic_hld_set_tx_empty:00000000 r_riic_hld_set_tx_empty
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1270   .text.r_riic_hld_set_tx_end:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1276   .text.r_riic_hld_set_tx_end:00000000 r_riic_hld_set_tx_end
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1287   .text.r_riic_hld_set_stop_asserted:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1293   .text.r_riic_hld_set_stop_asserted:00000000 r_riic_hld_set_stop_asserted
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1304   .text.r_riic_hld_set_start_asserted:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1310   .text.r_riic_hld_set_start_asserted:00000000 r_riic_hld_set_start_asserted
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1321   .text.r_riic_hld_set_nack_asserted:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1327   .text.r_riic_hld_set_nack_asserted:00000000 r_riic_hld_set_nack_asserted
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1338   .text.r_riic_hld_set_arbitrate_assert:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1344   .text.r_riic_hld_set_arbitrate_assert:00000000 r_riic_hld_set_arbitrate_assert
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1355   .text.r_riic_hld_set_timeout_asserted:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1361   .text.r_riic_hld_set_timeout_asserted:00000000 r_riic_hld_set_timeout_asserted
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1372   .bss.gs_channel_initialise_state:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1376   .bss.gs_channel_initialise_state:00000000 gs_channel_initialise_state
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1379   .bss.gs_riic_arbitration_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1383   .bss.gs_riic_arbitration_flg:00000000 gs_riic_arbitration_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1386   .bss.gs_riic_nack_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1390   .bss.gs_riic_nack_flg:00000000 gs_riic_nack_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1393   .bss.gs_riic_receive_full_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1397   .bss.gs_riic_receive_full_flg:00000000 gs_riic_receive_full_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1400   .bss.gs_riic_start_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1404   .bss.gs_riic_start_flg:00000000 gs_riic_start_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1407   .bss.gs_riic_stop_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1411   .bss.gs_riic_stop_flg:00000000 gs_riic_stop_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1414   .bss.gs_riic_timeout_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1418   .bss.gs_riic_timeout_flg:00000000 gs_riic_timeout_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1421   .bss.gs_riic_transmit_empty_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1425   .bss.gs_riic_transmit_empty_flg:00000000 gs_riic_transmit_empty_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1428   .bss.gs_riic_transmit_end_flg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1432   .bss.gs_riic_transmit_end_flg:00000000 gs_riic_transmit_end_flg
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1435   .rodata.GPIO_SC_TABLE_riic1:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1438   .rodata.GPIO_SC_TABLE_riic1:00000000 GPIO_SC_TABLE_riic1
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1450   .rodata.RIIC_SC_TABLE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1454   .rodata.RIIC_SC_TABLE:00000000 RIIC_SC_TABLE
+C:\Users\a5050395\AppData\Local\Temp\cc0WBk33.s:1489   .rodata.open_channel.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_RIIC_DetectTimeoutStart
+R_RIIC_DetectTimeoutStop
+R_RIIC_WriteByte
+R_RIIC_DisableTransEndIntr
+R_RIIC_EnableTransEndIntr
+R_RIIC_TransmitAck
+R_RIIC_ReadByte
+R_RIIC_TransmitNack
+R_RIIC_ReleaseLowHold
+R_RIIC_AssertLowHold
+R_RIIC_TransmitStop
+direct_open
+direct_control
+direct_close
+validate_channel
+R_RIIC_CloseChannel
+R_RIIC_IsBusBusy
+R_RIIC_TransmitStart
+R_RIIC_TransmitRestart

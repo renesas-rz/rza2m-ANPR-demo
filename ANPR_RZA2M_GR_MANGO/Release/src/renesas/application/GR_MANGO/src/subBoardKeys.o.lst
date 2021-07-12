@@ -1,0 +1,182 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"subBoardKeys.c"
+  13              		.section	.text.initBoardSwitch,"ax",%progbits
+  14              		.align	2
+  15              		.global	initBoardSwitch
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	initBoardSwitch:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 30402DE9 		push	{r4, r5, lr}
+  24 0004 004000E3 		movw	r4, #:lower16:.LANCHOR1
+  25 0008 004040E3 		movt	r4, #:upper16:.LANCHOR1
+  26 000c 00E000E3 		movw	lr, #:lower16:.LANCHOR0
+  27 0010 00E040E3 		movt	lr, #:upper16:.LANCHOR0
+  28 0014 FFC00EE3 		movw	ip, #57599
+  29 0018 0F00B4E8 		ldmia	r4!, {r0, r1, r2, r3}
+  30 001c FFCC4FE3 		movt	ip, 64767
+  31 0020 0250A0E3 		mov	r5, #2
+  32 0024 0F00AEE8 		stmia	lr!, {r0, r1, r2, r3}
+  33 0028 030094E8 		ldm	r4, {r0, r1}
+  34 002c 03008EE8 		stm	lr, {r0, r1}
+  35 0030 72305CE5 		ldrb	r3, [ip, #-114]	@ zero_extendqisi2
+  36 0034 403083E3 		orr	r3, r3, #64
+  37 0038 72304CE5 		strb	r3, [ip, #-114]
+  38 003c 72305CE5 		ldrb	r3, [ip, #-114]	@ zero_extendqisi2
+  39 0040 1F33C6E7 		bfc	r3, #6, #1
+  40 0044 72304CE5 		strb	r3, [ip, #-114]
+  41 0048 B53E5CE1 		ldrh	r3, [ip, #-229]
+  42 004c 1536CDE7 		bfi	r3, r5, #12, #2
+  43 0050 B53E4CE1 		strh	r3, [ip, #-229]	@ movhi
+  44 0054 92305CE5 		ldrb	r3, [ip, #-146]	@ zero_extendqisi2
+  45 0058 72305CE5 		ldrb	r3, [ip, #-114]	@ zero_extendqisi2
+  46 005c 803083E3 		orr	r3, r3, #128
+  47 0060 72304CE5 		strb	r3, [ip, #-114]
+  48 0064 72305CE5 		ldrb	r3, [ip, #-114]	@ zero_extendqisi2
+  49 0068 9F33C7E7 		bfc	r3, #7, #1
+  50 006c 72304CE5 		strb	r3, [ip, #-114]
+  51 0070 B53E5CE1 		ldrh	r3, [ip, #-229]
+  52 0074 1537CFE7 		bfi	r3, r5, #14, #2
+  53 0078 B53E4CE1 		strh	r3, [ip, #-229]	@ movhi
+  54 007c 92305CE5 		ldrb	r3, [ip, #-146]	@ zero_extendqisi2
+  55 0080 3080BDE8 		pop	{r4, r5, pc}
+  57              		.section	.text.readBoardSwitch,"ax",%progbits
+  58              		.align	2
+  59              		.global	readBoardSwitch
+  60              		.syntax unified
+  61              		.arm
+  62              		.fpu neon
+  64              	readBoardSwitch:
+  65              		@ args = 0, pretend = 0, frame = 0
+  66              		@ frame_needed = 0, uses_anonymous_args = 0
+  67              		@ link register save eliminated.
+  68 0000 FF200EE3 		movw	r2, #57599
+  69 0004 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  70 0008 FF2C4FE3 		movt	r2, 64767
+  71 000c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  72 0010 922052E5 		ldrb	r2, [r2, #-146]	@ zero_extendqisi2
+  73 0014 041093E5 		ldr	r1, [r3, #4]
+  74 0018 5223E0E7 		ubfx	r2, r2, #6, #1
+  75 001c 000051E3 		cmp	r1, #0
+  76 0020 0200A001 		moveq	r0, r2
+  77 0024 01008213 		orrne	r0, r2, #1
+  78 0028 000050E3 		cmp	r0, #0
+  79 002c 0D00001A 		bne	.L4
+  80 0030 001000E3 		movw	r1, #:lower16:.LANCHOR2
+  81 0034 001040E3 		movt	r1, #:upper16:.LANCHOR2
+  82 0038 00C091E5 		ldr	ip, [r1]
+  83 003c 00005CE3 		cmp	ip, #0
+  84 0040 0C00000A 		beq	.L5
+  85 0044 002093E5 		ldr	r2, [r3]
+  86 0048 08C093E5 		ldr	ip, [r3, #8]
+  87 004c 0C0052E1 		cmp	r2, ip
+  88 0050 01C0A0E3 		mov	ip, #1
+  89 0054 010082B2 		addlt	r0, r2, #1
+  90 0058 0020A0E3 		mov	r2, #0
+  91 005c 011083E8 		stm	r3, {r0, ip}
+  92 0060 002081E5 		str	r2, [r1]
+  93 0064 040000EA 		b	.L7
+  94              	.L4:
+  95 0068 000051E3 		cmp	r1, #0
+  96 006c 0200001A 		bne	.L7
+  97 0070 001000E3 		movw	r1, #:lower16:.LANCHOR2
+  98 0074 001040E3 		movt	r1, #:upper16:.LANCHOR2
+  99              	.L5:
+ 100 0078 002081E5 		str	r2, [r1]
+ 101              	.L7:
+ 102 007c FF200EE3 		movw	r2, #57599
+ 103 0080 101093E5 		ldr	r1, [r3, #16]
+ 104 0084 FF2C4FE3 		movt	r2, 64767
+ 105 0088 922052E5 		ldrb	r2, [r2, #-146]	@ zero_extendqisi2
+ 106 008c A223A0E1 		lsr	r2, r2, #7
+ 107 0090 000051E3 		cmp	r1, #0
+ 108 0094 0200A001 		moveq	r0, r2
+ 109 0098 01008213 		orrne	r0, r2, #1
+ 110 009c 000050E3 		cmp	r0, #0
+ 111 00a0 0E00001A 		bne	.L8
+ 112 00a4 001000E3 		movw	r1, #:lower16:.LANCHOR3
+ 113 00a8 001040E3 		movt	r1, #:upper16:.LANCHOR3
+ 114 00ac 00C091E5 		ldr	ip, [r1]
+ 115 00b0 00005CE3 		cmp	ip, #0
+ 116 00b4 0D00000A 		beq	.L9
+ 117 00b8 0C2093E5 		ldr	r2, [r3, #12]
+ 118 00bc 14C093E5 		ldr	ip, [r3, #20]
+ 119 00c0 0C0052E1 		cmp	r2, ip
+ 120 00c4 01C0A0E3 		mov	ip, #1
+ 121 00c8 010082B2 		addlt	r0, r2, #1
+ 122 00cc 0020A0E3 		mov	r2, #0
+ 123 00d0 0C0083E5 		str	r0, [r3, #12]
+ 124 00d4 10C083E5 		str	ip, [r3, #16]
+ 125 00d8 002081E5 		str	r2, [r1]
+ 126 00dc 1EFF2FE1 		bx	lr
+ 127              	.L8:
+ 128 00e0 000051E3 		cmp	r1, #0
+ 129 00e4 1EFF2F11 		bxne	lr
+ 130 00e8 001000E3 		movw	r1, #:lower16:.LANCHOR3
+ 131 00ec 001040E3 		movt	r1, #:upper16:.LANCHOR3
+ 132              	.L9:
+ 133 00f0 002081E5 		str	r2, [r1]
+ 134 00f4 1EFF2FE1 		bx	lr
+ 136              		.global	boardSwitchInfoStruct
+ 137              		.section	.rodata
+ 138              		.align	2
+ 139              		.set	.LANCHOR1,. + 0
+ 140              	.LC0:
+ 141 0000 00000000 		.word	0
+ 142 0004 00000000 		.word	0
+ 143 0008 01000000 		.word	1
+ 144 000c 00000000 		.word	0
+ 145 0010 00000000 		.word	0
+ 146 0014 01000000 		.word	1
+ 147              		.section	.data.SW2_lastKey,"aw",%progbits
+ 148              		.align	2
+ 149              		.set	.LANCHOR2,. + 0
+ 152              	SW2_lastKey:
+ 153 0000 01000000 		.word	1
+ 154              		.section	.data.SW3_lastKey,"aw",%progbits
+ 155              		.align	2
+ 156              		.set	.LANCHOR3,. + 0
+ 159              	SW3_lastKey:
+ 160 0000 01000000 		.word	1
+ 161              		.section	.data.boardSwitchInfoStruct,"aw",%progbits
+ 162              		.align	2
+ 163              		.set	.LANCHOR0,. + 0
+ 166              	boardSwitchInfoStruct:
+ 167 0000 00000000 		.word	0
+ 168 0004 00000000 		.word	0
+ 169 0008 01000000 		.word	1
+ 170 000c 00000000 		.word	0
+ 171 0010 00000000 		.word	0
+ 172 0014 01000000 		.word	1
+ 173              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 subBoardKeys.c
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:14     .text.initBoardSwitch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:20     .text.initBoardSwitch:00000000 initBoardSwitch
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:139    .rodata:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:163    .data.boardSwitchInfoStruct:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:58     .text.readBoardSwitch:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:64     .text.readBoardSwitch:00000000 readBoardSwitch
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:149    .data.SW2_lastKey:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:156    .data.SW3_lastKey:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:166    .data.boardSwitchInfoStruct:00000000 boardSwitchInfoStruct
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:138    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:148    .data.SW2_lastKey:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:152    .data.SW2_lastKey:00000000 SW2_lastKey
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:155    .data.SW3_lastKey:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:159    .data.SW3_lastKey:00000000 SW3_lastKey
+C:\Users\a5050395\AppData\Local\Temp\cc8OjYvP.s:162    .data.boardSwitchInfoStruct:00000000 $d
+
+NO UNDEFINED SYMBOLS

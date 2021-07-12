@@ -1,0 +1,135 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"micro_time.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite16ticks_per_secondEv,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite16ticks_per_secondEv
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite16ticks_per_secondEv:
+  24              		.fnstart
+  25              	.LFB4:
+  26              		.cfi_startproc
+  27              		@ args = 0, pretend = 0, frame = 0
+  28              		@ frame_needed = 0, uses_anonymous_args = 0
+  29              		@ link register save eliminated.
+  30 0000 0000A0E3 		mov	r0, #0
+  31 0004 1EFF2FE1 		bx	lr
+  32              		.cfi_endproc
+  33              	.LFE4:
+  34              		.cantunwind
+  35              		.fnend
+  37              		.section	.text._ZN6tflite19GetCurrentTimeTicksEv,"ax",%progbits
+  38              		.align	2
+  39              		.global	_ZN6tflite19GetCurrentTimeTicksEv
+  40              		.syntax unified
+  41              		.arm
+  42              		.fpu neon
+  44              	_ZN6tflite19GetCurrentTimeTicksEv:
+  45              		.fnstart
+  46              	.LFB2:
+  47              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // Reference implementation of timer functions.  Platforms are not required to
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // implement these timer methods, but they are required to enable profiling.
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // On platforms that have a POSIX stack or C library, it can be written using
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // methods from <sys/time.h> or clock() from <time.h>.
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // To add an equivalent function for your own platform, create your own
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // implementation file, and place it in a subfolder with named after the OS
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // you're targeting. For example, see the Cortex M bare metal version in
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // tensorflow/lite/micro/bluepill/micro_time.cc or the mbed one on
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // tensorflow/lite/micro/mbed/micro_time.cc.
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** #include "tensorflow/lite/micro/micro_time.h"
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** #if defined(TF_LITE_USE_CTIME)
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** #include <ctime>
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** #endif
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** namespace tflite {
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** #if !defined(TF_LITE_USE_CTIME)
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // Reference implementation of the ticks_per_second() function that's required
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // for a platform to support Tensorflow Lite for Microcontrollers profiling.
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // This returns 0 by default because timing is an optional feature that builds
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // without errors on platforms that do not need it.
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** int32_t ticks_per_second() { return 0; }
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** 
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // Reference implementation of the GetCurrentTimeTicks() function that's
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // required for a platform to support Tensorflow Lite for Microcontrollers
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // profiling. This returns 0 by default because timing is an optional feature
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** // that builds without errors on platforms that do not need it.
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/micro_time.cpp **** int32_t GetCurrentTimeTicks() { return 0; }
+  48              		.loc 1 48 0
+  49              		.cfi_startproc
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52              		@ link register save eliminated.
+  53              		.loc 1 48 0
+  54 0000 0000A0E3 		mov	r0, #0
+  55 0004 1EFF2FE1 		bx	lr
+  56              		.cfi_endproc
+  57              	.LFE2:
+  58              		.cantunwind
+  59              		.fnend
+  61              		.text
+  62              	.Letext0:
+  63              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  64              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  65              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  66              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  67              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  68              		.file 7 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+  69              		.file 8 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 micro_time.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccmKMWoJ.s:17     .text._ZN6tflite16ticks_per_secondEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccmKMWoJ.s:23     .text._ZN6tflite16ticks_per_secondEv:00000000 _ZN6tflite16ticks_per_secondEv
+.ARM.exidx.text._ZN6tflite16ticks_per_secondEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccmKMWoJ.s:38     .text._ZN6tflite19GetCurrentTimeTicksEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccmKMWoJ.s:44     .text._ZN6tflite19GetCurrentTimeTicksEv:00000000 _ZN6tflite19GetCurrentTimeTicksEv
+.ARM.exidx.text._ZN6tflite19GetCurrentTimeTicksEv:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+
+NO UNDEFINED SYMBOLS

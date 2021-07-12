@@ -1,0 +1,2888 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"gather_nd.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	_ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:
+  23              		.fnstart
+  24              	.LFB1141:
+  25              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** /* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** #include "tensorflow/lite/c/common.h"
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** #include "tensorflow/lite/kernels/kernel_util.h"
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** #include "tensorflow/lite/micro/kernels/kernel_util.h"
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** #include "tensorflow/lite/micro/micro_utils.h"
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** namespace tflite {
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** namespace {
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** constexpr int kParams = 0;
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** constexpr int kIndices = 1;
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** constexpr int kOutputTensor = 0;
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** constexpr int MAX_INDICES_ND = 5;
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  26              		.loc 1 30 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 16
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31              	.LBB95:
+  32              	.LBB96:
+  33              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #define TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <stdint.h>
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <limits>
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** namespace tflite {
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // A fair number of functions in this header have historically been inline.
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // It is ok to change functions to not be inline if the latency with
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // benchmark_model for MobileNet + MobileBERT is unaffected. If such a change is
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // made, move the newly non-inlined function declarations to the top of this
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // header file.
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetInput(context, node, kMyTensorIdx);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                              const TfLiteNode* node, int index);
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetInput` but returns boolean and uses output argument for tensor.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetInputSafe(context, node, kMyTensorIdx, &my_tensor));
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetInputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                           int index, const TfLiteTensor** tensor);
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetVariableInput(context, node, kMyTensorIdx);
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetVariableInput(TfLiteContext* context, const TfLiteNode* node,
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                int index);
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  64:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  65:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  66:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOutput(context, node, kMyTensorIdx);
+  67:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  68:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  69:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  70:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  71:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetOutput(TfLiteContext* context, const TfLiteNode* node,
+  72:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                         int index);
+  73:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  74:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetOutput` but returns boolean and uses output argument for tensor.
+  75:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  76:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  77:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  78:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetOutputSafe(context, node, kMyTensorIdx, &my_tensor));
+  79:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  80:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  81:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  82:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetOutputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  83:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index, TfLiteTensor** tensor);
+  84:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  85:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  86:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  87:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOptionalInputTensor(context, node, kIdx);
+  88:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  89:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  90:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  91:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  92:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  93:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Deprecated. GetInput has the same functionality.
+  94:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetOptionalInputTensor(const TfLiteContext* context,
+  95:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                            const TfLiteNode* node, int index);
+  96:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  97:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+  98:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  99:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 100:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetTemporary(context, node, kMyTensorIdx);
+ 101:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 102:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 103:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 104:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 105:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetTemporary(TfLiteContext* context, const TfLiteNode* node,
+ 106:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index);
+ 107:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 108:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetTemporary` but returns boolean and uses output argument for
+ 109:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 110:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 111:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 112:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 113:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetTemporarySafe(context, node, kMyTensorIdx,
+ 114:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 115:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 116:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 117:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 118:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetTemporarySafe(const TfLiteContext* context,
+ 119:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               const TfLiteNode* node, int index,
+ 120:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               TfLiteTensor** tensor);
+ 121:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 122:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+ 123:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 124:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetIntermediates(context, node, kMyTensorIdx);
+ 125:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 126:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 127:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 128:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 129:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetIntermediates(TfLiteContext* context,
+ 130:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                      const TfLiteNode* node, int index);
+ 131:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 132:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetIntermediates` but returns boolean and uses output argument for
+ 133:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 134:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 135:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 136:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 137:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetIntermediatesSafe(context, node, kMyTensorIdx,
+ 138:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 139:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 140:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 141:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 142:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetIntermediatesSafe(const TfLiteContext* context,
+ 143:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   const TfLiteNode* node, int index,
+ 144:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   TfLiteTensor** tensor);
+ 145:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 146:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumDimensions(const TfLiteTensor* t) { return t->dims->size; }
+ 148:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   return t->dims->data[dim];
+ 150:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** }
+ 151:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumInputs(const TfLiteNode* node) { return node->inputs->size; }
+  34              		.loc 2 152 0
+  35 0000 003091E5 		ldr	r3, [r1]
+  36              	.LBE96:
+  37              	.LBE95:
+  38              		.loc 1 30 0
+  39 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  40              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  41              		.cfi_def_cfa_offset 36
+  42              		.cfi_offset 4, -36
+  43              		.cfi_offset 5, -32
+  44              		.cfi_offset 6, -28
+  45              		.cfi_offset 7, -24
+  46              		.cfi_offset 8, -20
+  47              		.cfi_offset 9, -16
+  48              		.cfi_offset 10, -12
+  49              		.cfi_offset 11, -8
+  50              		.cfi_offset 14, -4
+  51 0008 0050A0E1 		mov	r5, r0
+  52              	.LVL1:
+  53              		.pad #36
+  54 000c 24D04DE2 		sub	sp, sp, #36
+  55              		.cfi_def_cfa_offset 72
+  56              	.LBB98:
+  57              	.LBB97:
+  58              		.loc 2 152 0
+  59 0010 003093E5 		ldr	r3, [r3]
+  60              	.LBE97:
+  61              	.LBE98:
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_EQ(context, NumInputs(node), 2);
+  62              		.loc 1 31 0
+  63 0014 020053E3 		cmp	r3, #2
+  64 0018 C200001A 		bne	.L51
+  65              	.LBB99:
+  66              	.LBB100:
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+  67              		.loc 2 153 0
+  68 001c 043091E5 		ldr	r3, [r1, #4]
+  69 0020 0140A0E1 		mov	r4, r1
+  70              	.LVL2:
+  71 0024 006093E5 		ldr	r6, [r3]
+  72              	.LBE100:
+  73              	.LBE99:
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+  74              		.loc 1 32 0
+  75 0028 010056E3 		cmp	r6, #1
+  76 002c 1200000A 		beq	.L4
+  77              	.LVL3:
+  78              		.loc 1 32 0 is_stmt 0 discriminator 1
+  79 0030 00C000E3 		movw	ip, #:lower16:.LC5
+  80 0034 003000E3 		movw	r3, #:lower16:.LC6
+  81 0038 00C040E3 		movt	ip, #:upper16:.LC5
+  82 003c 003040E3 		movt	r3, #:upper16:.LC6
+  83 0040 0140A0E3 		mov	r4, #1
+  84 0044 002000E3 		movw	r2, #:lower16:.LC1
+  85 0048 001000E3 		movw	r1, #:lower16:.LC2
+  86              	.LVL4:
+  87 004c 08608DE5 		str	r6, [sp, #8]
+  88 0050 002040E3 		movt	r2, #:upper16:.LC1
+  89 0054 145090E5 		ldr	r5, [r0, #20]
+  90 0058 001040E3 		movt	r1, #:upper16:.LC2
+  91 005c 00308DE5 		str	r3, [sp]
+  92 0060 04C08DE5 		str	ip, [sp, #4]
+  93 0064 2030A0E3 		mov	r3, #32
+  94 0068 0C408DE5 		str	r4, [sp, #12]
+  95 006c 35FF2FE1 		blx	r5
+  96              	.LVL5:
+  97 0070 0400A0E1 		mov	r0, r4
+  98              	.LVL6:
+  99              	.L3:
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const TfLiteTensor* params;
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, kParams, &params));
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const TfLiteTensor* indices;
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_OK(context, GetInputSafe(context, node, kIndices, &indices));
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TfLiteTensor* output;
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_OK(context,
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                     GetOutputSafe(context, node, kOutputTensor, &output));
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   switch (params->type) {
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteFloat32:
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteInt8:
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     default:
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       TF_LITE_KERNEL_LOG(context,
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Params of type '%s' are not supported by gather_nd.",
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          TfLiteTypeGetName(params->type));
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return kTfLiteError;
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   switch (indices->type) {
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteInt32:
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     default:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       TF_LITE_KERNEL_LOG(context,
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Indices of type '%s' are not supported by gather_nd.",
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          TfLiteTypeGetName(indices->type));
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return kTfLiteError;
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  62:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_rank = NumDimensions(params);
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_rank = NumDimensions(indices);
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = SizeOfDimension(indices, indices_rank - 1);
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   if (params_rank < 1) {
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context, "Params must be at least a vector.");
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   if (indices_rank < 1) {
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context, "Indices must be at least a vector.");
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   if (indices_nd > params_rank) {
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****         context, "Index innermost dimension length must be <= params rank.");
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+  78:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   if (indices_nd > MAX_INDICES_ND) {
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context,
+  81:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                        "Index innermost dimension length must not exceed %d.",
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                        MAX_INDICES_ND);
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  85:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // Assign to output the input type.
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   output->type = params->type;
+  88:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // TFLM gather_nd does not create the output tensor, but it needs to ensure
+  90:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // that the output shape is correct. The result shape is
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // indices.shape[:-1] + params.shape[indices.shape[-1]:]
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TfLiteIntArray* output_shape = output->dims;
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int output_index = 0;
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_rank - 1; ++i) {
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = indices_nd; i < params_rank; ++i) {
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+  99:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   output_shape->size = output_index;
+ 101:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return kTfLiteOk;
+ 102:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 100              		.loc 1 102 0 is_stmt 1
+ 101 0074 24D08DE2 		add	sp, sp, #36
+ 102              		.cfi_remember_state
+ 103              		.cfi_def_cfa_offset 36
+ 104              		@ sp needed
+ 105 0078 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 106              	.LVL7:
+ 107              	.L4:
+ 108              		.cfi_restore_state
+ 109              	.LBB101:
+ 110              	.LBB102:
+ 111              	.LBB103:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const TfLiteTensor* indices;
+ 112              		.loc 1 35 0
+ 113 007c 14308DE2 		add	r3, sp, #20
+ 114 0080 0020A0E3 		mov	r2, #0
+ 115 0084 FEFFFFEB 		bl	_ZN6tflite12GetInputSafeEPK13TfLiteContextPK10TfLiteNodeiPPK12TfLiteTensor
+ 116              	.LVL8:
+ 117 0088 000050E3 		cmp	r0, #0
+ 118              	.LVL9:
+ 119 008c F8FFFF1A 		bne	.L3
+ 120              	.LBE103:
+ 121              	.LBB104:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TfLiteTensor* output;
+ 122              		.loc 1 37 0
+ 123 0090 18308DE2 		add	r3, sp, #24
+ 124 0094 0620A0E1 		mov	r2, r6
+ 125 0098 0410A0E1 		mov	r1, r4
+ 126 009c 0500A0E1 		mov	r0, r5
+ 127 00a0 FEFFFFEB 		bl	_ZN6tflite12GetInputSafeEPK13TfLiteContextPK10TfLiteNodeiPPK12TfLiteTensor
+ 128              	.LVL10:
+ 129 00a4 000050E3 		cmp	r0, #0
+ 130              	.LVL11:
+ 131 00a8 F1FFFF1A 		bne	.L3
+ 132              	.LBE104:
+ 133              	.LBB105:
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                     GetOutputSafe(context, node, kOutputTensor, &output));
+ 134              		.loc 1 39 0
+ 135 00ac 0020A0E1 		mov	r2, r0
+ 136 00b0 0410A0E1 		mov	r1, r4
+ 137 00b4 1C308DE2 		add	r3, sp, #28
+ 138 00b8 0500A0E1 		mov	r0, r5
+ 139 00bc FEFFFFEB 		bl	_ZN6tflite13GetOutputSafeEPK13TfLiteContextPK10TfLiteNodeiPP12TfLiteTensor
+ 140              	.LVL12:
+ 141 00c0 000050E3 		cmp	r0, #0
+ 142              	.LVL13:
+ 143 00c4 EAFFFF1A 		bne	.L3
+ 144              	.LBE105:
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteFloat32:
+ 145              		.loc 1 42 0
+ 146 00c8 14309DE5 		ldr	r3, [sp, #20]
+ 147 00cc 0000D3E5 		ldrb	r0, [r3]	@ zero_extendqisi2
+ 148 00d0 010050E3 		cmp	r0, #1
+ 149 00d4 0100000A 		beq	.L7
+ 150 00d8 090050E3 		cmp	r0, #9
+ 151 00dc AA00001A 		bne	.L52
+ 152              	.L7:
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteInt32:
+ 153              		.loc 1 53 0
+ 154 00e0 18209DE5 		ldr	r2, [sp, #24]
+ 155 00e4 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+ 156 00e8 020051E3 		cmp	r1, #2
+ 157 00ec AF00001A 		bne	.L53
+ 158 00f0 08C093E5 		ldr	ip, [r3, #8]
+ 159              	.LVL14:
+ 160 00f4 087092E5 		ldr	r7, [r2, #8]
+ 161              	.LBB106:
+ 162              	.LBB107:
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 163              		.loc 2 147 0
+ 164 00f8 00E09CE5 		ldr	lr, [ip]
+ 165              	.LVL15:
+ 166              	.LBE107:
+ 167              	.LBE106:
+ 168              	.LBB108:
+ 169              	.LBB109:
+ 170 00fc 006097E5 		ldr	r6, [r7]
+ 171              	.LVL16:
+ 172              	.LBE109:
+ 173              	.LBE108:
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context, "Params must be at least a vector.");
+ 174              		.loc 1 66 0
+ 175 0100 00005EE3 		cmp	lr, #0
+ 176              	.LBB110:
+ 177              	.LBB111:
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** }
+ 178              		.loc 2 149 0
+ 179 0104 013046E2 		sub	r3, r6, #1
+ 180              	.LVL17:
+ 181 0108 062197E7 		ldr	r2, [r7, r6, lsl #2]
+ 182              	.LVL18:
+ 183              	.LBE111:
+ 184              	.LBE110:
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context, "Params must be at least a vector.");
+ 185              		.loc 1 66 0
+ 186 010c E70000DA 		ble	.L54
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context, "Indices must be at least a vector.");
+ 187              		.loc 1 70 0
+ 188 0110 000056E3 		cmp	r6, #0
+ 189 0114 EC0000DA 		ble	.L55
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(
+ 190              		.loc 1 74 0
+ 191 0118 02005EE1 		cmp	lr, r2
+ 192 011c AD0000BA 		blt	.L56
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     TF_LITE_KERNEL_LOG(context,
+ 193              		.loc 1 79 0
+ 194 0120 050052E3 		cmp	r2, #5
+ 195 0124 B20000CA 		bgt	.L57
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 196              		.loc 1 87 0
+ 197 0128 1C109DE5 		ldr	r1, [sp, #28]
+ 198              	.LBB112:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 199              		.loc 1 94 0
+ 200 012c 000053E3 		cmp	r3, #0
+ 201              	.LBE112:
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 202              		.loc 1 87 0
+ 203 0130 0000C1E5 		strb	r0, [r1]
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int output_index = 0;
+ 204              		.loc 1 92 0
+ 205 0134 084091E5 		ldr	r4, [r1, #8]
+ 206              	.LVL19:
+ 207              	.LBB113:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 208              		.loc 1 94 0
+ 209 0138 EA0000DA 		ble	.L58
+ 210 013c 141087E2 		add	r1, r7, #20
+ 211 0140 045087E2 		add	r5, r7, #4
+ 212              	.LVL20:
+ 213 0144 040084E2 		add	r0, r4, #4
+ 214 0148 148084E2 		add	r8, r4, #20
+ 215 014c 080055E1 		cmp	r5, r8
+ 216 0150 01005031 		cmpcc	r0, r1
+ 217 0154 008085E1 		orr	r8, r5, r0
+ 218 0158 0110A023 		movcs	r1, #1
+ 219 015c 0010A033 		movcc	r1, #0
+ 220 0160 090053E3 		cmp	r3, #9
+ 221 0164 0010A093 		movls	r1, #0
+ 222 0168 01100182 		andhi	r1, r1, #1
+ 223 016c 0F0018E3 		tst	r8, #15
+ 224 0170 0010A013 		movne	r1, #0
+ 225 0174 01100102 		andeq	r1, r1, #1
+ 226 0178 000051E3 		cmp	r1, #0
+ 227 017c 7C00000A 		beq	.L23
+ 228 0180 051046E2 		sub	r1, r6, #5
+ 229 0184 0060A0E3 		mov	r6, #0
+ 230 0188 2111A0E1 		lsr	r1, r1, #2
+ 231 018c 011081E2 		add	r1, r1, #1
+ 232 0190 0181A0E1 		lsl	r8, r1, #2
+ 233              	.LVL21:
+ 234              	.L19:
+ 235 0194 016086E2 		add	r6, r6, #1
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 236              		.loc 1 95 0
+ 237 0198 DF0A65F4 		vld1.64	{d16-d17}, [r5:64]
+ 238 019c 060051E1 		cmp	r1, r6
+ 239 01a0 105085E2 		add	r5, r5, #16
+ 240 01a4 DF0A40F4 		vst1.64	{d16-d17}, [r0:64]
+ 241 01a8 100080E2 		add	r0, r0, #16
+ 242 01ac F8FFFF8A 		bhi	.L19
+ 243 01b0 080053E1 		cmp	r3, r8
+ 244 01b4 1400000A 		beq	.L24
+ 245              	.LVL22:
+ 246 01b8 0811A0E1 		lsl	r1, r8, #2
+ 247 01bc 010088E2 		add	r0, r8, #1
+ 248              	.LVL23:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 249              		.loc 1 94 0
+ 250 01c0 000053E1 		cmp	r3, r0
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 251              		.loc 1 95 0
+ 252 01c4 015087E0 		add	r5, r7, r1
+ 253 01c8 011084E0 		add	r1, r4, r1
+ 254 01cc 045095E5 		ldr	r5, [r5, #4]
+ 255 01d0 045081E5 		str	r5, [r1, #4]
+ 256              	.LVL24:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 257              		.loc 1 94 0
+ 258 01d4 0C0000DA 		ble	.L24
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 259              		.loc 1 95 0
+ 260 01d8 0001A0E1 		lsl	r0, r0, #2
+ 261              	.LVL25:
+ 262 01dc 021088E2 		add	r1, r8, #2
+ 263              	.LVL26:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 264              		.loc 1 94 0
+ 265 01e0 010053E1 		cmp	r3, r1
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 266              		.loc 1 95 0
+ 267 01e4 005087E0 		add	r5, r7, r0
+ 268 01e8 000084E0 		add	r0, r4, r0
+ 269 01ec 045095E5 		ldr	r5, [r5, #4]
+ 270 01f0 045080E5 		str	r5, [r0, #4]
+ 271              	.LVL27:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 272              		.loc 1 94 0
+ 273 01f4 040000DA 		ble	.L24
+ 274              	.LVL28:
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 275              		.loc 1 95 0
+ 276 01f8 0111A0E1 		lsl	r1, r1, #2
+ 277              	.LVL29:
+ 278 01fc 017087E0 		add	r7, r7, r1
+ 279 0200 011084E0 		add	r1, r4, r1
+ 280 0204 040097E5 		ldr	r0, [r7, #4]
+ 281 0208 040081E5 		str	r0, [r1, #4]
+ 282              	.LVL30:
+ 283              	.L24:
+ 284              	.LBE113:
+ 285              	.LBB114:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 286              		.loc 1 97 0
+ 287 020c 02005EE1 		cmp	lr, r2
+ 288 0210 410000DA 		ble	.L15
+ 289 0214 015082E2 		add	r5, r2, #1
+ 290 0218 017083E2 		add	r7, r3, #1
+ 291 021c 0701A0E1 		lsl	r0, r7, #2
+ 292 0220 0511A0E1 		lsl	r1, r5, #2
+ 293 0224 109080E2 		add	r9, r0, #16
+ 294 0228 106081E2 		add	r6, r1, #16
+ 295 022c 06608CE0 		add	r6, ip, r6
+ 296 0230 00B084E0 		add	fp, r4, r0
+ 297 0234 01A08CE0 		add	r10, ip, r1
+ 298 0238 099084E0 		add	r9, r4, r9
+ 299 023c 0A0059E1 		cmp	r9, r10
+ 300 0240 0B005681 		cmphi	r6, fp
+ 301 0244 0A808BE1 		orr	r8, fp, r10
+ 302 0248 0160A093 		movls	r6, #1
+ 303 024c 0060A083 		movhi	r6, #0
+ 304 0250 0F0018E3 		tst	r8, #15
+ 305 0254 02804EE0 		sub	r8, lr, r2
+ 306 0258 0060A013 		movne	r6, #0
+ 307 025c 01600602 		andeq	r6, r6, #1
+ 308 0260 090058E3 		cmp	r8, #9
+ 309 0264 0060A093 		movls	r6, #0
+ 310 0268 01600682 		andhi	r6, r6, #1
+ 311 026c 040040E2 		sub	r0, r0, #4
+ 312 0270 000056E3 		cmp	r6, #0
+ 313 0274 0390A0E1 		mov	r9, r3
+ 314 0278 6500000A 		beq	.L25
+ 315 027c 041048E2 		sub	r1, r8, #4
+ 316 0280 01004EE2 		sub	r0, lr, #1
+ 317 0284 020040E0 		sub	r0, r0, r2
+ 318 0288 2111A0E1 		lsr	r1, r1, #2
+ 319 028c 020050E3 		cmp	r0, #2
+ 320 0290 011081E2 		add	r1, r1, #1
+ 321 0294 0101A0E1 		lsl	r0, r1, #2
+ 322 0298 0D00009A 		bls	.L26
+ 323 029c 0050A0E3 		mov	r5, #0
+ 324              	.L28:
+ 325 02a0 015085E2 		add	r5, r5, #1
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 326              		.loc 1 98 0
+ 327 02a4 DF0A6AF4 		vld1.64	{d16-d17}, [r10:64]
+ 328 02a8 050051E1 		cmp	r1, r5
+ 329 02ac 10A08AE2 		add	r10, r10, #16
+ 330 02b0 DF0A4BF4 		vst1.64	{d16-d17}, [fp:64]
+ 331 02b4 10B08BE2 		add	fp, fp, #16
+ 332 02b8 F8FFFF8A 		bhi	.L28
+ 333 02bc 000058E1 		cmp	r8, r0
+ 334 02c0 002082E0 		add	r2, r2, r0
+ 335 02c4 003083E0 		add	r3, r3, r0
+ 336 02c8 1200000A 		beq	.L33
+ 337 02cc 015082E2 		add	r5, r2, #1
+ 338 02d0 017083E2 		add	r7, r3, #1
+ 339              	.L26:
+ 340              	.LVL31:
+ 341 02d4 02118CE0 		add	r1, ip, r2, lsl #2
+ 342 02d8 030184E0 		add	r0, r4, r3, lsl #2
+ 343 02dc 041091E5 		ldr	r1, [r1, #4]
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 344              		.loc 1 97 0
+ 345 02e0 05005EE1 		cmp	lr, r5
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 346              		.loc 1 98 0
+ 347 02e4 041080E5 		str	r1, [r0, #4]
+ 348              	.LVL32:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 349              		.loc 1 97 0
+ 350 02e8 0A0000DA 		ble	.L33
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 351              		.loc 1 98 0
+ 352 02ec 05518CE0 		add	r5, ip, r5, lsl #2
+ 353              	.LVL33:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 354              		.loc 1 97 0
+ 355 02f0 022082E2 		add	r2, r2, #2
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 356              		.loc 1 98 0
+ 357 02f4 077184E0 		add	r7, r4, r7, lsl #2
+ 358              	.LVL34:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 359              		.loc 1 97 0
+ 360 02f8 02005EE1 		cmp	lr, r2
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 361              		.loc 1 98 0
+ 362 02fc 041095E5 		ldr	r1, [r5, #4]
+ 363 0300 023083E2 		add	r3, r3, #2
+ 364              	.LVL35:
+ 365 0304 041087E5 		str	r1, [r7, #4]
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 366              		.loc 1 97 0
+ 367              	.LVL36:
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 368              		.loc 1 98 0
+ 369 0308 02218CC0 		addgt	r2, ip, r2, lsl #2
+ 370 030c 033184C0 		addgt	r3, r4, r3, lsl #2
+ 371              	.LVL37:
+ 372 0310 042092C5 		ldrgt	r2, [r2, #4]
+ 373 0314 042083C5 		strgt	r2, [r3, #4]
+ 374              	.L33:
+ 375 0318 083089E0 		add	r3, r9, r8
+ 376              	.L15:
+ 377              	.LBE114:
+ 101:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 378              		.loc 1 101 0
+ 379 031c 0000A0E3 		mov	r0, #0
+ 380              	.LVL38:
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return kTfLiteOk;
+ 381              		.loc 1 100 0
+ 382 0320 003084E5 		str	r3, [r4]
+ 383 0324 52FFFFEA 		b	.L3
+ 384              	.LVL39:
+ 385              	.L51:
+ 386              	.LBE102:
+ 387              	.LBE101:
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+ 388              		.loc 1 31 0 discriminator 1
+ 389 0328 00E000E3 		movw	lr, #:lower16:.LC3
+ 390 032c 00C000E3 		movw	ip, #:lower16:.LC4
+ 391 0330 00E040E3 		movt	lr, #:upper16:.LC3
+ 392 0334 00C040E3 		movt	ip, #:upper16:.LC4
+ 393 0338 0260A0E3 		mov	r6, #2
+ 394 033c 002000E3 		movw	r2, #:lower16:.LC1
+ 395 0340 001000E3 		movw	r1, #:lower16:.LC2
+ 396              	.LVL40:
+ 397 0344 08308DE5 		str	r3, [sp, #8]
+ 398 0348 002040E3 		movt	r2, #:upper16:.LC1
+ 399 034c 144090E5 		ldr	r4, [r0, #20]
+ 400 0350 001040E3 		movt	r1, #:upper16:.LC2
+ 401 0354 04E08DE5 		str	lr, [sp, #4]
+ 402 0358 00C08DE5 		str	ip, [sp]
+ 403 035c 1F30A0E3 		mov	r3, #31
+ 404 0360 0C608DE5 		str	r6, [sp, #12]
+ 405 0364 34FF2FE1 		blx	r4
+ 406              	.LVL41:
+ 407 0368 0100A0E3 		mov	r0, #1
+ 408              		.loc 1 102 0 discriminator 1
+ 409 036c 24D08DE2 		add	sp, sp, #36
+ 410              		.cfi_remember_state
+ 411              		.cfi_def_cfa_offset 36
+ 412              		@ sp needed
+ 413 0370 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 414              	.LVL42:
+ 415              	.L23:
+ 416              		.cfi_restore_state
+ 417              	.LBB118:
+ 418              	.LBB117:
+ 419              	.LBB115:
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 420              		.loc 1 95 0
+ 421 0374 011081E2 		add	r1, r1, #1
+ 422              	.LVL43:
+ 423 0378 046095E4 		ldr	r6, [r5], #4
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 424              		.loc 1 94 0
+ 425 037c 030051E1 		cmp	r1, r3
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 426              		.loc 1 95 0
+ 427 0380 046080E4 		str	r6, [r0], #4
+ 428              	.LVL44:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = indices->dims->data[i];
+ 429              		.loc 1 94 0
+ 430 0384 FAFFFF1A 		bne	.L23
+ 431 0388 9FFFFFEA 		b	.L24
+ 432              	.LVL45:
+ 433              	.L52:
+ 434              	.LBE115:
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Params of type '%s' are not supported by gather_nd.",
+ 435              		.loc 1 47 0
+ 436 038c 144095E5 		ldr	r4, [r5, #20]
+ 437              	.LVL46:
+ 438 0390 FEFFFFEB 		bl	TfLiteTypeGetName
+ 439              	.LVL47:
+ 440 0394 001000E3 		movw	r1, #:lower16:.LC7
+ 441 0398 0020A0E1 		mov	r2, r0
+ 442 039c 001040E3 		movt	r1, #:upper16:.LC7
+ 443 03a0 0500A0E1 		mov	r0, r5
+ 444 03a4 34FF2FE1 		blx	r4
+ 445              	.LVL48:
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+ 446              		.loc 1 50 0
+ 447 03a8 0600A0E1 		mov	r0, r6
+ 448 03ac 30FFFFEA 		b	.L3
+ 449              	.LVL49:
+ 450              	.L53:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Indices of type '%s' are not supported by gather_nd.",
+ 451              		.loc 1 57 0
+ 452 03b0 0100A0E1 		mov	r0, r1
+ 453 03b4 144095E5 		ldr	r4, [r5, #20]
+ 454              	.LVL50:
+ 455 03b8 FEFFFFEB 		bl	TfLiteTypeGetName
+ 456              	.LVL51:
+ 457 03bc 001000E3 		movw	r1, #:lower16:.LC8
+ 458 03c0 0020A0E1 		mov	r2, r0
+ 459 03c4 001040E3 		movt	r1, #:upper16:.LC8
+ 460 03c8 0500A0E1 		mov	r0, r5
+ 461 03cc 34FF2FE1 		blx	r4
+ 462              	.LVL52:
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 463              		.loc 1 60 0
+ 464 03d0 0100A0E3 		mov	r0, #1
+ 465 03d4 26FFFFEA 		b	.L3
+ 466              	.LVL53:
+ 467              	.L56:
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****         context, "Index innermost dimension length must be <= params rank.");
+ 468              		.loc 1 75 0
+ 469 03d8 001000E3 		movw	r1, #:lower16:.LC11
+ 470 03dc 0500A0E1 		mov	r0, r5
+ 471 03e0 143095E5 		ldr	r3, [r5, #20]
+ 472 03e4 001040E3 		movt	r1, #:upper16:.LC11
+ 473 03e8 33FF2FE1 		blx	r3
+ 474              	.LVL54:
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 475              		.loc 1 77 0
+ 476 03ec 0100A0E3 		mov	r0, #1
+ 477 03f0 1FFFFFEA 		b	.L3
+ 478              	.LVL55:
+ 479              	.L57:
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                        "Index innermost dimension length must not exceed %d.",
+ 480              		.loc 1 80 0
+ 481 03f4 001000E3 		movw	r1, #:lower16:.LC12
+ 482 03f8 0500A0E1 		mov	r0, r5
+ 483 03fc 143095E5 		ldr	r3, [r5, #20]
+ 484 0400 001040E3 		movt	r1, #:upper16:.LC12
+ 485 0404 0520A0E3 		mov	r2, #5
+ 486 0408 33FF2FE1 		blx	r3
+ 487              	.LVL56:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 488              		.loc 1 83 0
+ 489 040c 0100A0E3 		mov	r0, #1
+ 490 0410 17FFFFEA 		b	.L3
+ 491              	.LVL57:
+ 492              	.L25:
+ 493 0414 07604EE2 		sub	r6, lr, #7
+ 494 0418 060055E1 		cmp	r5, r6
+ 495 041c 1B0000AA 		bge	.L31
+ 496 0420 881081E2 		add	r1, r1, #136
+ 497 0424 000084E0 		add	r0, r4, r0
+ 498 0428 01108CE0 		add	r1, ip, r1
+ 499              	.L32:
+ 500              	.LBB116:
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 501              		.loc 1 98 0
+ 502 042c 887011E5 		ldr	r7, [r1, #-136]
+ 503 0430 095082E2 		add	r5, r2, #9
+ 504 0434 00F0D1F5 		pld	[r1]
+ 505 0438 050056E1 		cmp	r6, r5
+ 506 043c 083083E2 		add	r3, r3, #8
+ 507 0440 082082E2 		add	r2, r2, #8
+ 508 0444 047080E5 		str	r7, [r0, #4]
+ 509 0448 201081E2 		add	r1, r1, #32
+ 510 044c A45011E5 		ldr	r5, [r1, #-164]
+ 511 0450 085080E5 		str	r5, [r0, #8]
+ 512 0454 A05011E5 		ldr	r5, [r1, #-160]
+ 513 0458 0C5080E5 		str	r5, [r0, #12]
+ 514 045c 9C5011E5 		ldr	r5, [r1, #-156]
+ 515 0460 105080E5 		str	r5, [r0, #16]
+ 516 0464 985011E5 		ldr	r5, [r1, #-152]
+ 517 0468 145080E5 		str	r5, [r0, #20]
+ 518 046c 945011E5 		ldr	r5, [r1, #-148]
+ 519 0470 185080E5 		str	r5, [r0, #24]
+ 520 0474 905011E5 		ldr	r5, [r1, #-144]
+ 521 0478 1C5080E5 		str	r5, [r0, #28]
+ 522 047c 8C5011E5 		ldr	r5, [r1, #-140]
+ 523 0480 2050A0E5 		str	r5, [r0, #32]!
+ 524 0484 E8FFFFCA 		bgt	.L32
+ 525 0488 015082E2 		add	r5, r2, #1
+ 526 048c 017083E2 		add	r7, r3, #1
+ 527              	.L31:
+ 528 0490 05C18CE0 		add	ip, ip, r5, lsl #2
+ 529 0494 077184E0 		add	r7, r4, r7, lsl #2
+ 530              	.L34:
+ 531 0498 04309CE4 		ldr	r3, [ip], #4
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 532              		.loc 1 97 0
+ 533 049c 05005EE1 		cmp	lr, r5
+ 534 04a0 015085E2 		add	r5, r5, #1
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 535              		.loc 1 98 0
+ 536 04a4 043087E4 		str	r3, [r7], #4
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     output_shape->data[output_index++] = params->dims->data[i];
+ 537              		.loc 1 97 0
+ 538 04a8 FAFFFFCA 		bgt	.L34
+ 539 04ac 99FFFFEA 		b	.L33
+ 540              	.LVL58:
+ 541              	.L54:
+ 542              	.LBE116:
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+ 543              		.loc 1 67 0
+ 544 04b0 001000E3 		movw	r1, #:lower16:.LC9
+ 545 04b4 0500A0E1 		mov	r0, r5
+ 546 04b8 143095E5 		ldr	r3, [r5, #20]
+ 547 04bc 001040E3 		movt	r1, #:upper16:.LC9
+ 548 04c0 33FF2FE1 		blx	r3
+ 549              	.LVL59:
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 550              		.loc 1 68 0
+ 551 04c4 0100A0E3 		mov	r0, #1
+ 552 04c8 E9FEFFEA 		b	.L3
+ 553              	.LVL60:
+ 554              	.L55:
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     return kTfLiteError;
+ 555              		.loc 1 71 0
+ 556 04cc 001000E3 		movw	r1, #:lower16:.LC10
+ 557 04d0 0500A0E1 		mov	r0, r5
+ 558 04d4 143095E5 		ldr	r3, [r5, #20]
+ 559 04d8 001040E3 		movt	r1, #:upper16:.LC10
+ 560 04dc 33FF2FE1 		blx	r3
+ 561              	.LVL61:
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 562              		.loc 1 72 0
+ 563 04e0 0100A0E3 		mov	r0, #1
+ 564 04e4 E2FEFFEA 		b	.L3
+ 565              	.LVL62:
+ 566              	.L58:
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_rank - 1; ++i) {
+ 567              		.loc 1 93 0
+ 568 04e8 0030A0E3 		mov	r3, #0
+ 569 04ec 46FFFFEA 		b	.L24
+ 570              	.LBE117:
+ 571              	.LBE118:
+ 572              		.cfi_endproc
+ 573              	.LFE1141:
+ 574              		.fnend
+ 576              		.global	__aeabi_idiv
+ 577              		.section	.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 578              		.align	2
+ 579              		.syntax unified
+ 580              		.arm
+ 581              		.fpu neon
+ 583              	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:
+ 584              		.fnstart
+ 585              	.LFB1144:
+ 103:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 104:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** template <typename ParamsT, typename IndicesT>
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** TfLiteStatus GatherNd(const TfLiteEvalTensor* params,
+ 106:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                       const TfLiteEvalTensor* indices,
+ 107:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                       TfLiteEvalTensor* output) {
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_dims = indices->dims->size;
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = indices->dims->data[indices_dims - 1];
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_dims = params->dims->size;
+ 111:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const IndicesT* index_data = tflite::micro::GetTensorData<IndicesT>(indices);
+ 112:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const ParamsT* param_data = tflite::micro::GetTensorData<ParamsT>(params);
+ 113:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   ParamsT* output_data = tflite::micro::GetTensorData<ParamsT>(output);
+ 114:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 115:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int n_slices = 1;
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_dims - 1; ++i) {
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 118:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 119:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 120:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // If indices[-1] == params.rank, fetch single elements.
+ 121:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // If indices[-1] < params.rank, fetch slices.
+ 122:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int slice_size = 1;
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = indices_nd; i < params_dims; ++i) {
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 125:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 126:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 127:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int remain_flat_size = ElementCount(*params->dims);
+ 128:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 129:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   // Number of elements per dimension
+ 130:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   int dims_to_count[MAX_INDICES_ND];
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_nd; ++i) {
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 133:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 134:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 135:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < n_slices; ++i) {
+ 137:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     for (int j = 0; j < indices_nd; ++j) {
+ 139:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 140:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       IndicesT index = index_data[offset];
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       from_pos += index * dims_to_count[j];
+ 142:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     std::memcpy(output_data + i * slice_size, param_data + from_pos,
+ 144:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                 sizeof(ParamsT) * slice_size);
+ 145:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 146:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return kTfLiteOk;
+ 147:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 149:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** template <typename IndicesT>
+ 150:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** TfLiteStatus EvalGatherNd(TfLiteContext* context,
+ 151:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                           const TfLiteEvalTensor* params,
+ 152:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                           const TfLiteEvalTensor* indices,
+ 153:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                           TfLiteEvalTensor* output) {
+ 154:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   switch (params->type) {
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteFloat32:
+ 156:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return GatherNd<float, IndicesT>(params, indices, output);
+ 157:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+ 158:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteInt8:
+ 159:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return GatherNd<int8_t, IndicesT>(params, indices, output);
+ 160:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+ 161:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     default:
+ 162:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       TF_LITE_KERNEL_LOG(context,
+ 163:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Params type '%s' are not supported by gather_nd.",
+ 164:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          TfLiteTypeGetName(params->type));
+ 165:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return kTfLiteError;
+ 166:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 167:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 168:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 169:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+ 586              		.loc 1 169 0
+ 587              		.cfi_startproc
+ 588              		@ args = 0, pretend = 0, frame = 32
+ 589              		@ frame_needed = 0, uses_anonymous_args = 0
+ 590              	.LVL63:
+ 591 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 592              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 593              		.cfi_def_cfa_offset 36
+ 594              		.cfi_offset 4, -36
+ 595              		.cfi_offset 5, -32
+ 596              		.cfi_offset 6, -28
+ 597              		.cfi_offset 7, -24
+ 598              		.cfi_offset 8, -20
+ 599              		.cfi_offset 9, -16
+ 600              		.cfi_offset 10, -12
+ 601              		.cfi_offset 11, -8
+ 602              		.cfi_offset 14, -4
+ 603              	.LBB161:
+ 604              	.LBB162:
+ 605              	.LBB163:
+ 606              		.file 3 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #define TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include <cstdint>
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/compatibility.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/types.h"
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace tflite {
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace micro {
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns a mutable tensor for a given input index. is_variable must be checked
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // during prepare when the full TfLiteTensor is available.
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetMutableEvalInput(const TfLiteContext* context,
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              const TfLiteNode* node,
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              int index) {
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+ 607              		.loc 3 34 0
+ 608 0004 004050E2 		subs	r4, r0, #0
+ 609              	.LVL64:
+ 610              	.LBE163:
+ 611              	.LBE162:
+ 612              	.LBE161:
+ 613              		.loc 1 169 0
+ 614              		.pad #36
+ 615 0008 24D04DE2 		sub	sp, sp, #36
+ 616              		.cfi_def_cfa_offset 72
+ 617              	.LBB170:
+ 618              	.LBB167:
+ 619              	.LBB164:
+ 620              		.loc 3 34 0
+ 621 000c 6F02000A 		beq	.L61
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+ 622              		.loc 3 35 0
+ 623 0010 000051E3 		cmp	r1, #0
+ 624 0014 0150A0E1 		mov	r5, r1
+ 625 0018 6C02000A 		beq	.L61
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->inputs->data[index]);
+ 626              		.loc 3 36 0
+ 627 001c 002091E5 		ldr	r2, [r1]
+ 628 0020 543094E5 		ldr	r3, [r4, #84]
+ 629 0024 041092E5 		ldr	r1, [r2, #4]
+ 630              	.LVL65:
+ 631 0028 33FF2FE1 		blx	r3
+ 632              	.LVL66:
+ 633              	.LBE164:
+ 634              	.LBE167:
+ 635              	.LBE170:
+ 636              	.LBB171:
+ 637              	.LBB172:
+ 638              	.LBB173:
+ 639 002c 002095E5 		ldr	r2, [r5]
+ 640              	.LBE173:
+ 641              	.LBE172:
+ 642              	.LBE171:
+ 643              	.LBB178:
+ 644              	.LBB168:
+ 645              	.LBB165:
+ 646 0030 0060A0E1 		mov	r6, r0
+ 647              	.LVL67:
+ 648              	.LBE165:
+ 649              	.LBE168:
+ 650              	.LBE178:
+ 651              	.LBB179:
+ 652              	.LBB176:
+ 653              	.LBB174:
+ 654 0034 543094E5 		ldr	r3, [r4, #84]
+ 655 0038 0400A0E1 		mov	r0, r4
+ 656 003c 081092E5 		ldr	r1, [r2, #8]
+ 657 0040 33FF2FE1 		blx	r3
+ 658              	.LVL68:
+ 659              	.LBE174:
+ 660              	.LBE176:
+ 661              	.LBE179:
+ 662              	.LBB180:
+ 663              	.LBB181:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given input index in a node.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline const TfLiteEvalTensor* GetEvalInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                             const TfLiteNode* node, int index) {
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return GetMutableEvalInput(context, node, index);
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given output index in a node.
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetEvalOutput(const TfLiteContext* context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                        const TfLiteNode* node, int index) {
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->outputs->data[index]);
+ 664              		.loc 3 50 0
+ 665 0044 042095E5 		ldr	r2, [r5, #4]
+ 666              	.LBE181:
+ 667              	.LBE180:
+ 668              	.LBB183:
+ 669              	.LBB177:
+ 670              	.LBB175:
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->inputs->data[index]);
+ 671              		.loc 3 36 0
+ 672 0048 0070A0E1 		mov	r7, r0
+ 673              	.LVL69:
+ 674              	.LBE175:
+ 675              	.LBE177:
+ 676              	.LBE183:
+ 677              	.LBB184:
+ 678              	.LBB182:
+ 679              		.loc 3 50 0
+ 680 004c 543094E5 		ldr	r3, [r4, #84]
+ 681 0050 0400A0E1 		mov	r0, r4
+ 682 0054 041092E5 		ldr	r1, [r2, #4]
+ 683 0058 33FF2FE1 		blx	r3
+ 684              	.LVL70:
+ 685              	.LBE182:
+ 686              	.LBE184:
+ 170:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const TfLiteEvalTensor* params =
+ 171:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       tflite::micro::GetEvalInput(context, node, kParams);
+ 172:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const TfLiteEvalTensor* indices =
+ 173:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       tflite::micro::GetEvalInput(context, node, kIndices);
+ 174:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   TfLiteEvalTensor* output =
+ 175:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       tflite::micro::GetEvalOutput(context, node, kOutputTensor);
+ 176:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 177:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   switch (indices->type) {
+ 687              		.loc 1 177 0
+ 688 005c 0830D7E5 		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 689 0060 020053E3 		cmp	r3, #2
+ 690 0064 0A00000A 		beq	.L245
+ 178:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteInt32:
+ 179:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return EvalGatherNd<int32_t>(context, params, indices, output);
+ 180:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+ 181:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     default:
+ 182:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       TF_LITE_KERNEL_LOG(context,
+ 691              		.loc 1 182 0
+ 692 0068 0300A0E1 		mov	r0, r3
+ 693 006c 145094E5 		ldr	r5, [r4, #20]
+ 694              	.LVL71:
+ 695 0070 FEFFFFEB 		bl	TfLiteTypeGetName
+ 696              	.LVL72:
+ 697 0074 001000E3 		movw	r1, #:lower16:.LC8
+ 698 0078 0020A0E1 		mov	r2, r0
+ 699 007c 001040E3 		movt	r1, #:upper16:.LC8
+ 700 0080 0400A0E1 		mov	r0, r4
+ 701 0084 35FF2FE1 		blx	r5
+ 702              	.LVL73:
+ 183:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Indices of type '%s' are not supported by gather_nd.",
+ 184:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          TfLiteTypeGetName(indices->type));
+ 185:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       return kTfLiteError;
+ 703              		.loc 1 185 0
+ 704 0088 0100A0E3 		mov	r0, #1
+ 186:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 187:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 705              		.loc 1 187 0
+ 706 008c 24D08DE2 		add	sp, sp, #36
+ 707              		.cfi_remember_state
+ 708              		.cfi_def_cfa_offset 36
+ 709              		@ sp needed
+ 710 0090 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 711              	.LVL74:
+ 712              	.L245:
+ 713              		.cfi_restore_state
+ 714              	.LBB185:
+ 715              	.LBB186:
+ 154:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     case kTfLiteFloat32:
+ 716              		.loc 1 154 0
+ 717 0094 0830D6E5 		ldrb	r3, [r6, #8]	@ zero_extendqisi2
+ 718 0098 010053E3 		cmp	r3, #1
+ 719 009c 1D01000A 		beq	.L65
+ 720 00a0 090053E3 		cmp	r3, #9
+ 721 00a4 1001001A 		bne	.L246
+ 722              	.LVL75:
+ 723              	.LBB187:
+ 724              	.LBB188:
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = indices->dims->data[indices_dims - 1];
+ 725              		.loc 1 108 0
+ 726 00a8 042097E5 		ldr	r2, [r7, #4]
+ 727              	.LBB189:
+ 728              	.LBB190:
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns data for a TfLiteEvalTensor struct.
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** template <typename T>
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** T* GetTensorData(TfLiteEvalTensor* tensor) {
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return tensor != nullptr ? reinterpret_cast<T*>(tensor->data.raw) : nullptr;
+ 729              		.loc 3 56 0
+ 730 00ac 000050E3 		cmp	r0, #0
+ 731              	.LBE190:
+ 732              	.LBE189:
+ 733              	.LBB194:
+ 734              	.LBB195:
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns const data for a TfLiteEvalTensor struct.
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** template <typename T>
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** const T* GetTensorData(const TfLiteEvalTensor* tensor) {
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(tensor != nullptr);
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return reinterpret_cast<const T*>(tensor->data.raw);
+ 735              		.loc 3 63 0
+ 736 00b0 003097E5 		ldr	r3, [r7]
+ 737              	.LBE195:
+ 738              	.LBE194:
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const IndicesT* index_data = tflite::micro::GetTensorData<IndicesT>(indices);
+ 739              		.loc 1 110 0
+ 740 00b4 041096E5 		ldr	r1, [r6, #4]
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = indices->dims->data[indices_dims - 1];
+ 741              		.loc 1 108 0
+ 742 00b8 00E092E5 		ldr	lr, [r2]
+ 743              	.LVL76:
+ 744              	.LBB197:
+ 745              	.LBB196:
+ 746              		.loc 3 63 0
+ 747 00bc 00308DE5 		str	r3, [sp]
+ 748              	.LBE196:
+ 749              	.LBE197:
+ 750              	.LBB198:
+ 751              	.LBB191:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 752              		.loc 3 56 0
+ 753 00c0 00309015 		ldrne	r3, [r0]
+ 754              	.LBE191:
+ 755              	.LBE198:
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_dims = params->dims->size;
+ 756              		.loc 1 109 0
+ 757 00c4 01C04EE2 		sub	ip, lr, #1
+ 758              	.LBB199:
+ 759              	.LBB192:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 760              		.loc 3 56 0
+ 761 00c8 04008D05 		streq	r0, [sp, #4]
+ 762              	.LBE192:
+ 763              	.LBE199:
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const IndicesT* index_data = tflite::micro::GetTensorData<IndicesT>(indices);
+ 764              		.loc 1 110 0
+ 765 00cc 008091E5 		ldr	r8, [r1]
+ 766              	.LBB200:
+ 767              	.LBB193:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 768              		.loc 3 56 0
+ 769 00d0 04308D15 		strne	r3, [sp, #4]
+ 770              	.LBE193:
+ 771              	.LBE200:
+ 772              	.LBB201:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 773              		.loc 1 116 0
+ 774 00d4 00005CE3 		cmp	ip, #0
+ 775              	.LBE201:
+ 776              	.LBB202:
+ 777              	.LBB203:
+ 778              		.loc 3 63 0
+ 779 00d8 007096E5 		ldr	r7, [r6]
+ 780              	.LVL77:
+ 781              	.LBE203:
+ 782              	.LBE202:
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_dims = params->dims->size;
+ 783              		.loc 1 109 0
+ 784 00dc 0E4192E7 		ldr	r4, [r2, lr, lsl #2]
+ 785              	.LVL78:
+ 786              	.LBB204:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 787              		.loc 1 116 0
+ 788 00e0 340200DA 		ble	.L247
+ 789 00e4 043082E2 		add	r3, r2, #4
+ 790 00e8 5331A0E7 		sbfx	r3, r3, #2, #1
+ 791 00ec 033003E2 		and	r3, r3, #3
+ 792 00f0 0C0053E1 		cmp	r3, ip
+ 793 00f4 0C30A021 		movcs	r3, ip
+ 794 00f8 08005CE3 		cmp	ip, #8
+ 795 00fc 0C30A091 		movls	r3, ip
+ 796 0100 000053E3 		cmp	r3, #0
+ 797 0104 1D02000A 		beq	.L152
+ 798 0108 010053E3 		cmp	r3, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 799              		.loc 1 117 0
+ 800 010c 045092E5 		ldr	r5, [r2, #4]
+ 801              	.LVL79:
+ 802 0110 1802000A 		beq	.L159
+ 803 0114 080092E5 		ldr	r0, [r2, #8]
+ 804              	.LVL80:
+ 805 0118 020053E3 		cmp	r3, #2
+ 806 011c 900505E0 		mul	r5, r0, r5
+ 807              	.LVL81:
+ 808 0120 1402000A 		beq	.L159
+ 809 0124 0C0092E5 		ldr	r0, [r2, #12]
+ 810 0128 030053E3 		cmp	r3, #3
+ 811 012c 900505E0 		mul	r5, r0, r5
+ 812              	.LVL82:
+ 813 0130 1002000A 		beq	.L159
+ 814 0134 100092E5 		ldr	r0, [r2, #16]
+ 815 0138 040053E3 		cmp	r3, #4
+ 816 013c 900505E0 		mul	r5, r0, r5
+ 817              	.LVL83:
+ 818 0140 0C02000A 		beq	.L159
+ 819 0144 140092E5 		ldr	r0, [r2, #20]
+ 820 0148 050053E3 		cmp	r3, #5
+ 821 014c 900505E0 		mul	r5, r0, r5
+ 822              	.LVL84:
+ 823 0150 0802000A 		beq	.L159
+ 824 0154 180092E5 		ldr	r0, [r2, #24]
+ 825 0158 060053E3 		cmp	r3, #6
+ 826 015c 900505E0 		mul	r5, r0, r5
+ 827              	.LVL85:
+ 828 0160 0402000A 		beq	.L159
+ 829 0164 1C0092E5 		ldr	r0, [r2, #28]
+ 830 0168 070053E3 		cmp	r3, #7
+ 831 016c 900505E0 		mul	r5, r0, r5
+ 832              	.LVL86:
+ 833 0170 0002000A 		beq	.L159
+ 834 0174 209092E5 		ldr	r9, [r2, #32]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 835              		.loc 1 116 0
+ 836 0178 0800A0E3 		mov	r0, #8
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 837              		.loc 1 117 0
+ 838 017c 990505E0 		mul	r5, r9, r5
+ 839              	.LVL87:
+ 840              	.L109:
+ 841 0180 03005CE1 		cmp	ip, r3
+ 842 0184 2A00000A 		beq	.L117
+ 843              	.LVL88:
+ 844              	.L108:
+ 845 0188 03A04CE0 		sub	r10, ip, r3
+ 846 018c 02E04EE2 		sub	lr, lr, #2
+ 847              	.LVL89:
+ 848 0190 04B04AE2 		sub	fp, r10, #4
+ 849 0194 03904EE0 		sub	r9, lr, r3
+ 850 0198 2BE1A0E1 		lsr	lr, fp, #2
+ 851 019c 020059E3 		cmp	r9, #2
+ 852 01a0 01E08EE2 		add	lr, lr, #1
+ 853 01a4 0EB1A0E1 		lsl	fp, lr, #2
+ 854 01a8 1300009A 		bls	.L111
+ 855 01ac 013083E2 		add	r3, r3, #1
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 856              		.loc 1 116 0
+ 857 01b0 5100C0F2 		vmov.i32	q8, #1  @ v4si
+ 858 01b4 033182E0 		add	r3, r2, r3, lsl #2
+ 859 01b8 0090A0E3 		mov	r9, #0
+ 860              	.L113:
+ 861 01bc 019089E2 		add	r9, r9, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 862              		.loc 1 117 0
+ 863 01c0 DF2A63F4 		vld1.64	{d18-d19}, [r3:64]
+ 864 01c4 09005EE1 		cmp	lr, r9
+ 865 01c8 103083E2 		add	r3, r3, #16
+ 866 01cc F20960F2 		vmul.i32	q8, q8, q9
+ 867 01d0 F9FFFF8A 		bhi	.L113
+ 868 01d4 0B005AE1 		cmp	r10, fp
+ 869 01d8 0B0080E0 		add	r0, r0, fp
+ 870 01dc 5020C0F2 		vmov.i32	q9, #0  @ v4si
+ 871 01e0 E248F0F2 		vext.32	q10, q8, q9, #2
+ 872 01e4 F40960F2 		vmul.i32	q8, q8, q10
+ 873 01e8 E224F0F2 		vext.32	q9, q8, q9, #1
+ 874 01ec F20960F2 		vmul.i32	q8, q8, q9
+ 875 01f0 903B10EE 		vmov.32	r3, d16[0]
+ 876 01f4 930505E0 		mul	r5, r3, r5
+ 877 01f8 0D00000A 		beq	.L117
+ 878              	.L111:
+ 879              	.LVL90:
+ 880 01fc 00E182E0 		add	lr, r2, r0, lsl #2
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 881              		.loc 1 116 0
+ 882 0200 013080E2 		add	r3, r0, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 883              		.loc 1 117 0
+ 884 0204 04E09EE5 		ldr	lr, [lr, #4]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 885              		.loc 1 116 0
+ 886 0208 03005CE1 		cmp	ip, r3
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 887              		.loc 1 117 0
+ 888 020c 9E0505E0 		mul	r5, lr, r5
+ 889              	.LVL91:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 890              		.loc 1 116 0
+ 891 0210 070000DA 		ble	.L117
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 892              		.loc 1 117 0
+ 893 0214 033182E0 		add	r3, r2, r3, lsl #2
+ 894              	.LVL92:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 895              		.loc 1 116 0
+ 896 0218 020080E2 		add	r0, r0, #2
+ 897              	.LVL93:
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 898              		.loc 1 117 0
+ 899 021c 043093E5 		ldr	r3, [r3, #4]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 900              		.loc 1 116 0
+ 901 0220 00005CE1 		cmp	ip, r0
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 902              		.loc 1 117 0
+ 903 0224 930505E0 		mul	r5, r3, r5
+ 904              	.LVL94:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 905              		.loc 1 116 0
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 906              		.loc 1 117 0
+ 907 0228 000182C0 		addgt	r0, r2, r0, lsl #2
+ 908              	.LVL95:
+ 909 022c 043090C5 		ldrgt	r3, [r0, #4]
+ 910 0230 930505C0 		mulgt	r5, r3, r5
+ 911              	.LVL96:
+ 912              	.L117:
+ 913              	.LBE204:
+ 914              	.LBB205:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 915              		.loc 1 123 0
+ 916 0234 080054E1 		cmp	r4, r8
+ 917 0238 DC0100AA 		bge	.L248
+ 918 023c 01C084E2 		add	ip, r4, #1
+ 919 0240 040048E0 		sub	r0, r8, r4
+ 920 0244 0CE181E0 		add	lr, r1, ip, lsl #2
+ 921 0248 5E21A0E7 		sbfx	r2, lr, #2, #1
+ 922              	.LVL97:
+ 923 024c 032002E2 		and	r2, r2, #3
+ 924 0250 000052E1 		cmp	r2, r0
+ 925 0254 0020A021 		movcs	r2, r0
+ 926 0258 080050E3 		cmp	r0, #8
+ 927 025c 0020A091 		movls	r2, r0
+ 928 0260 000052E3 		cmp	r2, #0
+ 929 0264 CE01000A 		beq	.L160
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 930              		.loc 1 124 0
+ 931 0268 049181E0 		add	r9, r1, r4, lsl #2
+ 932 026c 010052E3 		cmp	r2, #1
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 933              		.loc 1 123 0
+ 934 0270 0C30A0E1 		mov	r3, ip
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 935              		.loc 1 124 0
+ 936 0274 049099E5 		ldr	r9, [r9, #4]
+ 937              	.LVL98:
+ 938 0278 2500000A 		beq	.L120
+ 939 027c 04E09EE5 		ldr	lr, [lr, #4]
+ 940 0280 020052E3 		cmp	r2, #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 941              		.loc 1 123 0
+ 942 0284 023084E2 		add	r3, r4, #2
+ 943              	.LVL99:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 944              		.loc 1 124 0
+ 945 0288 9E0909E0 		mul	r9, lr, r9
+ 946              	.LVL100:
+ 947 028c 2000000A 		beq	.L120
+ 948 0290 033181E0 		add	r3, r1, r3, lsl #2
+ 949              	.LVL101:
+ 950 0294 030052E3 		cmp	r2, #3
+ 951 0298 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 952              		.loc 1 123 0
+ 953 029c 033084E2 		add	r3, r4, #3
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 954              		.loc 1 124 0
+ 955 02a0 9E0909E0 		mul	r9, lr, r9
+ 956              	.LVL102:
+ 957 02a4 1A00000A 		beq	.L120
+ 958 02a8 033181E0 		add	r3, r1, r3, lsl #2
+ 959              	.LVL103:
+ 960 02ac 040052E3 		cmp	r2, #4
+ 961 02b0 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 962              		.loc 1 123 0
+ 963 02b4 043084E2 		add	r3, r4, #4
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 964              		.loc 1 124 0
+ 965 02b8 9E0909E0 		mul	r9, lr, r9
+ 966              	.LVL104:
+ 967 02bc 1400000A 		beq	.L120
+ 968 02c0 033181E0 		add	r3, r1, r3, lsl #2
+ 969              	.LVL105:
+ 970 02c4 050052E3 		cmp	r2, #5
+ 971 02c8 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 972              		.loc 1 123 0
+ 973 02cc 053084E2 		add	r3, r4, #5
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 974              		.loc 1 124 0
+ 975 02d0 9E0909E0 		mul	r9, lr, r9
+ 976              	.LVL106:
+ 977 02d4 0E00000A 		beq	.L120
+ 978 02d8 033181E0 		add	r3, r1, r3, lsl #2
+ 979              	.LVL107:
+ 980 02dc 060052E3 		cmp	r2, #6
+ 981 02e0 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 982              		.loc 1 123 0
+ 983 02e4 063084E2 		add	r3, r4, #6
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 984              		.loc 1 124 0
+ 985 02e8 9E0909E0 		mul	r9, lr, r9
+ 986              	.LVL108:
+ 987 02ec 0800000A 		beq	.L120
+ 988 02f0 033181E0 		add	r3, r1, r3, lsl #2
+ 989              	.LVL109:
+ 990 02f4 070052E3 		cmp	r2, #7
+ 991 02f8 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 992              		.loc 1 123 0
+ 993 02fc 073084E2 		add	r3, r4, #7
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 994              		.loc 1 124 0
+ 995 0300 9E0909E0 		mul	r9, lr, r9
+ 996              	.LVL110:
+ 997 0304 03E18110 		addne	lr, r1, r3, lsl #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 998              		.loc 1 123 0
+ 999 0308 08308412 		addne	r3, r4, #8
+ 1000              	.LVL111:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1001              		.loc 1 124 0
+ 1002 030c 04E09E15 		ldrne	lr, [lr, #4]
+ 1003 0310 9E090910 		mulne	r9, lr, r9
+ 1004              	.LVL112:
+ 1005              	.L120:
+ 1006 0314 020050E1 		cmp	r0, r2
+ 1007 0318 2A00000A 		beq	.L105
+ 1008              	.LVL113:
+ 1009              	.L119:
+ 1010 031c 02A040E0 		sub	r10, r0, r2
+ 1011 0320 010040E2 		sub	r0, r0, #1
+ 1012 0324 04E04AE2 		sub	lr, r10, #4
+ 1013 0328 020040E0 		sub	r0, r0, r2
+ 1014 032c 2EE1A0E1 		lsr	lr, lr, #2
+ 1015 0330 020050E3 		cmp	r0, #2
+ 1016 0334 01008EE2 		add	r0, lr, #1
+ 1017 0338 00E1A0E1 		lsl	lr, r0, #2
+ 1018 033c 1300009A 		bls	.L122
+ 1019 0340 02208CE0 		add	r2, ip, r2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1020              		.loc 1 123 0
+ 1021 0344 5100C0F2 		vmov.i32	q8, #1  @ v4si
+ 1022 0348 022181E0 		add	r2, r1, r2, lsl #2
+ 1023 034c 00C0A0E3 		mov	ip, #0
+ 1024              	.L124:
+ 1025 0350 01C08CE2 		add	ip, ip, #1
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1026              		.loc 1 124 0
+ 1027 0354 DF2A62F4 		vld1.64	{d18-d19}, [r2:64]
+ 1028 0358 0C0050E1 		cmp	r0, ip
+ 1029 035c 102082E2 		add	r2, r2, #16
+ 1030 0360 F20960F2 		vmul.i32	q8, q8, q9
+ 1031 0364 F9FFFF8A 		bhi	.L124
+ 1032 0368 0E005AE1 		cmp	r10, lr
+ 1033 036c 0E3083E0 		add	r3, r3, lr
+ 1034 0370 5020C0F2 		vmov.i32	q9, #0  @ v4si
+ 1035 0374 E248F0F2 		vext.32	q10, q8, q9, #2
+ 1036 0378 F40960F2 		vmul.i32	q8, q8, q10
+ 1037 037c E224F0F2 		vext.32	q9, q8, q9, #1
+ 1038 0380 F20960F2 		vmul.i32	q8, q8, q9
+ 1039 0384 902B10EE 		vmov.32	r2, d16[0]
+ 1040 0388 920909E0 		mul	r9, r2, r9
+ 1041 038c 0D00000A 		beq	.L105
+ 1042              	.L122:
+ 1043              	.LVL114:
+ 1044 0390 030181E0 		add	r0, r1, r3, lsl #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1045              		.loc 1 123 0
+ 1046 0394 012083E2 		add	r2, r3, #1
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1047              		.loc 1 124 0
+ 1048 0398 040090E5 		ldr	r0, [r0, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1049              		.loc 1 123 0
+ 1050 039c 020058E1 		cmp	r8, r2
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1051              		.loc 1 124 0
+ 1052 03a0 900909E0 		mul	r9, r0, r9
+ 1053              	.LVL115:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1054              		.loc 1 123 0
+ 1055 03a4 070000DA 		ble	.L105
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1056              		.loc 1 124 0
+ 1057 03a8 022181E0 		add	r2, r1, r2, lsl #2
+ 1058              	.LVL116:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1059              		.loc 1 123 0
+ 1060 03ac 023083E2 		add	r3, r3, #2
+ 1061              	.LVL117:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1062              		.loc 1 124 0
+ 1063 03b0 042092E5 		ldr	r2, [r2, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1064              		.loc 1 123 0
+ 1065 03b4 030058E1 		cmp	r8, r3
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1066              		.loc 1 124 0
+ 1067 03b8 920909E0 		mul	r9, r2, r9
+ 1068              	.LVL118:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1069              		.loc 1 123 0
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1070              		.loc 1 124 0
+ 1071 03bc 033181C0 		addgt	r3, r1, r3, lsl #2
+ 1072              	.LVL119:
+ 1073 03c0 043093C5 		ldrgt	r3, [r3, #4]
+ 1074 03c4 930909C0 		mulgt	r9, r3, r9
+ 1075              	.LVL120:
+ 1076              	.L105:
+ 1077              	.LBE205:
+ 127:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 1078              		.loc 1 127 0
+ 1079 03c8 0100A0E1 		mov	r0, r1
+ 1080 03cc FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 1081              	.LVL121:
+ 1082              	.LBB206:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1083              		.loc 1 131 0
+ 1084 03d0 000054E3 		cmp	r4, #0
+ 1085 03d4 170000DA 		ble	.L130
+ 1086 03d8 046096E5 		ldr	r6, [r6, #4]
+ 1087              	.LVL122:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1088              		.loc 1 132 0
+ 1089 03dc 041096E5 		ldr	r1, [r6, #4]
+ 1090 03e0 FEFFFFEB 		bl	__aeabi_idiv
+ 1091              	.LVL123:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1092              		.loc 1 131 0
+ 1093 03e4 010054E3 		cmp	r4, #1
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1094              		.loc 1 132 0
+ 1095 03e8 0C008DE5 		str	r0, [sp, #12]
+ 1096              	.LVL124:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1097              		.loc 1 131 0
+ 1098 03ec 1100000A 		beq	.L130
+ 1099              	.LVL125:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1100              		.loc 1 132 0
+ 1101 03f0 081096E5 		ldr	r1, [r6, #8]
+ 1102 03f4 FEFFFFEB 		bl	__aeabi_idiv
+ 1103              	.LVL126:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1104              		.loc 1 131 0
+ 1105 03f8 020054E3 		cmp	r4, #2
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1106              		.loc 1 132 0
+ 1107 03fc 10008DE5 		str	r0, [sp, #16]
+ 1108              	.LVL127:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1109              		.loc 1 131 0
+ 1110 0400 0C00000A 		beq	.L130
+ 1111              	.LVL128:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1112              		.loc 1 132 0
+ 1113 0404 0C1096E5 		ldr	r1, [r6, #12]
+ 1114 0408 FEFFFFEB 		bl	__aeabi_idiv
+ 1115              	.LVL129:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1116              		.loc 1 131 0
+ 1117 040c 030054E3 		cmp	r4, #3
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1118              		.loc 1 132 0
+ 1119 0410 14008DE5 		str	r0, [sp, #20]
+ 1120              	.LVL130:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1121              		.loc 1 131 0
+ 1122 0414 0700000A 		beq	.L130
+ 1123              	.LVL131:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1124              		.loc 1 132 0
+ 1125 0418 101096E5 		ldr	r1, [r6, #16]
+ 1126 041c FEFFFFEB 		bl	__aeabi_idiv
+ 1127              	.LVL132:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1128              		.loc 1 131 0
+ 1129 0420 040054E3 		cmp	r4, #4
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1130              		.loc 1 132 0
+ 1131 0424 18008DE5 		str	r0, [sp, #24]
+ 1132              	.LVL133:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1133              		.loc 1 131 0
+ 1134 0428 0200000A 		beq	.L130
+ 1135              	.LVL134:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1136              		.loc 1 132 0
+ 1137 042c 141096E5 		ldr	r1, [r6, #20]
+ 1138 0430 FEFFFFEB 		bl	__aeabi_idiv
+ 1139              	.LVL135:
+ 1140 0434 1C008DE5 		str	r0, [sp, #28]
+ 1141              	.LVL136:
+ 1142              	.L130:
+ 1143              	.LBE206:
+ 1144              	.LBB207:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1145              		.loc 1 136 0
+ 1146 0438 000055E3 		cmp	r5, #0
+ 1147 043c 270000DA 		ble	.L136
+ 1148 0440 04309DE5 		ldr	r3, [sp, #4]
+ 1149 0444 0481A0E1 		lsl	r8, r4, #2
+ 1150              	.LVL137:
+ 1151 0448 00A09DE5 		ldr	r10, [sp]
+ 1152 044c 0462A0E1 		lsl	r6, r4, #4
+ 1153 0450 00B0A0E3 		mov	fp, #0
+ 1154              	.LVL138:
+ 1155              	.L137:
+ 1156              	.LBB208:
+ 1157              	.LBB209:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1158              		.loc 1 138 0
+ 1159 0454 000054E3 		cmp	r4, #0
+ 1160 0458 0010A0D3 		movle	r1, #0
+ 1161 045c 160000DA 		ble	.L131
+ 1162              	.LVL139:
+ 1163              	.LBB210:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1164              		.loc 1 141 0
+ 1165 0460 00209AE5 		ldr	r2, [r10]
+ 1166              	.LBE210:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1167              		.loc 1 138 0
+ 1168 0464 010054E3 		cmp	r4, #1
+ 1169              	.LBB211:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1170              		.loc 1 141 0
+ 1171 0468 0C109DE5 		ldr	r1, [sp, #12]
+ 1172 046c 0AF0D6F7 		pld	[r6, r10]
+ 1173              	.LVL140:
+ 1174 0470 910201E0 		mul	r1, r1, r2
+ 1175              	.LVL141:
+ 1176              	.LBE211:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1177              		.loc 1 138 0
+ 1178 0474 1000000A 		beq	.L131
+ 1179              	.LVL142:
+ 1180              	.LBB212:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1181              		.loc 1 141 0
+ 1182 0478 04209AE5 		ldr	r2, [r10, #4]
+ 1183              	.LBE212:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1184              		.loc 1 138 0
+ 1185 047c 020054E3 		cmp	r4, #2
+ 1186              	.LBB213:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1187              		.loc 1 141 0
+ 1188 0480 10009DE5 		ldr	r0, [sp, #16]
+ 1189 0484 901221E0 		mla	r1, r0, r2, r1
+ 1190              	.LVL143:
+ 1191              	.LBE213:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1192              		.loc 1 138 0
+ 1193 0488 0B00000A 		beq	.L131
+ 1194              	.LVL144:
+ 1195              	.LBB214:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1196              		.loc 1 141 0
+ 1197 048c 08209AE5 		ldr	r2, [r10, #8]
+ 1198 0490 14009DE5 		ldr	r0, [sp, #20]
+ 1199              	.LBE214:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1200              		.loc 1 138 0
+ 1201 0494 030054E3 		cmp	r4, #3
+ 1202              	.LBB215:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1203              		.loc 1 141 0
+ 1204 0498 901221E0 		mla	r1, r0, r2, r1
+ 1205              	.LVL145:
+ 1206              	.LBE215:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1207              		.loc 1 138 0
+ 1208 049c 0600000A 		beq	.L131
+ 1209              	.LVL146:
+ 1210              	.LBB216:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1211              		.loc 1 141 0
+ 1212 04a0 0C209AE5 		ldr	r2, [r10, #12]
+ 1213 04a4 18009DE5 		ldr	r0, [sp, #24]
+ 1214              	.LBE216:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1215              		.loc 1 138 0
+ 1216 04a8 040054E3 		cmp	r4, #4
+ 1217              	.LBB217:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1218              		.loc 1 141 0
+ 1219 04ac 901221E0 		mla	r1, r0, r2, r1
+ 1220              	.LVL147:
+ 1221 04b0 10209A15 		ldrne	r2, [r10, #16]
+ 1222 04b4 1C009D15 		ldrne	r0, [sp, #28]
+ 1223 04b8 90122110 		mlane	r1, r0, r2, r1
+ 1224              	.LVL148:
+ 1225              	.L131:
+ 1226              	.LBE217:
+ 1227              	.LBE209:
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                 sizeof(ParamsT) * slice_size);
+ 1228              		.loc 1 143 0
+ 1229 04bc 0300A0E1 		mov	r0, r3
+ 1230 04c0 011087E0 		add	r1, r7, r1
+ 1231              	.LBE208:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1232              		.loc 1 136 0
+ 1233 04c4 01B08BE2 		add	fp, fp, #1
+ 1234              	.LVL149:
+ 1235              	.LBB218:
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                 sizeof(ParamsT) * slice_size);
+ 1236              		.loc 1 143 0
+ 1237 04c8 0920A0E1 		mov	r2, r9
+ 1238 04cc 08A08AE0 		add	r10, r10, r8
+ 1239 04d0 FEFFFFEB 		bl	memcpy
+ 1240              	.LVL150:
+ 1241              	.LBE218:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1242              		.loc 1 136 0
+ 1243 04d4 05005BE1 		cmp	fp, r5
+ 1244 04d8 093080E0 		add	r3, r0, r9
+ 1245 04dc DCFFFF1A 		bne	.L137
+ 1246              	.LVL151:
+ 1247              	.L136:
+ 1248              	.LBE207:
+ 1249              	.LBE188:
+ 1250              	.LBE187:
+ 159:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       break;
+ 1251              		.loc 1 159 0
+ 1252 04e0 0000A0E3 		mov	r0, #0
+ 1253              	.LBE186:
+ 1254              	.LBE185:
+ 1255              		.loc 1 187 0
+ 1256 04e4 24D08DE2 		add	sp, sp, #36
+ 1257              		.cfi_remember_state
+ 1258              		.cfi_def_cfa_offset 36
+ 1259              		@ sp needed
+ 1260 04e8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1261              	.LVL152:
+ 1262              	.L246:
+ 1263              		.cfi_restore_state
+ 1264              	.LBB264:
+ 1265              	.LBB262:
+ 162:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                          "Params type '%s' are not supported by gather_nd.",
+ 1266              		.loc 1 162 0
+ 1267 04ec 0300A0E1 		mov	r0, r3
+ 1268              	.LVL153:
+ 1269 04f0 145094E5 		ldr	r5, [r4, #20]
+ 1270              	.LVL154:
+ 1271 04f4 FEFFFFEB 		bl	TfLiteTypeGetName
+ 1272              	.LVL155:
+ 1273 04f8 001000E3 		movw	r1, #:lower16:.LC13
+ 1274 04fc 0020A0E1 		mov	r2, r0
+ 1275 0500 001040E3 		movt	r1, #:upper16:.LC13
+ 1276 0504 0400A0E1 		mov	r0, r4
+ 1277 0508 35FF2FE1 		blx	r5
+ 1278              	.LVL156:
+ 165:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1279              		.loc 1 165 0
+ 1280 050c 0100A0E3 		mov	r0, #1
+ 1281              	.LBE262:
+ 1282              	.LBE264:
+ 1283              		.loc 1 187 0
+ 1284 0510 24D08DE2 		add	sp, sp, #36
+ 1285              		.cfi_remember_state
+ 1286              		.cfi_def_cfa_offset 36
+ 1287              		@ sp needed
+ 1288 0514 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1289              	.LVL157:
+ 1290              	.L65:
+ 1291              		.cfi_restore_state
+ 1292              	.LBB265:
+ 1293              	.LBB263:
+ 1294              	.LBB223:
+ 1295              	.LBB224:
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = indices->dims->data[indices_dims - 1];
+ 1296              		.loc 1 108 0
+ 1297 0518 042097E5 		ldr	r2, [r7, #4]
+ 1298              	.LBB225:
+ 1299              	.LBB226:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 1300              		.loc 3 56 0
+ 1301 051c 000050E3 		cmp	r0, #0
+ 1302 0520 00309015 		ldrne	r3, [r0]
+ 1303              	.LBE226:
+ 1304              	.LBE225:
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const IndicesT* index_data = tflite::micro::GetTensorData<IndicesT>(indices);
+ 1305              		.loc 1 110 0
+ 1306 0524 041096E5 		ldr	r1, [r6, #4]
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int indices_nd = indices->dims->data[indices_dims - 1];
+ 1307              		.loc 1 108 0
+ 1308 0528 009092E5 		ldr	r9, [r2]
+ 1309              	.LVL158:
+ 1310              	.LBB228:
+ 1311              	.LBB227:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 1312              		.loc 3 56 0
+ 1313 052c 00308D15 		strne	r3, [sp]
+ 1314 0530 00008D05 		streq	r0, [sp]
+ 1315              	.LBE227:
+ 1316              	.LBE228:
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_dims = params->dims->size;
+ 1317              		.loc 1 109 0
+ 1318 0534 01C049E2 		sub	ip, r9, #1
+ 1319              	.LBB229:
+ 1320              	.LBB230:
+ 1321              		.loc 3 63 0
+ 1322 0538 00B097E5 		ldr	fp, [r7]
+ 1323              	.LBE230:
+ 1324              	.LBE229:
+ 1325              	.LBB231:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1326              		.loc 1 116 0
+ 1327 053c 00005CE3 		cmp	ip, #0
+ 1328              	.LBE231:
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const IndicesT* index_data = tflite::micro::GetTensorData<IndicesT>(indices);
+ 1329              		.loc 1 110 0
+ 1330 0540 008091E5 		ldr	r8, [r1]
+ 1331              	.LBB232:
+ 1332              	.LBB233:
+ 1333              		.loc 3 63 0
+ 1334 0544 007096E5 		ldr	r7, [r6]
+ 1335              	.LVL159:
+ 1336              	.LBE233:
+ 1337              	.LBE232:
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   const int params_dims = params->dims->size;
+ 1338              		.loc 1 109 0
+ 1339 0548 094192E7 		ldr	r4, [r2, r9, lsl #2]
+ 1340              	.LVL160:
+ 1341              	.LBB234:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1342              		.loc 1 116 0
+ 1343 054c 1D0100DA 		ble	.L249
+ 1344 0550 043082E2 		add	r3, r2, #4
+ 1345 0554 5331A0E7 		sbfx	r3, r3, #2, #1
+ 1346 0558 033003E2 		and	r3, r3, #3
+ 1347 055c 0C0053E1 		cmp	r3, ip
+ 1348 0560 0C30A021 		movcs	r3, ip
+ 1349 0564 08005CE3 		cmp	ip, #8
+ 1350 0568 0C30A091 		movls	r3, ip
+ 1351 056c 000053E3 		cmp	r3, #0
+ 1352 0570 0801000A 		beq	.L140
+ 1353 0574 010053E3 		cmp	r3, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1354              		.loc 1 117 0
+ 1355 0578 045092E5 		ldr	r5, [r2, #4]
+ 1356              	.LVL161:
+ 1357 057c FB00000A 		beq	.L147
+ 1358 0580 080092E5 		ldr	r0, [r2, #8]
+ 1359              	.LVL162:
+ 1360 0584 020053E3 		cmp	r3, #2
+ 1361 0588 900505E0 		mul	r5, r0, r5
+ 1362              	.LVL163:
+ 1363 058c F700000A 		beq	.L147
+ 1364 0590 0C0092E5 		ldr	r0, [r2, #12]
+ 1365 0594 030053E3 		cmp	r3, #3
+ 1366 0598 900505E0 		mul	r5, r0, r5
+ 1367              	.LVL164:
+ 1368 059c F300000A 		beq	.L147
+ 1369 05a0 100092E5 		ldr	r0, [r2, #16]
+ 1370 05a4 040053E3 		cmp	r3, #4
+ 1371 05a8 900505E0 		mul	r5, r0, r5
+ 1372              	.LVL165:
+ 1373 05ac EF00000A 		beq	.L147
+ 1374 05b0 140092E5 		ldr	r0, [r2, #20]
+ 1375 05b4 050053E3 		cmp	r3, #5
+ 1376 05b8 900505E0 		mul	r5, r0, r5
+ 1377              	.LVL166:
+ 1378 05bc EB00000A 		beq	.L147
+ 1379 05c0 180092E5 		ldr	r0, [r2, #24]
+ 1380 05c4 060053E3 		cmp	r3, #6
+ 1381 05c8 900505E0 		mul	r5, r0, r5
+ 1382              	.LVL167:
+ 1383 05cc E700000A 		beq	.L147
+ 1384 05d0 1C0092E5 		ldr	r0, [r2, #28]
+ 1385 05d4 070053E3 		cmp	r3, #7
+ 1386 05d8 900505E0 		mul	r5, r0, r5
+ 1387              	.LVL168:
+ 1388 05dc E300000A 		beq	.L147
+ 1389 05e0 20E092E5 		ldr	lr, [r2, #32]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1390              		.loc 1 116 0
+ 1391 05e4 0800A0E3 		mov	r0, #8
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1392              		.loc 1 117 0
+ 1393 05e8 9E0505E0 		mul	r5, lr, r5
+ 1394              	.LVL169:
+ 1395              	.L73:
+ 1396 05ec 0C0053E1 		cmp	r3, ip
+ 1397 05f0 2C00000A 		beq	.L81
+ 1398              	.LVL170:
+ 1399              	.L72:
+ 1400 05f4 03A04CE0 		sub	r10, ip, r3
+ 1401 05f8 029049E2 		sub	r9, r9, #2
+ 1402              	.LVL171:
+ 1403 05fc 04E04AE2 		sub	lr, r10, #4
+ 1404 0600 039049E0 		sub	r9, r9, r3
+ 1405 0604 2EE1A0E1 		lsr	lr, lr, #2
+ 1406 0608 020059E3 		cmp	r9, #2
+ 1407 060c 01E08EE2 		add	lr, lr, #1
+ 1408 0610 0E91A0E1 		lsl	r9, lr, #2
+ 1409 0614 04908DE5 		str	r9, [sp, #4]
+ 1410 0618 1400009A 		bls	.L75
+ 1411 061c 013083E2 		add	r3, r3, #1
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1412              		.loc 1 116 0
+ 1413 0620 5120C0F2 		vmov.i32	q9, #1  @ v4si
+ 1414 0624 033182E0 		add	r3, r2, r3, lsl #2
+ 1415 0628 0090A0E3 		mov	r9, #0
+ 1416              	.L77:
+ 1417 062c 019089E2 		add	r9, r9, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1418              		.loc 1 117 0
+ 1419 0630 DF0A63F4 		vld1.64	{d16-d17}, [r3:64]
+ 1420 0634 09005EE1 		cmp	lr, r9
+ 1421 0638 103083E2 		add	r3, r3, #16
+ 1422 063c F02962F2 		vmul.i32	q9, q9, q8
+ 1423 0640 F9FFFF8A 		bhi	.L77
+ 1424 0644 04309DE5 		ldr	r3, [sp, #4]
+ 1425 0648 5040C0F2 		vmov.i32	q10, #0  @ v4si
+ 1426 064c 0A0053E1 		cmp	r3, r10
+ 1427 0650 030080E0 		add	r0, r0, r3
+ 1428 0654 E408F2F2 		vext.32	q8, q9, q10, #2
+ 1429 0658 F20960F2 		vmul.i32	q8, q8, q9
+ 1430 065c E444F0F2 		vext.32	q10, q8, q10, #1
+ 1431 0660 F40960F2 		vmul.i32	q8, q8, q10
+ 1432 0664 903B10EE 		vmov.32	r3, d16[0]
+ 1433 0668 930505E0 		mul	r5, r3, r5
+ 1434 066c 0D00000A 		beq	.L81
+ 1435              	.L75:
+ 1436              	.LVL172:
+ 1437 0670 00E182E0 		add	lr, r2, r0, lsl #2
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1438              		.loc 1 116 0
+ 1439 0674 013080E2 		add	r3, r0, #1
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1440              		.loc 1 117 0
+ 1441 0678 04E09EE5 		ldr	lr, [lr, #4]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1442              		.loc 1 116 0
+ 1443 067c 03005CE1 		cmp	ip, r3
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1444              		.loc 1 117 0
+ 1445 0680 9E0505E0 		mul	r5, lr, r5
+ 1446              	.LVL173:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1447              		.loc 1 116 0
+ 1448 0684 070000DA 		ble	.L81
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1449              		.loc 1 117 0
+ 1450 0688 033182E0 		add	r3, r2, r3, lsl #2
+ 1451              	.LVL174:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1452              		.loc 1 116 0
+ 1453 068c 020080E2 		add	r0, r0, #2
+ 1454              	.LVL175:
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1455              		.loc 1 117 0
+ 1456 0690 043093E5 		ldr	r3, [r3, #4]
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1457              		.loc 1 116 0
+ 1458 0694 00005CE1 		cmp	ip, r0
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1459              		.loc 1 117 0
+ 1460 0698 930505E0 		mul	r5, r3, r5
+ 1461              	.LVL176:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1462              		.loc 1 116 0
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1463              		.loc 1 117 0
+ 1464 069c 000182C0 		addgt	r0, r2, r0, lsl #2
+ 1465              	.LVL177:
+ 1466 06a0 043090C5 		ldrgt	r3, [r0, #4]
+ 1467 06a4 930505C0 		mulgt	r5, r3, r5
+ 1468              	.LVL178:
+ 1469              	.L81:
+ 1470              	.LBE234:
+ 1471              	.LBB235:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1472              		.loc 1 123 0
+ 1473 06a8 080054E1 		cmp	r4, r8
+ 1474 06ac C30000AA 		bge	.L250
+ 1475 06b0 01C084E2 		add	ip, r4, #1
+ 1476 06b4 040048E0 		sub	r0, r8, r4
+ 1477 06b8 0CE181E0 		add	lr, r1, ip, lsl #2
+ 1478 06bc 5E21A0E7 		sbfx	r2, lr, #2, #1
+ 1479              	.LVL179:
+ 1480 06c0 032002E2 		and	r2, r2, #3
+ 1481 06c4 000052E1 		cmp	r2, r0
+ 1482 06c8 0020A021 		movcs	r2, r0
+ 1483 06cc 080050E3 		cmp	r0, #8
+ 1484 06d0 0020A091 		movls	r2, r0
+ 1485 06d4 000052E3 		cmp	r2, #0
+ 1486 06d8 AB00000A 		beq	.L148
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1487              		.loc 1 124 0
+ 1488 06dc 049181E0 		add	r9, r1, r4, lsl #2
+ 1489 06e0 010052E3 		cmp	r2, #1
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1490              		.loc 1 123 0
+ 1491 06e4 0C30A0E1 		mov	r3, ip
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1492              		.loc 1 124 0
+ 1493 06e8 049099E5 		ldr	r9, [r9, #4]
+ 1494              	.LVL180:
+ 1495 06ec 2500000A 		beq	.L84
+ 1496 06f0 04E09EE5 		ldr	lr, [lr, #4]
+ 1497 06f4 020052E3 		cmp	r2, #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1498              		.loc 1 123 0
+ 1499 06f8 023084E2 		add	r3, r4, #2
+ 1500              	.LVL181:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1501              		.loc 1 124 0
+ 1502 06fc 9E0909E0 		mul	r9, lr, r9
+ 1503              	.LVL182:
+ 1504 0700 2000000A 		beq	.L84
+ 1505 0704 033181E0 		add	r3, r1, r3, lsl #2
+ 1506              	.LVL183:
+ 1507 0708 030052E3 		cmp	r2, #3
+ 1508 070c 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1509              		.loc 1 123 0
+ 1510 0710 033084E2 		add	r3, r4, #3
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1511              		.loc 1 124 0
+ 1512 0714 9E0909E0 		mul	r9, lr, r9
+ 1513              	.LVL184:
+ 1514 0718 1A00000A 		beq	.L84
+ 1515 071c 033181E0 		add	r3, r1, r3, lsl #2
+ 1516              	.LVL185:
+ 1517 0720 040052E3 		cmp	r2, #4
+ 1518 0724 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1519              		.loc 1 123 0
+ 1520 0728 043084E2 		add	r3, r4, #4
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1521              		.loc 1 124 0
+ 1522 072c 9E0909E0 		mul	r9, lr, r9
+ 1523              	.LVL186:
+ 1524 0730 1400000A 		beq	.L84
+ 1525 0734 033181E0 		add	r3, r1, r3, lsl #2
+ 1526              	.LVL187:
+ 1527 0738 050052E3 		cmp	r2, #5
+ 1528 073c 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1529              		.loc 1 123 0
+ 1530 0740 053084E2 		add	r3, r4, #5
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1531              		.loc 1 124 0
+ 1532 0744 9E0909E0 		mul	r9, lr, r9
+ 1533              	.LVL188:
+ 1534 0748 0E00000A 		beq	.L84
+ 1535 074c 033181E0 		add	r3, r1, r3, lsl #2
+ 1536              	.LVL189:
+ 1537 0750 060052E3 		cmp	r2, #6
+ 1538 0754 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1539              		.loc 1 123 0
+ 1540 0758 063084E2 		add	r3, r4, #6
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1541              		.loc 1 124 0
+ 1542 075c 9E0909E0 		mul	r9, lr, r9
+ 1543              	.LVL190:
+ 1544 0760 0800000A 		beq	.L84
+ 1545 0764 033181E0 		add	r3, r1, r3, lsl #2
+ 1546              	.LVL191:
+ 1547 0768 070052E3 		cmp	r2, #7
+ 1548 076c 04E093E5 		ldr	lr, [r3, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1549              		.loc 1 123 0
+ 1550 0770 073084E2 		add	r3, r4, #7
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1551              		.loc 1 124 0
+ 1552 0774 9E0909E0 		mul	r9, lr, r9
+ 1553              	.LVL192:
+ 1554 0778 03E18110 		addne	lr, r1, r3, lsl #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1555              		.loc 1 123 0
+ 1556 077c 08308412 		addne	r3, r4, #8
+ 1557              	.LVL193:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1558              		.loc 1 124 0
+ 1559 0780 04E09E15 		ldrne	lr, [lr, #4]
+ 1560 0784 9E090910 		mulne	r9, lr, r9
+ 1561              	.LVL194:
+ 1562              	.L84:
+ 1563 0788 000052E1 		cmp	r2, r0
+ 1564 078c 2A00000A 		beq	.L69
+ 1565              	.LVL195:
+ 1566              	.L83:
+ 1567 0790 02A040E0 		sub	r10, r0, r2
+ 1568 0794 010040E2 		sub	r0, r0, #1
+ 1569 0798 04E04AE2 		sub	lr, r10, #4
+ 1570 079c 020040E0 		sub	r0, r0, r2
+ 1571 07a0 2EE1A0E1 		lsr	lr, lr, #2
+ 1572 07a4 020050E3 		cmp	r0, #2
+ 1573 07a8 01008EE2 		add	r0, lr, #1
+ 1574 07ac 00E1A0E1 		lsl	lr, r0, #2
+ 1575 07b0 1300009A 		bls	.L86
+ 1576 07b4 02208CE0 		add	r2, ip, r2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1577              		.loc 1 123 0
+ 1578 07b8 5120C0F2 		vmov.i32	q9, #1  @ v4si
+ 1579 07bc 022181E0 		add	r2, r1, r2, lsl #2
+ 1580 07c0 00C0A0E3 		mov	ip, #0
+ 1581              	.L88:
+ 1582 07c4 01C08CE2 		add	ip, ip, #1
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1583              		.loc 1 124 0
+ 1584 07c8 DF0A62F4 		vld1.64	{d16-d17}, [r2:64]
+ 1585 07cc 0C0050E1 		cmp	r0, ip
+ 1586 07d0 102082E2 		add	r2, r2, #16
+ 1587 07d4 F02962F2 		vmul.i32	q9, q9, q8
+ 1588 07d8 F9FFFF8A 		bhi	.L88
+ 1589 07dc 0A005EE1 		cmp	lr, r10
+ 1590 07e0 0E3083E0 		add	r3, r3, lr
+ 1591 07e4 5000C0F2 		vmov.i32	q8, #0  @ v4si
+ 1592 07e8 E048F2F2 		vext.32	q10, q9, q8, #2
+ 1593 07ec F22964F2 		vmul.i32	q9, q10, q9
+ 1594 07f0 E004F2F2 		vext.32	q8, q9, q8, #1
+ 1595 07f4 F20960F2 		vmul.i32	q8, q8, q9
+ 1596 07f8 902B10EE 		vmov.32	r2, d16[0]
+ 1597 07fc 920909E0 		mul	r9, r2, r9
+ 1598 0800 0D00000A 		beq	.L69
+ 1599              	.L86:
+ 1600              	.LVL196:
+ 1601 0804 030181E0 		add	r0, r1, r3, lsl #2
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1602              		.loc 1 123 0
+ 1603 0808 012083E2 		add	r2, r3, #1
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1604              		.loc 1 124 0
+ 1605 080c 040090E5 		ldr	r0, [r0, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1606              		.loc 1 123 0
+ 1607 0810 020058E1 		cmp	r8, r2
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1608              		.loc 1 124 0
+ 1609 0814 900909E0 		mul	r9, r0, r9
+ 1610              	.LVL197:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1611              		.loc 1 123 0
+ 1612 0818 070000DA 		ble	.L69
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1613              		.loc 1 124 0
+ 1614 081c 022181E0 		add	r2, r1, r2, lsl #2
+ 1615              	.LVL198:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1616              		.loc 1 123 0
+ 1617 0820 023083E2 		add	r3, r3, #2
+ 1618              	.LVL199:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1619              		.loc 1 124 0
+ 1620 0824 042092E5 		ldr	r2, [r2, #4]
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1621              		.loc 1 123 0
+ 1622 0828 030058E1 		cmp	r8, r3
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1623              		.loc 1 124 0
+ 1624 082c 920909E0 		mul	r9, r2, r9
+ 1625              	.LVL200:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1626              		.loc 1 123 0
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   }
+ 1627              		.loc 1 124 0
+ 1628 0830 033181C0 		addgt	r3, r1, r3, lsl #2
+ 1629              	.LVL201:
+ 1630 0834 043093C5 		ldrgt	r3, [r3, #4]
+ 1631 0838 930909C0 		mulgt	r9, r3, r9
+ 1632              	.LVL202:
+ 1633              	.L69:
+ 1634              	.LBE235:
+ 127:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 1635              		.loc 1 127 0
+ 1636 083c 0100A0E1 		mov	r0, r1
+ 1637 0840 FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 1638              	.LVL203:
+ 1639              	.LBB236:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1640              		.loc 1 131 0
+ 1641 0844 000054E3 		cmp	r4, #0
+ 1642 0848 170000DA 		ble	.L95
+ 1643 084c 046096E5 		ldr	r6, [r6, #4]
+ 1644              	.LVL204:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1645              		.loc 1 132 0
+ 1646 0850 041096E5 		ldr	r1, [r6, #4]
+ 1647 0854 FEFFFFEB 		bl	__aeabi_idiv
+ 1648              	.LVL205:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1649              		.loc 1 131 0
+ 1650 0858 010054E3 		cmp	r4, #1
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1651              		.loc 1 132 0
+ 1652 085c 0C008DE5 		str	r0, [sp, #12]
+ 1653              	.LVL206:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1654              		.loc 1 131 0
+ 1655 0860 1100000A 		beq	.L95
+ 1656              	.LVL207:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1657              		.loc 1 132 0
+ 1658 0864 081096E5 		ldr	r1, [r6, #8]
+ 1659 0868 FEFFFFEB 		bl	__aeabi_idiv
+ 1660              	.LVL208:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1661              		.loc 1 131 0
+ 1662 086c 020054E3 		cmp	r4, #2
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1663              		.loc 1 132 0
+ 1664 0870 10008DE5 		str	r0, [sp, #16]
+ 1665              	.LVL209:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1666              		.loc 1 131 0
+ 1667 0874 0C00000A 		beq	.L95
+ 1668              	.LVL210:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1669              		.loc 1 132 0
+ 1670 0878 0C1096E5 		ldr	r1, [r6, #12]
+ 1671 087c FEFFFFEB 		bl	__aeabi_idiv
+ 1672              	.LVL211:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1673              		.loc 1 131 0
+ 1674 0880 030054E3 		cmp	r4, #3
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1675              		.loc 1 132 0
+ 1676 0884 14008DE5 		str	r0, [sp, #20]
+ 1677              	.LVL212:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1678              		.loc 1 131 0
+ 1679 0888 0700000A 		beq	.L95
+ 1680              	.LVL213:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1681              		.loc 1 132 0
+ 1682 088c 101096E5 		ldr	r1, [r6, #16]
+ 1683 0890 FEFFFFEB 		bl	__aeabi_idiv
+ 1684              	.LVL214:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1685              		.loc 1 131 0
+ 1686 0894 040054E3 		cmp	r4, #4
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1687              		.loc 1 132 0
+ 1688 0898 18008DE5 		str	r0, [sp, #24]
+ 1689              	.LVL215:
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     dims_to_count[i] = remain_flat_size / params->dims->data[i];
+ 1690              		.loc 1 131 0
+ 1691 089c 0200000A 		beq	.L95
+ 1692              	.LVL216:
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     remain_flat_size = dims_to_count[i];
+ 1693              		.loc 1 132 0
+ 1694 08a0 141096E5 		ldr	r1, [r6, #20]
+ 1695 08a4 FEFFFFEB 		bl	__aeabi_idiv
+ 1696              	.LVL217:
+ 1697 08a8 1C008DE5 		str	r0, [sp, #28]
+ 1698              	.LVL218:
+ 1699              	.L95:
+ 1700              	.LBE236:
+ 1701              	.LBB237:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1702              		.loc 1 136 0
+ 1703 08ac 000055E3 		cmp	r5, #0
+ 1704 08b0 0AFFFFDA 		ble	.L136
+ 1705 08b4 848084E0 		add	r8, r4, r4, lsl #1
+ 1706              	.LVL219:
+ 1707 08b8 0B60A0E1 		mov	r6, fp
+ 1708 08bc 0991A0E1 		lsl	r9, r9, #2
+ 1709 08c0 04A1A0E1 		lsl	r10, r4, #2
+ 1710 08c4 0881A0E1 		lsl	r8, r8, #2
+ 1711 08c8 00309DE5 		ldr	r3, [sp]
+ 1712 08cc 00B0A0E3 		mov	fp, #0
+ 1713              	.LVL220:
+ 1714 08d0 160000EA 		b	.L102
+ 1715              	.LVL221:
+ 1716              	.L251:
+ 1717              	.LBB238:
+ 1718              	.LBB239:
+ 1719              	.LBB240:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1720              		.loc 1 141 0
+ 1721 08d4 081096E5 		ldr	r1, [r6, #8]
+ 1722              	.LBE240:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1723              		.loc 1 138 0
+ 1724 08d8 030054E3 		cmp	r4, #3
+ 1725              	.LBB241:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1726              		.loc 1 141 0
+ 1727 08dc 14009DE5 		ldr	r0, [sp, #20]
+ 1728 08e0 902121E0 		mla	r1, r0, r1, r2
+ 1729              	.LVL222:
+ 1730              	.LBE241:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1731              		.loc 1 138 0
+ 1732 08e4 0700000A 		beq	.L240
+ 1733              	.LVL223:
+ 1734              	.LBB242:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1735              		.loc 1 141 0
+ 1736 08e8 0C2096E5 		ldr	r2, [r6, #12]
+ 1737 08ec 18009DE5 		ldr	r0, [sp, #24]
+ 1738              	.LBE242:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1739              		.loc 1 138 0
+ 1740 08f0 040054E3 		cmp	r4, #4
+ 1741              	.LBB243:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1742              		.loc 1 141 0
+ 1743 08f4 901222E0 		mla	r2, r0, r2, r1
+ 1744              	.LVL224:
+ 1745              	.LBE243:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1746              		.loc 1 138 0
+ 1747 08f8 1A00000A 		beq	.L241
+ 1748              	.LVL225:
+ 1749              	.LBB244:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1750              		.loc 1 141 0
+ 1751 08fc 101096E5 		ldr	r1, [r6, #16]
+ 1752 0900 1C009DE5 		ldr	r0, [sp, #28]
+ 1753 0904 902121E0 		mla	r1, r0, r1, r2
+ 1754              	.LVL226:
+ 1755              	.L240:
+ 1756 0908 0111A0E1 		lsl	r1, r1, #2
+ 1757              	.LVL227:
+ 1758              	.L96:
+ 1759              	.LBE244:
+ 1760              	.LBE239:
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                 sizeof(ParamsT) * slice_size);
+ 1761              		.loc 1 143 0
+ 1762 090c 0300A0E1 		mov	r0, r3
+ 1763 0910 011087E0 		add	r1, r7, r1
+ 1764              	.LBE238:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1765              		.loc 1 136 0
+ 1766 0914 01B08BE2 		add	fp, fp, #1
+ 1767              	.LVL228:
+ 1768              	.LBB250:
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****                 sizeof(ParamsT) * slice_size);
+ 1769              		.loc 1 143 0
+ 1770 0918 0920A0E1 		mov	r2, r9
+ 1771 091c 0A6086E0 		add	r6, r6, r10
+ 1772 0920 FEFFFFEB 		bl	memcpy
+ 1773              	.LVL229:
+ 1774              	.LBE250:
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     int from_pos = 0;
+ 1775              		.loc 1 136 0
+ 1776 0924 05005BE1 		cmp	fp, r5
+ 1777 0928 093080E0 		add	r3, r0, r9
+ 1778 092c EBFEFF0A 		beq	.L136
+ 1779              	.LVL230:
+ 1780              	.L102:
+ 1781              	.LBB251:
+ 1782              	.LBB249:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1783              		.loc 1 138 0
+ 1784 0930 000054E3 		cmp	r4, #0
+ 1785 0934 0010A0D3 		movle	r1, #0
+ 1786 0938 F3FFFFDA 		ble	.L96
+ 1787              	.LVL231:
+ 1788              	.LBB245:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1789              		.loc 1 141 0
+ 1790 093c 0C209DE5 		ldr	r2, [sp, #12]
+ 1791              	.LBE245:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1792              		.loc 1 138 0
+ 1793 0940 010054E3 		cmp	r4, #1
+ 1794              	.LBB246:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1795              		.loc 1 141 0
+ 1796 0944 001096E5 		ldr	r1, [r6]
+ 1797 0948 06F0D8F7 		pld	[r8, r6]
+ 1798              	.LVL232:
+ 1799 094c 910201E0 		mul	r1, r1, r2
+ 1800              	.LVL233:
+ 1801              	.LBE246:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1802              		.loc 1 138 0
+ 1803 0950 ECFFFF0A 		beq	.L240
+ 1804              	.LVL234:
+ 1805              	.LBB247:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1806              		.loc 1 141 0
+ 1807 0954 042096E5 		ldr	r2, [r6, #4]
+ 1808              	.LBE247:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1809              		.loc 1 138 0
+ 1810 0958 020054E3 		cmp	r4, #2
+ 1811              	.LBB248:
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     }
+ 1812              		.loc 1 141 0
+ 1813 095c 10009DE5 		ldr	r0, [sp, #16]
+ 1814 0960 901222E0 		mla	r2, r0, r2, r1
+ 1815              	.LVL235:
+ 1816              	.LBE248:
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****       int offset = i * indices_nd + j;
+ 1817              		.loc 1 138 0
+ 1818 0964 DAFFFF1A 		bne	.L251
+ 1819              	.LVL236:
+ 1820              	.L241:
+ 1821 0968 0211A0E1 		lsl	r1, r2, #2
+ 1822 096c E6FFFFEA 		b	.L96
+ 1823              	.LVL237:
+ 1824              	.L147:
+ 1825              	.LBE249:
+ 1826              	.LBE251:
+ 1827              	.LBE237:
+ 1828              	.LBB252:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1829              		.loc 1 116 0
+ 1830 0970 0300A0E1 		mov	r0, r3
+ 1831 0974 1CFFFFEA 		b	.L73
+ 1832              	.LVL238:
+ 1833              	.L159:
+ 1834              	.LBE252:
+ 1835              	.LBE224:
+ 1836              	.LBE223:
+ 1837              	.LBB258:
+ 1838              	.LBB221:
+ 1839              	.LBB219:
+ 1840 0978 0300A0E1 		mov	r0, r3
+ 1841 097c FFFDFFEA 		b	.L109
+ 1842              	.LVL239:
+ 1843              	.L152:
+ 1844 0980 0150A0E3 		mov	r5, #1
+ 1845              	.LVL240:
+ 1846 0984 0300A0E1 		mov	r0, r3
+ 1847              	.LVL241:
+ 1848 0988 FEFDFFEA 		b	.L108
+ 1849              	.LVL242:
+ 1850              	.L148:
+ 1851              	.LBE219:
+ 1852              	.LBE221:
+ 1853              	.LBE258:
+ 1854              	.LBB259:
+ 1855              	.LBB256:
+ 1856              	.LBB253:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1857              		.loc 1 123 0
+ 1858 098c 0430A0E1 		mov	r3, r4
+ 1859 0990 0190A0E3 		mov	r9, #1
+ 1860 0994 7DFFFFEA 		b	.L83
+ 1861              	.LVL243:
+ 1862              	.L140:
+ 1863              	.LBE253:
+ 1864              	.LBB254:
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     n_slices *= indices->dims->data[i];
+ 1865              		.loc 1 116 0
+ 1866 0998 0150A0E3 		mov	r5, #1
+ 1867              	.LVL244:
+ 1868 099c 0300A0E1 		mov	r0, r3
+ 1869              	.LVL245:
+ 1870 09a0 13FFFFEA 		b	.L72
+ 1871              	.LVL246:
+ 1872              	.L160:
+ 1873              	.LBE254:
+ 1874              	.LBE256:
+ 1875              	.LBE259:
+ 1876              	.LBB260:
+ 1877              	.LBB222:
+ 1878              	.LBB220:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1879              		.loc 1 123 0
+ 1880 09a4 0430A0E1 		mov	r3, r4
+ 1881 09a8 0190A0E3 		mov	r9, #1
+ 1882 09ac 5AFEFFEA 		b	.L119
+ 1883              	.LVL247:
+ 1884              	.L248:
+ 1885 09b0 0190A0E3 		mov	r9, #1
+ 1886 09b4 83FEFFEA 		b	.L105
+ 1887              	.LVL248:
+ 1888              	.L247:
+ 1889              	.LBE220:
+ 115:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_dims - 1; ++i) {
+ 1890              		.loc 1 115 0
+ 1891 09b8 0150A0E3 		mov	r5, #1
+ 1892              	.LVL249:
+ 1893 09bc 1CFEFFEA 		b	.L117
+ 1894              	.LVL250:
+ 1895              	.L250:
+ 1896              	.LBE222:
+ 1897              	.LBE260:
+ 1898              	.LBB261:
+ 1899              	.LBB257:
+ 1900              	.LBB255:
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****     slice_size *= params->dims->data[i];
+ 1901              		.loc 1 123 0
+ 1902 09c0 0190A0E3 		mov	r9, #1
+ 1903 09c4 9CFFFFEA 		b	.L69
+ 1904              	.LVL251:
+ 1905              	.L249:
+ 1906              	.LBE255:
+ 115:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   for (int i = 0; i < indices_dims - 1; ++i) {
+ 1907              		.loc 1 115 0
+ 1908 09c8 0150A0E3 		mov	r5, #1
+ 1909              	.LVL252:
+ 1910 09cc 35FFFFEA 		b	.L81
+ 1911              	.LVL253:
+ 1912              	.L61:
+ 1913              	.LBE257:
+ 1914              	.LBE261:
+ 1915              	.LBE263:
+ 1916              	.LBE265:
+ 1917              	.LBB266:
+ 1918              	.LBB169:
+ 1919              	.LBB166:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+ 1920              		.loc 3 34 0
+ 1921 09d0 FEFFFFEB 		bl	abort
+ 1922              	.LVL254:
+ 1923              	.LBE166:
+ 1924              	.LBE169:
+ 1925              	.LBE266:
+ 1926              		.cfi_endproc
+ 1927              	.LFE1144:
+ 1928              		.fnend
+ 1930              		.section	.text._ZN6tflite18Register_GATHER_NDEv,"ax",%progbits
+ 1931              		.align	2
+ 1932              		.global	_ZN6tflite18Register_GATHER_NDEv
+ 1933              		.syntax unified
+ 1934              		.arm
+ 1935              		.fpu neon
+ 1937              	_ZN6tflite18Register_GATHER_NDEv:
+ 1938              		.fnstart
+ 1939              	.LFB1145:
+ 188:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }  // namespace
+ 189:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** 
+ 190:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** TfLiteRegistration Register_GATHER_ND() {
+ 1940              		.loc 1 190 0
+ 1941              		.cfi_startproc
+ 1942              		@ args = 0, pretend = 0, frame = 0
+ 1943              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1944              	.LVL255:
+ 191:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return {/*init=*/nullptr,
+ 192:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*free=*/nullptr,
+ 193:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*prepare=*/Prepare,
+ 194:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*invoke=*/Eval,
+ 195:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*profiling_string=*/nullptr,
+ 196:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*builtin_code=*/0,
+ 197:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*custom_name=*/nullptr,
+ 198:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****           /*version=*/0};
+ 1945              		.loc 1 198 0
+ 1946 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 190:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return {/*init=*/nullptr,
+ 1947              		.loc 1 190 0
+ 1948 0004 10402DE9 		push	{r4, lr}
+ 1949              		.cfi_def_cfa_offset 8
+ 1950              		.cfi_offset 4, -8
+ 1951              		.cfi_offset 14, -4
+ 1952              		.loc 1 198 0
+ 1953 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 190:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp ****   return {/*init=*/nullptr,
+ 1954              		.loc 1 190 0
+ 1955 000c 0040A0E1 		mov	r4, r0
+ 1956              		.loc 1 198 0
+ 1957 0010 00E0A0E1 		mov	lr, r0
+ 1958 0014 0F00BCE8 		ldmia	ip!, {r0, r1, r2, r3}
+ 1959              	.LVL256:
+ 1960 0018 0F00AEE8 		stmia	lr!, {r0, r1, r2, r3}
+ 1961 001c 0F009CE8 		ldm	ip, {r0, r1, r2, r3}
+ 1962 0020 0F008EE8 		stm	lr, {r0, r1, r2, r3}
+ 199:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/gather_nd.cpp **** }
+ 1963              		.loc 1 199 0
+ 1964 0024 0400A0E1 		mov	r0, r4
+ 1965 0028 1080BDE8 		pop	{r4, pc}
+ 1966              		.cfi_endproc
+ 1967              	.LFE1145:
+ 1968              		.cantunwind
+ 1969              		.fnend
+ 1971              		.section	.rodata
+ 1972              		.align	2
+ 1973              		.set	.LANCHOR0,. + 0
+ 1974              	.LC0:
+ 1975 0000 00000000 		.word	0
+ 1976 0004 00000000 		.word	0
+ 1977 0008 00000000 		.word	_ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode
+ 1978 000c 00000000 		.word	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+ 1979 0010 00000000 		.word	0
+ 1980 0014 00000000 		.word	0
+ 1981 0018 00000000 		.word	0
+ 1982 001c 00000000 		.word	0
+ 1983              		.section	.rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%progbit
+ 1984              		.align	2
+ 1985              	.LC13:
+ 1986 0000 50617261 		.ascii	"Params type '%s' are not supported by gather_nd.\000"
+ 1986      6D732074 
+ 1986      79706520 
+ 1986      27257327 
+ 1986      20617265 
+ 1987              		.section	.rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%prog
+ 1988              		.align	2
+ 1989              	.LC1:
+ 1990 0000 2E2E2F73 		.ascii	"../src/tensorflow_lite/src/tensorflow/lite/micro/ke"
+ 1990      72632F74 
+ 1990      656E736F 
+ 1990      72666C6F 
+ 1990      775F6C69 
+ 1991 0033 726E656C 		.ascii	"rnels/gather_nd.cpp\000"
+ 1991      732F6761 
+ 1991      74686572 
+ 1991      5F6E642E 
+ 1991      63707000 
+ 1992 0047 00       		.space	1
+ 1993              	.LC2:
+ 1994 0048 25733A25 		.ascii	"%s:%d %s != %s (%d != %d)\000"
+ 1994      64202573 
+ 1994      20213D20 
+ 1994      25732028 
+ 1994      25642021 
+ 1995 0062 0000     		.space	2
+ 1996              	.LC3:
+ 1997 0064 3200     		.ascii	"2\000"
+ 1998 0066 0000     		.space	2
+ 1999              	.LC4:
+ 2000 0068 4E756D49 		.ascii	"NumInputs(node)\000"
+ 2000      6E707574 
+ 2000      73286E6F 
+ 2000      64652900 
+ 2001              	.LC5:
+ 2002 0078 3100     		.ascii	"1\000"
+ 2003 007a 0000     		.space	2
+ 2004              	.LC6:
+ 2005 007c 4E756D4F 		.ascii	"NumOutputs(node)\000"
+ 2005      75747075 
+ 2005      7473286E 
+ 2005      6F646529 
+ 2005      00
+ 2006 008d 000000   		.space	3
+ 2007              	.LC7:
+ 2008 0090 50617261 		.ascii	"Params of type '%s' are not supported by gather_nd."
+ 2008      6D73206F 
+ 2008      66207479 
+ 2008      70652027 
+ 2008      25732720 
+ 2009 00c3 00       		.ascii	"\000"
+ 2010              	.LC8:
+ 2011 00c4 496E6469 		.ascii	"Indices of type '%s' are not supported by gather_nd"
+ 2011      63657320 
+ 2011      6F662074 
+ 2011      79706520 
+ 2011      27257327 
+ 2012 00f7 2E00     		.ascii	".\000"
+ 2013 00f9 000000   		.space	3
+ 2014              	.LC9:
+ 2015 00fc 50617261 		.ascii	"Params must be at least a vector.\000"
+ 2015      6D73206D 
+ 2015      75737420 
+ 2015      62652061 
+ 2015      74206C65 
+ 2016 011e 0000     		.space	2
+ 2017              	.LC10:
+ 2018 0120 496E6469 		.ascii	"Indices must be at least a vector.\000"
+ 2018      63657320 
+ 2018      6D757374 
+ 2018      20626520 
+ 2018      6174206C 
+ 2019 0143 00       		.space	1
+ 2020              	.LC11:
+ 2021 0144 496E6465 		.ascii	"Index innermost dimension length must be <= params "
+ 2021      7820696E 
+ 2021      6E65726D 
+ 2021      6F737420 
+ 2021      64696D65 
+ 2022 0177 72616E6B 		.ascii	"rank.\000"
+ 2022      2E00
+ 2023 017d 000000   		.space	3
+ 2024              	.LC12:
+ 2025 0180 496E6465 		.ascii	"Index innermost dimension length must not exceed %d"
+ 2025      7820696E 
+ 2025      6E65726D 
+ 2025      6F737420 
+ 2025      64696D65 
+ 2026 01b3 2E00     		.ascii	".\000"
+ 2027              		.text
+ 2028              	.Letext0:
+ 2029              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 2030              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2031              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2032              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2033              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+ 2034              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+ 2035              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2036              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2037              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2038              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2039              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2040              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2041              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2042              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2043              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2044              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2045              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2046              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2047              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2048              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2049              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2050              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2051              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2052              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2053              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2054              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2055              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2056              		.file 31 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+ 2057              		.file 32 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+ 2058              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2059              		.file 34 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 gather_nd.cpp
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:17     .text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:22     .text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2001   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000078 .LC5
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2004   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:0000007c .LC6
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1989   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1993   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000048 .LC2
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1996   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000064 .LC3
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1999   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000068 .LC4
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2007   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000090 .LC7
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2010   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000c4 .LC8
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2020   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000144 .LC11
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2024   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000180 .LC12
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2014   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000fc .LC9
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:2017   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000120 .LC10
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:578    .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:583    .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1985   .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC13
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1931   .text._ZN6tflite18Register_GATHER_NDEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1937   .text._ZN6tflite18Register_GATHER_NDEv:00000000 _ZN6tflite18Register_GATHER_NDEv
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1973   .rodata:00000000 .LANCHOR0
+.ARM.exidx.text._ZN6tflite18Register_GATHER_NDEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1972   .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1984   .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc5H6Ylg.s:1988   .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+                           .group:00000000 wm4.builtin_op_data.h.16.b961d1222c948363e3f10ad99298fd3f
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+
+UNDEFINED SYMBOLS
+_ZN6tflite12GetInputSafeEPK13TfLiteContextPK10TfLiteNodeiPPK12TfLiteTensor
+_ZN6tflite13GetOutputSafeEPK13TfLiteContextPK10TfLiteNodeiPP12TfLiteTensor
+TfLiteTypeGetName
+__aeabi_unwind_cpp_pr0
+__aeabi_idiv
+_ZN6tflite12ElementCountERK14TfLiteIntArray
+memcpy
+abort

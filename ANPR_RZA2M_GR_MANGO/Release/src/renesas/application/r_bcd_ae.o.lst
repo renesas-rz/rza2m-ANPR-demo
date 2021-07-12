@@ -1,0 +1,450 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_bcd_ae.c"
+  13              		.section	.text.R_BCD_AeInit,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_BCD_AeInit
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_BCD_AeInit:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 0030A0E3 		mov	r3, #0
+  25 0008 0040A0E1 		mov	r4, r0
+  26 000c FA1FA0E3 		mov	r1, #1000
+  27 0010 01C0E0E3 		mvn	ip, #1
+  28 0014 0600A0E3 		mov	r0, #6
+  29 0018 002000E3 		movw	r2, #:lower16:.LANCHOR0
+  30 001c 0EC0C4E5 		strb	ip, [r4, #14]
+  31 0020 002040E3 		movt	r2, #:upper16:.LANCHOR0
+  32 0024 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+  33 0028 B030C4E1 		strh	r3, [r4]	@ movhi
+  34 002c 0100A0E1 		mov	r0, r1
+  35 0030 B230C4E1 		strh	r3, [r4, #2]	@ movhi
+  36 0034 0F30C4E5 		strb	r3, [r4, #15]
+  37 0038 1030C4E5 		strb	r3, [r4, #16]
+  38 003c B410C4E1 		strh	r1, [r4, #4]	@ movhi
+  39 0040 0030C2E5 		strb	r3, [r2]
+  40 0044 FEFFFFEB 		bl	R_BCD_shutter_setting
+  41 0048 0A00D4E5 		ldrb	r0, [r4, #10]	@ zero_extendqisi2
+  42 004c 100050E3 		cmp	r0, #16
+  43 0050 1000A023 		movcs	r0, #16
+  44 0054 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+  45 0058 FEFFFFEB 		bl	R_BCD_gain_table_setting
+  46 005c FE00A0E3 		mov	r0, #254
+  47 0060 1080BDE8 		pop	{r4, pc}
+  49              		.section	.text.R_BCD_AeStop,"ax",%progbits
+  50              		.align	2
+  51              		.global	R_BCD_AeStop
+  52              		.syntax unified
+  53              		.arm
+  54              		.fpu neon
+  56              	R_BCD_AeStop:
+  57              		@ args = 0, pretend = 0, frame = 0
+  58              		@ frame_needed = 0, uses_anonymous_args = 0
+  59 0000 10402DE9 		push	{r4, lr}
+  60 0004 0020A0E3 		mov	r2, #0
+  61 0008 0040A0E1 		mov	r4, r0
+  62 000c FA1FA0E3 		mov	r1, #1000
+  63 0010 00C0E0E3 		mvn	ip, #0
+  64 0014 0600A0E3 		mov	r0, #6
+  65 0018 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  66 001c 0EC0C4E5 		strb	ip, [r4, #14]
+  67 0020 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  68 0024 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+  69 0028 B220C4E1 		strh	r2, [r4, #2]	@ movhi
+  70 002c 0100A0E1 		mov	r0, r1
+  71 0030 B410C4E1 		strh	r1, [r4, #4]	@ movhi
+  72 0034 0020C3E5 		strb	r2, [r3]
+  73 0038 FEFFFFEB 		bl	R_BCD_shutter_setting
+  74 003c 0A00D4E5 		ldrb	r0, [r4, #10]	@ zero_extendqisi2
+  75 0040 100050E3 		cmp	r0, #16
+  76 0044 1000A023 		movcs	r0, #16
+  77 0048 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+  78 004c FEFFFFEB 		bl	R_BCD_gain_table_setting
+  79 0050 FF00A0E3 		mov	r0, #255
+  80 0054 1080BDE8 		pop	{r4, pc}
+  82              		.section	.text.R_BCD_AeStart,"ax",%progbits
+  83              		.align	2
+  84              		.global	R_BCD_AeStart
+  85              		.syntax unified
+  86              		.arm
+  87              		.fpu neon
+  89              	R_BCD_AeStart:
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92 0000 0A30D0E5 		ldrb	r3, [r0, #10]	@ zero_extendqisi2
+  93 0004 0120E0E3 		mvn	r2, #1
+  94 0008 10402DE9 		push	{r4, lr}
+  95 000c 0E20C0E5 		strb	r2, [r0, #14]
+  96 0010 100053E3 		cmp	r3, #16
+  97 0014 1030A023 		movcs	r3, #16
+  98 0018 BA30C0E1 		strh	r3, [r0, #10]	@ movhi
+  99 001c 0300A0E1 		mov	r0, r3
+ 100 0020 FEFFFFEB 		bl	R_BCD_gain_table_setting
+ 101 0024 FE00A0E3 		mov	r0, #254
+ 102 0028 1080BDE8 		pop	{r4, pc}
+ 104              		.section	.text.R_BCD_AeGetMode,"ax",%progbits
+ 105              		.align	2
+ 106              		.global	R_BCD_AeGetMode
+ 107              		.syntax unified
+ 108              		.arm
+ 109              		.fpu neon
+ 111              	R_BCD_AeGetMode:
+ 112              		@ args = 0, pretend = 0, frame = 0
+ 113              		@ frame_needed = 0, uses_anonymous_args = 0
+ 114              		@ link register save eliminated.
+ 115 0000 0E00D0E5 		ldrb	r0, [r0, #14]	@ zero_extendqisi2
+ 116 0004 1EFF2FE1 		bx	lr
+ 118              		.section	.text.R_BCD_AeMakeGammaTable,"ax",%progbits
+ 119              		.align	2
+ 120              		.global	R_BCD_AeMakeGammaTable
+ 121              		.syntax unified
+ 122              		.arm
+ 123              		.fpu neon
+ 125              	R_BCD_AeMakeGammaTable:
+ 126              		@ args = 0, pretend = 0, frame = 8
+ 127              		@ frame_needed = 0, uses_anonymous_args = 0
+ 128 0000 000BF7EE 		vmov.f64	d16, #1.0e+0
+ 129 0004 0020A0E3 		mov	r2, #0
+ 130 0008 70402DE9 		push	{r4, r5, r6, lr}
+ 131 000c 0060A0E1 		mov	r6, r0
+ 132 0010 048B2DED 		vpush.64	{d8, d9}
+ 133 0014 015041E2 		sub	r5, r1, #1
+ 134 0018 08D04DE2 		sub	sp, sp, #8
+ 135 001c 0040A0E3 		mov	r4, #0
+ 136 0020 809B80EE 		vdiv.f64	d9, d16, d0
+ 137 0024 0E30D0E5 		ldrb	r3, [r0, #14]	@ zero_extendqisi2
+ 138 0028 188B9FED 		vldr.64	d8, .L18
+ 139 002c B020C0E1 		strh	r2, [r0]	@ movhi
+ 140 0030 FF0053E3 		cmp	r3, #255
+ 141 0034 0130E013 		mvnne	r3, #1
+ 142 0038 0E30C015 		strbne	r3, [r0, #14]
+ 143              	.L11:
+ 144 003c 904A07EE 		vmov	s15, r4	@ int
+ 145 0040 E70BB8EE 		vcvt.f64.s32	d0, s15
+ 146 0044 491BB0EE 		vmov.f64	d1, d9
+ 147 0048 080B80EE 		vdiv.f64	d0, d0, d8
+ 148 004c FEFFFFEB 		bl	pow
+ 149 0050 080B20EE 		vmul.f64	d0, d0, d8
+ 150 0054 C07BFCEE 		vcvt.u32.f64	s15, d0
+ 151 0058 017ACDED 		vstr.32	s15, [sp, #4]	@ int
+ 152 005c 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 153 0060 810053E3 		cmp	r3, #129
+ 154 0064 0130E5E5 		strb	r3, [r5, #1]!
+ 155 0068 0200009A 		bls	.L10
+ 156 006c B030D6E1 		ldrh	r3, [r6]
+ 157 0070 000053E3 		cmp	r3, #0
+ 158 0074 B040C601 		strheq	r4, [r6]	@ movhi
+ 159              	.L10:
+ 160 0078 014084E2 		add	r4, r4, #1
+ 161 007c 010C54E3 		cmp	r4, #256
+ 162 0080 EDFFFF1A 		bne	.L11
+ 163 0084 08D08DE2 		add	sp, sp, #8
+ 164              		@ sp needed
+ 165 0088 048BBDEC 		vldm	sp!, {d8-d9}
+ 166 008c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 167              	.L19:
+ 168              		.align	3
+ 169              	.L18:
+ 170 0090 00000000 		.word	0
+ 171 0094 00E06F40 		.word	1081073664
+ 173              		.global	__aeabi_uidiv
+ 174              		.section	.text.R_BCD_AeRunAutoExpousure,"ax",%progbits
+ 175              		.align	2
+ 176              		.global	R_BCD_AeRunAutoExpousure
+ 177              		.syntax unified
+ 178              		.arm
+ 179              		.fpu neon
+ 181              	R_BCD_AeRunAutoExpousure:
+ 182              		@ args = 0, pretend = 0, frame = 0
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184 0000 FF0051E3 		cmp	r1, #255
+ 185 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 186 0008 0040A0E1 		mov	r4, r0
+ 187 000c BA50D0E1 		ldrh	r5, [r0, #10]
+ 188 0010 0E00D0E5 		ldrb	r0, [r0, #14]	@ zero_extendqisi2
+ 189 0014 2300008A 		bhi	.L46
+ 190 0018 FF0050E3 		cmp	r0, #255
+ 191 001c 2100000A 		beq	.L46
+ 192 0020 B0C0D4E1 		ldrh	ip, [r4]
+ 193 0024 1FE508E3 		movw	lr, #34079
+ 194 0028 EBE145E3 		movt	lr, 20971
+ 195 002c 0120A0E1 		mov	r2, r1
+ 196 0030 B480D4E1 		ldrh	r8, [r4, #4]
+ 197 0034 8C316CE0 		rsb	r3, ip, ip, lsl #3
+ 198 0038 033263E0 		rsb	r3, r3, r3, lsl #4
+ 199 003c 936EC7E0 		smull	r6, r7, r3, lr
+ 200 0040 C33FA0E1 		asr	r3, r3, #31
+ 201 0044 C73263E0 		rsb	r3, r3, r7, asr #5
+ 202 0048 030051E1 		cmp	r1, r3
+ 203 004c 1A0000DA 		ble	.L23
+ 204 0050 000055E3 		cmp	r5, #0
+ 205 0054 3A00001A 		bne	.L24
+ 206 0058 90CA07EE 		vmov	s15, ip	@ int
+ 207 005c 0C2041E0 		sub	r2, r1, ip
+ 208 0060 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 209 0064 7220EFE6 		uxtb	r2, r2
+ 210 0068 A02BDFED 		vldr.64	d18, .L56
+ 211 006c 902A07EE 		vmov	s15, r2	@ int
+ 212 0070 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 213 0074 A21B61EE 		vmul.f64	d17, d17, d18
+ 214 0078 E10BF4EE 		vcmpe.f64	d16, d17
+ 215 007c 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 216 0080 7C0000CA 		bgt	.L55
+ 217 0084 200058E3 		cmp	r8, #32
+ 218 0088 8300009A 		bls	.L28
+ 219 008c 200048E2 		sub	r0, r8, #32
+ 220 0090 7000FFE6 		uxth	r0, r0
+ 221 0094 B400C4E1 		strh	r0, [r4, #4]	@ movhi
+ 222              	.L27:
+ 223 0098 4F0050E3 		cmp	r0, #79
+ 224 009c 7E00009A 		bls	.L28
+ 225              	.L39:
+ 226 00a0 FEFFFFEB 		bl	R_BCD_shutter_setting
+ 227 00a4 450000EA 		b	.L30
+ 228              	.L46:
+ 229 00a8 0020A0E3 		mov	r2, #0
+ 230              	.L22:
+ 231 00ac 0030A0E3 		mov	r3, #0
+ 232              	.L44:
+ 233 00b0 0F30C4E5 		strb	r3, [r4, #15]
+ 234 00b4 1020C4E5 		strb	r2, [r4, #16]
+ 235 00b8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 236              	.L23:
+ 237 00bc 5A30A0E3 		mov	r3, #90
+ 238 00c0 930C03E0 		mul	r3, r3, ip
+ 239 00c4 936EC7E0 		smull	r6, r7, r3, lr
+ 240 00c8 C33FA0E1 		asr	r3, r3, #31
+ 241 00cc C73263E0 		rsb	r3, r3, r7, asr #5
+ 242 00d0 030051E1 		cmp	r1, r3
+ 243 00d4 F3FFFFAA 		bge	.L46
+ 244 00d8 873301E3 		movw	r3, #4999
+ 245 00dc 030058E1 		cmp	r8, r3
+ 246 00e0 4100008A 		bhi	.L34
+ 247 00e4 90CA07EE 		vmov	s15, ip	@ int
+ 248 00e8 01204CE0 		sub	r2, ip, r1
+ 249 00ec E71BF8EE 		vcvt.f64.s32	d17, s15
+ 250 00f0 7220EFE6 		uxtb	r2, r2
+ 251 00f4 7D2BDFED 		vldr.64	d18, .L56
+ 252 00f8 902A07EE 		vmov	s15, r2	@ int
+ 253 00fc E70BF8EE 		vcvt.f64.s32	d16, s15
+ 254 0100 A21B61EE 		vmul.f64	d17, d17, d18
+ 255 0104 E10BF4EE 		vcmpe.f64	d16, d17
+ 256 0108 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 257 010c 680000DA 		ble	.L52
+ 258 0110 980C00E0 		mul	r0, r8, ip
+ 259 0114 FEFFFFEB 		bl	__aeabi_uidiv
+ 260 0118 AB3A0AE3 		movw	r3, #43691
+ 261 011c 800088E0 		add	r0, r8, r0, lsl #1
+ 262 0120 AA3A4AE3 		movt	r3, 43690
+ 263 0124 900381E0 		umull	r0, r1, r0, r3
+ 264 0128 D100EFE7 		ubfx	r0, r1, #1, #16
+ 265              	.L37:
+ 266 012c 883301E3 		movw	r3, #5000
+ 267 0130 030050E1 		cmp	r0, r3
+ 268 0134 B400C491 		strhls	r0, [r4, #4]	@ movhi
+ 269 0138 0300A081 		movhi	r0, r3
+ 270 013c B430C481 		strhhi	r3, [r4, #4]	@ movhi
+ 271 0140 D6FFFFEA 		b	.L39
+ 272              	.L24:
+ 273 0144 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 274 0148 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 275 014c 0010D3E5 		ldrb	r1, [r3]	@ zero_extendqisi2
+ 276 0150 000051E3 		cmp	r1, #0
+ 277 0154 2000001A 		bne	.L31
+ 278 0158 90CA07EE 		vmov	s15, ip	@ int
+ 279 015c 0C2042E0 		sub	r2, r2, ip
+ 280 0160 E71BF8EE 		vcvt.f64.s32	d17, s15
+ 281 0164 7220EFE6 		uxtb	r2, r2
+ 282 0168 602BDFED 		vldr.64	d18, .L56
+ 283 016c 0210A0E3 		mov	r1, #2
+ 284 0170 0010C3E5 		strb	r1, [r3]
+ 285 0174 902A07EE 		vmov	s15, r2	@ int
+ 286 0178 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 287 017c A21B61EE 		vmul.f64	d17, d17, d18
+ 288 0180 E10BF4EE 		vcmpe.f64	d16, d17
+ 289 0184 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 290 0188 0130A0C3 		movgt	r3, #1
+ 291 018c 0030A0D3 		movle	r3, #0
+ 292 0190 010055E1 		cmp	r5, r1
+ 293 0194 0030A093 		movls	r3, #0
+ 294 0198 01300382 		andhi	r3, r3, #1
+ 295 019c 000053E3 		cmp	r3, #0
+ 296 01a0 02004512 		subne	r0, r5, #2
+ 297 01a4 01004502 		subeq	r0, r5, #1
+ 298 01a8 7000FFE6 		uxth	r0, r0
+ 299 01ac 7000EFE6 		uxtb	r0, r0
+ 300 01b0 100050E3 		cmp	r0, #16
+ 301 01b4 1000A023 		movcs	r0, #16
+ 302 01b8 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+ 303 01bc FEFFFFEB 		bl	R_BCD_gain_table_setting
+ 304              	.L30:
+ 305 01c0 B430D4E1 		ldrh	r3, [r4, #4]
+ 306 01c4 080053E1 		cmp	r3, r8
+ 307 01c8 4000000A 		beq	.L43
+ 308 01cc 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 309 01d0 0130A0E3 		mov	r3, #1
+ 310 01d4 0020A0E3 		mov	r2, #0
+ 311 01d8 B4FFFFEA 		b	.L44
+ 312              	.L31:
+ 313 01dc 011041E2 		sub	r1, r1, #1
+ 314 01e0 0120A0E3 		mov	r2, #1
+ 315 01e4 0010C3E5 		strb	r1, [r3]
+ 316 01e8 AFFFFFEA 		b	.L22
+ 317              	.L34:
+ 318 01ec 0F0055E3 		cmp	r5, #15
+ 319 01f0 2D00008A 		bhi	.L47
+ 320 01f4 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 321 01f8 B210D4E1 		ldrh	r1, [r4, #2]
+ 322 01fc 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 323 0200 00E0D3E5 		ldrb	lr, [r3]	@ zero_extendqisi2
+ 324 0204 011081E2 		add	r1, r1, #1
+ 325 0208 B210C4E1 		strh	r1, [r4, #2]	@ movhi
+ 326 020c 00005EE3 		cmp	lr, #0
+ 327 0210 2A00001A 		bne	.L40
+ 328 0214 90CA07EE 		vmov	s15, ip	@ int
+ 329 0218 02204CE0 		sub	r2, ip, r2
+ 330 021c E71BF8EE 		vcvt.f64.s32	d17, s15
+ 331 0220 7220EFE6 		uxtb	r2, r2
+ 332 0224 312BDFED 		vldr.64	d18, .L56
+ 333 0228 0210A0E3 		mov	r1, #2
+ 334 022c 0010C3E5 		strb	r1, [r3]
+ 335 0230 902A07EE 		vmov	s15, r2	@ int
+ 336 0234 E70BF8EE 		vcvt.f64.s32	d16, s15
+ 337 0238 A21B61EE 		vmul.f64	d17, d17, d18
+ 338 023c E10BF4EE 		vcmpe.f64	d16, d17
+ 339 0240 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 340 0244 0130A0C3 		movgt	r3, #1
+ 341 0248 0030A0D3 		movle	r3, #0
+ 342 024c 0F0055E3 		cmp	r5, #15
+ 343 0250 0030A003 		moveq	r3, #0
+ 344 0254 01300312 		andne	r3, r3, #1
+ 345 0258 000053E3 		cmp	r3, #0
+ 346 025c 01008510 		addne	r0, r5, r1
+ 347 0260 01008502 		addeq	r0, r5, #1
+ 348 0264 7000FFE6 		uxth	r0, r0
+ 349 0268 7000EFE6 		uxtb	r0, r0
+ 350 026c BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+ 351 0270 FEFFFFEB 		bl	R_BCD_gain_table_setting
+ 352 0274 D1FFFFEA 		b	.L30
+ 353              	.L55:
+ 354 0278 980C00E0 		mul	r0, r8, ip
+ 355 027c FEFFFFEB 		bl	__aeabi_uidiv
+ 356 0280 AB3A0AE3 		movw	r3, #43691
+ 357 0284 800088E0 		add	r0, r8, r0, lsl #1
+ 358 0288 AA3A4AE3 		movt	r3, 43690
+ 359 028c 900381E0 		umull	r0, r1, r0, r3
+ 360 0290 D100EFE7 		ubfx	r0, r1, #1, #16
+ 361 0294 B400C4E1 		strh	r0, [r4, #4]	@ movhi
+ 362 0298 7EFFFFEA 		b	.L27
+ 363              	.L28:
+ 364 029c 5030A0E3 		mov	r3, #80
+ 365 02a0 0300A0E1 		mov	r0, r3
+ 366 02a4 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 367 02a8 7CFFFFEA 		b	.L39
+ 368              	.L47:
+ 369 02ac 0120A0E3 		mov	r2, #1
+ 370 02b0 7DFFFFEA 		b	.L22
+ 371              	.L52:
+ 372 02b4 200088E2 		add	r0, r8, #32
+ 373 02b8 7000FFE6 		uxth	r0, r0
+ 374 02bc 9AFFFFEA 		b	.L37
+ 375              	.L40:
+ 376 02c0 01E04EE2 		sub	lr, lr, #1
+ 377 02c4 0120A0E3 		mov	r2, #1
+ 378 02c8 00E0C3E5 		strb	lr, [r3]
+ 379 02cc 76FFFFEA 		b	.L22
+ 380              	.L43:
+ 381 02d0 BA30D4E1 		ldrh	r3, [r4, #10]
+ 382 02d4 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 383 02d8 050053E1 		cmp	r3, r5
+ 384 02dc 0130A013 		movne	r3, #1
+ 385 02e0 0030A003 		moveq	r3, #0
+ 386 02e4 0120A003 		moveq	r2, #1
+ 387 02e8 0020A013 		movne	r2, #0
+ 388 02ec 6FFFFFEA 		b	.L44
+ 389              	.L57:
+ 390              		.align	3
+ 391              	.L56:
+ 392 02f0 CDCCCCCC 		.word	-858993459
+ 393 02f4 CCCCDC3F 		.word	1071434956
+ 395              		.section	.text.R_BCD_AeSetShutterSpeed,"ax",%progbits
+ 396              		.align	2
+ 397              		.global	R_BCD_AeSetShutterSpeed
+ 398              		.syntax unified
+ 399              		.arm
+ 400              		.fpu neon
+ 402              	R_BCD_AeSetShutterSpeed:
+ 403              		@ args = 0, pretend = 0, frame = 0
+ 404              		@ frame_needed = 0, uses_anonymous_args = 0
+ 405 0000 10402DE9 		push	{r4, lr}
+ 406 0004 0040A0E1 		mov	r4, r0
+ 407 0008 B410C0E1 		strh	r1, [r0, #4]	@ movhi
+ 408 000c 0100A0E1 		mov	r0, r1
+ 409 0010 FEFFFFEB 		bl	R_BCD_shutter_setting
+ 410 0014 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 411 0018 1080BDE8 		pop	{r4, pc}
+ 413              		.section	.text.R_BCD_AeSetAnalogGain,"ax",%progbits
+ 414              		.align	2
+ 415              		.global	R_BCD_AeSetAnalogGain
+ 416              		.syntax unified
+ 417              		.arm
+ 418              		.fpu neon
+ 420              	R_BCD_AeSetAnalogGain:
+ 421              		@ args = 0, pretend = 0, frame = 0
+ 422              		@ frame_needed = 0, uses_anonymous_args = 0
+ 423 0000 100051E3 		cmp	r1, #16
+ 424 0004 10402DE9 		push	{r4, lr}
+ 425 0008 0040A0E1 		mov	r4, r0
+ 426 000c 0100A031 		movcc	r0, r1
+ 427 0010 1000A023 		movcs	r0, #16
+ 428 0014 BA00C4E1 		strh	r0, [r4, #10]	@ movhi
+ 429 0018 FEFFFFEB 		bl	R_BCD_gain_table_setting
+ 430 001c 0E00D4E5 		ldrb	r0, [r4, #14]	@ zero_extendqisi2
+ 431 0020 1080BDE8 		pop	{r4, pc}
+ 433              		.section	.bss.gain_set_count,"aw",%nobits
+ 434              		.set	.LANCHOR0,. + 0
+ 437              	gain_set_count:
+ 438 0000 00       		.space	1
+ 439              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_bcd_ae.c
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:14     .text.R_BCD_AeInit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:20     .text.R_BCD_AeInit:00000000 R_BCD_AeInit
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:434    .bss.gain_set_count:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:50     .text.R_BCD_AeStop:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:56     .text.R_BCD_AeStop:00000000 R_BCD_AeStop
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:83     .text.R_BCD_AeStart:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:89     .text.R_BCD_AeStart:00000000 R_BCD_AeStart
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:105    .text.R_BCD_AeGetMode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:111    .text.R_BCD_AeGetMode:00000000 R_BCD_AeGetMode
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:119    .text.R_BCD_AeMakeGammaTable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:125    .text.R_BCD_AeMakeGammaTable:00000000 R_BCD_AeMakeGammaTable
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:170    .text.R_BCD_AeMakeGammaTable:00000090 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:175    .text.R_BCD_AeRunAutoExpousure:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:181    .text.R_BCD_AeRunAutoExpousure:00000000 R_BCD_AeRunAutoExpousure
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:392    .text.R_BCD_AeRunAutoExpousure:000002f0 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:396    .text.R_BCD_AeSetShutterSpeed:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:402    .text.R_BCD_AeSetShutterSpeed:00000000 R_BCD_AeSetShutterSpeed
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:414    .text.R_BCD_AeSetAnalogGain:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:420    .text.R_BCD_AeSetAnalogGain:00000000 R_BCD_AeSetAnalogGain
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:437    .bss.gain_set_count:00000000 gain_set_count
+C:\Users\a5050395\AppData\Local\Temp\ccdPpQGs.s:438    .bss.gain_set_count:00000000 $d
+
+UNDEFINED SYMBOLS
+R_BCD_shutter_setting
+R_BCD_gain_table_setting
+pow
+__aeabi_uidiv

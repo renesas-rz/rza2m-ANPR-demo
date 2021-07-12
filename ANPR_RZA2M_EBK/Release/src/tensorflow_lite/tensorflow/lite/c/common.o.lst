@@ -1,0 +1,822 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"common.c"
+  13              		.section	.text.TfLiteIntArrayGetSizeInBytes,"ax",%progbits
+  14              		.align	2
+  15              		.global	TfLiteIntArrayGetSizeInBytes
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	TfLiteIntArrayGetSizeInBytes:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23              		@ link register save eliminated.
+  24 0000 010080E2 		add	r0, r0, #1
+  25 0004 0001A0E1 		lsl	r0, r0, #2
+  26 0008 1EFF2FE1 		bx	lr
+  28              		.section	.text.TfLiteIntArrayEqual,"ax",%progbits
+  29              		.align	2
+  30              		.global	TfLiteIntArrayEqual
+  31              		.syntax unified
+  32              		.arm
+  33              		.fpu neon
+  35              	TfLiteIntArrayEqual:
+  36              		@ args = 0, pretend = 0, frame = 0
+  37              		@ frame_needed = 0, uses_anonymous_args = 0
+  38 0000 010050E1 		cmp	r0, r1
+  39 0004 2000000A 		beq	.L6
+  40 0008 000051E3 		cmp	r1, #0
+  41 000c 00005013 		cmpne	r0, #0
+  42 0010 0130A003 		moveq	r3, #1
+  43 0014 0030A013 		movne	r3, #0
+  44 0018 1900000A 		beq	.L7
+  45 001c 04E02DE5 		str	lr, [sp, #-4]!
+  46 0020 002090E5 		ldr	r2, [r0]
+  47 0024 00E091E5 		ldr	lr, [r1]
+  48 0028 02005EE1 		cmp	lr, r2
+  49 002c 0100000A 		beq	.L17
+  50              	.L11:
+  51 0030 0000A0E3 		mov	r0, #0
+  52 0034 04F09DE4 		ldr	pc, [sp], #4
+  53              	.L17:
+  54 0038 00005EE3 		cmp	lr, #0
+  55 003c 0E0000DA 		ble	.L9
+  56 0040 04C090E5 		ldr	ip, [r0, #4]
+  57 0044 042091E5 		ldr	r2, [r1, #4]
+  58 0048 02005CE1 		cmp	ip, r2
+  59 004c F7FFFF1A 		bne	.L11
+  60 0050 082080E2 		add	r2, r0, #8
+  61 0054 041081E2 		add	r1, r1, #4
+  62 0058 0300A0E1 		mov	r0, r3
+  63 005c 030000EA 		b	.L4
+  64              	.L5:
+  65 0060 04C092E4 		ldr	ip, [r2], #4
+  66 0064 0430B1E5 		ldr	r3, [r1, #4]!
+  67 0068 03005CE1 		cmp	ip, r3
+  68 006c EFFFFF1A 		bne	.L11
+  69              	.L4:
+  70 0070 010080E2 		add	r0, r0, #1
+  71 0074 00005EE1 		cmp	lr, r0
+  72 0078 F8FFFF1A 		bne	.L5
+  73              	.L9:
+  74 007c 0100A0E3 		mov	r0, #1
+  75 0080 04F09DE4 		ldr	pc, [sp], #4
+  76              	.L7:
+  77 0084 0000A0E3 		mov	r0, #0
+  78 0088 1EFF2FE1 		bx	lr
+  79              	.L6:
+  80 008c 0100A0E3 		mov	r0, #1
+  81 0090 1EFF2FE1 		bx	lr
+  83              		.section	.text.TfLiteIntArrayEqualsArray,"ax",%progbits
+  84              		.align	2
+  85              		.global	TfLiteIntArrayEqualsArray
+  86              		.syntax unified
+  87              		.arm
+  88              		.fpu neon
+  90              	TfLiteIntArrayEqualsArray:
+  91              		@ args = 0, pretend = 0, frame = 0
+  92              		@ frame_needed = 0, uses_anonymous_args = 0
+  93 0000 000050E3 		cmp	r0, #0
+  94 0004 1F00000A 		beq	.L33
+  95 0008 003090E5 		ldr	r3, [r0]
+  96 000c 030051E1 		cmp	r1, r3
+  97 0010 0100000A 		beq	.L34
+  98              	.L25:
+  99 0014 0000A0E3 		mov	r0, #0
+ 100 0018 1EFF2FE1 		bx	lr
+ 101              	.L34:
+ 102 001c 000051E3 		cmp	r1, #0
+ 103 0020 1B0000DA 		ble	.L32
+ 104 0024 04C090E5 		ldr	ip, [r0, #4]
+ 105 0028 003092E5 		ldr	r3, [r2]
+ 106 002c 03005CE1 		cmp	ip, r3
+ 107 0030 F7FFFF1A 		bne	.L25
+ 108 0034 0030A0E3 		mov	r3, #0
+ 109 0038 080080E2 		add	r0, r0, #8
+ 110 003c 013083E2 		add	r3, r3, #1
+ 111 0040 030051E1 		cmp	r1, r3
+ 112 0044 1200000A 		beq	.L32
+ 113 0048 04E02DE5 		str	lr, [sp, #-4]!
+ 114 004c 04C0B2E5 		ldr	ip, [r2, #4]!
+ 115 0050 04E090E4 		ldr	lr, [r0], #4
+ 116 0054 0C005EE1 		cmp	lr, ip
+ 117 0058 0600001A 		bne	.L26
+ 118              	.L36:
+ 119 005c 013083E2 		add	r3, r3, #1
+ 120 0060 030051E1 		cmp	r1, r3
+ 121 0064 0500000A 		beq	.L35
+ 122 0068 04E090E4 		ldr	lr, [r0], #4
+ 123 006c 04C0B2E5 		ldr	ip, [r2, #4]!
+ 124 0070 0C005EE1 		cmp	lr, ip
+ 125 0074 F8FFFF0A 		beq	.L36
+ 126              	.L26:
+ 127 0078 0000A0E3 		mov	r0, #0
+ 128 007c 04F09DE4 		ldr	pc, [sp], #4
+ 129              	.L35:
+ 130 0080 0100A0E3 		mov	r0, #1
+ 131 0084 04F09DE4 		ldr	pc, [sp], #4
+ 132              	.L33:
+ 133 0088 110F6FE1 		clz	r0, r1
+ 134 008c A002A0E1 		lsr	r0, r0, #5
+ 135 0090 1EFF2FE1 		bx	lr
+ 136              	.L32:
+ 137 0094 0100A0E3 		mov	r0, #1
+ 138 0098 1EFF2FE1 		bx	lr
+ 140              		.section	.text.TfLiteIntArrayCreate,"ax",%progbits
+ 141              		.align	2
+ 142              		.global	TfLiteIntArrayCreate
+ 143              		.syntax unified
+ 144              		.arm
+ 145              		.fpu neon
+ 147              	TfLiteIntArrayCreate:
+ 148              		@ args = 0, pretend = 0, frame = 0
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150 0000 013080E2 		add	r3, r0, #1
+ 151 0004 0331A0E1 		lsl	r3, r3, #2
+ 152 0008 000053E3 		cmp	r3, #0
+ 153 000c 060000DA 		ble	.L39
+ 154 0010 10402DE9 		push	{r4, lr}
+ 155 0014 0040A0E1 		mov	r4, r0
+ 156 0018 0300A0E1 		mov	r0, r3
+ 157 001c FEFFFFEB 		bl	malloc
+ 158 0020 000050E3 		cmp	r0, #0
+ 159 0024 00408015 		strne	r4, [r0]
+ 160 0028 1080BDE8 		pop	{r4, pc}
+ 161              	.L39:
+ 162 002c 0000A0E3 		mov	r0, #0
+ 163 0030 1EFF2FE1 		bx	lr
+ 165              		.section	.text.TfLiteIntArrayCopy,"ax",%progbits
+ 166              		.align	2
+ 167              		.global	TfLiteIntArrayCopy
+ 168              		.syntax unified
+ 169              		.arm
+ 170              		.fpu neon
+ 172              	TfLiteIntArrayCopy:
+ 173              		@ args = 0, pretend = 0, frame = 0
+ 174              		@ frame_needed = 0, uses_anonymous_args = 0
+ 175 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 176 0004 004050E2 		subs	r4, r0, #0
+ 177 0008 0F00000A 		beq	.L50
+ 178 000c 006094E5 		ldr	r6, [r4]
+ 179 0010 010086E2 		add	r0, r6, #1
+ 180 0014 0001A0E1 		lsl	r0, r0, #2
+ 181 0018 000050E3 		cmp	r0, #0
+ 182 001c 0A0000DA 		ble	.L50
+ 183 0020 FEFFFFEB 		bl	malloc
+ 184 0024 005050E2 		subs	r5, r0, #0
+ 185 0028 0500000A 		beq	.L47
+ 186 002c 0410A0E1 		mov	r1, r4
+ 187 0030 0500A0E1 		mov	r0, r5
+ 188 0034 042091E4 		ldr	r2, [r1], #4
+ 189 0038 046080E4 		str	r6, [r0], #4
+ 190 003c 0221A0E1 		lsl	r2, r2, #2
+ 191 0040 FEFFFFEB 		bl	memcpy
+ 192              	.L47:
+ 193 0044 0500A0E1 		mov	r0, r5
+ 194 0048 7080BDE8 		pop	{r4, r5, r6, pc}
+ 195              	.L50:
+ 196 004c 0050A0E3 		mov	r5, #0
+ 197 0050 0500A0E1 		mov	r0, r5
+ 198 0054 7080BDE8 		pop	{r4, r5, r6, pc}
+ 200              		.section	.text.TfLiteIntArrayFree,"ax",%progbits
+ 201              		.align	2
+ 202              		.global	TfLiteIntArrayFree
+ 203              		.syntax unified
+ 204              		.arm
+ 205              		.fpu neon
+ 207              	TfLiteIntArrayFree:
+ 208              		@ args = 0, pretend = 0, frame = 0
+ 209              		@ frame_needed = 0, uses_anonymous_args = 0
+ 210              		@ link register save eliminated.
+ 211 0000 FEFFFFEA 		b	free
+ 213              		.section	.text.TfLiteFloatArrayGetSizeInBytes,"ax",%progbits
+ 214              		.align	2
+ 215              		.global	TfLiteFloatArrayGetSizeInBytes
+ 216              		.syntax unified
+ 217              		.arm
+ 218              		.fpu neon
+ 220              	TfLiteFloatArrayGetSizeInBytes:
+ 221              		@ args = 0, pretend = 0, frame = 0
+ 222              		@ frame_needed = 0, uses_anonymous_args = 0
+ 223              		@ link register save eliminated.
+ 224 0000 010080E2 		add	r0, r0, #1
+ 225 0004 0001A0E1 		lsl	r0, r0, #2
+ 226 0008 1EFF2FE1 		bx	lr
+ 228              		.section	.text.TfLiteFloatArrayCreate,"ax",%progbits
+ 229              		.align	2
+ 230              		.global	TfLiteFloatArrayCreate
+ 231              		.syntax unified
+ 232              		.arm
+ 233              		.fpu neon
+ 235              	TfLiteFloatArrayCreate:
+ 236              		@ args = 0, pretend = 0, frame = 0
+ 237              		@ frame_needed = 0, uses_anonymous_args = 0
+ 238 0000 10402DE9 		push	{r4, lr}
+ 239 0004 0040A0E1 		mov	r4, r0
+ 240 0008 010080E2 		add	r0, r0, #1
+ 241 000c 0001A0E1 		lsl	r0, r0, #2
+ 242 0010 FEFFFFEB 		bl	malloc
+ 243 0014 004080E5 		str	r4, [r0]
+ 244 0018 1080BDE8 		pop	{r4, pc}
+ 246              		.section	.text.TfLiteFloatArrayFree,"ax",%progbits
+ 247              		.align	2
+ 248              		.global	TfLiteFloatArrayFree
+ 249              		.syntax unified
+ 250              		.arm
+ 251              		.fpu neon
+ 253              	TfLiteFloatArrayFree:
+ 254              		@ args = 0, pretend = 0, frame = 0
+ 255              		@ frame_needed = 0, uses_anonymous_args = 0
+ 256              		@ link register save eliminated.
+ 257 0000 FEFFFFEA 		b	free
+ 259              		.section	.text.TfLiteTensorDataFree,"ax",%progbits
+ 260              		.align	2
+ 261              		.global	TfLiteTensorDataFree
+ 262              		.syntax unified
+ 263              		.arm
+ 264              		.fpu neon
+ 266              	TfLiteTensorDataFree:
+ 267              		@ args = 0, pretend = 0, frame = 0
+ 268              		@ frame_needed = 0, uses_anonymous_args = 0
+ 269 0000 1430D0E5 		ldrb	r3, [r0, #20]	@ zero_extendqisi2
+ 270 0004 10402DE9 		push	{r4, lr}
+ 271 0008 0040A0E1 		mov	r4, r0
+ 272 000c 043043E2 		sub	r3, r3, #4
+ 273 0010 010053E3 		cmp	r3, #1
+ 274 0014 0200009A 		bls	.L63
+ 275              	.L61:
+ 276 0018 0030A0E3 		mov	r3, #0
+ 277 001c 043084E5 		str	r3, [r4, #4]
+ 278 0020 1080BDE8 		pop	{r4, pc}
+ 279              	.L63:
+ 280 0024 040090E5 		ldr	r0, [r0, #4]
+ 281 0028 FEFFFFEB 		bl	free
+ 282 002c F9FFFFEA 		b	.L61
+ 284              		.section	.text.TfLiteQuantizationFree,"ax",%progbits
+ 285              		.align	2
+ 286              		.global	TfLiteQuantizationFree
+ 287              		.syntax unified
+ 288              		.arm
+ 289              		.fpu neon
+ 291              	TfLiteQuantizationFree:
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294 0000 0030D0E5 		ldrb	r3, [r0]	@ zero_extendqisi2
+ 295 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 296 0008 0040A0E1 		mov	r4, r0
+ 297 000c 010053E3 		cmp	r3, #1
+ 298 0010 0300000A 		beq	.L75
+ 299              	.L65:
+ 300 0014 0030A0E3 		mov	r3, #0
+ 301 0018 043084E5 		str	r3, [r4, #4]
+ 302 001c 0030C4E5 		strb	r3, [r4]
+ 303 0020 7080BDE8 		pop	{r4, r5, r6, pc}
+ 304              	.L75:
+ 305 0024 045090E5 		ldr	r5, [r0, #4]
+ 306 0028 000095E5 		ldr	r0, [r5]
+ 307 002c 000050E3 		cmp	r0, #0
+ 308 0030 0200000A 		beq	.L66
+ 309 0034 FEFFFFEB 		bl	free
+ 310 0038 0030A0E3 		mov	r3, #0
+ 311 003c 003085E5 		str	r3, [r5]
+ 312              	.L66:
+ 313 0040 040095E5 		ldr	r0, [r5, #4]
+ 314 0044 000050E3 		cmp	r0, #0
+ 315 0048 0000000A 		beq	.L67
+ 316 004c FEFFFFEB 		bl	free
+ 317              	.L67:
+ 318 0050 0500A0E1 		mov	r0, r5
+ 319 0054 FEFFFFEB 		bl	free
+ 320 0058 EDFFFFEA 		b	.L65
+ 322              		.section	.text.TfLiteSparsityFree,"ax",%progbits
+ 323              		.align	2
+ 324              		.global	TfLiteSparsityFree
+ 325              		.syntax unified
+ 326              		.arm
+ 327              		.fpu neon
+ 329              	TfLiteSparsityFree:
+ 330              		@ args = 0, pretend = 0, frame = 0
+ 331              		@ frame_needed = 0, uses_anonymous_args = 0
+ 332 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 333 0004 005050E2 		subs	r5, r0, #0
+ 334 0008 7080BD08 		popeq	{r4, r5, r6, pc}
+ 335 000c 000095E5 		ldr	r0, [r5]
+ 336 0010 000050E3 		cmp	r0, #0
+ 337 0014 0200000A 		beq	.L78
+ 338 0018 FEFFFFEB 		bl	free
+ 339 001c 0030A0E3 		mov	r3, #0
+ 340 0020 003085E5 		str	r3, [r5]
+ 341              	.L78:
+ 342 0024 040095E5 		ldr	r0, [r5, #4]
+ 343 0028 000050E3 		cmp	r0, #0
+ 344 002c 0200000A 		beq	.L79
+ 345 0030 FEFFFFEB 		bl	free
+ 346 0034 0030A0E3 		mov	r3, #0
+ 347 0038 043085E5 		str	r3, [r5, #4]
+ 348              	.L79:
+ 349 003c 080095E5 		ldr	r0, [r5, #8]
+ 350 0040 000050E3 		cmp	r0, #0
+ 351 0044 1500000A 		beq	.L80
+ 352 0048 0C2095E5 		ldr	r2, [r5, #12]
+ 353 004c 000052E3 		cmp	r2, #0
+ 354 0050 110000DA 		ble	.L81
+ 355 0054 0040A0E3 		mov	r4, #0
+ 356 0058 010000EA 		b	.L83
+ 357              	.L82:
+ 358 005c 020054E1 		cmp	r4, r2
+ 359 0060 0D0000AA 		bge	.L81
+ 360              	.L83:
+ 361 0064 0432D0E7 		ldrb	r3, [r0, r4, lsl #4]	@ zero_extendqisi2
+ 362 0068 041280E0 		add	r1, r0, r4, lsl #4
+ 363 006c 014084E2 		add	r4, r4, #1
+ 364 0070 010053E3 		cmp	r3, #1
+ 365 0074 F8FFFF1A 		bne	.L82
+ 366 0078 0C6091E5 		ldr	r6, [r1, #12]
+ 367 007c 080091E5 		ldr	r0, [r1, #8]
+ 368 0080 FEFFFFEB 		bl	free
+ 369 0084 0600A0E1 		mov	r0, r6
+ 370 0088 FEFFFFEB 		bl	free
+ 371 008c 0C2095E5 		ldr	r2, [r5, #12]
+ 372 0090 080095E5 		ldr	r0, [r5, #8]
+ 373 0094 020054E1 		cmp	r4, r2
+ 374 0098 F1FFFFBA 		blt	.L83
+ 375              	.L81:
+ 376 009c FEFFFFEB 		bl	free
+ 377              	.L80:
+ 378 00a0 0500A0E1 		mov	r0, r5
+ 379 00a4 7040BDE8 		pop	{r4, r5, r6, lr}
+ 380 00a8 FEFFFFEA 		b	free
+ 382              		.section	.text.TfLiteTensorFree,"ax",%progbits
+ 383              		.align	2
+ 384              		.global	TfLiteTensorFree
+ 385              		.syntax unified
+ 386              		.arm
+ 387              		.fpu neon
+ 389              	TfLiteTensorFree:
+ 390              		@ args = 0, pretend = 0, frame = 0
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392 0000 1430D0E5 		ldrb	r3, [r0, #20]	@ zero_extendqisi2
+ 393 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 394 0008 0050A0E1 		mov	r5, r0
+ 395 000c 043043E2 		sub	r3, r3, #4
+ 396 0010 010053E3 		cmp	r3, #1
+ 397 0014 4C00009A 		bls	.L135
+ 398              	.L96:
+ 399 0018 080095E5 		ldr	r0, [r5, #8]
+ 400 001c 0030A0E3 		mov	r3, #0
+ 401 0020 043085E5 		str	r3, [r5, #4]
+ 402 0024 030050E1 		cmp	r0, r3
+ 403 0028 0000000A 		beq	.L97
+ 404 002c FEFFFFEB 		bl	free
+ 405              	.L97:
+ 406 0030 3C0095E5 		ldr	r0, [r5, #60]
+ 407 0034 0030A0E3 		mov	r3, #0
+ 408 0038 083085E5 		str	r3, [r5, #8]
+ 409 003c 030050E1 		cmp	r0, r3
+ 410 0040 0000000A 		beq	.L98
+ 411 0044 FEFFFFEB 		bl	free
+ 412              	.L98:
+ 413 0048 3030D5E5 		ldrb	r3, [r5, #48]	@ zero_extendqisi2
+ 414 004c 0040A0E3 		mov	r4, #0
+ 415 0050 3C4085E5 		str	r4, [r5, #60]
+ 416 0054 010053E3 		cmp	r3, #1
+ 417 0058 2E00000A 		beq	.L136
+ 418              	.L99:
+ 419 005c 386095E5 		ldr	r6, [r5, #56]
+ 420 0060 0040A0E3 		mov	r4, #0
+ 421 0064 344085E5 		str	r4, [r5, #52]
+ 422 0068 3040C5E5 		strb	r4, [r5, #48]
+ 423 006c 040056E1 		cmp	r6, r4
+ 424 0070 2500000A 		beq	.L102
+ 425 0074 000096E5 		ldr	r0, [r6]
+ 426 0078 040050E1 		cmp	r0, r4
+ 427 007c 0100000A 		beq	.L103
+ 428 0080 FEFFFFEB 		bl	free
+ 429 0084 004086E5 		str	r4, [r6]
+ 430              	.L103:
+ 431 0088 040096E5 		ldr	r0, [r6, #4]
+ 432 008c 000050E3 		cmp	r0, #0
+ 433 0090 0200000A 		beq	.L104
+ 434 0094 FEFFFFEB 		bl	free
+ 435 0098 0030A0E3 		mov	r3, #0
+ 436 009c 043086E5 		str	r3, [r6, #4]
+ 437              	.L104:
+ 438 00a0 080096E5 		ldr	r0, [r6, #8]
+ 439 00a4 000050E3 		cmp	r0, #0
+ 440 00a8 1500000A 		beq	.L105
+ 441 00ac 0C2096E5 		ldr	r2, [r6, #12]
+ 442 00b0 000052E3 		cmp	r2, #0
+ 443 00b4 110000DA 		ble	.L106
+ 444 00b8 0040A0E3 		mov	r4, #0
+ 445 00bc 010000EA 		b	.L108
+ 446              	.L107:
+ 447 00c0 040052E1 		cmp	r2, r4
+ 448 00c4 0D0000DA 		ble	.L106
+ 449              	.L108:
+ 450 00c8 0432D0E7 		ldrb	r3, [r0, r4, lsl #4]	@ zero_extendqisi2
+ 451 00cc 041280E0 		add	r1, r0, r4, lsl #4
+ 452 00d0 014084E2 		add	r4, r4, #1
+ 453 00d4 010053E3 		cmp	r3, #1
+ 454 00d8 F8FFFF1A 		bne	.L107
+ 455 00dc 0C7091E5 		ldr	r7, [r1, #12]
+ 456 00e0 080091E5 		ldr	r0, [r1, #8]
+ 457 00e4 FEFFFFEB 		bl	free
+ 458 00e8 0700A0E1 		mov	r0, r7
+ 459 00ec FEFFFFEB 		bl	free
+ 460 00f0 0C2096E5 		ldr	r2, [r6, #12]
+ 461 00f4 080096E5 		ldr	r0, [r6, #8]
+ 462 00f8 040052E1 		cmp	r2, r4
+ 463 00fc F1FFFFCA 		bgt	.L108
+ 464              	.L106:
+ 465 0100 FEFFFFEB 		bl	free
+ 466              	.L105:
+ 467 0104 0600A0E1 		mov	r0, r6
+ 468 0108 FEFFFFEB 		bl	free
+ 469              	.L102:
+ 470 010c 0030A0E3 		mov	r3, #0
+ 471 0110 383085E5 		str	r3, [r5, #56]
+ 472 0114 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 473              	.L136:
+ 474 0118 346095E5 		ldr	r6, [r5, #52]
+ 475 011c 000096E5 		ldr	r0, [r6]
+ 476 0120 040050E1 		cmp	r0, r4
+ 477 0124 0100000A 		beq	.L100
+ 478 0128 FEFFFFEB 		bl	free
+ 479 012c 004086E5 		str	r4, [r6]
+ 480              	.L100:
+ 481 0130 040096E5 		ldr	r0, [r6, #4]
+ 482 0134 000050E3 		cmp	r0, #0
+ 483 0138 0000000A 		beq	.L101
+ 484 013c FEFFFFEB 		bl	free
+ 485              	.L101:
+ 486 0140 0600A0E1 		mov	r0, r6
+ 487 0144 FEFFFFEB 		bl	free
+ 488 0148 C3FFFFEA 		b	.L99
+ 489              	.L135:
+ 490 014c 040090E5 		ldr	r0, [r0, #4]
+ 491 0150 FEFFFFEB 		bl	free
+ 492 0154 AFFFFFEA 		b	.L96
+ 494              		.section	.text.TfLiteTensorReset,"ax",%progbits
+ 495              		.align	2
+ 496              		.global	TfLiteTensorReset
+ 497              		.syntax unified
+ 498              		.arm
+ 499              		.fpu neon
+ 501              	TfLiteTensorReset:
+ 502              		@ args = 36, pretend = 8, frame = 8
+ 503              		@ frame_needed = 0, uses_anonymous_args = 0
+ 504 0000 08D04DE2 		sub	sp, sp, #8
+ 505 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 506 0008 0CD04DE2 		sub	sp, sp, #12
+ 507 000c 50409DE5 		ldr	r4, [sp, #80]
+ 508 0010 00B0A0E1 		mov	fp, r0
+ 509 0014 01A0A0E1 		mov	r10, r1
+ 510 0018 0290A0E1 		mov	r9, r2
+ 511 001c 34308DE5 		str	r3, [sp, #52]
+ 512 0020 1430D4E5 		ldrb	r3, [r4, #20]	@ zero_extendqisi2
+ 513 0024 4460DDE5 		ldrb	r6, [sp, #68]	@ zero_extendqisi2
+ 514 0028 043043E2 		sub	r3, r3, #4
+ 515 002c 010053E3 		cmp	r3, #1
+ 516 0030 4C30DDE5 		ldrb	r3, [sp, #76]	@ zero_extendqisi2
+ 517 0034 04308DE5 		str	r3, [sp, #4]
+ 518 0038 6100009A 		bls	.L177
+ 519              	.L138:
+ 520 003c 080094E5 		ldr	r0, [r4, #8]
+ 521 0040 0030A0E3 		mov	r3, #0
+ 522 0044 043084E5 		str	r3, [r4, #4]
+ 523 0048 030050E1 		cmp	r0, r3
+ 524 004c 0000000A 		beq	.L139
+ 525 0050 FEFFFFEB 		bl	free
+ 526              	.L139:
+ 527 0054 3C0094E5 		ldr	r0, [r4, #60]
+ 528 0058 0030A0E3 		mov	r3, #0
+ 529 005c 083084E5 		str	r3, [r4, #8]
+ 530 0060 030050E1 		cmp	r0, r3
+ 531 0064 0000000A 		beq	.L140
+ 532 0068 FEFFFFEB 		bl	free
+ 533              	.L140:
+ 534 006c 3020D4E5 		ldrb	r2, [r4, #48]	@ zero_extendqisi2
+ 535 0070 0080A0E3 		mov	r8, #0
+ 536 0074 3C8084E5 		str	r8, [r4, #60]
+ 537 0078 010052E3 		cmp	r2, #1
+ 538 007c 4300000A 		beq	.L178
+ 539              	.L141:
+ 540 0080 387094E5 		ldr	r7, [r4, #56]
+ 541 0084 0080A0E3 		mov	r8, #0
+ 542 0088 348084E5 		str	r8, [r4, #52]
+ 543 008c 3080C4E5 		strb	r8, [r4, #48]
+ 544 0090 080057E1 		cmp	r7, r8
+ 545 0094 2500000A 		beq	.L144
+ 546 0098 000097E5 		ldr	r0, [r7]
+ 547 009c 080050E1 		cmp	r0, r8
+ 548 00a0 0100000A 		beq	.L145
+ 549 00a4 FEFFFFEB 		bl	free
+ 550 00a8 008087E5 		str	r8, [r7]
+ 551              	.L145:
+ 552 00ac 040097E5 		ldr	r0, [r7, #4]
+ 553 00b0 000050E3 		cmp	r0, #0
+ 554 00b4 0200000A 		beq	.L146
+ 555 00b8 FEFFFFEB 		bl	free
+ 556 00bc 0030A0E3 		mov	r3, #0
+ 557 00c0 043087E5 		str	r3, [r7, #4]
+ 558              	.L146:
+ 559 00c4 080097E5 		ldr	r0, [r7, #8]
+ 560 00c8 000050E3 		cmp	r0, #0
+ 561 00cc 1500000A 		beq	.L147
+ 562 00d0 0CE097E5 		ldr	lr, [r7, #12]
+ 563 00d4 00005EE3 		cmp	lr, #0
+ 564 00d8 110000DA 		ble	.L148
+ 565 00dc 0080A0E3 		mov	r8, #0
+ 566 00e0 010000EA 		b	.L150
+ 567              	.L149:
+ 568 00e4 0E0058E1 		cmp	r8, lr
+ 569 00e8 0D0000AA 		bge	.L148
+ 570              	.L150:
+ 571 00ec 0832D0E7 		ldrb	r3, [r0, r8, lsl #4]	@ zero_extendqisi2
+ 572 00f0 082280E0 		add	r2, r0, r8, lsl #4
+ 573 00f4 018088E2 		add	r8, r8, #1
+ 574 00f8 010053E3 		cmp	r3, #1
+ 575 00fc F8FFFF1A 		bne	.L149
+ 576 0100 0C5092E5 		ldr	r5, [r2, #12]
+ 577 0104 080092E5 		ldr	r0, [r2, #8]
+ 578 0108 FEFFFFEB 		bl	free
+ 579 010c 0500A0E1 		mov	r0, r5
+ 580 0110 FEFFFFEB 		bl	free
+ 581 0114 0CE097E5 		ldr	lr, [r7, #12]
+ 582 0118 080097E5 		ldr	r0, [r7, #8]
+ 583 011c 0E0058E1 		cmp	r8, lr
+ 584 0120 F1FFFFBA 		blt	.L150
+ 585              	.L148:
+ 586 0124 FEFFFFEB 		bl	free
+ 587              	.L147:
+ 588 0128 0700A0E1 		mov	r0, r7
+ 589 012c FEFFFFEB 		bl	free
+ 590              	.L144:
+ 591 0130 34208DE2 		add	r2, sp, #52
+ 592 0134 0030A0E3 		mov	r3, #0
+ 593 0138 030092E8 		ldm	r2, {r0, r1}
+ 594 013c 0C2084E2 		add	r2, r4, #12
+ 595 0140 383084E5 		str	r3, [r4, #56]
+ 596 0144 00B0C4E5 		strb	fp, [r4]
+ 597 0148 20A084E5 		str	r10, [r4, #32]
+ 598 014c 089084E5 		str	r9, [r4, #8]
+ 599 0150 030082E8 		stm	r2, {r0, r1}
+ 600 0154 3030C4E5 		strb	r3, [r4, #48]
+ 601 0158 343084E5 		str	r3, [r4, #52]
+ 602 015c 3C309DE5 		ldr	r3, [sp, #60]
+ 603 0160 1460C4E5 		strb	r6, [r4, #20]
+ 604 0164 043084E5 		str	r3, [r4, #4]
+ 605 0168 40309DE5 		ldr	r3, [sp, #64]
+ 606 016c 183084E5 		str	r3, [r4, #24]
+ 607 0170 48309DE5 		ldr	r3, [sp, #72]
+ 608 0174 1C3084E5 		str	r3, [r4, #28]
+ 609 0178 0430DDE5 		ldrb	r3, [sp, #4]	@ zero_extendqisi2
+ 610 017c 2D30C4E5 		strb	r3, [r4, #45]
+ 611 0180 0CD08DE2 		add	sp, sp, #12
+ 612              		@ sp needed
+ 613 0184 F04FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 614 0188 08D08DE2 		add	sp, sp, #8
+ 615 018c 1EFF2FE1 		bx	lr
+ 616              	.L178:
+ 617 0190 347094E5 		ldr	r7, [r4, #52]
+ 618 0194 000097E5 		ldr	r0, [r7]
+ 619 0198 080050E1 		cmp	r0, r8
+ 620 019c 0100000A 		beq	.L142
+ 621 01a0 FEFFFFEB 		bl	free
+ 622 01a4 008087E5 		str	r8, [r7]
+ 623              	.L142:
+ 624 01a8 040097E5 		ldr	r0, [r7, #4]
+ 625 01ac 000050E3 		cmp	r0, #0
+ 626 01b0 0000000A 		beq	.L143
+ 627 01b4 FEFFFFEB 		bl	free
+ 628              	.L143:
+ 629 01b8 0700A0E1 		mov	r0, r7
+ 630 01bc FEFFFFEB 		bl	free
+ 631 01c0 AEFFFFEA 		b	.L141
+ 632              	.L177:
+ 633 01c4 040094E5 		ldr	r0, [r4, #4]
+ 634 01c8 FEFFFFEB 		bl	free
+ 635 01cc 9AFFFFEA 		b	.L138
+ 637              		.section	.text.TfLiteTensorRealloc,"ax",%progbits
+ 638              		.align	2
+ 639              		.global	TfLiteTensorRealloc
+ 640              		.syntax unified
+ 641              		.arm
+ 642              		.fpu neon
+ 644              	TfLiteTensorRealloc:
+ 645              		@ args = 0, pretend = 0, frame = 0
+ 646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 647 0000 1430D1E5 		ldrb	r3, [r1, #20]	@ zero_extendqisi2
+ 648 0004 043043E2 		sub	r3, r3, #4
+ 649 0008 010053E3 		cmp	r3, #1
+ 650 000c 1EFF2F81 		bxhi	lr
+ 651 0010 70402DE9 		push	{r4, r5, r6, lr}
+ 652 0014 0050A0E1 		mov	r5, r0
+ 653 0018 043091E5 		ldr	r3, [r1, #4]
+ 654 001c 0140A0E1 		mov	r4, r1
+ 655 0020 000053E3 		cmp	r3, #0
+ 656 0024 0900000A 		beq	.L187
+ 657 0028 182091E5 		ldr	r2, [r1, #24]
+ 658 002c 020050E1 		cmp	r0, r2
+ 659 0030 0100008A 		bhi	.L188
+ 660              	.L182:
+ 661 0034 185084E5 		str	r5, [r4, #24]
+ 662 0038 7080BDE8 		pop	{r4, r5, r6, pc}
+ 663              	.L188:
+ 664 003c 0300A0E1 		mov	r0, r3
+ 665 0040 0510A0E1 		mov	r1, r5
+ 666 0044 FEFFFFEB 		bl	realloc
+ 667 0048 040084E5 		str	r0, [r4, #4]
+ 668 004c F8FFFFEA 		b	.L182
+ 669              	.L187:
+ 670 0050 FEFFFFEB 		bl	malloc
+ 671 0054 040084E5 		str	r0, [r4, #4]
+ 672 0058 F5FFFFEA 		b	.L182
+ 674              		.section	.text.TfLiteTypeGetName,"ax",%progbits
+ 675              		.align	2
+ 676              		.global	TfLiteTypeGetName
+ 677              		.syntax unified
+ 678              		.arm
+ 679              		.fpu neon
+ 681              	TfLiteTypeGetName:
+ 682              		@ args = 0, pretend = 0, frame = 0
+ 683              		@ frame_needed = 0, uses_anonymous_args = 0
+ 684              		@ link register save eliminated.
+ 685 0000 100050E3 		cmp	r0, #16
+ 686 0004 00300093 		movwls	r3, #:lower16:.LANCHOR0
+ 687 0008 00304093 		movtls	r3, #:upper16:.LANCHOR0
+ 688 000c 00019397 		ldrls	r0, [r3, r0, lsl #2]
+ 689 0010 00000083 		movwhi	r0, #:lower16:.LC0
+ 690 0014 00004083 		movthi	r0, #:upper16:.LC0
+ 691 0018 1EFF2FE1 		bx	lr
+ 693              		.section	.text.TfLiteDelegateCreate,"ax",%progbits
+ 694              		.align	2
+ 695              		.global	TfLiteDelegateCreate
+ 696              		.syntax unified
+ 697              		.arm
+ 698              		.fpu neon
+ 700              	TfLiteDelegateCreate:
+ 701              		@ args = 0, pretend = 0, frame = 0
+ 702              		@ frame_needed = 0, uses_anonymous_args = 0
+ 703 0000 10402DE9 		push	{r4, lr}
+ 704 0004 2020A0E3 		mov	r2, #32
+ 705 0008 0040A0E1 		mov	r4, r0
+ 706 000c 0010A0E3 		mov	r1, #0
+ 707 0010 FEFFFFEB 		bl	memset
+ 708 0014 0400A0E1 		mov	r0, r4
+ 709 0018 1080BDE8 		pop	{r4, pc}
+ 711              		.section	.rodata.CSWTCH.24,"a",%progbits
+ 712              		.align	3
+ 713              		.set	.LANCHOR0,. + 0
+ 716              	CSWTCH.24:
+ 717 0000 00000000 		.word	.LC1
+ 718 0004 08000000 		.word	.LC2
+ 719 0008 10000000 		.word	.LC3
+ 720 000c 18000000 		.word	.LC4
+ 721 0010 20000000 		.word	.LC5
+ 722 0014 28000000 		.word	.LC6
+ 723 0018 30000000 		.word	.LC7
+ 724 001c 38000000 		.word	.LC8
+ 725 0020 40000000 		.word	.LC9
+ 726 0024 4C000000 		.word	.LC10
+ 727 0028 54000000 		.word	.LC11
+ 728 002c 5C000000 		.word	.LC12
+ 729 0030 64000000 		.word	.LC13
+ 730 0034 70000000 		.word	.LC14
+ 731 0038 78000000 		.word	.LC15
+ 732 003c 84000000 		.word	.LC16
+ 733 0040 8C000000 		.word	.LC17
+ 734              		.section	.rodata.TfLiteTypeGetName.str1.4,"aMS",%progbits,1
+ 735              		.align	2
+ 736              	.LC0:
+ 737 0000 556E6B6E 		.ascii	"Unknown type\000"
+ 737      6F776E20 
+ 737      74797065 
+ 737      00
+ 738              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 739              		.align	2
+ 740              	.LC1:
+ 741 0000 4E4F5459 		.ascii	"NOTYPE\000"
+ 741      504500
+ 742 0007 00       		.space	1
+ 743              	.LC2:
+ 744 0008 464C4F41 		.ascii	"FLOAT32\000"
+ 744      54333200 
+ 745              	.LC3:
+ 746 0010 494E5433 		.ascii	"INT32\000"
+ 746      3200
+ 747 0016 0000     		.space	2
+ 748              	.LC4:
+ 749 0018 55494E54 		.ascii	"UINT8\000"
+ 749      3800
+ 750 001e 0000     		.space	2
+ 751              	.LC5:
+ 752 0020 494E5436 		.ascii	"INT64\000"
+ 752      3400
+ 753 0026 0000     		.space	2
+ 754              	.LC6:
+ 755 0028 53545249 		.ascii	"STRING\000"
+ 755      4E4700
+ 756 002f 00       		.space	1
+ 757              	.LC7:
+ 758 0030 424F4F4C 		.ascii	"BOOL\000"
+ 758      00
+ 759 0035 000000   		.space	3
+ 760              	.LC8:
+ 761 0038 494E5431 		.ascii	"INT16\000"
+ 761      3600
+ 762 003e 0000     		.space	2
+ 763              	.LC9:
+ 764 0040 434F4D50 		.ascii	"COMPLEX64\000"
+ 764      4C455836 
+ 764      3400
+ 765 004a 0000     		.space	2
+ 766              	.LC10:
+ 767 004c 494E5438 		.ascii	"INT8\000"
+ 767      00
+ 768 0051 000000   		.space	3
+ 769              	.LC11:
+ 770 0054 464C4F41 		.ascii	"FLOAT16\000"
+ 770      54313600 
+ 771              	.LC12:
+ 772 005c 464C4F41 		.ascii	"FLOAT64\000"
+ 772      54363400 
+ 773              	.LC13:
+ 774 0064 434F4D50 		.ascii	"COMPLEX128\000"
+ 774      4C455831 
+ 774      323800
+ 775 006f 00       		.space	1
+ 776              	.LC14:
+ 777 0070 55494E54 		.ascii	"UINT64\000"
+ 777      363400
+ 778 0077 00       		.space	1
+ 779              	.LC15:
+ 780 0078 5245534F 		.ascii	"RESOURCE\000"
+ 780      55524345 
+ 780      00
+ 781 0081 000000   		.space	3
+ 782              	.LC16:
+ 783 0084 56415249 		.ascii	"VARIANT\000"
+ 783      414E5400 
+ 784              	.LC17:
+ 785 008c 55494E54 		.ascii	"UINT32\000"
+ 785      333200
+ 786              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 common.c
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:14     .text.TfLiteIntArrayGetSizeInBytes:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:20     .text.TfLiteIntArrayGetSizeInBytes:00000000 TfLiteIntArrayGetSizeInBytes
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:29     .text.TfLiteIntArrayEqual:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:35     .text.TfLiteIntArrayEqual:00000000 TfLiteIntArrayEqual
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:84     .text.TfLiteIntArrayEqualsArray:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:90     .text.TfLiteIntArrayEqualsArray:00000000 TfLiteIntArrayEqualsArray
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:141    .text.TfLiteIntArrayCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:147    .text.TfLiteIntArrayCreate:00000000 TfLiteIntArrayCreate
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:166    .text.TfLiteIntArrayCopy:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:172    .text.TfLiteIntArrayCopy:00000000 TfLiteIntArrayCopy
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:201    .text.TfLiteIntArrayFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:207    .text.TfLiteIntArrayFree:00000000 TfLiteIntArrayFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:214    .text.TfLiteFloatArrayGetSizeInBytes:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:220    .text.TfLiteFloatArrayGetSizeInBytes:00000000 TfLiteFloatArrayGetSizeInBytes
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:229    .text.TfLiteFloatArrayCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:235    .text.TfLiteFloatArrayCreate:00000000 TfLiteFloatArrayCreate
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:247    .text.TfLiteFloatArrayFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:253    .text.TfLiteFloatArrayFree:00000000 TfLiteFloatArrayFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:260    .text.TfLiteTensorDataFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:266    .text.TfLiteTensorDataFree:00000000 TfLiteTensorDataFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:285    .text.TfLiteQuantizationFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:291    .text.TfLiteQuantizationFree:00000000 TfLiteQuantizationFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:323    .text.TfLiteSparsityFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:329    .text.TfLiteSparsityFree:00000000 TfLiteSparsityFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:383    .text.TfLiteTensorFree:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:389    .text.TfLiteTensorFree:00000000 TfLiteTensorFree
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:495    .text.TfLiteTensorReset:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:501    .text.TfLiteTensorReset:00000000 TfLiteTensorReset
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:638    .text.TfLiteTensorRealloc:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:644    .text.TfLiteTensorRealloc:00000000 TfLiteTensorRealloc
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:675    .text.TfLiteTypeGetName:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:681    .text.TfLiteTypeGetName:00000000 TfLiteTypeGetName
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:713    .rodata.CSWTCH.24:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:736    .rodata.TfLiteTypeGetName.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:694    .text.TfLiteDelegateCreate:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:700    .text.TfLiteDelegateCreate:00000000 TfLiteDelegateCreate
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:712    .rodata.CSWTCH.24:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:716    .rodata.CSWTCH.24:00000000 CSWTCH.24
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:735    .rodata.TfLiteTypeGetName.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccndQhV9.s:739    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+malloc
+memcpy
+free
+realloc
+memset

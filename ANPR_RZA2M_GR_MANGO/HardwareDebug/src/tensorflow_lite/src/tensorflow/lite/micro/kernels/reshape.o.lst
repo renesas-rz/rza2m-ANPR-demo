@@ -1,0 +1,1572 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"reshape.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode:
+  24              		.fnstart
+  25              	.LFB6770:
+  26              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/c/builtin_op_data.h"
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/c/common.h"
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/kernels/kernel_util.h"
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/kernels/op_macros.h"
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/micro/kernels/kernel_util.h"
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/micro/memory_helpers.h"
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** #include "tensorflow/lite/micro/micro_utils.h"
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** namespace tflite {
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** namespace ops {
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** namespace micro {
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** namespace reshape {
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** constexpr int kInputTensor = 0;
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** constexpr int kOutputTensor = 0;
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** TfLiteStatus ReshapeOutput(TfLiteContext* context, TfLiteNode* node) {
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   const TfLiteTensor* input = GetInput(context, node, kInputTensor);
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, input != nullptr);
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TfLiteTensor* output = GetOutput(context, node, kOutputTensor);
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, output != nullptr);
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // Tensorflow's Reshape allows one of the shape components to have the
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // special -1 value, meaning it will be calculated automatically based on the
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // input. Here we calculate what that dimension should be so that the number
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // of output elements in the same as the number of input elements.
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   int num_input_elements = NumElements(input);
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TfLiteIntArray* output_shape = output->dims;
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   if (NumInputs(node) == 1 &&  // Legacy scalar supported with params.
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output_shape->size == 1 && output_shape->data[0] == 0) {
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // Legacy tflite models use a shape parameter of [0] to indicate scalars,
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // so adjust accordingly. TODO(b/111614235): Allow zero-sized buffers during
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // toco conversion.
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     output_shape->size = 0;
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   int num_output_elements = 1;
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   int stretch_dim = -1;
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   for (int i = 0; i < output_shape->size; ++i) {
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     int value = output_shape->data[i];
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     if (value == -1) {
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       TF_LITE_ENSURE_EQ(context, stretch_dim, -1);
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       stretch_dim = i;
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     } else {
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       num_output_elements *= value;
+  62:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     }
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   if (stretch_dim != -1) {
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     output_shape->data[stretch_dim] = num_input_elements / num_output_elements;
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     num_output_elements *= output_shape->data[stretch_dim];
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_TYPES_EQ(context, input->type, output->type);
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, num_input_elements, num_output_elements);
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, NumInputs(node) == 1 || NumInputs(node) == 2);
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, ReshapeOutput(context, node), kTfLiteOk);
+  78:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  81:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+  27              		.loc 1 81 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  32 0000 70402DE9 		push	{r4, r5, r6, lr}
+  33              		.save {r4, r5, r6, lr}
+  34              		.cfi_def_cfa_offset 16
+  35              		.cfi_offset 4, -16
+  36              		.cfi_offset 5, -12
+  37              		.cfi_offset 6, -8
+  38              		.cfi_offset 14, -4
+  39              	.LBB47:
+  40              	.LBB48:
+  41              	.LBB49:
+  42              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #define TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include <cstdint>
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/compatibility.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/types.h"
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace tflite {
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace micro {
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns a mutable tensor for a given input index. is_variable must be checked
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // during prepare when the full TfLiteTensor is available.
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetMutableEvalInput(const TfLiteContext* context,
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              const TfLiteNode* node,
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              int index) {
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+  43              		.loc 2 34 0
+  44 0004 004050E2 		subs	r4, r0, #0
+  45              	.LVL1:
+  46              	.LBE49:
+  47              	.LBE48:
+  48              	.LBE47:
+  49              		.loc 1 81 0
+  50              		.pad #8
+  51 0008 08D04DE2 		sub	sp, sp, #8
+  52              		.cfi_def_cfa_offset 24
+  53              	.LBB56:
+  54              	.LBB53:
+  55              	.LBB50:
+  56              		.loc 2 34 0
+  57 000c 2D00000A 		beq	.L3
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+  58              		.loc 2 35 0
+  59 0010 000051E3 		cmp	r1, #0
+  60 0014 0160A0E1 		mov	r6, r1
+  61 0018 2A00000A 		beq	.L3
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->inputs->data[index]);
+  62              		.loc 2 36 0
+  63 001c 002091E5 		ldr	r2, [r1]
+  64 0020 543094E5 		ldr	r3, [r4, #84]
+  65 0024 041092E5 		ldr	r1, [r2, #4]
+  66              	.LVL2:
+  67 0028 33FF2FE1 		blx	r3
+  68              	.LVL3:
+  69              	.LBE50:
+  70              	.LBE53:
+  71              	.LBE56:
+  72              	.LBB57:
+  73              	.LBB58:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given input index in a node.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline const TfLiteEvalTensor* GetEvalInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                             const TfLiteNode* node, int index) {
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return GetMutableEvalInput(context, node, index);
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given output index in a node.
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetEvalOutput(const TfLiteContext* context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                        const TfLiteNode* node, int index) {
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->outputs->data[index]);
+  74              		.loc 2 50 0
+  75 002c 042096E5 		ldr	r2, [r6, #4]
+  76              	.LBE58:
+  77              	.LBE57:
+  78              	.LBB61:
+  79              	.LBB54:
+  80              	.LBB51:
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->inputs->data[index]);
+  81              		.loc 2 36 0
+  82 0030 0050A0E1 		mov	r5, r0
+  83              	.LVL4:
+  84              	.LBE51:
+  85              	.LBE54:
+  86              	.LBE61:
+  87              	.LBB62:
+  88              	.LBB59:
+  89              		.loc 2 50 0
+  90 0034 543094E5 		ldr	r3, [r4, #84]
+  91 0038 0400A0E1 		mov	r0, r4
+  92 003c 041092E5 		ldr	r1, [r2, #4]
+  93 0040 33FF2FE1 		blx	r3
+  94              	.LVL5:
+  95              	.LBE59:
+  96              	.LBE62:
+  97              	.LBB63:
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   const TfLiteEvalTensor* input =
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       tflite::micro::GetEvalInput(context, node, kInputTensor);
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TfLiteEvalTensor* output =
+  85:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       tflite::micro::GetEvalOutput(context, node, kOutputTensor);
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // TODO(b/162522304): storing input bytes in OpData increases some models
+  88:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // significantly, possibly due to alignment issues.
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   size_t input_bytes;
+  90:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_STATUS(TfLiteTypeSizeOf(input->type, &input_bytes));
+  98              		.loc 1 90 0
+  99 0044 04108DE2 		add	r1, sp, #4
+ 100              	.LBE63:
+ 101              	.LBB64:
+ 102              	.LBB60:
+ 103              		.loc 2 50 0
+ 104 0048 0060A0E1 		mov	r6, r0
+ 105              	.LVL6:
+ 106              	.LBE60:
+ 107              	.LBE64:
+ 108              	.LBB65:
+ 109              		.loc 1 90 0
+ 110 004c 0800D5E5 		ldrb	r0, [r5, #8]	@ zero_extendqisi2
+ 111 0050 FEFFFFEB 		bl	_ZN6tflite16TfLiteTypeSizeOfE10TfLiteTypePj
+ 112              	.LVL7:
+ 113 0054 004050E2 		subs	r4, r0, #0
+ 114              	.LVL8:
+ 115 0058 0400A011 		movne	r0, r4
+ 116              	.LVL9:
+ 117 005c 0100000A 		beq	.L17
+ 118              	.LBE65:
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   input_bytes *= ElementCount(*input->dims);
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // Do nothing for in-place reshape.
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   if (input->data.raw != output->data.raw) {
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // Otherwise perform reshape with copy.
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     for (size_t i = 0; i < input_bytes; ++i) {
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output->data.raw[i] = input->data.raw[i];
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     }
+  99:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+ 101:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+ 119              		.loc 1 101 0
+ 120 0060 08D08DE2 		add	sp, sp, #8
+ 121              		.cfi_remember_state
+ 122              		.cfi_def_cfa_offset 16
+ 123              		@ sp needed
+ 124 0064 7080BDE8 		pop	{r4, r5, r6, pc}
+ 125              	.L17:
+ 126              		.cfi_restore_state
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   input_bytes *= ElementCount(*input->dims);
+ 127              		.loc 1 91 0
+ 128 0068 040095E5 		ldr	r0, [r5, #4]
+ 129 006c FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 130              	.LVL10:
+ 131 0070 04309DE5 		ldr	r3, [sp, #4]
+ 132 0074 930000E0 		mul	r0, r3, r0
+ 133 0078 04008DE5 		str	r0, [sp, #4]
+ 134              	.LBB66:
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // Otherwise perform reshape with copy.
+ 135              		.loc 1 94 0
+ 136 007c 003095E5 		ldr	r3, [r5]
+ 137 0080 002096E5 		ldr	r2, [r6]
+ 138 0084 020053E1 		cmp	r3, r2
+ 139 0088 0B00000A 		beq	.L6
+ 140              	.LVL11:
+ 141              	.LBB67:
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output->data.raw[i] = input->data.raw[i];
+ 142              		.loc 1 96 0 discriminator 3
+ 143 008c 000050E3 		cmp	r0, #0
+ 144 0090 0900000A 		beq	.L6
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output->data.raw[i] = input->data.raw[i];
+ 145              		.loc 1 96 0 is_stmt 0 discriminator 2
+ 146 0094 0400A0E1 		mov	r0, r4
+ 147 0098 010000EA 		b	.L7
+ 148              	.LVL12:
+ 149              	.L18:
+ 150 009c 002096E5 		ldr	r2, [r6]
+ 151 00a0 003095E5 		ldr	r3, [r5]
+ 152              	.LVL13:
+ 153              	.L7:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     }
+ 154              		.loc 1 97 0 is_stmt 1 discriminator 2
+ 155 00a4 0030D3E7 		ldrb	r3, [r3, r0]	@ zero_extendqisi2
+ 156 00a8 0030C2E7 		strb	r3, [r2, r0]
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output->data.raw[i] = input->data.raw[i];
+ 157              		.loc 1 96 0 discriminator 2
+ 158 00ac 010080E2 		add	r0, r0, #1
+ 159              	.LVL14:
+ 160 00b0 04309DE5 		ldr	r3, [sp, #4]
+ 161 00b4 000053E1 		cmp	r3, r0
+ 162 00b8 F7FFFF8A 		bhi	.L18
+ 163              	.LVL15:
+ 164              	.L6:
+ 165              	.LBE67:
+ 166              	.LBE66:
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+ 167              		.loc 1 100 0
+ 168 00bc 0000A0E3 		mov	r0, #0
+ 169              		.loc 1 101 0
+ 170 00c0 08D08DE2 		add	sp, sp, #8
+ 171              		.cfi_remember_state
+ 172              		.cfi_def_cfa_offset 16
+ 173              		@ sp needed
+ 174 00c4 7080BDE8 		pop	{r4, r5, r6, pc}
+ 175              	.LVL16:
+ 176              	.L3:
+ 177              		.cfi_restore_state
+ 178              	.LBB68:
+ 179              	.LBB55:
+ 180              	.LBB52:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+ 181              		.loc 2 34 0
+ 182 00c8 FEFFFFEB 		bl	abort
+ 183              	.LVL17:
+ 184              	.LBE52:
+ 185              	.LBE55:
+ 186              	.LBE68:
+ 187              		.cfi_endproc
+ 188              	.LFE6770:
+ 189              		.fnend
+ 191              		.global	__aeabi_idiv
+ 192              		.section	.text._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode,"ax",%pro
+ 193              		.align	2
+ 194              		.global	_ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode
+ 195              		.syntax unified
+ 196              		.arm
+ 197              		.fpu neon
+ 199              	_ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode:
+ 200              		.fnstart
+ 201              	.LFB6768:
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   const TfLiteTensor* input = GetInput(context, node, kInputTensor);
+ 202              		.loc 1 33 0
+ 203              		.cfi_startproc
+ 204              		@ args = 0, pretend = 0, frame = 32
+ 205              		@ frame_needed = 0, uses_anonymous_args = 0
+ 206              	.LVL18:
+ 207 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 208              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 209              		.cfi_def_cfa_offset 36
+ 210              		.cfi_offset 4, -36
+ 211              		.cfi_offset 5, -32
+ 212              		.cfi_offset 6, -28
+ 213              		.cfi_offset 7, -24
+ 214              		.cfi_offset 8, -20
+ 215              		.cfi_offset 9, -16
+ 216              		.cfi_offset 10, -12
+ 217              		.cfi_offset 11, -8
+ 218              		.cfi_offset 14, -4
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, input != nullptr);
+ 219              		.loc 1 34 0
+ 220 0004 0020A0E3 		mov	r2, #0
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   const TfLiteTensor* input = GetInput(context, node, kInputTensor);
+ 221              		.loc 1 33 0
+ 222              		.pad #52
+ 223 0008 34D04DE2 		sub	sp, sp, #52
+ 224              		.cfi_def_cfa_offset 88
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   const TfLiteTensor* input = GetInput(context, node, kInputTensor);
+ 225              		.loc 1 33 0
+ 226 000c 1C008DE5 		str	r0, [sp, #28]
+ 227 0010 18108DE5 		str	r1, [sp, #24]
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, input != nullptr);
+ 228              		.loc 1 34 0
+ 229 0014 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 230              	.LVL19:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TfLiteTensor* output = GetOutput(context, node, kOutputTensor);
+ 231              		.loc 1 35 0
+ 232 0018 003050E2 		subs	r3, r0, #0
+ 233 001c 20308DE5 		str	r3, [sp, #32]
+ 234 0020 D300000A 		beq	.L48
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, output != nullptr);
+ 235              		.loc 1 36 0
+ 236 0024 0020A0E3 		mov	r2, #0
+ 237 0028 18109DE5 		ldr	r1, [sp, #24]
+ 238 002c 1C009DE5 		ldr	r0, [sp, #28]
+ 239              	.LVL20:
+ 240 0030 FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 241              	.LVL21:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // Tensorflow's Reshape allows one of the shape components to have the
+ 242              		.loc 1 37 0
+ 243 0034 003050E2 		subs	r3, r0, #0
+ 244 0038 24308DE5 		str	r3, [sp, #36]
+ 245 003c E200000A 		beq	.L49
+ 246 0040 20309DE5 		ldr	r3, [sp, #32]
+ 247 0044 083093E5 		ldr	r3, [r3, #8]
+ 248 0048 0320A0E1 		mov	r2, r3
+ 249 004c 2C308DE5 		str	r3, [sp, #44]
+ 250              	.LVL22:
+ 251              	.LBB69:
+ 252              	.LBB70:
+ 253              	.LBB71:
+ 254              	.LBB72:
+ 255              		.file 3 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #define TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <stdint.h>
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <limits>
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** namespace tflite {
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // A fair number of functions in this header have historically been inline.
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // It is ok to change functions to not be inline if the latency with
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // benchmark_model for MobileNet + MobileBERT is unaffected. If such a change is
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // made, move the newly non-inlined function declarations to the top of this
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // header file.
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetInput(context, node, kMyTensorIdx);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                              const TfLiteNode* node, int index);
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetInput` but returns boolean and uses output argument for tensor.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetInputSafe(context, node, kMyTensorIdx, &my_tensor));
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetInputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                           int index, const TfLiteTensor** tensor);
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetVariableInput(context, node, kMyTensorIdx);
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetVariableInput(TfLiteContext* context, const TfLiteNode* node,
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                int index);
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  64:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  65:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  66:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOutput(context, node, kMyTensorIdx);
+  67:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  68:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  69:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  70:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  71:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetOutput(TfLiteContext* context, const TfLiteNode* node,
+  72:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                         int index);
+  73:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  74:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetOutput` but returns boolean and uses output argument for tensor.
+  75:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  76:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  77:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  78:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetOutputSafe(context, node, kMyTensorIdx, &my_tensor));
+  79:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  80:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  81:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  82:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetOutputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  83:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index, TfLiteTensor** tensor);
+  84:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  85:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  86:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  87:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOptionalInputTensor(context, node, kIdx);
+  88:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  89:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  90:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  91:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  92:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  93:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Deprecated. GetInput has the same functionality.
+  94:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetOptionalInputTensor(const TfLiteContext* context,
+  95:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                            const TfLiteNode* node, int index);
+  96:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  97:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+  98:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  99:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 100:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetTemporary(context, node, kMyTensorIdx);
+ 101:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 102:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 103:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 104:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 105:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetTemporary(TfLiteContext* context, const TfLiteNode* node,
+ 106:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index);
+ 107:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 108:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetTemporary` but returns boolean and uses output argument for
+ 109:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 110:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 111:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 112:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 113:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetTemporarySafe(context, node, kMyTensorIdx,
+ 114:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 115:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 116:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 117:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 118:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetTemporarySafe(const TfLiteContext* context,
+ 119:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               const TfLiteNode* node, int index,
+ 120:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               TfLiteTensor** tensor);
+ 121:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 122:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+ 123:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 124:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetIntermediates(context, node, kMyTensorIdx);
+ 125:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 126:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 127:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 128:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 129:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetIntermediates(TfLiteContext* context,
+ 130:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                      const TfLiteNode* node, int index);
+ 131:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 132:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetIntermediates` but returns boolean and uses output argument for
+ 133:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 134:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 135:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 136:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 137:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetIntermediatesSafe(context, node, kMyTensorIdx,
+ 138:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 139:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 140:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 141:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 142:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetIntermediatesSafe(const TfLiteContext* context,
+ 143:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   const TfLiteNode* node, int index,
+ 144:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   TfLiteTensor** tensor);
+ 145:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 146:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumDimensions(const TfLiteTensor* t) { return t->dims->size; }
+ 148:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   return t->dims->data[dim];
+ 150:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** }
+ 151:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumInputs(const TfLiteNode* node) { return node->inputs->size; }
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+ 154:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 155:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+ 156:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumIntermediates(const TfLiteNode* node) {
+ 157:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   return node->intermediates->size;
+ 158:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** }
+ 159:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 160:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 161:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int64_t NumElements(const TfLiteIntArray* dims) {
+ 162:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   int64_t count = 1;
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   for (int i = 0; i < dims->size; ++i) {
+ 256              		.loc 3 163 0
+ 257 0050 003093E5 		ldr	r3, [r3]
+ 258 0054 000053E3 		cmp	r3, #0
+ 259 0058 28308DE5 		str	r3, [sp, #40]
+ 260 005c D80000DA 		ble	.L36
+ 261 0060 080053E3 		cmp	r3, #8
+ 262 0064 D10000DA 		ble	.L37
+ 263 0068 093043E2 		sub	r3, r3, #9
+ 264 006c 0080A0E3 		mov	r8, #0
+ 265 0070 0730C3E3 		bic	r3, r3, #7
+ 266 0074 A4E082E2 		add	lr, r2, #164
+ 267 0078 0100A0E3 		mov	r0, #1
+ 268              	.LVL23:
+ 269 007c 0010A0E3 		mov	r1, #0
+ 270 0080 08C0A0E1 		mov	ip, r8
+ 271 0084 083083E2 		add	r3, r3, #8
+ 272 0088 14308DE5 		str	r3, [sp, #20]
+ 273              	.LVL24:
+ 274              	.L25:
+ 164:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 275              		.loc 3 164 0
+ 276 008c A0801EE5 		ldr	r8, [lr, #-160]
+ 277 0090 08C08CE2 		add	ip, ip, #8
+ 278 0094 14309DE5 		ldr	r3, [sp, #20]
+ 279 0098 9C601EE5 		ldr	r6, [lr, #-156]
+ 280 009c 98401EE5 		ldr	r4, [lr, #-152]
+ 281 00a0 03005CE1 		cmp	ip, r3
+ 282 00a4 980103E0 		mul	r3, r8, r1
+ 283 00a8 C8BFA0E1 		asr	fp, r8, #31
+ 284 00ac 94501EE5 		ldr	r5, [lr, #-148]
+ 285 00b0 988089E0 		umull	r8, r9, r8, r0
+ 286 00b4 8C201EE5 		ldr	r2, [lr, #-140]
+ 287 00b8 00F0DEF5 		pld	[lr]
+ 288 00bc 20E08EE2 		add	lr, lr, #32
+ 289 00c0 903B23E0 		mla	r3, r0, fp, r3
+ 290 00c4 C6BFA0E1 		asr	fp, r6, #31
+ 291 00c8 960881E0 		umull	r0, r1, r6, r8
+ 292              	.LVL25:
+ 293 00cc 099083E0 		add	r9, r3, r9
+ 294              	.LVL26:
+ 295 00d0 B0301EE5 		ldr	r3, [lr, #-176]
+ 296 00d4 960907E0 		mul	r7, r6, r9
+ 297 00d8 C49FA0E1 		asr	r9, r4, #31
+ 298 00dc 987B27E0 		mla	r7, r8, fp, r7
+ 299 00e0 011087E0 		add	r1, r7, r1
+ 300              	.LVL27:
+ 301 00e4 946087E0 		umull	r6, r7, r4, r0
+ 302 00e8 94010AE0 		mul	r10, r4, r1
+ 303 00ec A8101EE5 		ldr	r1, [lr, #-168]
+ 304 00f0 90A92AE0 		mla	r10, r0, r9, r10
+ 305 00f4 A4001EE5 		ldr	r0, [lr, #-164]
+ 306              	.LVL28:
+ 307 00f8 C59FA0E1 		asr	r9, r5, #31
+ 308 00fc 07708AE0 		add	r7, r10, r7
+ 309              	.LVL29:
+ 310 0100 950708E0 		mul	r8, r5, r7
+ 311 0104 C37FA0E1 		asr	r7, r3, #31
+ 312 0108 954685E0 		umull	r4, r5, r5, r6
+ 313 010c 968928E0 		mla	r8, r6, r9, r8
+ 314 0110 C29FA0E1 		asr	r9, r2, #31
+ 315 0114 055088E0 		add	r5, r8, r5
+ 316              	.LVL30:
+ 317 0118 93050AE0 		mul	r10, r3, r5
+ 318 011c 94A72AE0 		mla	r10, r4, r7, r10
+ 319 0120 934485E0 		umull	r4, r5, r3, r4
+ 320              	.LVL31:
+ 321 0124 C17FA0E1 		asr	r7, r1, #31
+ 322 0128 05508AE0 		add	r5, r10, r5
+ 323              	.LVL32:
+ 324 012c 920506E0 		mul	r6, r2, r5
+ 325 0130 C05FA0E1 		asr	r5, r0, #31
+ 326 0134 922483E0 		umull	r2, r3, r2, r4
+ 327 0138 946926E0 		mla	r6, r4, r9, r6
+ 328 013c 033086E0 		add	r3, r6, r3
+ 329              	.LVL33:
+ 330 0140 910304E0 		mul	r4, r1, r3
+ 331 0144 924724E0 		mla	r4, r2, r7, r4
+ 332 0148 912283E0 		umull	r2, r3, r1, r2
+ 333              	.LVL34:
+ 334 014c 033084E0 		add	r3, r4, r3
+ 335              	.LVL35:
+ 336 0150 900303E0 		mul	r3, r0, r3
+ 337 0154 900281E0 		umull	r0, r1, r0, r2
+ 338 0158 923522E0 		mla	r2, r2, r5, r3
+ 339              	.LVL36:
+ 340 015c 011082E0 		add	r1, r2, r1
+ 341              	.LVL37:
+ 342 0160 C9FFFF1A 		bne	.L25
+ 343 0164 2C309DE5 		ldr	r3, [sp, #44]
+ 344 0168 0C80A0E1 		mov	r8, ip
+ 345              	.LVL38:
+ 346              	.L24:
+ 347 016c 018088E2 		add	r8, r8, #1
+ 348 0170 28C09DE5 		ldr	ip, [sp, #40]
+ 349 0174 08E183E0 		add	lr, r3, r8, lsl #2
+ 350              	.L26:
+ 351              	.LVL39:
+ 352 0178 04209EE4 		ldr	r2, [lr], #4
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 353              		.loc 3 163 0
+ 354 017c 08005CE1 		cmp	ip, r8
+ 355 0180 018088E2 		add	r8, r8, #1
+ 356              		.loc 3 164 0
+ 357 0184 C25FA0E1 		asr	r5, r2, #31
+ 358 0188 900503E0 		mul	r3, r0, r5
+ 359 018c 923123E0 		mla	r3, r2, r1, r3
+ 360 0190 900281E0 		umull	r0, r1, r0, r2
+ 361              	.LVL40:
+ 362 0194 011083E0 		add	r1, r3, r1
+ 363              	.LVL41:
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 364              		.loc 3 163 0
+ 365 0198 F6FFFFCA 		bgt	.L26
+ 366 019c 0050A0E1 		mov	r5, r0
+ 367              	.LVL42:
+ 368              	.L23:
+ 369              	.LBE72:
+ 370              	.LBE71:
+ 371              	.LBE70:
+ 372              	.LBE69:
+ 373              	.LBB79:
+ 374              	.LBB80:
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+ 375              		.loc 3 152 0
+ 376 01a0 18309DE5 		ldr	r3, [sp, #24]
+ 377              	.LBE80:
+ 378              	.LBE79:
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 379              		.loc 1 43 0
+ 380 01a4 24209DE5 		ldr	r2, [sp, #36]
+ 381              	.LBB82:
+ 382              	.LBB81:
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+ 383              		.loc 3 152 0
+ 384 01a8 003093E5 		ldr	r3, [r3]
+ 385              	.LBE81:
+ 386              	.LBE82:
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 387              		.loc 1 43 0
+ 388 01ac 087092E5 		ldr	r7, [r2, #8]
+ 389              	.LVL43:
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // Legacy tflite models use a shape parameter of [0] to indicate scalars,
+ 390              		.loc 1 46 0
+ 391 01b0 003093E5 		ldr	r3, [r3]
+ 392 01b4 00C097E5 		ldr	ip, [r7]
+ 393 01b8 010053E3 		cmp	r3, #1
+ 394 01bc 5000000A 		beq	.L50
+ 395              	.L28:
+ 396              	.LVL44:
+ 397              	.LBB83:
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     int value = output_shape->data[i];
+ 398              		.loc 1 55 0
+ 399 01c0 00005CE3 		cmp	ip, #0
+ 400 01c4 8E0000DA 		ble	.L38
+ 401              	.LVL45:
+ 402              	.L30:
+ 403 01c8 042087E2 		add	r2, r7, #4
+ 404              	.LBE83:
+ 405              	.LBB87:
+ 406              	.LBB77:
+ 407              	.LBB75:
+ 408              	.LBB73:
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 409              		.loc 3 163 0
+ 410 01cc 0030A0E3 		mov	r3, #0
+ 411 01d0 0060E0E3 		mvn	r6, #0
+ 412 01d4 0140A0E3 		mov	r4, #1
+ 413 01d8 030000EA 		b	.L34
+ 414              	.LVL46:
+ 415              	.L32:
+ 416              	.LBE73:
+ 417              	.LBE75:
+ 418              	.LBE77:
+ 419              	.LBE87:
+ 420              	.LBB88:
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     int value = output_shape->data[i];
+ 421              		.loc 1 55 0
+ 422 01dc 013083E2 		add	r3, r3, #1
+ 423              	.LVL47:
+ 424              	.LBB84:
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     }
+ 425              		.loc 1 61 0
+ 426 01e0 900404E0 		mul	r4, r0, r4
+ 427              	.LVL48:
+ 428              	.LBE84:
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     int value = output_shape->data[i];
+ 429              		.loc 1 55 0
+ 430 01e4 0C0053E1 		cmp	r3, ip
+ 431 01e8 080000AA 		bge	.L51
+ 432              	.LVL49:
+ 433              	.L34:
+ 434              	.LBB85:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     if (value == -1) {
+ 435              		.loc 1 56 0
+ 436 01ec 040092E4 		ldr	r0, [r2], #4
+ 437              	.LVL50:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       TF_LITE_ENSURE_EQ(context, stretch_dim, -1);
+ 438              		.loc 1 57 0
+ 439 01f0 010070E3 		cmn	r0, #1
+ 440 01f4 F8FFFF1A 		bne	.L32
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       stretch_dim = i;
+ 441              		.loc 1 58 0
+ 442 01f8 010076E3 		cmn	r6, #1
+ 443 01fc 4800001A 		bne	.L52
+ 444 0200 0360A0E1 		mov	r6, r3
+ 445              	.LVL51:
+ 446              	.LBE85:
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     int value = output_shape->data[i];
+ 447              		.loc 1 55 0
+ 448 0204 013083E2 		add	r3, r3, #1
+ 449              	.LVL52:
+ 450 0208 0C0053E1 		cmp	r3, ip
+ 451 020c F6FFFFBA 		blt	.L34
+ 452              	.L51:
+ 453              	.LBE88:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     output_shape->data[stretch_dim] = num_input_elements / num_output_elements;
+ 454              		.loc 1 64 0
+ 455 0210 010076E3 		cmn	r6, #1
+ 456 0214 7D00000A 		beq	.L40
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     num_output_elements *= output_shape->data[stretch_dim];
+ 457              		.loc 1 65 0
+ 458 0218 066187E0 		add	r6, r7, r6, lsl #2
+ 459              	.LVL53:
+ 460 021c 0410A0E1 		mov	r1, r4
+ 461 0220 0500A0E1 		mov	r0, r5
+ 462              	.LVL54:
+ 463 0224 FEFFFFEB 		bl	__aeabi_idiv
+ 464              	.LVL55:
+ 465 0228 040086E5 		str	r0, [r6, #4]
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+ 466              		.loc 1 66 0
+ 467 022c 90040CE0 		mul	ip, r0, r4
+ 468              	.LVL56:
+ 469 0230 24609DE5 		ldr	r6, [sp, #36]
+ 470              	.LVL57:
+ 471              	.L31:
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, num_input_elements, num_output_elements);
+ 472              		.loc 1 69 0
+ 473 0234 20309DE5 		ldr	r3, [sp, #32]
+ 474 0238 0000D3E5 		ldrb	r0, [r3]	@ zero_extendqisi2
+ 475 023c 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+ 476 0240 000053E1 		cmp	r3, r0
+ 477 0244 1600001A 		bne	.L53
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+ 478              		.loc 1 70 0
+ 479 0248 05005CE1 		cmp	ip, r5
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+ 480              		.loc 1 71 0
+ 481 024c 0000A003 		moveq	r0, #0
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+ 482              		.loc 1 70 0
+ 483 0250 1100000A 		beq	.L45
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+ 484              		.loc 1 70 0 is_stmt 0 discriminator 1
+ 485 0254 0CC08DE5 		str	ip, [sp, #12]
+ 486 0258 000000E3 		movw	r0, #:lower16:.LC11
+ 487 025c 1CC09DE5 		ldr	ip, [sp, #28]
+ 488              	.LVL58:
+ 489 0260 003000E3 		movw	r3, #:lower16:.LC12
+ 490 0264 000040E3 		movt	r0, #:upper16:.LC11
+ 491 0268 003040E3 		movt	r3, #:upper16:.LC12
+ 492 026c 002000E3 		movw	r2, #:lower16:.LC1
+ 493 0270 001000E3 		movw	r1, #:lower16:.LC5
+ 494 0274 04008DE5 		str	r0, [sp, #4]
+ 495 0278 002040E3 		movt	r2, #:upper16:.LC1
+ 496 027c 00308DE5 		str	r3, [sp]
+ 497 0280 0C00A0E1 		mov	r0, ip
+ 498 0284 08508DE5 		str	r5, [sp, #8]
+ 499 0288 001040E3 		movt	r1, #:upper16:.LC5
+ 500 028c 4630A0E3 		mov	r3, #70
+ 501 0290 14409CE5 		ldr	r4, [ip, #20]
+ 502 0294 34FF2FE1 		blx	r4
+ 503              	.LVL59:
+ 504 0298 0100A0E3 		mov	r0, #1
+ 505              	.LVL60:
+ 506              	.L45:
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 507              		.loc 1 72 0 is_stmt 1
+ 508 029c 34D08DE2 		add	sp, sp, #52
+ 509              		.cfi_remember_state
+ 510              		.cfi_def_cfa_offset 36
+ 511              		@ sp needed
+ 512 02a0 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 513              	.LVL61:
+ 514              	.L53:
+ 515              		.cfi_restore_state
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, num_input_elements, num_output_elements);
+ 516              		.loc 1 69 0 discriminator 1
+ 517 02a4 1C709DE5 		ldr	r7, [sp, #28]
+ 518              	.LVL62:
+ 519 02a8 144097E5 		ldr	r4, [r7, #20]
+ 520 02ac FEFFFFEB 		bl	TfLiteTypeGetName
+ 521              	.LVL63:
+ 522 02b0 0050A0E1 		mov	r5, r0
+ 523 02b4 0000D6E5 		ldrb	r0, [r6]	@ zero_extendqisi2
+ 524 02b8 FEFFFFEB 		bl	TfLiteTypeGetName
+ 525              	.LVL64:
+ 526 02bc 00C000E3 		movw	ip, #:lower16:.LC9
+ 527 02c0 003000E3 		movw	r3, #:lower16:.LC10
+ 528 02c4 00C040E3 		movt	ip, #:upper16:.LC9
+ 529 02c8 003040E3 		movt	r3, #:upper16:.LC10
+ 530 02cc 002000E3 		movw	r2, #:lower16:.LC1
+ 531 02d0 001000E3 		movw	r1, #:lower16:.LC8
+ 532 02d4 0C008DE5 		str	r0, [sp, #12]
+ 533 02d8 002040E3 		movt	r2, #:upper16:.LC1
+ 534 02dc 0700A0E1 		mov	r0, r7
+ 535 02e0 00308DE5 		str	r3, [sp]
+ 536 02e4 08508DE5 		str	r5, [sp, #8]
+ 537 02e8 001040E3 		movt	r1, #:upper16:.LC8
+ 538 02ec 04C08DE5 		str	ip, [sp, #4]
+ 539 02f0 4530A0E3 		mov	r3, #69
+ 540 02f4 34FF2FE1 		blx	r4
+ 541              	.LVL65:
+ 542 02f8 0100A0E3 		mov	r0, #1
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 543              		.loc 1 72 0 discriminator 1
+ 544 02fc 34D08DE2 		add	sp, sp, #52
+ 545              		.cfi_remember_state
+ 546              		.cfi_def_cfa_offset 36
+ 547              		@ sp needed
+ 548 0300 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 549              	.LVL66:
+ 550              	.L50:
+ 551              		.cfi_restore_state
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       output_shape->size == 1 && output_shape->data[0] == 0) {
+ 552              		.loc 1 45 0 discriminator 1
+ 553 0304 01005CE3 		cmp	ip, #1
+ 554 0308 ACFFFF1A 		bne	.L28
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****     // Legacy tflite models use a shape parameter of [0] to indicate scalars,
+ 555              		.loc 1 46 0 discriminator 4
+ 556 030c 043097E5 		ldr	r3, [r7, #4]
+ 557 0310 000053E3 		cmp	r3, #0
+ 558 0314 ABFFFF1A 		bne	.L30
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   }
+ 559              		.loc 1 50 0
+ 560 0318 003087E5 		str	r3, [r7]
+ 561              	.LVL67:
+ 562 031c 0260A0E1 		mov	r6, r2
+ 563 0320 C3FFFFEA 		b	.L31
+ 564              	.LVL68:
+ 565              	.L52:
+ 566              	.LBB89:
+ 567              	.LBB86:
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****       stretch_dim = i;
+ 568              		.loc 1 58 0 discriminator 1
+ 569 0324 00C000E3 		movw	ip, #:lower16:.LC6
+ 570 0328 003000E3 		movw	r3, #:lower16:.LC7
+ 571              	.LVL69:
+ 572 032c 00C040E3 		movt	ip, #:upper16:.LC6
+ 573 0330 003040E3 		movt	r3, #:upper16:.LC7
+ 574 0334 04C08DE5 		str	ip, [sp, #4]
+ 575 0338 002000E3 		movw	r2, #:lower16:.LC1
+ 576 033c 1CC09DE5 		ldr	ip, [sp, #28]
+ 577 0340 001000E3 		movw	r1, #:lower16:.LC5
+ 578 0344 0C008DE5 		str	r0, [sp, #12]
+ 579 0348 002040E3 		movt	r2, #:upper16:.LC1
+ 580 034c 00308DE5 		str	r3, [sp]
+ 581 0350 001040E3 		movt	r1, #:upper16:.LC5
+ 582 0354 08608DE5 		str	r6, [sp, #8]
+ 583 0358 0C00A0E1 		mov	r0, ip
+ 584              	.LVL70:
+ 585 035c 3A30A0E3 		mov	r3, #58
+ 586 0360 14409CE5 		ldr	r4, [ip, #20]
+ 587              	.LVL71:
+ 588 0364 34FF2FE1 		blx	r4
+ 589              	.LVL72:
+ 590 0368 0100A0E3 		mov	r0, #1
+ 591              	.LBE86:
+ 592              	.LBE89:
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 593              		.loc 1 72 0 discriminator 1
+ 594 036c 34D08DE2 		add	sp, sp, #52
+ 595              		.cfi_remember_state
+ 596              		.cfi_def_cfa_offset 36
+ 597              		@ sp needed
+ 598 0370 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 599              	.LVL73:
+ 600              	.L48:
+ 601              		.cfi_restore_state
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TfLiteTensor* output = GetOutput(context, node, kOutputTensor);
+ 602              		.loc 1 35 0 discriminator 1
+ 603 0374 003000E3 		movw	r3, #:lower16:.LC3
+ 604 0378 002000E3 		movw	r2, #:lower16:.LC1
+ 605 037c 003040E3 		movt	r3, #:upper16:.LC3
+ 606 0380 001000E3 		movw	r1, #:lower16:.LC2
+ 607 0384 00308DE5 		str	r3, [sp]
+ 608 0388 002040E3 		movt	r2, #:upper16:.LC1
+ 609 038c 1C309DE5 		ldr	r3, [sp, #28]
+ 610 0390 001040E3 		movt	r1, #:upper16:.LC2
+ 611 0394 144093E5 		ldr	r4, [r3, #20]
+ 612 0398 0300A0E1 		mov	r0, r3
+ 613              	.LVL74:
+ 614 039c 2330A0E3 		mov	r3, #35
+ 615 03a0 34FF2FE1 		blx	r4
+ 616              	.LVL75:
+ 617 03a4 0100A0E3 		mov	r0, #1
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 618              		.loc 1 72 0 discriminator 1
+ 619 03a8 34D08DE2 		add	sp, sp, #52
+ 620              		.cfi_remember_state
+ 621              		.cfi_def_cfa_offset 36
+ 622              		@ sp needed
+ 623 03ac F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 624              	.LVL76:
+ 625              	.L37:
+ 626              		.cfi_restore_state
+ 627              	.LBB90:
+ 628              	.LBB78:
+ 629              	.LBB76:
+ 630              	.LBB74:
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 631              		.loc 3 163 0
+ 632 03b0 0100A0E3 		mov	r0, #1
+ 633              	.LVL77:
+ 634 03b4 0010A0E3 		mov	r1, #0
+ 635 03b8 0080A0E3 		mov	r8, #0
+ 636 03bc 0230A0E1 		mov	r3, r2
+ 637 03c0 69FFFFEA 		b	.L24
+ 638              	.LVL78:
+ 639              	.L36:
+ 640 03c4 0150A0E3 		mov	r5, #1
+ 641 03c8 74FFFFEA 		b	.L23
+ 642              	.LVL79:
+ 643              	.L49:
+ 644              	.LBE74:
+ 645              	.LBE76:
+ 646              	.LBE78:
+ 647              	.LBE90:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   // Tensorflow's Reshape allows one of the shape components to have the
+ 648              		.loc 1 37 0 discriminator 1
+ 649 03cc 003000E3 		movw	r3, #:lower16:.LC4
+ 650 03d0 002000E3 		movw	r2, #:lower16:.LC1
+ 651 03d4 003040E3 		movt	r3, #:upper16:.LC4
+ 652 03d8 001000E3 		movw	r1, #:lower16:.LC2
+ 653 03dc 00308DE5 		str	r3, [sp]
+ 654 03e0 002040E3 		movt	r2, #:upper16:.LC1
+ 655 03e4 1C309DE5 		ldr	r3, [sp, #28]
+ 656 03e8 001040E3 		movt	r1, #:upper16:.LC2
+ 657 03ec 0300A0E1 		mov	r0, r3
+ 658              	.LVL80:
+ 659 03f0 144093E5 		ldr	r4, [r3, #20]
+ 660 03f4 2530A0E3 		mov	r3, #37
+ 661 03f8 34FF2FE1 		blx	r4
+ 662              	.LVL81:
+ 663 03fc 0100A0E3 		mov	r0, #1
+ 664 0400 A5FFFFEA 		b	.L45
+ 665              	.LVL82:
+ 666              	.L38:
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   int stretch_dim = -1;
+ 667              		.loc 1 53 0
+ 668 0404 01C0A0E3 		mov	ip, #1
+ 669 0408 24609DE5 		ldr	r6, [sp, #36]
+ 670 040c 88FFFFEA 		b	.L31
+ 671              	.LVL83:
+ 672              	.L40:
+ 673 0410 04C0A0E1 		mov	ip, r4
+ 674 0414 24609DE5 		ldr	r6, [sp, #36]
+ 675              	.LVL84:
+ 676 0418 85FFFFEA 		b	.L31
+ 677              		.cfi_endproc
+ 678              	.LFE6768:
+ 679              		.fnend
+ 681              		.section	.text._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 682              		.align	2
+ 683              		.global	_ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode
+ 684              		.syntax unified
+ 685              		.arm
+ 686              		.fpu neon
+ 688              	_ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode:
+ 689              		.fnstart
+ 690              	.LFB6769:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, NumInputs(node) == 1 || NumInputs(node) == 2);
+ 691              		.loc 1 74 0
+ 692              		.cfi_startproc
+ 693              		@ args = 0, pretend = 0, frame = 0
+ 694              		@ frame_needed = 0, uses_anonymous_args = 0
+ 695              	.LVL85:
+ 696              	.LBB105:
+ 697              	.LBB106:
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+ 698              		.loc 3 152 0
+ 699 0000 003091E5 		ldr	r3, [r1]
+ 700              	.LBE106:
+ 701              	.LBE105:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE(context, NumInputs(node) == 1 || NumInputs(node) == 2);
+ 702              		.loc 1 74 0
+ 703 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 704              		.save {r4, r5, r6, lr}
+ 705              		.cfi_def_cfa_offset 16
+ 706              		.cfi_offset 4, -16
+ 707              		.cfi_offset 5, -12
+ 708              		.cfi_offset 6, -8
+ 709              		.cfi_offset 14, -4
+ 710 0008 0050A0E1 		mov	r5, r0
+ 711              	.LVL86:
+ 712              		.pad #16
+ 713 000c 10D04DE2 		sub	sp, sp, #16
+ 714              		.cfi_def_cfa_offset 32
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+ 715              		.loc 1 75 0
+ 716 0010 003093E5 		ldr	r3, [r3]
+ 717 0014 013043E2 		sub	r3, r3, #1
+ 718 0018 010053E3 		cmp	r3, #1
+ 719 001c 0C00009A 		bls	.L67
+ 720 0020 003000E3 		movw	r3, #:lower16:.LC17
+ 721 0024 002000E3 		movw	r2, #:lower16:.LC1
+ 722 0028 003040E3 		movt	r3, #:upper16:.LC17
+ 723 002c 001000E3 		movw	r1, #:lower16:.LC2
+ 724              	.LVL87:
+ 725 0030 144090E5 		ldr	r4, [r0, #20]
+ 726 0034 002040E3 		movt	r2, #:upper16:.LC1
+ 727 0038 00308DE5 		str	r3, [sp]
+ 728 003c 001040E3 		movt	r1, #:upper16:.LC2
+ 729 0040 4B30A0E3 		mov	r3, #75
+ 730 0044 34FF2FE1 		blx	r4
+ 731              	.LVL88:
+ 732 0048 0100A0E3 		mov	r0, #1
+ 733              	.L62:
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 734              		.loc 1 79 0
+ 735 004c 10D08DE2 		add	sp, sp, #16
+ 736              		.cfi_remember_state
+ 737              		.cfi_def_cfa_offset 16
+ 738              		@ sp needed
+ 739 0050 7080BDE8 		pop	{r4, r5, r6, pc}
+ 740              	.LVL89:
+ 741              	.L67:
+ 742              		.cfi_restore_state
+ 743              	.LBB107:
+ 744              	.LBB108:
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 745              		.loc 3 153 0
+ 746 0054 043091E5 		ldr	r3, [r1, #4]
+ 747 0058 0140A0E1 		mov	r4, r1
+ 748              	.LVL90:
+ 749 005c 006093E5 		ldr	r6, [r3]
+ 750              	.LBE108:
+ 751              	.LBE107:
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, ReshapeOutput(context, node), kTfLiteOk);
+ 752              		.loc 1 76 0
+ 753 0060 010056E3 		cmp	r6, #1
+ 754 0064 1200000A 		beq	.L68
+ 755              	.LVL91:
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   TF_LITE_ENSURE_EQ(context, ReshapeOutput(context, node), kTfLiteOk);
+ 756              		.loc 1 76 0 is_stmt 0 discriminator 1
+ 757 0068 00C000E3 		movw	ip, #:lower16:.LC13
+ 758 006c 003000E3 		movw	r3, #:lower16:.LC14
+ 759 0070 00C040E3 		movt	ip, #:upper16:.LC13
+ 760 0074 0140A0E3 		mov	r4, #1
+ 761 0078 003040E3 		movt	r3, #:upper16:.LC14
+ 762 007c 002000E3 		movw	r2, #:lower16:.LC1
+ 763 0080 001000E3 		movw	r1, #:lower16:.LC5
+ 764              	.LVL92:
+ 765 0084 08608DE5 		str	r6, [sp, #8]
+ 766 0088 002040E3 		movt	r2, #:upper16:.LC1
+ 767 008c 145095E5 		ldr	r5, [r5, #20]
+ 768 0090 001040E3 		movt	r1, #:upper16:.LC5
+ 769 0094 00308DE5 		str	r3, [sp]
+ 770 0098 04C08DE5 		str	ip, [sp, #4]
+ 771 009c 4C30A0E3 		mov	r3, #76
+ 772 00a0 0C408DE5 		str	r4, [sp, #12]
+ 773 00a4 35FF2FE1 		blx	r5
+ 774              	.LVL93:
+ 775 00a8 0400A0E1 		mov	r0, r4
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 776              		.loc 1 79 0 is_stmt 1 discriminator 1
+ 777 00ac 10D08DE2 		add	sp, sp, #16
+ 778              		.cfi_remember_state
+ 779              		.cfi_def_cfa_offset 16
+ 780              		@ sp needed
+ 781 00b0 7080BDE8 		pop	{r4, r5, r6, pc}
+ 782              	.LVL94:
+ 783              	.L68:
+ 784              		.cfi_restore_state
+ 785              	.LBB109:
+ 786              	.LBB110:
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return kTfLiteOk;
+ 787              		.loc 1 77 0
+ 788 00b4 FEFFFFEB 		bl	_ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode
+ 789              	.LVL95:
+ 790 00b8 000050E3 		cmp	r0, #0
+ 791 00bc E2FFFF0A 		beq	.L62
+ 792 00c0 0410A0E1 		mov	r1, r4
+ 793 00c4 0500A0E1 		mov	r0, r5
+ 794 00c8 144095E5 		ldr	r4, [r5, #20]
+ 795              	.LVL96:
+ 796 00cc FEFFFFEB 		bl	_ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode
+ 797              	.LVL97:
+ 798 00d0 00C000E3 		movw	ip, #:lower16:.LC15
+ 799 00d4 003000E3 		movw	r3, #:lower16:.LC16
+ 800 00d8 00C040E3 		movt	ip, #:upper16:.LC15
+ 801 00dc 00E0A0E3 		mov	lr, #0
+ 802 00e0 003040E3 		movt	r3, #:upper16:.LC16
+ 803 00e4 002000E3 		movw	r2, #:lower16:.LC1
+ 804 00e8 001000E3 		movw	r1, #:lower16:.LC5
+ 805 00ec 08008DE5 		str	r0, [sp, #8]
+ 806 00f0 08108DE8 		stm	sp, {r3, ip}
+ 807 00f4 0500A0E1 		mov	r0, r5
+ 808 00f8 002040E3 		movt	r2, #:upper16:.LC1
+ 809 00fc 0CE08DE5 		str	lr, [sp, #12]
+ 810 0100 001040E3 		movt	r1, #:upper16:.LC5
+ 811 0104 4D30A0E3 		mov	r3, #77
+ 812 0108 34FF2FE1 		blx	r4
+ 813              	.LVL98:
+ 814 010c 0600A0E1 		mov	r0, r6
+ 815              	.LBE110:
+ 816              	.LBE109:
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 817              		.loc 1 79 0
+ 818 0110 10D08DE2 		add	sp, sp, #16
+ 819              		.cfi_def_cfa_offset 16
+ 820              		@ sp needed
+ 821 0114 7080BDE8 		pop	{r4, r5, r6, pc}
+ 822              		.cfi_endproc
+ 823              	.LFE6769:
+ 824              		.fnend
+ 826              		.section	.text._ZN6tflite3ops5micro16Register_RESHAPEEv,"ax",%progbits
+ 827              		.align	2
+ 828              		.global	_ZN6tflite3ops5micro16Register_RESHAPEEv
+ 829              		.syntax unified
+ 830              		.arm
+ 831              		.fpu neon
+ 833              	_ZN6tflite3ops5micro16Register_RESHAPEEv:
+ 834              		.fnstart
+ 835              	.LFB6771:
+ 102:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 103:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }  // namespace reshape
+ 104:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** 
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** TfLiteRegistration Register_RESHAPE() {
+ 836              		.loc 1 105 0
+ 837              		.cfi_startproc
+ 838              		@ args = 0, pretend = 0, frame = 0
+ 839              		@ frame_needed = 0, uses_anonymous_args = 0
+ 840              	.LVL99:
+ 106:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return {/*init=*/nullptr,
+ 107:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*free=*/nullptr,
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*prepare=*/reshape::Prepare,
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*invoke=*/reshape::Eval,
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*profiling_string=*/nullptr,
+ 111:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*builtin_code=*/0,
+ 112:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*custom_name=*/nullptr,
+ 113:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****           /*version=*/0};
+ 841              		.loc 1 113 0
+ 842 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return {/*init=*/nullptr,
+ 843              		.loc 1 105 0
+ 844 0004 10402DE9 		push	{r4, lr}
+ 845              		.cfi_def_cfa_offset 8
+ 846              		.cfi_offset 4, -8
+ 847              		.cfi_offset 14, -4
+ 848              		.loc 1 113 0
+ 849 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp ****   return {/*init=*/nullptr,
+ 850              		.loc 1 105 0
+ 851 000c 0040A0E1 		mov	r4, r0
+ 852              		.loc 1 113 0
+ 853 0010 00E0A0E1 		mov	lr, r0
+ 854 0014 0F00BCE8 		ldmia	ip!, {r0, r1, r2, r3}
+ 855              	.LVL100:
+ 856 0018 0F00AEE8 		stmia	lr!, {r0, r1, r2, r3}
+ 857 001c 0F009CE8 		ldm	ip, {r0, r1, r2, r3}
+ 858 0020 0F008EE8 		stm	lr, {r0, r1, r2, r3}
+ 114:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/reshape.cpp **** }
+ 859              		.loc 1 114 0
+ 860 0024 0400A0E1 		mov	r0, r4
+ 861 0028 1080BDE8 		pop	{r4, pc}
+ 862              		.cfi_endproc
+ 863              	.LFE6771:
+ 864              		.cantunwind
+ 865              		.fnend
+ 867              		.weak	_ZN11flatbuffers25flatbuffer_version_stringE
+ 868              		.section	.rodata
+ 869              		.align	2
+ 870              		.set	.LANCHOR0,. + 0
+ 871              	.LC0:
+ 872 0000 00000000 		.word	0
+ 873 0004 00000000 		.word	0
+ 874 0008 00000000 		.word	_ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode
+ 875 000c 00000000 		.word	_ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode
+ 876 0010 00000000 		.word	0
+ 877 0014 00000000 		.word	0
+ 878 0018 00000000 		.word	0
+ 879 001c 00000000 		.word	0
+ 880              		.section	.data._ZN11flatbuffers25flatbuffer_version_stringE,"aw",%progbits
+ 881              		.align	2
+ 884              	_ZN11flatbuffers25flatbuffer_version_stringE:
+ 885 0000 00000000 		.word	.LC18
+ 886              		.section	.rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4,
+ 887              		.align	2
+ 888              	.LC1:
+ 889 0000 2E2E2F73 		.ascii	"../src/tensorflow_lite/src/tensorflow/lite/micro/ke"
+ 889      72632F74 
+ 889      656E736F 
+ 889      72666C6F 
+ 889      775F6C69 
+ 890 0033 726E656C 		.ascii	"rnels/reshape.cpp\000"
+ 890      732F7265 
+ 890      73686170 
+ 890      652E6370 
+ 890      7000
+ 891 0045 000000   		.space	3
+ 892              	.LC2:
+ 893 0048 25733A25 		.ascii	"%s:%d %s was not true.\000"
+ 893      64202573 
+ 893      20776173 
+ 893      206E6F74 
+ 893      20747275 
+ 894 005f 00       		.space	1
+ 895              	.LC3:
+ 896 0060 696E7075 		.ascii	"input != nullptr\000"
+ 896      7420213D 
+ 896      206E756C 
+ 896      6C707472 
+ 896      00
+ 897 0071 000000   		.space	3
+ 898              	.LC4:
+ 899 0074 6F757470 		.ascii	"output != nullptr\000"
+ 899      75742021 
+ 899      3D206E75 
+ 899      6C6C7074 
+ 899      7200
+ 900 0086 0000     		.space	2
+ 901              	.LC5:
+ 902 0088 25733A25 		.ascii	"%s:%d %s != %s (%d != %d)\000"
+ 902      64202573 
+ 902      20213D20 
+ 902      25732028 
+ 902      25642021 
+ 903 00a2 0000     		.space	2
+ 904              	.LC6:
+ 905 00a4 2D3100   		.ascii	"-1\000"
+ 906 00a7 00       		.space	1
+ 907              	.LC7:
+ 908 00a8 73747265 		.ascii	"stretch_dim\000"
+ 908      7463685F 
+ 908      64696D00 
+ 909              	.LC8:
+ 910 00b4 25733A25 		.ascii	"%s:%d %s != %s (%s != %s)\000"
+ 910      64202573 
+ 910      20213D20 
+ 910      25732028 
+ 910      25732021 
+ 911 00ce 0000     		.space	2
+ 912              	.LC9:
+ 913 00d0 6F757470 		.ascii	"output->type\000"
+ 913      75742D3E 
+ 913      74797065 
+ 913      00
+ 914 00dd 000000   		.space	3
+ 915              	.LC10:
+ 916 00e0 696E7075 		.ascii	"input->type\000"
+ 916      742D3E74 
+ 916      79706500 
+ 917              	.LC11:
+ 918 00ec 6E756D5F 		.ascii	"num_output_elements\000"
+ 918      6F757470 
+ 918      75745F65 
+ 918      6C656D65 
+ 918      6E747300 
+ 919              	.LC12:
+ 920 0100 6E756D5F 		.ascii	"num_input_elements\000"
+ 920      696E7075 
+ 920      745F656C 
+ 920      656D656E 
+ 920      747300
+ 921              		.section	.rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%
+ 922              		.align	2
+ 923              	.LC13:
+ 924 0000 3100     		.ascii	"1\000"
+ 925 0002 0000     		.space	2
+ 926              	.LC14:
+ 927 0004 4E756D4F 		.ascii	"NumOutputs(node)\000"
+ 927      75747075 
+ 927      7473286E 
+ 927      6F646529 
+ 927      00
+ 928 0015 000000   		.space	3
+ 929              	.LC15:
+ 930 0018 6B54664C 		.ascii	"kTfLiteOk\000"
+ 930      6974654F 
+ 930      6B00
+ 931 0022 0000     		.space	2
+ 932              	.LC16:
+ 933 0024 52657368 		.ascii	"ReshapeOutput(context, node)\000"
+ 933      6170654F 
+ 933      75747075 
+ 933      7428636F 
+ 933      6E746578 
+ 934 0041 000000   		.space	3
+ 935              	.LC17:
+ 936 0044 4E756D49 		.ascii	"NumInputs(node) == 1 || NumInputs(node) == 2\000"
+ 936      6E707574 
+ 936      73286E6F 
+ 936      64652920 
+ 936      3D3D2031 
+ 937              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 938              		.align	2
+ 939              	.LC18:
+ 940 0000 466C6174 		.ascii	"FlatBuffers 1.12.0\000"
+ 940      42756666 
+ 940      65727320 
+ 940      312E3132 
+ 940      2E3000
+ 941              		.text
+ 942              	.Letext0:
+ 943              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 944              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 945              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 946              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 947              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 948              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 949              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 950              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 951              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 952              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 953              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 954              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 955              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 956              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 957              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 958              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 959              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 960              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 961              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 962              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 963              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 964              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 965              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 966              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 967              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 968              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 969              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 970              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 971              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 972              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 973              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 974              		.file 35 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 975              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 976              		.file 37 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 977              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 978              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 979              		.file 40 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 980              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 981              		.file 42 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 982              		.file 43 "<built-in>"
+ 983              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 984              		.file 45 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 985              		.file 46 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 986              		.file 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 987              		.file 48 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 988              		.file 49 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 989              		.file 50 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 990              		.file 51 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 991              		.file 52 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 992              		.file 53 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 993              		.file 54 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 994              		.file 55 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 995              		.file 56 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 reshape.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:17     .text._ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:23     .text._ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode
+.ARM.exidx.text._ZN6tflite3ops5micro7reshape4EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:193    .text._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:199    .text._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:917    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000ec .LC11
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:919    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000100 .LC12
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:888    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:901    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000088 .LC5
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:912    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000d0 .LC9
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:915    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000e0 .LC10
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:909    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000b4 .LC8
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:904    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000a4 .LC6
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:907    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:000000a8 .LC7
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:895    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000060 .LC3
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:892    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000048 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:898    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000074 .LC4
+.ARM.exidx.text._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:682    .text._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:688    .text._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:935    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000044 .LC17
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:923    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC13
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:926    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000004 .LC14
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:929    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000018 .LC15
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:932    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000024 .LC16
+.ARM.exidx.text._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:827    .text._ZN6tflite3ops5micro16Register_RESHAPEEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:833    .text._ZN6tflite3ops5micro16Register_RESHAPEEv:00000000 _ZN6tflite3ops5micro16Register_RESHAPEEv
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:870    .rodata:00000000 .LANCHOR0
+.ARM.exidx.text._ZN6tflite3ops5micro16Register_RESHAPEEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:884    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 _ZN11flatbuffers25flatbuffer_version_stringE
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:869    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:881    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:887    .rodata._ZN6tflite3ops5micro7reshape13ReshapeOutputEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:922    .rodata._ZN6tflite3ops5micro7reshape7PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccF4Fipn.s:938    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+                           .group:00000000 wm4.cstddef.40.7f59894b65c26f8fc669473914a0ef3e
+                           .group:00000000 wm4.stdarg.h.31.250806951830a1b6a3066ee41cf22414
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.wchar.h.2.f837619576d797e948eb58c44fac4678
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.wchar.h.21.454a0b75f45497599b41aa0e6acf289d
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.locale.h.8.27d0fe4c0abbb6f8893a1fa7c1799fd9
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.98.3bf7680ffcc8d24d09fa83ac1339c79d
+                           .group:00000000 wm4.wctype.h.2.898a9b94aa35d125e245195b099726a8
+                           .group:00000000 wm4.wctype.h.21.aec4d35c940c33b3f9c6f879c49edcd8
+                           .group:00000000 wm4.cwctype.54.6582aca101688c1c3785d03bc15e2af6
+                           .group:00000000 wm4.locale_facets.h.56.0d4bb655ce5e76ea564363ed7c5a34fc
+                           .group:00000000 wm4.typeinfo.30.04014f5b1b4fb021c5662653bc27c750
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.atomic_base.h.31.692a6b53cef50ad728d4af54dfbd4448
+                           .group:00000000 wm4.base.h.81.f7b1ec2a44bbbae0afe7a7a890202b81
+                           .group:00000000 wm4.flatbuffers.h.2690.8dde7194088843c14d4d121ab864e44f
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+
+UNDEFINED SYMBOLS
+_ZN6tflite16TfLiteTypeSizeOfE10TfLiteTypePj
+_ZN6tflite12ElementCountERK14TfLiteIntArray
+abort
+__aeabi_unwind_cpp_pr0
+__aeabi_idiv
+_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+TfLiteTypeGetName

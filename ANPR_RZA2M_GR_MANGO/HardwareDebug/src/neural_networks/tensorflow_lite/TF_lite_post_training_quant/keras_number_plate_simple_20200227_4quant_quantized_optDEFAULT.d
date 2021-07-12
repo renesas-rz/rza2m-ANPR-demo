@@ -1,0 +1,5 @@
+src/neural_networks/tensorflow_lite/TF_lite_post_training_quant/keras_number_plate_simple_20200227_4quant_quantized_optDEFAULT.o: \
+ ../src/neural_networks/tensorflow_lite/TF_lite_post_training_quant/keras_number_plate_simple_20200227_4quant_quantized_optDEFAULT.cc \
+ ../src/neural_networks/tensorflow_lite/TF_lite_post_training_quant/keras_number_plate_simple_20200227_4quant_quantized_optDEFAULT.h
+
+../src/neural_networks/tensorflow_lite/TF_lite_post_training_quant/keras_number_plate_simple_20200227_4quant_quantized_optDEFAULT.h:

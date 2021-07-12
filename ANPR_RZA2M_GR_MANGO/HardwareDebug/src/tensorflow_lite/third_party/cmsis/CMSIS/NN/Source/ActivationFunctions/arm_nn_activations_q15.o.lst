@@ -1,0 +1,269 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_activations_q15.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_nn_activations_direct_q15,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_nn_activations_direct_q15
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_nn_activations_direct_q15:
+  24              	.LFB87:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activ
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Copyright (C) 2010-2020 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Title:        arm_nn_activations_q15.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Description:  Q15 neural network activation function using direct table look-up
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * $Date:        09. October 2020
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * $Revision:    V.1.0.1
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * Target Processor:  Cortex-M cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * -------------------------------------------------------------------- */
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** #include "arm_nn_tables.h"
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** #include "arm_nnfunctions.h"
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** /**
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *  @ingroup groupNN
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  */
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** /**
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * @addtogroup Acti
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * @{
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  */
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** /**
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * @brief neural network activation function using direct table look-up
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  * @note  Refer header file for details.
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  *
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****  */
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** void arm_nn_activations_direct_q15(q15_t *data, uint16_t size, uint16_t int_width, arm_nn_activatio
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** {
+  26              		.loc 1 51 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  32              		.cfi_def_cfa_offset 24
+  33              		.cfi_offset 4, -24
+  34              		.cfi_offset 5, -20
+  35              		.cfi_offset 6, -16
+  36              		.cfi_offset 7, -12
+  37              		.cfi_offset 8, -8
+  38              		.cfi_offset 14, -4
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint16_t i = size;
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     q15_t *pIn = data;
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     q15_t *pOut = data;
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint16_t shift_size = 8 + 3 - int_width;
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint32_t bit_mask = 0x7FF >> int_width;
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint32_t full_frac = bit_mask + 1;
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     const q15_t *lookup_table;
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     switch (type)
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     {
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     case ARM_SIGMOID:
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         lookup_table = sigmoidTable_q15;
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         break;
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     case ARM_TANH:
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     default:
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         lookup_table = tanhTable_q15;
+  39              		.loc 1 67 0
+  40 0004 00C000E3 		movw	ip, #:lower16:tanhTable_q15
+  41 0008 00E000E3 		movw	lr, #:lower16:sigmoidTable_q15
+  42 000c 000053E3 		cmp	r3, #0
+  43 0010 00E040E3 		movt	lr, #:upper16:sigmoidTable_q15
+  44 0014 00C040E3 		movt	ip, #:upper16:tanhTable_q15
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint32_t full_frac = bit_mask + 1;
+  45              		.loc 1 56 0
+  46 0018 FF6700E3 		movw	r6, #2047
+  47              		.loc 1 67 0
+  48 001c 0E30A001 		moveq	r3, lr
+  49              	.LVL1:
+  50 0020 0C30A011 		movne	r3, ip
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         break;
+  69:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     }
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     while (i)
+  51              		.loc 1 71 0
+  52 0024 000051E3 		cmp	r1, #0
+  53              	.LVL2:
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     uint32_t full_frac = bit_mask + 1;
+  54              		.loc 1 56 0
+  55 0028 5662A0E1 		asr	r6, r6, r2
+  56              	.LVL3:
+  57              		.loc 1 71 0
+  58 002c F081BD08 		popeq	{r4, r5, r6, r7, r8, pc}
+  59 0030 011041E2 		sub	r1, r1, #1
+  60 0034 7110FFE6 		uxth	r1, r1
+  61 0038 0B2062E2 		rsb	r2, r2, #11
+  62              	.LVL4:
+  63 003c 017086E2 		add	r7, r6, #1
+  64              	.LVL5:
+  65 0040 7250FFE6 		uxth	r5, r2
+  66 0044 024040E2 		sub	r4, r0, #2
+  67 0048 7660FFE6 		uxth	r6, r6
+  68              	.LVL6:
+  69 004c 810080E0 		add	r0, r0, r1, lsl #1
+  70              	.LVL7:
+  71              	.L6:
+  72              	.LBB2:
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     {
+  73:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t out;
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t in = *pIn++;
+  73              		.loc 1 74 0
+  74 0050 F220D4E1 		ldrsh	r2, [r4, #2]
+  75              	.LVL8:
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t frac = (uint32_t)in & bit_mask;
+  76              		.loc 1 75 0
+  77 0054 02C006E0 		and	ip, r6, r2
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t value = lookup_table[(uint8_t)(in >> shift_size)];
+  78              		.loc 1 76 0
+  79 0058 5225A0E1 		asr	r2, r2, r5
+  80              	.LVL9:
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t frac = (uint32_t)in & bit_mask;
+  81              		.loc 1 75 0
+  82 005c 7CC0BFE6 		sxth	ip, ip
+  83              	.LBB3:
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         if ((in >> shift_size) != 0x7f)
+  78:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         {
+  79:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****             q15_t value2 = lookup_table[(uint8_t)(1 + ((uint8_t)(in >> shift_size)))];
+  84              		.loc 1 79 0
+  85 0060 011082E2 		add	r1, r2, #1
+  86              	.LBE3:
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         if ((in >> shift_size) != 0x7f)
+  87              		.loc 1 77 0
+  88 0064 7F0052E3 		cmp	r2, #127
+  89              	.LBB4:
+  90              		.loc 1 79 0
+  91 0068 7110EFE6 		uxtb	r1, r1
+  92              	.LBE4:
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t value = lookup_table[(uint8_t)(in >> shift_size)];
+  93              		.loc 1 76 0
+  94 006c 7280EFE6 		uxtb	r8, r2
+  95              	.LBB5:
+  96              		.loc 1 79 0
+  97 0070 8110A0E1 		lsl	r1, r1, #1
+  98              	.LBE5:
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         q15_t value = lookup_table[(uint8_t)(in >> shift_size)];
+  99              		.loc 1 76 0
+ 100 0074 8820A0E1 		lsl	r2, r8, #1
+ 101              	.LVL10:
+ 102              	.LBB6:
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****             /* doing the interpolation here for better accuracy */
+  81:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****             out = ((q31_t)(full_frac - frac) * value + (q31_t)value2 * frac) >> shift_size;
+ 103              		.loc 1 81 0
+ 104 0078 B1109311 		ldrhne	r1, [r3, r1]
+ 105 007c 0CE047E0 		sub	lr, r7, ip
+ 106              	.LBE6:
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         if ((in >> shift_size) != 0x7f)
+ 107              		.loc 1 76 0
+ 108 0080 F22093E1 		ldrsh	r2, [r3, r2]
+ 109              	.LVL11:
+ 110              	.LBB7:
+ 111              		.loc 1 81 0
+ 112 0084 810C6C11 		smulbbne	ip, r1, ip
+ 113 0088 92CE2E10 		mlane	lr, r2, lr, ip
+ 114 008c 5EE5A011 		asrne	lr, lr, r5
+ 115 0090 7E20BF16 		sxthne	r2, lr
+ 116              	.LVL12:
+ 117              	.LBE7:
+  82:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         }
+  83:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         else
+  84:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         {
+  85:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****             /* the largest positive value does not have a right side for linear interpolation */
+  86:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****             out = value;
+  87:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         }
+  88:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c **** 
+  89:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****         *pOut++ = out;
+ 118              		.loc 1 89 0
+ 119 0094 B220E4E1 		strh	r2, [r4, #2]!	@ movhi
+ 120              	.LVL13:
+ 121              	.LBE2:
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c ****     {
+ 122              		.loc 1 71 0
+ 123 0098 040050E1 		cmp	r0, r4
+ 124 009c EBFFFF1A 		bne	.L6
+ 125 00a0 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 126              		.cfi_endproc
+ 127              	.LFE87:
+ 129              		.text
+ 130              	.Letext0:
+ 131              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 132              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 133              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 134              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 135              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 136              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 137              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 138              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 139              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 140              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_activations_q15.c
+C:\Users\a5050395\AppData\Local\Temp\ccmX8dDR.s:17     .text.arm_nn_activations_direct_q15:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccmX8dDR.s:23     .text.arm_nn_activations_direct_q15:00000000 arm_nn_activations_direct_q15
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+
+UNDEFINED SYMBOLS
+tanhTable_q15
+sigmoidTable_q15

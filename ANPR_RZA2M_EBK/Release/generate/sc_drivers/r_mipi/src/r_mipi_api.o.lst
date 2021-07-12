@@ -1,0 +1,1049 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_mipi_api.c"
+  13              		.section	.text.R_MIPI_Initialize,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_MIPI_Initialize
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_MIPI_Initialize:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 003050E2 		subs	r3, r0, #0
+  24 0004 0700000A 		beq	.L7
+  25 0008 10402DE9 		push	{r4, lr}
+  26 000c 0100A0E1 		mov	r0, r1
+  27 0010 33FF2FE1 		blx	r3
+  28 0014 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  29 0018 0020A0E3 		mov	r2, #0
+  30 001c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  31 0020 0020C3E5 		strb	r2, [r3]
+  32 0024 1080BDE8 		pop	{r4, pc}
+  33              	.L7:
+  34 0028 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  35 002c 0020A0E3 		mov	r2, #0
+  36 0030 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  37 0034 0020C3E5 		strb	r2, [r3]
+  38 0038 1EFF2FE1 		bx	lr
+  40              		.section	.text.R_MIPI_Open,"ax",%progbits
+  41              		.align	2
+  42              		.global	R_MIPI_Open
+  43              		.syntax unified
+  44              		.arm
+  45              		.fpu neon
+  47              	R_MIPI_Open:
+  48              		@ args = 0, pretend = 0, frame = 0
+  49              		@ frame_needed = 0, uses_anonymous_args = 0
+  50 0000 002000E3 		movw	r2, #:lower16:.LANCHOR0
+  51 0004 002040E3 		movt	r2, #:upper16:.LANCHOR0
+  52 0008 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+  53 000c 000051E3 		cmp	r1, #0
+  54 0010 0100000A 		beq	.L40
+  55 0014 0100A0E3 		mov	r0, #1
+  56 0018 1EFF2FE1 		bx	lr
+  57              	.L40:
+  58 001c 000050E3 		cmp	r0, #0
+  59 0020 0600000A 		beq	.L41
+  60 0024 30402DE9 		push	{r4, r5, lr}
+  61 0028 0040D0E5 		ldrb	r4, [r0]	@ zero_extendqisi2
+  62 002c 013044E2 		sub	r3, r4, #1
+  63 0030 010053E3 		cmp	r3, #1
+  64 0034 0300009A 		bls	.L42
+  65              	.L26:
+  66 0038 0200A0E3 		mov	r0, #2
+  67 003c 3080BDE8 		pop	{r4, r5, pc}
+  68              	.L41:
+  69 0040 0200A0E3 		mov	r0, #2
+  70 0044 1EFF2FE1 		bx	lr
+  71              	.L42:
+  72 0048 01E0D0E5 		ldrb	lr, [r0, #1]	@ zero_extendqisi2
+  73 004c 03005EE3 		cmp	lr, #3
+  74 0050 F8FFFF8A 		bhi	.L26
+  75 0054 02C0D0E5 		ldrb	ip, [r0, #2]	@ zero_extendqisi2
+  76 0058 01005CE3 		cmp	ip, #1
+  77 005c F5FFFF8A 		bhi	.L26
+  78 0060 0330D0E5 		ldrb	r3, [r0, #3]	@ zero_extendqisi2
+  79 0064 010053E3 		cmp	r3, #1
+  80 0068 F2FFFF8A 		bhi	.L26
+  81 006c FA3FA0E3 		mov	r3, #1000
+  82 0070 B650D0E1 		ldrh	r5, [r0, #6]
+  83 0074 930403E0 		mul	r3, r3, r4
+  84 0078 030055E1 		cmp	r5, r3
+  85 007c EDFFFFCA 		bgt	.L26
+  86 0080 093AA0E3 		mov	r3, #36864
+  87 0084 01005CE3 		cmp	ip, #1
+  88 0088 20384EE3 		movt	r3, 59424
+  89 008c 00C093E5 		ldr	ip, [r3]
+  90 0090 01C08CE3 		orr	ip, ip, #1
+  91 0094 00C083E5 		str	ip, [r3]
+  92 0098 04C093E5 		ldr	ip, [r3, #4]
+  93 009c 01C08CE3 		orr	ip, ip, #1
+  94 00a0 04C083E5 		str	ip, [r3, #4]
+  95 00a4 04C093E5 		ldr	ip, [r3, #4]
+  96 00a8 11C0C0E7 		bfi	ip, r1, #0, #1
+  97 00ac 04C083E5 		str	ip, [r3, #4]
+  98 00b0 6CC293E5 		ldr	ip, [r3, #620]
+  99 00b4 B850D0E1 		ldrh	r5, [r0, #8]
+ 100 00b8 15C0C5E7 		bfi	ip, r5, #0, #6
+ 101 00bc 6CC283E5 		str	ip, [r3, #620]
+ 102 00c0 6CC293E5 		ldr	ip, [r3, #620]
+ 103 00c4 BA50D0E1 		ldrh	r5, [r0, #10]
+ 104 00c8 15C4CDE7 		bfi	ip, r5, #8, #6
+ 105 00cc 6CC283E5 		str	ip, [r3, #620]
+ 106 00d0 68C293E5 		ldr	ip, [r3, #616]
+ 107 00d4 BC50D0E1 		ldrh	r5, [r0, #12]
+ 108 00d8 15C0C4E7 		bfi	ip, r5, #0, #5
+ 109 00dc 68C283E5 		str	ip, [r3, #616]
+ 110 00e0 68C293E5 		ldr	ip, [r3, #616]
+ 111 00e4 BE50D0E1 		ldrh	r5, [r0, #14]
+ 112 00e8 15C4CDE7 		bfi	ip, r5, #8, #6
+ 113 00ec 68C283E5 		str	ip, [r3, #616]
+ 114 00f0 68C293E5 		ldr	ip, [r3, #616]
+ 115 00f4 B051D0E1 		ldrh	r5, [r0, #16]
+ 116 00f8 15C8D4E7 		bfi	ip, r5, #16, #5
+ 117 00fc 68C283E5 		str	ip, [r3, #616]
+ 118 0100 64C293E5 		ldr	ip, [r3, #612]
+ 119 0104 B251D0E1 		ldrh	r5, [r0, #18]
+ 120 0108 15C0CFE7 		bfi	ip, r5, #0, #16
+ 121 010c 64C283E5 		str	ip, [r3, #612]
+ 122 0110 B4C0D0E1 		ldrh	ip, [r0, #4]
+ 123 0114 1C0093E5 		ldr	r0, [r3, #28]
+ 124 0118 1C08DFE7 		bfi	r0, ip, #16, #16
+ 125 011c 1C0083E5 		str	r0, [r3, #28]
+ 126 0120 1C0093E5 		ldr	r0, [r3, #28]
+ 127 0124 1102C5E7 		bfi	r0, r1, #4, #2
+ 128 0128 1C0083E5 		str	r0, [r3, #28]
+ 129 012c 3900000A 		beq	.L43
+ 130 0130 1C0093E5 		ldr	r0, [r3, #28]
+ 131 0134 1100C0E7 		bfi	r0, r1, #0, #1
+ 132 0138 1C0083E5 		str	r0, [r3, #28]
+ 133              	.L15:
+ 134 013c 093AA0E3 		mov	r3, #36864
+ 135 0140 0100A0E3 		mov	r0, #1
+ 136 0144 20384EE3 		movt	r3, 59424
+ 137 0148 2AC0A0E3 		mov	ip, #42
+ 138 014c 0C1093E5 		ldr	r1, [r3, #12]
+ 139 0150 020054E3 		cmp	r4, #2
+ 140 0154 001081E1 		orr	r1, r1, r0
+ 141 0158 0C1083E5 		str	r1, [r3, #12]
+ 142 015c 0C1093E5 		ldr	r1, [r3, #12]
+ 143 0160 021081E3 		orr	r1, r1, #2
+ 144 0164 0C1083E5 		str	r1, [r3, #12]
+ 145 0168 101093E5 		ldr	r1, [r3, #16]
+ 146 016c 021981E3 		orr	r1, r1, #32768
+ 147 0170 101083E5 		str	r1, [r3, #16]
+ 148 0174 101093E5 		ldr	r1, [r3, #16]
+ 149 0178 1E14C9E7 		bfi	r1, lr, #8, #2
+ 150 017c 101083E5 		str	r1, [r3, #16]
+ 151 0180 101093E5 		ldr	r1, [r3, #16]
+ 152 0184 1F13C6E7 		bfc	r1, #6, #1
+ 153 0188 101083E5 		str	r1, [r3, #16]
+ 154 018c 101093E5 		ldr	r1, [r3, #16]
+ 155 0190 1C10C5E7 		bfi	r1, ip, #0, #6
+ 156 0194 101083E5 		str	r1, [r3, #16]
+ 157 0198 181093E5 		ldr	r1, [r3, #24]
+ 158 019c 1F1CDDE7 		bfc	r1, #24, #6
+ 159 01a0 181083E5 		str	r1, [r3, #24]
+ 160 01a4 181093E5 		ldr	r1, [r3, #24]
+ 161 01a8 1018D5E7 		bfi	r1, r0, #16, #6
+ 162 01ac 181083E5 		str	r1, [r3, #24]
+ 163 01b0 481093E5 		ldr	r1, [r3, #72]
+ 164 01b4 021481E3 		orr	r1, r1, #33554432
+ 165 01b8 481083E5 		str	r1, [r3, #72]
+ 166 01bc 481093E5 		ldr	r1, [r3, #72]
+ 167 01c0 021181E3 		orr	r1, r1, #-2147483648
+ 168 01c4 481083E5 		str	r1, [r3, #72]
+ 169 01c8 081093E5 		ldr	r1, [r3, #8]
+ 170 01cc 021881E3 		orr	r1, r1, #131072
+ 171 01d0 081083E5 		str	r1, [r3, #8]
+ 172 01d4 081093E5 		ldr	r1, [r3, #8]
+ 173 01d8 011881E3 		orr	r1, r1, #65536
+ 174 01dc 081083E5 		str	r1, [r3, #8]
+ 175 01e0 081093E5 		ldr	r1, [r3, #8]
+ 176 01e4 101081E3 		orr	r1, r1, #16
+ 177 01e8 081083E5 		str	r1, [r3, #8]
+ 178 01ec 081093E5 		ldr	r1, [r3, #8]
+ 179 01f0 001081E1 		orr	r1, r1, r0
+ 180 01f4 0000A0E3 		mov	r0, #0
+ 181 01f8 081083E5 		str	r1, [r3, #8]
+ 182 01fc 081093E5 		ldr	r1, [r3, #8]
+ 183 0200 02108103 		orreq	r1, r1, #2
+ 184 0204 9F10C117 		bfcne	r1, #1, #1
+ 185 0208 081083E5 		str	r1, [r3, #8]
+ 186 020c 0130A0E3 		mov	r3, #1
+ 187 0210 0030C2E5 		strb	r3, [r2]
+ 188 0214 3080BDE8 		pop	{r4, r5, pc}
+ 189              	.L43:
+ 190 0218 1C1093E5 		ldr	r1, [r3, #28]
+ 191 021c 011081E3 		orr	r1, r1, #1
+ 192 0220 1C1083E5 		str	r1, [r3, #28]
+ 193 0224 C4FFFFEA 		b	.L15
+ 195              		.section	.text.R_MIPI_Close,"ax",%progbits
+ 196              		.align	2
+ 197              		.global	R_MIPI_Close
+ 198              		.syntax unified
+ 199              		.arm
+ 200              		.fpu neon
+ 202              	R_MIPI_Close:
+ 203              		@ args = 0, pretend = 0, frame = 0
+ 204              		@ frame_needed = 0, uses_anonymous_args = 0
+ 205 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 206 0004 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 207 0008 0030DCE5 		ldrb	r3, [ip]	@ zero_extendqisi2
+ 208 000c 013043E2 		sub	r3, r3, #1
+ 209 0010 010053E3 		cmp	r3, #1
+ 210 0014 0100009A 		bls	.L56
+ 211 0018 0100A0E3 		mov	r0, #1
+ 212 001c 1EFF2FE1 		bx	lr
+ 213              	.L56:
+ 214 0020 10402DE9 		push	{r4, lr}
+ 215 0024 093AA0E3 		mov	r3, #36864
+ 216 0028 DDEC0FE3 		movw	lr, #64733
+ 217 002c 0F2AA0E3 		mov	r2, #61440
+ 218 0030 20384EE3 		movt	r3, 59424
+ 219 0034 0040A0E3 		mov	r4, #0
+ 220 0038 03284EE3 		movt	r2, 59395
+ 221 003c 1FE841E3 		movt	lr, 6175
+ 222 0040 304083E5 		str	r4, [r3, #48]
+ 223 0044 040050E1 		cmp	r0, r4
+ 224 0048 34E083E5 		str	lr, [r3, #52]
+ 225 004c 404082E5 		str	r4, [r2, #64]
+ 226 0050 00E092E5 		ldr	lr, [r2]
+ 227 0054 14E0C0E7 		bfi	lr, r4, #0, #1
+ 228 0058 00E082E5 		str	lr, [r2]
+ 229 005c 08E092E5 		ldr	lr, [r2, #8]
+ 230 0060 14E0C0E7 		bfi	lr, r4, #0, #1
+ 231 0064 08E082E5 		str	lr, [r2, #8]
+ 232 0068 08E092E5 		ldr	lr, [r2, #8]
+ 233 006c 94E0C1E7 		bfi	lr, r4, #1, #1
+ 234 0070 08E082E5 		str	lr, [r2, #8]
+ 235 0074 082093E5 		ldr	r2, [r3, #8]
+ 236 0078 9428D1E7 		bfi	r2, r4, #17, #1
+ 237 007c 082083E5 		str	r2, [r3, #8]
+ 238 0080 082093E5 		ldr	r2, [r3, #8]
+ 239 0084 1428D0E7 		bfi	r2, r4, #16, #1
+ 240 0088 082083E5 		str	r2, [r3, #8]
+ 241 008c 042093E5 		ldr	r2, [r3, #4]
+ 242 0090 012082E3 		orr	r2, r2, #1
+ 243 0094 042083E5 		str	r2, [r3, #4]
+ 244 0098 042093E5 		ldr	r2, [r3, #4]
+ 245 009c 1420C0E7 		bfi	r2, r4, #0, #1
+ 246 00a0 042083E5 		str	r2, [r3, #4]
+ 247 00a4 0040CCE5 		strb	r4, [ip]
+ 248 00a8 0400000A 		beq	.L55
+ 249 00ac 0030A0E1 		mov	r3, r0
+ 250 00b0 0100A0E1 		mov	r0, r1
+ 251 00b4 33FF2FE1 		blx	r3
+ 252 00b8 0400A0E1 		mov	r0, r4
+ 253 00bc 1080BDE8 		pop	{r4, pc}
+ 254              	.L55:
+ 255 00c0 1080BDE8 		pop	{r4, pc}
+ 257              		.section	.text.R_MIPI_Setup,"ax",%progbits
+ 258              		.align	2
+ 259              		.global	R_MIPI_Setup
+ 260              		.syntax unified
+ 261              		.arm
+ 262              		.fpu neon
+ 264              	R_MIPI_Setup:
+ 265              		@ args = 0, pretend = 0, frame = 16
+ 266              		@ frame_needed = 0, uses_anonymous_args = 0
+ 267 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 268 0004 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 269 0008 0030D3E5 		ldrb	r3, [r3]	@ zero_extendqisi2
+ 270 000c 010053E3 		cmp	r3, #1
+ 271 0010 0120A013 		movne	r2, #1
+ 272 0014 0100000A 		beq	.L112
+ 273 0018 0200A0E1 		mov	r0, r2
+ 274 001c 1EFF2FE1 		bx	lr
+ 275              	.L112:
+ 276 0020 000050E3 		cmp	r0, #0
+ 277 0024 0B00000A 		beq	.L94
+ 278 0028 1410D0E5 		ldrb	r1, [r0, #20]	@ zero_extendqisi2
+ 279 002c 040051E3 		cmp	r1, #4
+ 280 0030 0800008A 		bhi	.L94
+ 281 0034 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 282 0038 14D04DE2 		sub	sp, sp, #20
+ 283 003c 1550D0E5 		ldrb	r5, [r0, #21]	@ zero_extendqisi2
+ 284 0040 200055E3 		cmp	r5, #32
+ 285 0044 0600009A 		bls	.L113
+ 286              	.L91:
+ 287 0048 0220A0E3 		mov	r2, #2
+ 288 004c 0200A0E1 		mov	r0, r2
+ 289 0050 14D08DE2 		add	sp, sp, #20
+ 290              		@ sp needed
+ 291 0054 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 292              	.L94:
+ 293 0058 0220A0E3 		mov	r2, #2
+ 294 005c 0200A0E1 		mov	r0, r2
+ 295 0060 1EFF2FE1 		bx	lr
+ 296              	.L113:
+ 297 0064 16B0D0E5 		ldrb	fp, [r0, #22]	@ zero_extendqisi2
+ 298 0068 01005BE3 		cmp	fp, #1
+ 299 006c F5FFFF8A 		bhi	.L91
+ 300 0070 1870D0E5 		ldrb	r7, [r0, #24]	@ zero_extendqisi2
+ 301 0074 030057E3 		cmp	r7, #3
+ 302 0078 F2FFFF8A 		bhi	.L91
+ 303 007c 203090E5 		ldr	r3, [r0, #32]
+ 304 0080 7F2013E2 		ands	r2, r3, #127
+ 305 0084 08308DE5 		str	r3, [sp, #8]
+ 306 0088 EEFFFF1A 		bne	.L91
+ 307 008c B630D0E1 		ldrh	r3, [r0, #6]
+ 308 0090 B4A0D0E1 		ldrh	r10, [r0, #4]
+ 309 0094 BCC1D0E1 		ldrh	ip, [r0, #28]
+ 310 0098 04308DE5 		str	r3, [sp, #4]
+ 311 009c 0A4043E0 		sub	r4, r3, r10
+ 312 00a0 04005CE1 		cmp	ip, r4
+ 313 00a4 0CC08DE5 		str	ip, [sp, #12]
+ 314 00a8 E6FFFFBA 		blt	.L91
+ 315 00ac 000055E3 		cmp	r5, #0
+ 316 00b0 BD00000A 		beq	.L114
+ 317 00b4 020055E3 		cmp	r5, #2
+ 318 00b8 B800000A 		beq	.L108
+ 319 00bc 030055E3 		cmp	r5, #3
+ 320 00c0 B600000A 		beq	.L108
+ 321 00c4 200055E3 		cmp	r5, #32
+ 322 00c8 BB00000A 		beq	.L115
+ 323              	.L96:
+ 324 00cc B0C0D0E1 		ldrh	ip, [r0]
+ 325 00d0 B2E0D0E1 		ldrh	lr, [r0, #2]
+ 326 00d4 0E005CE1 		cmp	ip, lr
+ 327 00d8 DAFFFF8A 		bhi	.L91
+ 328 00dc 0C304EE0 		sub	r3, lr, ip
+ 329 00e0 000053E3 		cmp	r3, #0
+ 330 00e4 D7FFFFDA 		ble	.L91
+ 331 00e8 04309DE5 		ldr	r3, [sp, #4]
+ 332 00ec 0A0053E1 		cmp	r3, r10
+ 333 00f0 D4FFFF3A 		bcc	.L91
+ 334 00f4 050054E3 		cmp	r4, #5
+ 335 00f8 D2FFFFDA 		ble	.L91
+ 336 00fc 01001AE3 		tst	r10, #1
+ 337 0100 D0FFFF1A 		bne	.L91
+ 338 0104 010014E3 		tst	r4, #1
+ 339 0108 CEFFFF0A 		beq	.L91
+ 340 010c 0F3AA0E3 		mov	r3, #61440
+ 341 0110 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 342 0114 03384EE3 		movt	r3, 59395
+ 343 0118 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 344 011c 006093E5 		ldr	r6, [r3]
+ 345 0120 200055E3 		cmp	r5, #32
+ 346 0124 0180D4E7 		ldrb	r8, [r4, r1]	@ zero_extendqisi2
+ 347 0128 004000E3 		movw	r4, #:lower16:.LANCHOR2
+ 348 012c 004040E3 		movt	r4, #:upper16:.LANCHOR2
+ 349 0130 126EDDE7 		bfi	r6, r2, #28, #2
+ 350 0134 0770D4E7 		ldrb	r7, [r4, r7]	@ zero_extendqisi2
+ 351 0138 006083E5 		str	r6, [r3]
+ 352 013c 0160A0E3 		mov	r6, #1
+ 353 0140 004093E5 		ldr	r4, [r3]
+ 354 0144 124DDAE7 		bfi	r4, r2, #26, #1
+ 355 0148 004083E5 		str	r4, [r3]
+ 356 014c 004093E5 		ldr	r4, [r3]
+ 357 0150 124AD4E7 		bfi	r4, r2, #20, #1
+ 358 0154 004083E5 		str	r4, [r3]
+ 359 0158 004093E5 		ldr	r4, [r3]
+ 360 015c 2490D0E5 		ldrb	r9, [r0, #36]	@ zero_extendqisi2
+ 361 0160 9949D3E7 		bfi	r4, r9, #19, #1
+ 362 0164 004083E5 		str	r4, [r3]
+ 363 0168 004093E5 		ldr	r4, [r3]
+ 364 016c 1848D2E7 		bfi	r4, r8, #16, #3
+ 365 0170 004083E5 		str	r4, [r3]
+ 366 0174 004093E5 		ldr	r4, [r3]
+ 367 0178 1247CFE7 		bfi	r4, r2, #14, #2
+ 368 017c 004083E5 		str	r4, [r3]
+ 369 0180 004093E5 		ldr	r4, [r3]
+ 370 0184 1B43C6E7 		bfi	r4, fp, #6, #1
+ 371 0188 004083E5 		str	r4, [r3]
+ 372 018c 004093E5 		ldr	r4, [r3]
+ 373 0190 9741C4E7 		bfi	r4, r7, #3, #2
+ 374 0194 004083E5 		str	r4, [r3]
+ 375 0198 004093E5 		ldr	r4, [r3]
+ 376 019c 024084E3 		orr	r4, r4, #2
+ 377 01a0 004083E5 		str	r4, [r3]
+ 378 01a4 004093E5 		ldr	r4, [r3]
+ 379 01a8 1240C0E7 		bfi	r4, r2, #0, #1
+ 380 01ac 004083E5 		str	r4, [r3]
+ 381 01b0 204093E5 		ldr	r4, [r3, #32]
+ 382 01b4 024484E3 		orr	r4, r4, #33554432
+ 383 01b8 204083E5 		str	r4, [r3, #32]
+ 384 01bc 5C4093E5 		ldr	r4, [r3, #92]
+ 385 01c0 024884E3 		orr	r4, r4, #131072
+ 386 01c4 5C4083E5 		str	r4, [r3, #92]
+ 387 01c8 5C4093E5 		ldr	r4, [r3, #92]
+ 388 01cc 1646CFE7 		bfi	r4, r6, #12, #4
+ 389 01d0 5C4083E5 		str	r4, [r3, #92]
+ 390 01d4 5C4093E5 		ldr	r4, [r3, #92]
+ 391 01d8 1248D0E7 		bfi	r4, r2, #16, #1
+ 392 01dc 5C4083E5 		str	r4, [r3, #92]
+ 393 01e0 5C4093E5 		ldr	r4, [r3, #92]
+ 394 01e4 1240CAE7 		bfi	r4, r2, #0, #11
+ 395 01e8 5C4083E5 		str	r4, [r3, #92]
+ 396 01ec 5700000A 		beq	.L116
+ 397 01f0 0C409DE5 		ldr	r4, [sp, #12]
+ 398 01f4 2C4083E5 		str	r4, [r3, #44]
+ 399              	.L65:
+ 400 01f8 0F3AA0E3 		mov	r3, #61440
+ 401 01fc 0040A0E3 		mov	r4, #0
+ 402 0200 03384EE3 		movt	r3, 59395
+ 403 0204 010051E3 		cmp	r1, #1
+ 404 0208 0CC083E5 		str	ip, [r3, #12]
+ 405 020c 10E083E5 		str	lr, [r3, #16]
+ 406 0210 14A083E5 		str	r10, [r3, #20]
+ 407 0214 04C09DE5 		ldr	ip, [sp, #4]
+ 408 0218 18C083E5 		str	ip, [r3, #24]
+ 409 021c 80C093E5 		ldr	ip, [r3, #128]
+ 410 0220 1FCFDEE7 		bfc	ip, #30, #1
+ 411 0224 80C083E5 		str	ip, [r3, #128]
+ 412 0228 80C093E5 		ldr	ip, [r3, #128]
+ 413 022c 1FCAD4E7 		bfc	ip, #20, #1
+ 414 0230 80C083E5 		str	ip, [r3, #128]
+ 415 0234 80C093E5 		ldr	ip, [r3, #128]
+ 416 0238 1FC9D2E7 		bfc	ip, #18, #1
+ 417 023c 80C083E5 		str	ip, [r3, #128]
+ 418 0240 80C093E5 		ldr	ip, [r3, #128]
+ 419 0244 1FC8D0E7 		bfc	ip, #16, #1
+ 420 0248 80C083E5 		str	ip, [r3, #128]
+ 421 024c 80C093E5 		ldr	ip, [r3, #128]
+ 422 0250 9FC8D1E7 		bfc	ip, #17, #1
+ 423 0254 80C083E5 		str	ip, [r3, #128]
+ 424 0258 844083E5 		str	r4, [r3, #132]
+ 425 025c 90C093E5 		ldr	ip, [r3, #144]
+ 426 0260 14C8D6E7 		bfi	ip, r4, #16, #7
+ 427 0264 90C083E5 		str	ip, [r3, #144]
+ 428 0268 90C093E5 		ldr	ip, [r3, #144]
+ 429 026c 14C0C6E7 		bfi	ip, r4, #0, #7
+ 430 0270 90C083E5 		str	ip, [r3, #144]
+ 431 0274 A4C093E5 		ldr	ip, [r3, #164]
+ 432 0278 14C8DBE7 		bfi	ip, r4, #16, #12
+ 433 027c A4C083E5 		str	ip, [r3, #164]
+ 434 0280 A4C093E5 		ldr	ip, [r3, #164]
+ 435 0284 14C0CBE7 		bfi	ip, r4, #0, #12
+ 436 0288 A4C083E5 		str	ip, [r3, #164]
+ 437 028c 58C093E5 		ldr	ip, [r3, #88]
+ 438 0290 14CCDFE7 		bfi	ip, r4, #24, #8
+ 439 0294 58C083E5 		str	ip, [r3, #88]
+ 440 0298 58C093E5 		ldr	ip, [r3, #88]
+ 441 029c 14C8D0E7 		bfi	ip, r4, #16, #1
+ 442 02a0 58C083E5 		str	ip, [r3, #88]
+ 443 02a4 1C00009A 		bls	.L67
+ 444 02a8 040051E3 		cmp	r1, #4
+ 445 02ac 1800001A 		bne	.L93
+ 446 02b0 581093E5 		ldr	r1, [r3, #88]
+ 447 02b4 1416CEE7 		bfi	r1, r4, #12, #3
+ 448 02b8 581083E5 		str	r1, [r3, #88]
+ 449 02bc 581093E5 		ldr	r1, [r3, #88]
+ 450 02c0 1410C1E7 		bfi	r1, r4, #0, #2
+ 451 02c4 581083E5 		str	r1, [r3, #88]
+ 452              	.L66:
+ 453 02c8 0F3AA0E3 		mov	r3, #61440
+ 454 02cc 03384EE3 		movt	r3, 59395
+ 455 02d0 581093E5 		ldr	r1, [r3, #88]
+ 456 02d4 1F14C8E7 		bfc	r1, #8, #1
+ 457 02d8 581083E5 		str	r1, [r3, #88]
+ 458 02dc 581093E5 		ldr	r1, [r3, #88]
+ 459 02e0 2500D0E5 		ldrb	r0, [r0, #37]	@ zero_extendqisi2
+ 460 02e4 1012C4E7 		bfi	r1, r0, #4, #1
+ 461 02e8 581083E5 		str	r1, [r3, #88]
+ 462 02ec 581093E5 		ldr	r1, [r3, #88]
+ 463 02f0 1F11C2E7 		bfc	r1, #2, #1
+ 464 02f4 581083E5 		str	r1, [r3, #88]
+ 465 02f8 08009DE5 		ldr	r0, [sp, #8]
+ 466 02fc 601093E5 		ldr	r1, [r3, #96]
+ 467 0300 9013DFE7 		bfi	r1, r0, #7, #25
+ 468 0304 0200A0E1 		mov	r0, r2
+ 469 0308 601083E5 		str	r1, [r3, #96]
+ 470 030c 14D08DE2 		add	sp, sp, #20
+ 471              		@ sp needed
+ 472 0310 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 473              	.L93:
+ 474 0314 0220A0E3 		mov	r2, #2
+ 475 0318 EAFFFFEA 		b	.L66
+ 476              	.L67:
+ 477 031c 020055E3 		cmp	r5, #2
+ 478 0320 0E00000A 		beq	.L117
+ 479 0324 030055E3 		cmp	r5, #3
+ 480 0328 1300000A 		beq	.L118
+ 481 032c 000055E3 		cmp	r5, #0
+ 482 0330 F7FFFF1A 		bne	.L93
+ 483 0334 581093E5 		ldr	r1, [r3, #88]
+ 484 0338 1516CEE7 		bfi	r1, r5, #12, #3
+ 485 033c 581083E5 		str	r1, [r3, #88]
+ 486 0340 581093E5 		ldr	r1, [r3, #88]
+ 487 0344 1510C1E7 		bfi	r1, r5, #0, #2
+ 488 0348 581083E5 		str	r1, [r3, #88]
+ 489 034c DDFFFFEA 		b	.L66
+ 490              	.L116:
+ 491 0350 0C409DE5 		ldr	r4, [sp, #12]
+ 492 0354 A440A0E1 		lsr	r4, r4, #1
+ 493 0358 2C4083E5 		str	r4, [r3, #44]
+ 494 035c A5FFFFEA 		b	.L65
+ 495              	.L117:
+ 496 0360 581093E5 		ldr	r1, [r3, #88]
+ 497 0364 1416CEE7 		bfi	r1, r4, #12, #3
+ 498 0368 581083E5 		str	r1, [r3, #88]
+ 499 036c 581093E5 		ldr	r1, [r3, #88]
+ 500 0370 1510C1E7 		bfi	r1, r5, #0, #2
+ 501 0374 581083E5 		str	r1, [r3, #88]
+ 502 0378 D2FFFFEA 		b	.L66
+ 503              	.L118:
+ 504 037c 581093E5 		ldr	r1, [r3, #88]
+ 505 0380 01E0A0E3 		mov	lr, #1
+ 506 0384 02C0A0E3 		mov	ip, #2
+ 507 0388 1E16CEE7 		bfi	r1, lr, #12, #3
+ 508 038c 581083E5 		str	r1, [r3, #88]
+ 509 0390 581093E5 		ldr	r1, [r3, #88]
+ 510 0394 1C10C1E7 		bfi	r1, ip, #0, #2
+ 511 0398 581083E5 		str	r1, [r3, #88]
+ 512 039c C9FFFFEA 		b	.L66
+ 513              	.L108:
+ 514 03a0 7F001CE3 		tst	ip, #127
+ 515 03a4 27FFFF1A 		bne	.L91
+ 516 03a8 47FFFFEA 		b	.L96
+ 517              	.L114:
+ 518 03ac 3F001CE3 		tst	ip, #63
+ 519 03b0 0020A003 		moveq	r2, #0
+ 520 03b4 44FFFF0A 		beq	.L96
+ 521 03b8 22FFFFEA 		b	.L91
+ 522              	.L115:
+ 523 03bc 0C309DE5 		ldr	r3, [sp, #12]
+ 524 03c0 3F0013E3 		tst	r3, #63
+ 525 03c4 40FFFF0A 		beq	.L96
+ 526 03c8 1EFFFFEA 		b	.L91
+ 528              		.section	.text.R_MIPI_SetBufferAdr,"ax",%progbits
+ 529              		.align	2
+ 530              		.global	R_MIPI_SetBufferAdr
+ 531              		.syntax unified
+ 532              		.arm
+ 533              		.fpu neon
+ 535              	R_MIPI_SetBufferAdr:
+ 536              		@ args = 0, pretend = 0, frame = 0
+ 537              		@ frame_needed = 0, uses_anonymous_args = 0
+ 538 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 539 0004 092AA0E3 		mov	r2, #36864
+ 540 0008 0F4AA0E3 		mov	r4, #61440
+ 541 000c DDCC0FE3 		movw	ip, #64733
+ 542 0010 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 543 0014 03484EE3 		movt	r4, 59395
+ 544 0018 20284EE3 		movt	r2, 59424
+ 545 001c 00E0A0E3 		mov	lr, #0
+ 546 0020 1FC841E3 		movt	ip, 6175
+ 547 0024 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 548 0028 406094E5 		ldr	r6, [r4, #64]
+ 549 002c 347092E5 		ldr	r7, [r2, #52]
+ 550 0030 40E084E5 		str	lr, [r4, #64]
+ 551 0034 34C082E5 		str	ip, [r2, #52]
+ 552 0038 0030D3E5 		ldrb	r3, [r3]	@ zero_extendqisi2
+ 553 003c 013043E2 		sub	r3, r3, #1
+ 554 0040 010053E3 		cmp	r3, #1
+ 555 0044 0100A083 		movhi	r0, #1
+ 556 0048 0600009A 		bls	.L134
+ 557              	.L120:
+ 558 004c 0F2AA0E3 		mov	r2, #61440
+ 559 0050 093AA0E3 		mov	r3, #36864
+ 560 0054 03284EE3 		movt	r2, 59395
+ 561 0058 20384EE3 		movt	r3, 59424
+ 562 005c 406082E5 		str	r6, [r2, #64]
+ 563 0060 347083E5 		str	r7, [r3, #52]
+ 564 0064 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 565              	.L134:
+ 566 0068 113F6FE1 		clz	r3, r1
+ 567 006c A332A0E1 		lsr	r3, r3, #5
+ 568 0070 020050E3 		cmp	r0, #2
+ 569 0074 01308383 		orrhi	r3, r3, #1
+ 570 0078 0E0053E1 		cmp	r3, lr
+ 571 007c 0100001A 		bne	.L127
+ 572 0080 7F8011E2 		ands	r8, r1, #127
+ 573 0084 0100000A 		beq	.L135
+ 574              	.L127:
+ 575 0088 0200A0E3 		mov	r0, #2
+ 576 008c EEFFFFEA 		b	.L120
+ 577              	.L135:
+ 578 0090 000050E3 		cmp	r0, #0
+ 579 0094 0050A0E1 		mov	r5, r0
+ 580 0098 0600000A 		beq	.L136
+ 581 009c 010055E3 		cmp	r5, #1
+ 582 00a0 0100A0E1 		mov	r0, r1
+ 583 00a4 0800000A 		beq	.L137
+ 584 00a8 FEFFFFEB 		bl	R_MIPI_CPUVAddrToSysPAddr
+ 585 00ac 380084E5 		str	r0, [r4, #56]
+ 586 00b0 0800A0E1 		mov	r0, r8
+ 587 00b4 E4FFFFEA 		b	.L120
+ 588              	.L136:
+ 589 00b8 0100A0E1 		mov	r0, r1
+ 590 00bc FEFFFFEB 		bl	R_MIPI_CPUVAddrToSysPAddr
+ 591 00c0 300084E5 		str	r0, [r4, #48]
+ 592 00c4 0500A0E1 		mov	r0, r5
+ 593 00c8 DFFFFFEA 		b	.L120
+ 594              	.L137:
+ 595 00cc FEFFFFEB 		bl	R_MIPI_CPUVAddrToSysPAddr
+ 596 00d0 340084E5 		str	r0, [r4, #52]
+ 597 00d4 0800A0E1 		mov	r0, r8
+ 598 00d8 DBFFFFEA 		b	.L120
+ 600              		.section	.text.R_MIPI_InterruptEnable,"ax",%progbits
+ 601              		.align	2
+ 602              		.global	R_MIPI_InterruptEnable
+ 603              		.syntax unified
+ 604              		.arm
+ 605              		.fpu neon
+ 607              	R_MIPI_InterruptEnable:
+ 608              		@ args = 0, pretend = 0, frame = 0
+ 609              		@ frame_needed = 0, uses_anonymous_args = 0
+ 610 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 611 0004 092AA0E3 		mov	r2, #36864
+ 612 0008 0F4AA0E3 		mov	r4, #61440
+ 613 000c DDEC0FE3 		movw	lr, #64733
+ 614 0010 20284EE3 		movt	r2, 59424
+ 615 0014 03484EE3 		movt	r4, 59395
+ 616 0018 00C0A0E3 		mov	ip, #0
+ 617 001c 1FE841E3 		movt	lr, 6175
+ 618 0020 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 619 0024 001090E5 		ldr	r1, [r0]
+ 620 0028 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 621 002c 40C084E5 		str	ip, [r4, #64]
+ 622 0030 30C082E5 		str	ip, [r2, #48]
+ 623 0034 004000E3 		movw	r4, #:lower16:.LANCHOR3
+ 624 0038 34E082E5 		str	lr, [r2, #52]
+ 625 003c 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 626 0040 046090E5 		ldr	r6, [r0, #4]
+ 627 0044 98E083E2 		add	lr, r3, #152
+ 628 0048 085090E5 		ldr	r5, [r0, #8]
+ 629 004c 004040E3 		movt	r4, #:upper16:.LANCHOR3
+ 630 0050 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 631 0054 006084E5 		str	r6, [r4]
+ 632 0058 005082E5 		str	r5, [r2]
+ 633              	.L140:
+ 634 005c 042093E5 		ldr	r2, [r3, #4]
+ 635 0060 083083E2 		add	r3, r3, #8
+ 636 0064 0120D2E1 		bics	r2, r2, r1
+ 637 0068 08201305 		ldreq	r2, [r3, #-8]
+ 638 006c 02C08C01 		orreq	ip, ip, r2
+ 639 0070 0E0053E1 		cmp	r3, lr
+ 640 0074 F8FFFF1A 		bne	.L140
+ 641 0078 013611E2 		ands	r3, r1, #1048576
+ 642 007c 0231A013 		movne	r3, #-2147483648
+ 643 0080 020611E3 		tst	r1, #2097152
+ 644 0084 02388313 		orrne	r3, r3, #131072
+ 645 0088 010511E3 		tst	r1, #4194304
+ 646 008c 01388313 		orrne	r3, r3, #65536
+ 647 0090 020511E3 		tst	r1, #8388608
+ 648 0094 10308313 		orrne	r3, r3, #16
+ 649 0098 010411E3 		tst	r1, #16777216
+ 650 009c 1800001A 		bne	.L169
+ 651              	.L145:
+ 652 00a0 092AA0E3 		mov	r2, #36864
+ 653 00a4 020411E3 		tst	r1, #33554432
+ 654 00a8 20284EE3 		movt	r2, 59424
+ 655 00ac 02308313 		orrne	r3, r3, #2
+ 656 00b0 38E092E5 		ldr	lr, [r2, #56]
+ 657 00b4 010311E3 		tst	r1, #67108864
+ 658 00b8 0F1AA0E3 		mov	r1, #61440
+ 659 00bc 01308313 		orrne	r3, r3, #1
+ 660 00c0 03184EE3 		movt	r1, 59395
+ 661 00c4 DD0C0FE3 		movw	r0, #64733
+ 662 00c8 0EE08CE1 		orr	lr, ip, lr
+ 663 00cc 1F0841E3 		movt	r0, 6175
+ 664 00d0 38E082E5 		str	lr, [r2, #56]
+ 665 00d4 0C0040E0 		sub	r0, r0, ip
+ 666 00d8 44E091E5 		ldr	lr, [r1, #68]
+ 667 00dc 0EE083E1 		orr	lr, r3, lr
+ 668 00e0 44E081E5 		str	lr, [r1, #68]
+ 669 00e4 30E092E5 		ldr	lr, [r2, #48]
+ 670 00e8 0EC08CE1 		orr	ip, ip, lr
+ 671 00ec 30C082E5 		str	ip, [r2, #48]
+ 672 00f0 340082E5 		str	r0, [r2, #52]
+ 673 00f4 402091E5 		ldr	r2, [r1, #64]
+ 674 00f8 023083E1 		orr	r3, r3, r2
+ 675 00fc 403081E5 		str	r3, [r1, #64]
+ 676 0100 7080BDE8 		pop	{r4, r5, r6, pc}
+ 677              	.L169:
+ 678 0104 0F2AA0E3 		mov	r2, #61440
+ 679 0108 0CE090E5 		ldr	lr, [r0, #12]
+ 680 010c 03284EE3 		movt	r2, 59395
+ 681 0110 043083E3 		orr	r3, r3, #4
+ 682 0114 480092E5 		ldr	r0, [r2, #72]
+ 683 0118 1E00CAE7 		bfi	r0, lr, #0, #11
+ 684 011c 480082E5 		str	r0, [r2, #72]
+ 685 0120 DEFFFFEA 		b	.L145
+ 687              		.section	.text.R_MIPI_InterruptDisable,"ax",%progbits
+ 688              		.align	2
+ 689              		.global	R_MIPI_InterruptDisable
+ 690              		.syntax unified
+ 691              		.arm
+ 692              		.fpu neon
+ 694              	R_MIPI_InterruptDisable:
+ 695              		@ args = 0, pretend = 0, frame = 0
+ 696              		@ frame_needed = 0, uses_anonymous_args = 0
+ 697 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 698 0004 000000E3 		movw	r0, #:lower16:.LANCHOR3
+ 699 0008 001000E3 		movw	r1, #:lower16:.LANCHOR4
+ 700 000c 0FEAA0E3 		mov	lr, #61440
+ 701 0010 092AA0E3 		mov	r2, #36864
+ 702 0014 DDCC0FE3 		movw	ip, #64733
+ 703 0018 0030A0E3 		mov	r3, #0
+ 704 001c 20284EE3 		movt	r2, 59424
+ 705 0020 000040E3 		movt	r0, #:upper16:.LANCHOR3
+ 706 0024 001040E3 		movt	r1, #:upper16:.LANCHOR4
+ 707 0028 03E84EE3 		movt	lr, 59395
+ 708 002c 1FC841E3 		movt	ip, 6175
+ 709 0030 003080E5 		str	r3, [r0]
+ 710 0034 003081E5 		str	r3, [r1]
+ 711 0038 40308EE5 		str	r3, [lr, #64]
+ 712 003c 303082E5 		str	r3, [r2, #48]
+ 713 0040 34C082E5 		str	ip, [r2, #52]
+ 714 0044 04F09DE4 		ldr	pc, [sp], #4
+ 716              		.section	.text.R_MIPI_GetInfo,"ax",%progbits
+ 717              		.align	2
+ 718              		.global	R_MIPI_GetInfo
+ 719              		.syntax unified
+ 720              		.arm
+ 721              		.fpu neon
+ 723              	R_MIPI_GetInfo:
+ 724              		@ args = 0, pretend = 0, frame = 0
+ 725              		@ frame_needed = 0, uses_anonymous_args = 0
+ 726              		@ link register save eliminated.
+ 727 0000 0F3AA0E3 		mov	r3, #61440
+ 728 0004 0020A0E1 		mov	r2, r0
+ 729 0008 03384EE3 		movt	r3, 59395
+ 730 000c 000000E3 		movw	r0, #:lower16:.LANCHOR0
+ 731 0010 3C1093E5 		ldr	r1, [r3, #60]
+ 732 0014 000040E3 		movt	r0, #:upper16:.LANCHOR0
+ 733 0018 0000D0E5 		ldrb	r0, [r0]	@ zero_extendqisi2
+ 734 001c 5110EBE7 		ubfx	r1, r1, #0, #12
+ 735 0020 B010C2E1 		strh	r1, [r2]	@ movhi
+ 736 0024 010040E2 		sub	r0, r0, #1
+ 737 0028 041093E5 		ldr	r1, [r3, #4]
+ 738 002c 010050E3 		cmp	r0, #1
+ 739 0030 0000A093 		movls	r0, #0
+ 740 0034 0100A083 		movhi	r0, #1
+ 741 0038 5111E0E7 		ubfx	r1, r1, #2, #1
+ 742 003c 0210C2E5 		strb	r1, [r2, #2]
+ 743 0040 043093E5 		ldr	r3, [r3, #4]
+ 744 0044 D331E1E7 		ubfx	r3, r3, #3, #2
+ 745 0048 0330C2E5 		strb	r3, [r2, #3]
+ 746 004c 1EFF2FE1 		bx	lr
+ 748              		.section	.text.R_MIPI_CaptureStart,"ax",%progbits
+ 749              		.align	2
+ 750              		.global	R_MIPI_CaptureStart
+ 751              		.syntax unified
+ 752              		.arm
+ 753              		.fpu neon
+ 755              	R_MIPI_CaptureStart:
+ 756              		@ args = 0, pretend = 0, frame = 0
+ 757              		@ frame_needed = 0, uses_anonymous_args = 0
+ 758 0000 30402DE9 		push	{r4, r5, lr}
+ 759 0004 0F3AA0E3 		mov	r3, #61440
+ 760 0008 091AA0E3 		mov	r1, #36864
+ 761 000c DDEC0FE3 		movw	lr, #64733
+ 762 0010 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 763 0014 20184EE3 		movt	r1, 59424
+ 764 0018 03384EE3 		movt	r3, 59395
+ 765 001c 00C0A0E3 		mov	ip, #0
+ 766 0020 1FE841E3 		movt	lr, 6175
+ 767 0024 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 768 0028 404093E5 		ldr	r4, [r3, #64]
+ 769 002c 345091E5 		ldr	r5, [r1, #52]
+ 770 0030 40C083E5 		str	ip, [r3, #64]
+ 771 0034 34E081E5 		str	lr, [r1, #52]
+ 772 0038 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+ 773 003c 011041E2 		sub	r1, r1, #1
+ 774 0040 010051E3 		cmp	r1, #1
+ 775 0044 0100A083 		movhi	r0, #1
+ 776 0048 0600009A 		bls	.L186
+ 777              	.L174:
+ 778 004c 0F2AA0E3 		mov	r2, #61440
+ 779 0050 093AA0E3 		mov	r3, #36864
+ 780 0054 03284EE3 		movt	r2, 59395
+ 781 0058 20384EE3 		movt	r3, 59424
+ 782 005c 404082E5 		str	r4, [r2, #64]
+ 783 0060 345083E5 		str	r5, [r3, #52]
+ 784 0064 3080BDE8 		pop	{r4, r5, pc}
+ 785              	.L186:
+ 786 0068 081093E5 		ldr	r1, [r3, #8]
+ 787 006c 000050E3 		cmp	r0, #0
+ 788 0070 9C10C1E7 		bfi	r1, ip, #1, #1
+ 789 0074 081083E5 		str	r1, [r3, #8]
+ 790 0078 081093E5 		ldr	r1, [r3, #8]
+ 791 007c 1C10C0E7 		bfi	r1, ip, #0, #1
+ 792 0080 081083E5 		str	r1, [r3, #8]
+ 793 0084 001093E5 		ldr	r1, [r3]
+ 794 0088 011081E3 		orr	r1, r1, #1
+ 795 008c 001083E5 		str	r1, [r3]
+ 796 0090 0E00000A 		beq	.L177
+ 797 0094 081093E5 		ldr	r1, [r3, #8]
+ 798 0098 021081E3 		orr	r1, r1, #2
+ 799 009c 081083E5 		str	r1, [r3, #8]
+ 800              	.L176:
+ 801 00a0 091AA0E3 		mov	r1, #36864
+ 802 00a4 0F3AA0E3 		mov	r3, #61440
+ 803 00a8 20184EE3 		movt	r1, 59424
+ 804 00ac 03384EE3 		movt	r3, 59395
+ 805 00b0 38E091E5 		ldr	lr, [r1, #56]
+ 806 00b4 02C0A0E3 		mov	ip, #2
+ 807 00b8 0000A0E3 		mov	r0, #0
+ 808 00bc 38E081E5 		str	lr, [r1, #56]
+ 809 00c0 441093E5 		ldr	r1, [r3, #68]
+ 810 00c4 441083E5 		str	r1, [r3, #68]
+ 811 00c8 00C0C2E5 		strb	ip, [r2]
+ 812 00cc DEFFFFEA 		b	.L174
+ 813              	.L177:
+ 814 00d0 081093E5 		ldr	r1, [r3, #8]
+ 815 00d4 011081E3 		orr	r1, r1, #1
+ 816 00d8 081083E5 		str	r1, [r3, #8]
+ 817 00dc EFFFFFEA 		b	.L176
+ 819              		.section	.text.R_MIPI_CaptureStop,"ax",%progbits
+ 820              		.align	2
+ 821              		.global	R_MIPI_CaptureStop
+ 822              		.syntax unified
+ 823              		.arm
+ 824              		.fpu neon
+ 826              	R_MIPI_CaptureStop:
+ 827              		@ args = 0, pretend = 0, frame = 0
+ 828              		@ frame_needed = 0, uses_anonymous_args = 0
+ 829 0000 0F3AA0E3 		mov	r3, #61440
+ 830 0004 091AA0E3 		mov	r1, #36864
+ 831 0008 DD0C0FE3 		movw	r0, #64733
+ 832 000c 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 833 0010 03384EE3 		movt	r3, 59395
+ 834 0014 00C0A0E3 		mov	ip, #0
+ 835 0018 1F0841E3 		movt	r0, 6175
+ 836 001c 20184EE3 		movt	r1, 59424
+ 837 0020 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 838 0024 30402DE9 		push	{r4, r5, lr}
+ 839 0028 40E093E5 		ldr	lr, [r3, #64]
+ 840 002c 344091E5 		ldr	r4, [r1, #52]
+ 841 0030 40C083E5 		str	ip, [r3, #64]
+ 842 0034 340081E5 		str	r0, [r1, #52]
+ 843 0038 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+ 844 003c 020051E3 		cmp	r1, #2
+ 845 0040 00109305 		ldreq	r1, [r3]
+ 846 0044 0150A003 		moveq	r5, #1
+ 847 0048 0100A013 		movne	r0, #1
+ 848 004c 0C00A001 		moveq	r0, ip
+ 849 0050 1C10C007 		bfieq	r1, ip, #0, #1
+ 850 0054 00108305 		streq	r1, [r3]
+ 851 0058 093AA0E3 		mov	r3, #36864
+ 852 005c 0050C205 		strbeq	r5, [r2]
+ 853 0060 0F2AA0E3 		mov	r2, #61440
+ 854 0064 03284EE3 		movt	r2, 59395
+ 855 0068 20384EE3 		movt	r3, 59424
+ 856 006c 40E082E5 		str	lr, [r2, #64]
+ 857 0070 344083E5 		str	r4, [r3, #52]
+ 858 0074 3080BDE8 		pop	{r4, r5, pc}
+ 860              		.section	.text.R_MIPI_InterruptHandler,"ax",%progbits
+ 861              		.align	2
+ 862              		.global	R_MIPI_InterruptHandler
+ 863              		.syntax unified
+ 864              		.arm
+ 865              		.fpu neon
+ 867              	R_MIPI_InterruptHandler:
+ 868              		@ args = 0, pretend = 0, frame = 8
+ 869              		@ frame_needed = 0, uses_anonymous_args = 0
+ 870 0000 092AA0E3 		mov	r2, #36864
+ 871 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 872 0008 20284EE3 		movt	r2, 59424
+ 873 000c 0CD04DE2 		sub	sp, sp, #12
+ 874 0010 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 875 0014 0000A0E3 		mov	r0, #0
+ 876 0018 381092E5 		ldr	r1, [r2, #56]
+ 877 001c 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 878 0020 98C083E2 		add	ip, r3, #152
+ 879 0024 04108DE5 		str	r1, [sp, #4]
+ 880 0028 04109DE5 		ldr	r1, [sp, #4]
+ 881 002c 381082E5 		str	r1, [r2, #56]
+ 882              	.L194:
+ 883 0030 002093E5 		ldr	r2, [r3]
+ 884 0034 083083E2 		add	r3, r3, #8
+ 885 0038 04109DE5 		ldr	r1, [sp, #4]
+ 886 003c 0120D2E1 		bics	r2, r2, r1
+ 887 0040 04201305 		ldreq	r2, [r3, #-4]
+ 888 0044 02008001 		orreq	r0, r0, r2
+ 889 0048 0C0053E1 		cmp	r3, ip
+ 890 004c F7FFFF1A 		bne	.L194
+ 891 0050 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 892 0054 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 893 0058 003093E5 		ldr	r3, [r3]
+ 894 005c 000053E3 		cmp	r3, #0
+ 895 0060 0000000A 		beq	.L192
+ 896 0064 33FF2FE1 		blx	r3
+ 897              	.L192:
+ 898 0068 0CD08DE2 		add	sp, sp, #12
+ 899              		@ sp needed
+ 900 006c 04F09DE4 		ldr	pc, [sp], #4
+ 902              		.section	.text.R_VIN_InterruptHandler,"ax",%progbits
+ 903              		.align	2
+ 904              		.global	R_VIN_InterruptHandler
+ 905              		.syntax unified
+ 906              		.arm
+ 907              		.fpu neon
+ 909              	R_VIN_InterruptHandler:
+ 910              		@ args = 0, pretend = 0, frame = 8
+ 911              		@ frame_needed = 0, uses_anonymous_args = 0
+ 912 0000 0F3AA0E3 		mov	r3, #61440
+ 913 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 914 0008 03384EE3 		movt	r3, 59395
+ 915 000c 0CD04DE2 		sub	sp, sp, #12
+ 916 0010 442093E5 		ldr	r2, [r3, #68]
+ 917 0014 04208DE5 		str	r2, [sp, #4]
+ 918 0018 04209DE5 		ldr	r2, [sp, #4]
+ 919 001c 442083E5 		str	r2, [r3, #68]
+ 920 0020 04209DE5 		ldr	r2, [sp, #4]
+ 921 0024 04309DE5 		ldr	r3, [sp, #4]
+ 922 0028 000052E3 		cmp	r2, #0
+ 923 002c 0106A0B3 		movlt	r0, #1048576
+ 924 0030 0000A0A3 		movge	r0, #0
+ 925 0034 020813E3 		tst	r3, #131072
+ 926 0038 04309DE5 		ldr	r3, [sp, #4]
+ 927 003c 02068013 		orrne	r0, r0, #2097152
+ 928 0040 010813E3 		tst	r3, #65536
+ 929 0044 04309DE5 		ldr	r3, [sp, #4]
+ 930 0048 01058013 		orrne	r0, r0, #4194304
+ 931 004c 100013E3 		tst	r3, #16
+ 932 0050 04309DE5 		ldr	r3, [sp, #4]
+ 933 0054 02058013 		orrne	r0, r0, #8388608
+ 934 0058 040013E3 		tst	r3, #4
+ 935 005c 04309DE5 		ldr	r3, [sp, #4]
+ 936 0060 01048013 		orrne	r0, r0, #16777216
+ 937 0064 020013E3 		tst	r3, #2
+ 938 0068 04309DE5 		ldr	r3, [sp, #4]
+ 939 006c 02048013 		orrne	r0, r0, #33554432
+ 940 0070 010013E3 		tst	r3, #1
+ 941 0074 003000E3 		movw	r3, #:lower16:.LANCHOR4
+ 942 0078 003040E3 		movt	r3, #:upper16:.LANCHOR4
+ 943 007c 01038013 		orrne	r0, r0, #67108864
+ 944 0080 003093E5 		ldr	r3, [r3]
+ 945 0084 000053E3 		cmp	r3, #0
+ 946 0088 0000000A 		beq	.L201
+ 947 008c 33FF2FE1 		blx	r3
+ 948              	.L201:
+ 949 0090 0CD08DE2 		add	sp, sp, #12
+ 950              		@ sp needed
+ 951 0094 04F09DE4 		ldr	pc, [sp], #4
+ 953              		.section	.bss.Mipi_Callback,"aw",%nobits
+ 954              		.align	2
+ 955              		.set	.LANCHOR3,. + 0
+ 958              	Mipi_Callback:
+ 959 0000 00000000 		.space	4
+ 960              		.section	.bss.Vin_Callback,"aw",%nobits
+ 961              		.align	2
+ 962              		.set	.LANCHOR4,. + 0
+ 965              	Vin_Callback:
+ 966 0000 00000000 		.space	4
+ 967              		.section	.bss.gs_mipi_state,"aw",%nobits
+ 968              		.set	.LANCHOR0,. + 0
+ 971              	gs_mipi_state:
+ 972 0000 00       		.space	1
+ 973              		.section	.rodata.gs_cnvtbl_inputformat_toinf,"a",%progbits
+ 974              		.align	3
+ 975              		.set	.LANCHOR1,. + 0
+ 978              	gs_cnvtbl_inputformat_toinf:
+ 979 0000 01       		.byte	1
+ 980 0001 01       		.byte	1
+ 981 0002 03       		.byte	3
+ 982 0003 06       		.byte	6
+ 983 0004 04       		.byte	4
+ 984              		.section	.rodata.gs_cnvtbl_interlace_toim,"a",%progbits
+ 985              		.align	3
+ 986              		.set	.LANCHOR2,. + 0
+ 989              	gs_cnvtbl_interlace_toim:
+ 990 0000 00       		.byte	0
+ 991 0001 02       		.byte	2
+ 992 0002 01       		.byte	1
+ 993 0003 01       		.byte	1
+ 994              		.section	.rodata.gs_tbl_mipi_interrupt_bit,"a",%progbits
+ 995              		.align	3
+ 996              		.set	.LANCHOR5,. + 0
+ 999              	gs_tbl_mipi_interrupt_bit:
+ 1000 0000 00000010 		.word	268435456
+ 1001 0004 01000000 		.word	1
+ 1002 0008 00000008 		.word	134217728
+ 1003 000c 02000000 		.word	2
+ 1004 0010 00001000 		.word	1048576
+ 1005 0014 04000000 		.word	4
+ 1006 0018 00000800 		.word	524288
+ 1007 001c 08000000 		.word	8
+ 1008 0020 00000400 		.word	262144
+ 1009 0024 10000000 		.word	16
+ 1010 0028 00000200 		.word	131072
+ 1011 002c 20000000 		.word	32
+ 1012 0030 00000100 		.word	65536
+ 1013 0034 40000000 		.word	64
+ 1014 0038 00800000 		.word	32768
+ 1015 003c 80000000 		.word	128
+ 1016 0040 00400000 		.word	16384
+ 1017 0044 00010000 		.word	256
+ 1018 0048 00200000 		.word	8192
+ 1019 004c 00020000 		.word	512
+ 1020 0050 00100000 		.word	4096
+ 1021 0054 00040000 		.word	1024
+ 1022 0058 00080000 		.word	2048
+ 1023 005c 00080000 		.word	2048
+ 1024 0060 00040000 		.word	1024
+ 1025 0064 00100000 		.word	4096
+ 1026 0068 80000000 		.word	128
+ 1027 006c 00200000 		.word	8192
+ 1028 0070 40000000 		.word	64
+ 1029 0074 00400000 		.word	16384
+ 1030 0078 10000000 		.word	16
+ 1031 007c 00800000 		.word	32768
+ 1032 0080 08000000 		.word	8
+ 1033 0084 00000100 		.word	65536
+ 1034 0088 04000000 		.word	4
+ 1035 008c 00000200 		.word	131072
+ 1036 0090 01000000 		.word	1
+ 1037 0094 00000400 		.word	262144
+ 1038              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_mipi_api.c
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:14     .text.R_MIPI_Initialize:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:20     .text.R_MIPI_Initialize:00000000 R_MIPI_Initialize
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:968    .bss.gs_mipi_state:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:41     .text.R_MIPI_Open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:47     .text.R_MIPI_Open:00000000 R_MIPI_Open
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:196    .text.R_MIPI_Close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:202    .text.R_MIPI_Close:00000000 R_MIPI_Close
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:258    .text.R_MIPI_Setup:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:264    .text.R_MIPI_Setup:00000000 R_MIPI_Setup
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:975    .rodata.gs_cnvtbl_inputformat_toinf:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:986    .rodata.gs_cnvtbl_interlace_toim:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:529    .text.R_MIPI_SetBufferAdr:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:535    .text.R_MIPI_SetBufferAdr:00000000 R_MIPI_SetBufferAdr
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:601    .text.R_MIPI_InterruptEnable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:607    .text.R_MIPI_InterruptEnable:00000000 R_MIPI_InterruptEnable
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:996    .rodata.gs_tbl_mipi_interrupt_bit:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:955    .bss.Mipi_Callback:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:962    .bss.Vin_Callback:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:688    .text.R_MIPI_InterruptDisable:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:694    .text.R_MIPI_InterruptDisable:00000000 R_MIPI_InterruptDisable
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:717    .text.R_MIPI_GetInfo:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:723    .text.R_MIPI_GetInfo:00000000 R_MIPI_GetInfo
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:749    .text.R_MIPI_CaptureStart:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:755    .text.R_MIPI_CaptureStart:00000000 R_MIPI_CaptureStart
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:820    .text.R_MIPI_CaptureStop:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:826    .text.R_MIPI_CaptureStop:00000000 R_MIPI_CaptureStop
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:861    .text.R_MIPI_InterruptHandler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:867    .text.R_MIPI_InterruptHandler:00000000 R_MIPI_InterruptHandler
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:903    .text.R_VIN_InterruptHandler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:909    .text.R_VIN_InterruptHandler:00000000 R_VIN_InterruptHandler
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:954    .bss.Mipi_Callback:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:958    .bss.Mipi_Callback:00000000 Mipi_Callback
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:961    .bss.Vin_Callback:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:965    .bss.Vin_Callback:00000000 Vin_Callback
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:971    .bss.gs_mipi_state:00000000 gs_mipi_state
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:972    .bss.gs_mipi_state:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:974    .rodata.gs_cnvtbl_inputformat_toinf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:978    .rodata.gs_cnvtbl_inputformat_toinf:00000000 gs_cnvtbl_inputformat_toinf
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:985    .rodata.gs_cnvtbl_interlace_toim:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:989    .rodata.gs_cnvtbl_interlace_toim:00000000 gs_cnvtbl_interlace_toim
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:995    .rodata.gs_tbl_mipi_interrupt_bit:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc8E1wYe.s:999    .rodata.gs_tbl_mipi_interrupt_bit:00000000 gs_tbl_mipi_interrupt_bit
+
+UNDEFINED SYMBOLS
+R_MIPI_CPUVAddrToSysPAddr

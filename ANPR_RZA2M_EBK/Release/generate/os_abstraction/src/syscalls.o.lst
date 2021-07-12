@@ -1,0 +1,805 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"syscalls.c"
+  13              		.section	.text.initialise_monitor_handles,"ax",%progbits
+  14              		.align	2
+  15              		.global	initialise_monitor_handles
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	initialise_monitor_handles:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 70402DE9 		push	{r4, r5, r6, lr}
+  24 0004 000000E3 		movw	r0, #:lower16:.LC0
+  25 0008 005000E3 		movw	r5, #:lower16:.LANCHOR0
+  26 000c 0210A0E3 		mov	r1, #2
+  27 0010 000040E3 		movt	r0, #:upper16:.LC0
+  28 0014 005040E3 		movt	r5, #:upper16:.LANCHOR0
+  29 0018 FEFFFFEB 		bl	low_open
+  30 001c 004000E3 		movw	r4, #:lower16:.LANCHOR1
+  31 0020 000085E5 		str	r0, [r5]
+  32 0024 000000E3 		movw	r0, #:lower16:.LC1
+  33 0028 0110A0E3 		mov	r1, #1
+  34 002c 000040E3 		movt	r0, #:upper16:.LC1
+  35 0030 004040E3 		movt	r4, #:upper16:.LANCHOR1
+  36 0034 FEFFFFEB 		bl	low_open
+  37 0038 000084E5 		str	r0, [r4]
+  38 003c 000000E3 		movw	r0, #:lower16:.LC2
+  39 0040 0110A0E3 		mov	r1, #1
+  40 0044 000040E3 		movt	r0, #:upper16:.LC2
+  41 0048 FEFFFFEB 		bl	low_open
+  42 004c 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  43 0050 0030A0E3 		mov	r3, #0
+  44 0054 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  45 0058 0010E0E3 		mvn	r1, #0
+  46              	.L2:
+  47 005c 831182E7 		str	r1, [r2, r3, lsl #3]
+  48 0060 013083E2 		add	r3, r3, #1
+  49 0064 140053E3 		cmp	r3, #20
+  50 0068 FBFFFF1A 		bne	.L2
+  51 006c 001094E5 		ldr	r1, [r4]
+  52 0070 0030A0E3 		mov	r3, #0
+  53 0074 000095E5 		ldr	r0, [r5]
+  54 0078 0C3082E5 		str	r3, [r2, #12]
+  55 007c 081082E5 		str	r1, [r2, #8]
+  56 0080 090082E8 		stm	r2, {r0, r3}
+  57 0084 101082E5 		str	r1, [r2, #16]
+  58 0088 143082E5 		str	r3, [r2, #20]
+  59 008c 7080BDE8 		pop	{r4, r5, r6, pc}
+  61              		.section	.text._swiread,"ax",%progbits
+  62              		.align	2
+  63              		.global	_swiread
+  64              		.syntax unified
+  65              		.arm
+  66              		.fpu neon
+  68              	_swiread:
+  69              		@ args = 0, pretend = 0, frame = 0
+  70              		@ frame_needed = 0, uses_anonymous_args = 0
+  71              		@ link register save eliminated.
+  72 0000 0000A0E3 		mov	r0, #0
+  73 0004 1EFF2FE1 		bx	lr
+  75              		.section	.text._read,"ax",%progbits
+  76              		.align	2
+  77              		.weak	_read
+  78              		.syntax unified
+  79              		.arm
+  80              		.fpu neon
+  82              	_read:
+  83              		@ args = 0, pretend = 0, frame = 0
+  84              		@ frame_needed = 0, uses_anonymous_args = 0
+  85 0000 10402DE9 		push	{r4, lr}
+  86 0004 FEFFFFEB 		bl	low_read
+  87 0008 010070E3 		cmn	r0, #1
+  88 000c 0040A0E1 		mov	r4, r0
+  89 0010 0100000A 		beq	.L10
+  90              	.L7:
+  91 0014 0400A0E1 		mov	r0, r4
+  92 0018 1080BDE8 		pop	{r4, pc}
+  93              	.L10:
+  94 001c FEFFFFEB 		bl	__errno
+  95 0020 0030A0E3 		mov	r3, #0
+  96 0024 003080E5 		str	r3, [r0]
+  97 0028 F9FFFFEA 		b	.L7
+  99              		.section	.text._swilseek,"ax",%progbits
+ 100              		.align	2
+ 101              		.global	_swilseek
+ 102              		.syntax unified
+ 103              		.arm
+ 104              		.fpu neon
+ 106              	_swilseek:
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109 0000 003000E3 		movw	r3, #:lower16:_impure_ptr
+ 110 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 111 0008 003040E3 		movt	r3, #:upper16:_impure_ptr
+ 112 000c 0040A0E1 		mov	r4, r0
+ 113 0010 0150A0E1 		mov	r5, r1
+ 114 0014 0260A0E1 		mov	r6, r2
+ 115 0018 000093E5 		ldr	r0, [r3]
+ 116 001c 000050E3 		cmp	r0, #0
+ 117 0020 0200000A 		beq	.L12
+ 118 0024 383090E5 		ldr	r3, [r0, #56]
+ 119 0028 000053E3 		cmp	r3, #0
+ 120 002c 1F00000A 		beq	.L30
+ 121              	.L12:
+ 122 0030 000054E3 		cmp	r4, #0
+ 123 0034 1900000A 		beq	.L31
+ 124 0038 010054E3 		cmp	r4, #1
+ 125 003c 1D00000A 		beq	.L32
+ 126 0040 020054E3 		cmp	r4, #2
+ 127 0044 0040A003 		moveq	r4, #0
+ 128              	.L14:
+ 129 0048 00C000E3 		movw	ip, #:lower16:.LANCHOR2
+ 130 004c 0030A0E3 		mov	r3, #0
+ 131 0050 00C040E3 		movt	ip, #:upper16:.LANCHOR2
+ 132              	.L17:
+ 133 0054 83019CE7 		ldr	r0, [ip, r3, lsl #3]
+ 134 0058 83E1A0E1 		lsl	lr, r3, #3
+ 135 005c 013083E2 		add	r3, r3, #1
+ 136 0060 040050E1 		cmp	r0, r4
+ 137 0064 0500000A 		beq	.L16
+ 138 0068 140053E3 		cmp	r3, #20
+ 139 006c F8FFFF1A 		bne	.L17
+ 140 0070 010056E3 		cmp	r6, #1
+ 141 0074 0050E003 		mvneq	r5, #0
+ 142 0078 0500A0E1 		mov	r0, r5
+ 143 007c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 144              	.L16:
+ 145 0080 010056E3 		cmp	r6, #1
+ 146 0084 0E308C00 		addeq	r3, ip, lr
+ 147 0088 04309305 		ldreq	r3, [r3, #4]
+ 148 008c 03508500 		addeq	r5, r5, r3
+ 149              	.L20:
+ 150 0090 0EC08CE0 		add	ip, ip, lr
+ 151 0094 0500A0E1 		mov	r0, r5
+ 152 0098 04508CE5 		str	r5, [ip, #4]
+ 153 009c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 154              	.L31:
+ 155 00a0 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 156 00a4 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 157 00a8 004093E5 		ldr	r4, [r3]
+ 158 00ac E5FFFFEA 		b	.L14
+ 159              	.L30:
+ 160 00b0 FEFFFFEB 		bl	__sinit
+ 161 00b4 DDFFFFEA 		b	.L12
+ 162              	.L32:
+ 163 00b8 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 164 00bc 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 165 00c0 004093E5 		ldr	r4, [r3]
+ 166 00c4 DFFFFFEA 		b	.L14
+ 168              		.section	.text._lseek,"ax",%progbits
+ 169              		.align	2
+ 170              		.global	_lseek
+ 171              		.syntax unified
+ 172              		.arm
+ 173              		.fpu neon
+ 175              	_lseek:
+ 176              		@ args = 0, pretend = 0, frame = 0
+ 177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 178 0000 003000E3 		movw	r3, #:lower16:_impure_ptr
+ 179 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 180 0008 003040E3 		movt	r3, #:upper16:_impure_ptr
+ 181 000c 0040A0E1 		mov	r4, r0
+ 182 0010 0170A0E1 		mov	r7, r1
+ 183 0014 0260A0E1 		mov	r6, r2
+ 184 0018 000093E5 		ldr	r0, [r3]
+ 185 001c 000050E3 		cmp	r0, #0
+ 186 0020 0200000A 		beq	.L34
+ 187 0024 383090E5 		ldr	r3, [r0, #56]
+ 188 0028 000053E3 		cmp	r3, #0
+ 189 002c 2800000A 		beq	.L54
+ 190              	.L34:
+ 191 0030 000054E3 		cmp	r4, #0
+ 192 0034 2200000A 		beq	.L55
+ 193 0038 010054E3 		cmp	r4, #1
+ 194 003c 2600000A 		beq	.L56
+ 195 0040 020054E3 		cmp	r4, #2
+ 196 0044 0040A003 		moveq	r4, #0
+ 197              	.L36:
+ 198 0048 00E000E3 		movw	lr, #:lower16:.LANCHOR2
+ 199 004c 0030A0E3 		mov	r3, #0
+ 200 0050 00E040E3 		movt	lr, #:upper16:.LANCHOR2
+ 201              	.L39:
+ 202 0054 83C19EE7 		ldr	ip, [lr, r3, lsl #3]
+ 203 0058 8351A0E1 		lsl	r5, r3, #3
+ 204 005c 013083E2 		add	r3, r3, #1
+ 205 0060 04005CE1 		cmp	ip, r4
+ 206 0064 0C00000A 		beq	.L38
+ 207 0068 140053E3 		cmp	r3, #20
+ 208 006c F8FFFF1A 		bne	.L39
+ 209 0070 010056E3 		cmp	r6, #1
+ 210 0074 0700A011 		movne	r0, r7
+ 211 0078 0100000A 		beq	.L42
+ 212 007c 010070E3 		cmn	r0, #1
+ 213 0080 F081BD18 		popne	{r4, r5, r6, r7, r8, pc}
+ 214              	.L42:
+ 215 0084 FEFFFFEB 		bl	__errno
+ 216 0088 0020A0E3 		mov	r2, #0
+ 217 008c 0030A0E1 		mov	r3, r0
+ 218 0090 002083E5 		str	r2, [r3]
+ 219 0094 0000E0E3 		mvn	r0, #0
+ 220 0098 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 221              	.L38:
+ 222 009c 010056E3 		cmp	r6, #1
+ 223 00a0 0700A011 		movne	r0, r7
+ 224 00a4 05308E00 		addeq	r3, lr, r5
+ 225 00a8 04009305 		ldreq	r0, [r3, #4]
+ 226 00ac 00008700 		addeq	r0, r7, r0
+ 227              	.L44:
+ 228 00b0 05E08EE0 		add	lr, lr, r5
+ 229 00b4 010070E3 		cmn	r0, #1
+ 230 00b8 04008EE5 		str	r0, [lr, #4]
+ 231 00bc F081BD18 		popne	{r4, r5, r6, r7, r8, pc}
+ 232 00c0 EFFFFFEA 		b	.L42
+ 233              	.L55:
+ 234 00c4 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 235 00c8 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 236 00cc 004093E5 		ldr	r4, [r3]
+ 237 00d0 DCFFFFEA 		b	.L36
+ 238              	.L54:
+ 239 00d4 FEFFFFEB 		bl	__sinit
+ 240 00d8 D4FFFFEA 		b	.L34
+ 241              	.L56:
+ 242 00dc 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 243 00e0 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 244 00e4 004093E5 		ldr	r4, [r3]
+ 245 00e8 D6FFFFEA 		b	.L36
+ 247              		.section	.text._swiwrite,"ax",%progbits
+ 248              		.align	2
+ 249              		.global	_swiwrite
+ 250              		.syntax unified
+ 251              		.arm
+ 252              		.fpu neon
+ 254              	_swiwrite:
+ 255              		@ args = 0, pretend = 0, frame = 0
+ 256              		@ frame_needed = 0, uses_anonymous_args = 0
+ 257              		@ link register save eliminated.
+ 258 0000 1EFF2FE1 		bx	lr
+ 260              		.section	.text._write,"ax",%progbits
+ 261              		.align	2
+ 262              		.weak	_write
+ 263              		.syntax unified
+ 264              		.arm
+ 265              		.fpu neon
+ 267              	_write:
+ 268              		@ args = 0, pretend = 0, frame = 0
+ 269              		@ frame_needed = 0, uses_anonymous_args = 0
+ 270 0000 10402DE9 		push	{r4, lr}
+ 271 0004 FEFFFFEB 		bl	low_write
+ 272 0008 010070E3 		cmn	r0, #1
+ 273 000c 0040A0E1 		mov	r4, r0
+ 274 0010 0100000A 		beq	.L61
+ 275              	.L58:
+ 276 0014 0400A0E1 		mov	r0, r4
+ 277 0018 1080BDE8 		pop	{r4, pc}
+ 278              	.L61:
+ 279 001c FEFFFFEB 		bl	__errno
+ 280 0020 0030A0E3 		mov	r3, #0
+ 281 0024 003080E5 		str	r3, [r0]
+ 282 0028 F9FFFFEA 		b	.L58
+ 284              		.section	.text._swiopen,"ax",%progbits
+ 285              		.align	2
+ 286              		.global	_swiopen
+ 287              		.syntax unified
+ 288              		.arm
+ 289              		.fpu neon
+ 291              	_swiopen:
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 295 0004 005000E3 		movw	r5, #:lower16:.LANCHOR2
+ 296 0008 005040E3 		movt	r5, #:upper16:.LANCHOR2
+ 297 000c 0040A0E3 		mov	r4, #0
+ 298              	.L64:
+ 299 0010 8461A0E1 		lsl	r6, r4, #3
+ 300 0014 843195E7 		ldr	r3, [r5, r4, lsl #3]
+ 301 0018 010073E3 		cmn	r3, #1
+ 302 001c 0500000A 		beq	.L63
+ 303 0020 014084E2 		add	r4, r4, #1
+ 304 0024 140054E3 		cmp	r4, #20
+ 305 0028 F8FFFF1A 		bne	.L64
+ 306 002c 0070E0E3 		mvn	r7, #0
+ 307 0030 0700A0E1 		mov	r0, r7
+ 308 0034 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 309              	.L63:
+ 310 0038 FEFFFFEB 		bl	low_open
+ 311 003c 007050E2 		subs	r7, r0, #0
+ 312 0040 050000BA 		blt	.L69
+ 313 0044 066085E0 		add	r6, r5, r6
+ 314 0048 0030A0E3 		mov	r3, #0
+ 315 004c 847185E7 		str	r7, [r5, r4, lsl #3]
+ 316 0050 0700A0E1 		mov	r0, r7
+ 317 0054 043086E5 		str	r3, [r6, #4]
+ 318 0058 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 319              	.L69:
+ 320 005c FEFFFFEB 		bl	__errno
+ 321 0060 0030A0E3 		mov	r3, #0
+ 322 0064 003080E5 		str	r3, [r0]
+ 323 0068 0700A0E1 		mov	r0, r7
+ 324 006c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 326              		.section	.text._open,"ax",%progbits
+ 327              		.align	2
+ 328              		.global	_open
+ 329              		.syntax unified
+ 330              		.arm
+ 331              		.fpu neon
+ 333              	_open:
+ 334              		@ args = 4, pretend = 12, frame = 0
+ 335              		@ frame_needed = 0, uses_anonymous_args = 1
+ 336 0000 0E002DE9 		push	{r1, r2, r3}
+ 337 0004 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 338 0008 005000E3 		movw	r5, #:lower16:.LANCHOR2
+ 339 000c 005040E3 		movt	r5, #:upper16:.LANCHOR2
+ 340 0010 0040A0E3 		mov	r4, #0
+ 341              	.L72:
+ 342 0014 8461A0E1 		lsl	r6, r4, #3
+ 343 0018 843195E7 		ldr	r3, [r5, r4, lsl #3]
+ 344 001c 010073E3 		cmn	r3, #1
+ 345 0020 0A00000A 		beq	.L71
+ 346 0024 014084E2 		add	r4, r4, #1
+ 347 0028 140054E3 		cmp	r4, #20
+ 348 002c F8FFFF1A 		bne	.L72
+ 349              	.L73:
+ 350 0030 FEFFFFEB 		bl	__errno
+ 351 0034 0070E0E3 		mvn	r7, #0
+ 352 0038 0030A0E3 		mov	r3, #0
+ 353 003c 003080E5 		str	r3, [r0]
+ 354 0040 0700A0E1 		mov	r0, r7
+ 355 0044 F040BDE8 		pop	{r4, r5, r6, r7, lr}
+ 356 0048 0CD08DE2 		add	sp, sp, #12
+ 357 004c 1EFF2FE1 		bx	lr
+ 358              	.L71:
+ 359 0050 14109DE5 		ldr	r1, [sp, #20]
+ 360 0054 FEFFFFEB 		bl	low_open
+ 361 0058 007050E2 		subs	r7, r0, #0
+ 362 005c 070000BA 		blt	.L81
+ 363 0060 066085E0 		add	r6, r5, r6
+ 364 0064 0030A0E3 		mov	r3, #0
+ 365 0068 0700A0E1 		mov	r0, r7
+ 366 006c 847185E7 		str	r7, [r5, r4, lsl #3]
+ 367 0070 043086E5 		str	r3, [r6, #4]
+ 368 0074 F040BDE8 		pop	{r4, r5, r6, r7, lr}
+ 369 0078 0CD08DE2 		add	sp, sp, #12
+ 370 007c 1EFF2FE1 		bx	lr
+ 371              	.L81:
+ 372 0080 FEFFFFEB 		bl	__errno
+ 373 0084 010077E3 		cmn	r7, #1
+ 374 0088 0030A0E3 		mov	r3, #0
+ 375 008c 003080E5 		str	r3, [r0]
+ 376 0090 E6FFFF0A 		beq	.L73
+ 377 0094 0700A0E1 		mov	r0, r7
+ 378 0098 F040BDE8 		pop	{r4, r5, r6, r7, lr}
+ 379 009c 0CD08DE2 		add	sp, sp, #12
+ 380 00a0 1EFF2FE1 		bx	lr
+ 382              		.section	.text._swiclose,"ax",%progbits
+ 383              		.align	2
+ 384              		.global	_swiclose
+ 385              		.syntax unified
+ 386              		.arm
+ 387              		.fpu neon
+ 389              	_swiclose:
+ 390              		@ args = 0, pretend = 0, frame = 0
+ 391              		@ frame_needed = 0, uses_anonymous_args = 0
+ 392              		@ link register save eliminated.
+ 393 0000 001000E3 		movw	r1, #:lower16:.LANCHOR2
+ 394 0004 0030A0E3 		mov	r3, #0
+ 395 0008 001040E3 		movt	r1, #:upper16:.LANCHOR2
+ 396              	.L84:
+ 397 000c 832191E7 		ldr	r2, [r1, r3, lsl #3]
+ 398 0010 020050E1 		cmp	r0, r2
+ 399 0014 0300000A 		beq	.L83
+ 400 0018 013083E2 		add	r3, r3, #1
+ 401 001c 140053E3 		cmp	r3, #20
+ 402 0020 F9FFFF1A 		bne	.L84
+ 403 0024 FEFFFFEA 		b	low_close
+ 404              	.L83:
+ 405 0028 0020E0E3 		mvn	r2, #0
+ 406 002c 832181E7 		str	r2, [r1, r3, lsl #3]
+ 407 0030 FEFFFFEA 		b	low_close
+ 409              		.section	.text._close,"ax",%progbits
+ 410              		.align	2
+ 411              		.global	_close
+ 412              		.syntax unified
+ 413              		.arm
+ 414              		.fpu neon
+ 416              	_close:
+ 417              		@ args = 0, pretend = 0, frame = 0
+ 418              		@ frame_needed = 0, uses_anonymous_args = 0
+ 419 0000 001000E3 		movw	r1, #:lower16:.LANCHOR2
+ 420 0004 0030A0E3 		mov	r3, #0
+ 421 0008 001040E3 		movt	r1, #:upper16:.LANCHOR2
+ 422 000c 10402DE9 		push	{r4, lr}
+ 423              	.L89:
+ 424 0010 832191E7 		ldr	r2, [r1, r3, lsl #3]
+ 425 0014 020050E1 		cmp	r0, r2
+ 426 0018 0800000A 		beq	.L88
+ 427 001c 013083E2 		add	r3, r3, #1
+ 428 0020 140053E3 		cmp	r3, #20
+ 429 0024 F9FFFF1A 		bne	.L89
+ 430              	.L91:
+ 431 0028 FEFFFFEB 		bl	low_close
+ 432 002c 010070E3 		cmn	r0, #1
+ 433 0030 0040A0E1 		mov	r4, r0
+ 434 0034 0400000A 		beq	.L94
+ 435              	.L87:
+ 436 0038 0400A0E1 		mov	r0, r4
+ 437 003c 1080BDE8 		pop	{r4, pc}
+ 438              	.L88:
+ 439 0040 0020E0E3 		mvn	r2, #0
+ 440 0044 832181E7 		str	r2, [r1, r3, lsl #3]
+ 441 0048 F6FFFFEA 		b	.L91
+ 442              	.L94:
+ 443 004c FEFFFFEB 		bl	__errno
+ 444 0050 0030A0E3 		mov	r3, #0
+ 445 0054 003080E5 		str	r3, [r0]
+ 446 0058 F6FFFFEA 		b	.L87
+ 448              		.section	.text._kill,"ax",%progbits
+ 449              		.align	2
+ 450              		.global	_kill
+ 451              		.syntax unified
+ 452              		.arm
+ 453              		.fpu neon
+ 455              	_kill:
+ 456              		@ args = 0, pretend = 0, frame = 0
+ 457              		@ frame_needed = 0, uses_anonymous_args = 0
+ 458              		@ link register save eliminated.
+ 459 0000 1EFF2FE1 		bx	lr
+ 461              		.section	.text._exit,"ax",%progbits
+ 462              		.align	2
+ 463              		.global	_exit
+ 464              		.syntax unified
+ 465              		.arm
+ 466              		.fpu neon
+ 468              	_exit:
+ 469              		@ Volatile: function does not return.
+ 470              		@ args = 0, pretend = 0, frame = 0
+ 471              		@ frame_needed = 0, uses_anonymous_args = 0
+ 472              		@ link register save eliminated.
+ 473 0000 1EFF2FE1 		bx	lr
+ 475              		.section	.text._getpid,"ax",%progbits
+ 476              		.align	2
+ 477              		.global	_getpid
+ 478              		.syntax unified
+ 479              		.arm
+ 480              		.fpu neon
+ 482              	_getpid:
+ 483              		@ args = 0, pretend = 0, frame = 0
+ 484              		@ frame_needed = 0, uses_anonymous_args = 0
+ 485              		@ link register save eliminated.
+ 486 0000 0100A0E3 		mov	r0, #1
+ 487 0004 1EFF2FE1 		bx	lr
+ 489              		.section	.text._sbrk,"ax",%progbits
+ 490              		.align	2
+ 491              		.weak	_sbrk
+ 492              		.syntax unified
+ 493              		.arm
+ 494              		.fpu neon
+ 496              	_sbrk:
+ 497              		@ args = 0, pretend = 0, frame = 0
+ 498              		@ frame_needed = 0, uses_anonymous_args = 0
+ 499              		@ link register save eliminated.
+ 500 0000 002000E3 		movw	r2, #:lower16:.LANCHOR3
+ 501 0004 001000E3 		movw	r1, #:lower16:__heap_start
+ 502 0008 002040E3 		movt	r2, #:upper16:.LANCHOR3
+ 503 000c 001040E3 		movt	r1, #:upper16:__heap_start
+ 504 0010 003092E5 		ldr	r3, [r2]
+ 505 0014 000053E3 		cmp	r3, #0
+ 506 0018 0130A001 		moveq	r3, r1
+ 507 001c 001083E0 		add	r1, r3, r0
+ 508 0020 0300A0E1 		mov	r0, r3
+ 509 0024 001082E5 		str	r1, [r2]
+ 510 0028 1EFF2FE1 		bx	lr
+ 512              		.section	.text._fstat,"ax",%progbits
+ 513              		.align	2
+ 514              		.global	_fstat
+ 515              		.syntax unified
+ 516              		.arm
+ 517              		.fpu neon
+ 519              	_fstat:
+ 520              		@ args = 0, pretend = 0, frame = 0
+ 521              		@ frame_needed = 0, uses_anonymous_args = 0
+ 522 0000 10402DE9 		push	{r4, lr}
+ 523 0004 0100A0E1 		mov	r0, r1
+ 524 0008 0140A0E1 		mov	r4, r1
+ 525 000c 3C20A0E3 		mov	r2, #60
+ 526 0010 0010A0E3 		mov	r1, #0
+ 527 0014 FEFFFFEB 		bl	memset
+ 528 0018 022AA0E3 		mov	r2, #8192
+ 529 001c 013BA0E3 		mov	r3, #1024
+ 530 0020 042084E5 		str	r2, [r4, #4]
+ 531 0024 0000A0E3 		mov	r0, #0
+ 532 0028 2C3084E5 		str	r3, [r4, #44]
+ 533 002c 1080BDE8 		pop	{r4, pc}
+ 535              		.section	.text._stat,"ax",%progbits
+ 536              		.align	2
+ 537              		.global	_stat
+ 538              		.syntax unified
+ 539              		.arm
+ 540              		.fpu neon
+ 542              	_stat:
+ 543              		@ args = 0, pretend = 0, frame = 0
+ 544              		@ frame_needed = 0, uses_anonymous_args = 0
+ 545 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 546 0004 006000E3 		movw	r6, #:lower16:.LANCHOR2
+ 547 0008 0190A0E1 		mov	r9, r1
+ 548 000c 006040E3 		movt	r6, #:upper16:.LANCHOR2
+ 549 0010 0040A0E3 		mov	r4, #0
+ 550              	.L105:
+ 551 0014 845196E7 		ldr	r5, [r6, r4, lsl #3]
+ 552 0018 8471A0E1 		lsl	r7, r4, #3
+ 553 001c 010075E3 		cmn	r5, #1
+ 554 0020 0800000A 		beq	.L104
+ 555 0024 014084E2 		add	r4, r4, #1
+ 556 0028 140054E3 		cmp	r4, #20
+ 557 002c F8FFFF1A 		bne	.L105
+ 558              	.L106:
+ 559 0030 FEFFFFEB 		bl	__errno
+ 560 0034 0050E0E3 		mvn	r5, #0
+ 561 0038 0030A0E3 		mov	r3, #0
+ 562 003c 003080E5 		str	r3, [r0]
+ 563 0040 0500A0E1 		mov	r0, r5
+ 564 0044 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 565              	.L104:
+ 566 0048 0010A0E3 		mov	r1, #0
+ 567 004c FEFFFFEB 		bl	low_open
+ 568 0050 008050E2 		subs	r8, r0, #0
+ 569 0054 1D0000BA 		blt	.L119
+ 570 0058 0050A0E3 		mov	r5, #0
+ 571 005c 077086E0 		add	r7, r6, r7
+ 572 0060 0510A0E1 		mov	r1, r5
+ 573 0064 3C20A0E3 		mov	r2, #60
+ 574 0068 0900A0E1 		mov	r0, r9
+ 575 006c 045087E5 		str	r5, [r7, #4]
+ 576 0070 848186E7 		str	r8, [r6, r4, lsl #3]
+ 577 0074 FEFFFFEB 		bl	memset
+ 578 0078 0510A0E1 		mov	r1, r5
+ 579 007c 812CA0E3 		mov	r2, #33024
+ 580 0080 013BA0E3 		mov	r3, #1024
+ 581 0084 042089E5 		str	r2, [r9, #4]
+ 582 0088 2C3089E5 		str	r3, [r9, #44]
+ 583              	.L107:
+ 584 008c 813196E7 		ldr	r3, [r6, r1, lsl #3]
+ 585 0090 030058E1 		cmp	r8, r3
+ 586 0094 0700000A 		beq	.L109
+ 587 0098 011081E2 		add	r1, r1, #1
+ 588 009c 140051E3 		cmp	r1, #20
+ 589 00a0 F9FFFF1A 		bne	.L107
+ 590 00a4 0800A0E1 		mov	r0, r8
+ 591 00a8 0050A0E3 		mov	r5, #0
+ 592 00ac FEFFFFEB 		bl	low_close
+ 593              	.L120:
+ 594 00b0 0500A0E1 		mov	r0, r5
+ 595 00b4 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 596              	.L109:
+ 597 00b8 0030E0E3 		mvn	r3, #0
+ 598 00bc 0800A0E1 		mov	r0, r8
+ 599 00c0 813186E7 		str	r3, [r6, r1, lsl #3]
+ 600 00c4 0050A0E3 		mov	r5, #0
+ 601 00c8 FEFFFFEB 		bl	low_close
+ 602 00cc F7FFFFEA 		b	.L120
+ 603              	.L119:
+ 604 00d0 FEFFFFEB 		bl	__errno
+ 605 00d4 010078E3 		cmn	r8, #1
+ 606 00d8 0030A0E3 		mov	r3, #0
+ 607 00dc 003080E5 		str	r3, [r0]
+ 608 00e0 D2FFFF0A 		beq	.L106
+ 609 00e4 0500A0E1 		mov	r0, r5
+ 610 00e8 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 612              		.section	.text._link,"ax",%progbits
+ 613              		.align	2
+ 614              		.global	_link
+ 615              		.syntax unified
+ 616              		.arm
+ 617              		.fpu neon
+ 619              	_link:
+ 620              		@ args = 0, pretend = 0, frame = 0
+ 621              		@ frame_needed = 0, uses_anonymous_args = 0
+ 622              		@ link register save eliminated.
+ 623 0000 0000E0E3 		mvn	r0, #0
+ 624 0004 1EFF2FE1 		bx	lr
+ 626              		.section	.text._unlink,"ax",%progbits
+ 627              		.align	2
+ 628              		.global	_unlink
+ 629              		.syntax unified
+ 630              		.arm
+ 631              		.fpu neon
+ 633              	_unlink:
+ 634              		@ args = 0, pretend = 0, frame = 0
+ 635              		@ frame_needed = 0, uses_anonymous_args = 0
+ 636              		@ link register save eliminated.
+ 637 0000 0000A0E3 		mov	r0, #0
+ 638 0004 1EFF2FE1 		bx	lr
+ 640              		.section	.text._raise,"ax",%progbits
+ 641              		.align	2
+ 642              		.global	_raise
+ 643              		.syntax unified
+ 644              		.arm
+ 645              		.fpu neon
+ 647              	_raise:
+ 648              		@ args = 0, pretend = 0, frame = 0
+ 649              		@ frame_needed = 0, uses_anonymous_args = 0
+ 650              		@ link register save eliminated.
+ 651 0000 1EFF2FE1 		bx	lr
+ 653              		.section	.text._gettimeofday,"ax",%progbits
+ 654              		.align	2
+ 655              		.global	_gettimeofday
+ 656              		.syntax unified
+ 657              		.arm
+ 658              		.fpu neon
+ 660              	_gettimeofday:
+ 661              		@ args = 0, pretend = 0, frame = 0
+ 662              		@ frame_needed = 0, uses_anonymous_args = 0
+ 663              		@ link register save eliminated.
+ 664 0000 000050E3 		cmp	r0, #0
+ 665 0004 0030A013 		movne	r3, #0
+ 666 0008 04308015 		strne	r3, [r0, #4]
+ 667 000c 000051E3 		cmp	r1, #0
+ 668 0010 0030A013 		movne	r3, #0
+ 669 0014 0000A0E3 		mov	r0, #0
+ 670 0018 00308115 		strne	r3, [r1]
+ 671 001c 04308115 		strne	r3, [r1, #4]
+ 672 0020 1EFF2FE1 		bx	lr
+ 674              		.section	.text._times,"ax",%progbits
+ 675              		.align	2
+ 676              		.global	_times
+ 677              		.syntax unified
+ 678              		.arm
+ 679              		.fpu neon
+ 681              	_times:
+ 682              		@ args = 0, pretend = 0, frame = 0
+ 683              		@ frame_needed = 0, uses_anonymous_args = 0
+ 684              		@ link register save eliminated.
+ 685 0000 000050E3 		cmp	r0, #0
+ 686 0004 0030A013 		movne	r3, #0
+ 687 0008 00308015 		strne	r3, [r0]
+ 688 000c 04308015 		strne	r3, [r0, #4]
+ 689 0010 08308015 		strne	r3, [r0, #8]
+ 690 0014 0C308015 		strne	r3, [r0, #12]
+ 691 0018 0000A0E3 		mov	r0, #0
+ 692 001c 1EFF2FE1 		bx	lr
+ 694              		.section	.text._isatty,"ax",%progbits
+ 695              		.align	2
+ 696              		.global	_isatty
+ 697              		.syntax unified
+ 698              		.arm
+ 699              		.fpu neon
+ 701              	_isatty:
+ 702              		@ args = 0, pretend = 0, frame = 0
+ 703              		@ frame_needed = 0, uses_anonymous_args = 0
+ 704              		@ link register save eliminated.
+ 705 0000 010050E3 		cmp	r0, #1
+ 706 0004 0000A083 		movhi	r0, #0
+ 707 0008 0100A093 		movls	r0, #1
+ 708 000c 1EFF2FE1 		bx	lr
+ 710              		.section	.text._system,"ax",%progbits
+ 711              		.align	2
+ 712              		.global	_system
+ 713              		.syntax unified
+ 714              		.arm
+ 715              		.fpu neon
+ 717              	_system:
+ 718              		@ args = 0, pretend = 0, frame = 0
+ 719              		@ frame_needed = 0, uses_anonymous_args = 0
+ 720              		@ link register save eliminated.
+ 721 0000 1EFF2FE1 		bx	lr
+ 723              		.section	.text._rename,"ax",%progbits
+ 724              		.align	2
+ 725              		.global	_rename
+ 726              		.syntax unified
+ 727              		.arm
+ 728              		.fpu neon
+ 730              	_rename:
+ 731              		@ args = 0, pretend = 0, frame = 0
+ 732              		@ frame_needed = 0, uses_anonymous_args = 0
+ 733              		@ link register save eliminated.
+ 734 0000 1EFF2FE1 		bx	lr
+ 736              		.section	.bss.heap_end.8341,"aw",%nobits
+ 737              		.align	2
+ 738              		.set	.LANCHOR3,. + 0
+ 741              	heap_end.8341:
+ 742 0000 00000000 		.space	4
+ 743              		.section	.bss.monitor_stdin,"aw",%nobits
+ 744              		.align	2
+ 745              		.set	.LANCHOR0,. + 0
+ 748              	monitor_stdin:
+ 749 0000 00000000 		.space	4
+ 750              		.section	.bss.monitor_stdout,"aw",%nobits
+ 751              		.align	2
+ 752              		.set	.LANCHOR1,. + 0
+ 755              	monitor_stdout:
+ 756 0000 00000000 		.space	4
+ 757              		.section	.bss.openfiles,"aw",%nobits
+ 758              		.align	2
+ 759              		.set	.LANCHOR2,. + 0
+ 762              	openfiles:
+ 763 0000 00000000 		.space	160
+ 763      00000000 
+ 763      00000000 
+ 763      00000000 
+ 763      00000000 
+ 764              		.section	.rodata.initialise_monitor_handles.str1.4,"aMS",%progbits,1
+ 765              		.align	2
+ 766              	.LC0:
+ 767 0000 5C5C2E5C 		.ascii	"\\\\.\\stdin\000"
+ 767      73746469 
+ 767      6E00
+ 768 000a 0000     		.space	2
+ 769              	.LC1:
+ 770 000c 5C5C2E5C 		.ascii	"\\\\.\\stdout\000"
+ 770      7374646F 
+ 770      757400
+ 771 0017 00       		.space	1
+ 772              	.LC2:
+ 773 0018 5C5C2E5C 		.ascii	"\\\\.\\stderr\000"
+ 773      73746465 
+ 773      727200
+ 774              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 syscalls.c
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:14     .text.initialise_monitor_handles:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:20     .text.initialise_monitor_handles:00000000 initialise_monitor_handles
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:766    .rodata.initialise_monitor_handles.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:745    .bss.monitor_stdin:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:752    .bss.monitor_stdout:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:769    .rodata.initialise_monitor_handles.str1.4:0000000c .LC1
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:772    .rodata.initialise_monitor_handles.str1.4:00000018 .LC2
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:759    .bss.openfiles:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:62     .text._swiread:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:68     .text._swiread:00000000 _swiread
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:76     .text._read:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:82     .text._read:00000000 _read
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:100    .text._swilseek:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:106    .text._swilseek:00000000 _swilseek
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:169    .text._lseek:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:175    .text._lseek:00000000 _lseek
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:248    .text._swiwrite:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:254    .text._swiwrite:00000000 _swiwrite
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:261    .text._write:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:267    .text._write:00000000 _write
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:285    .text._swiopen:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:291    .text._swiopen:00000000 _swiopen
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:327    .text._open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:333    .text._open:00000000 _open
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:383    .text._swiclose:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:389    .text._swiclose:00000000 _swiclose
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:410    .text._close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:416    .text._close:00000000 _close
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:449    .text._kill:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:455    .text._kill:00000000 _kill
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:462    .text._exit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:468    .text._exit:00000000 _exit
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:476    .text._getpid:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:482    .text._getpid:00000000 _getpid
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:490    .text._sbrk:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:496    .text._sbrk:00000000 _sbrk
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:738    .bss.heap_end.8341:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:513    .text._fstat:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:519    .text._fstat:00000000 _fstat
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:536    .text._stat:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:542    .text._stat:00000000 _stat
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:613    .text._link:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:619    .text._link:00000000 _link
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:627    .text._unlink:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:633    .text._unlink:00000000 _unlink
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:641    .text._raise:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:647    .text._raise:00000000 _raise
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:654    .text._gettimeofday:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:660    .text._gettimeofday:00000000 _gettimeofday
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:675    .text._times:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:681    .text._times:00000000 _times
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:695    .text._isatty:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:701    .text._isatty:00000000 _isatty
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:711    .text._system:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:717    .text._system:00000000 _system
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:724    .text._rename:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:730    .text._rename:00000000 _rename
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:737    .bss.heap_end.8341:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:741    .bss.heap_end.8341:00000000 heap_end.8341
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:744    .bss.monitor_stdin:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:748    .bss.monitor_stdin:00000000 monitor_stdin
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:751    .bss.monitor_stdout:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:755    .bss.monitor_stdout:00000000 monitor_stdout
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:758    .bss.openfiles:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:762    .bss.openfiles:00000000 openfiles
+C:\Users\a5050395\AppData\Local\Temp\cc7CkBaL.s:765    .rodata.initialise_monitor_handles.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+low_open
+low_read
+__errno
+_impure_ptr
+__sinit
+low_write
+low_close
+__heap_start
+memset

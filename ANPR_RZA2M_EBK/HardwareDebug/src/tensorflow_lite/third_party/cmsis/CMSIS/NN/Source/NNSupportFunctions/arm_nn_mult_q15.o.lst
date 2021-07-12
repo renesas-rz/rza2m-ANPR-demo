@@ -1,0 +1,1064 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_mult_q15.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_nn_mult_q15,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_nn_mult_q15
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_nn_mult_q15:
+  24              	.LFB122:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Copyright (C) 2010-2018 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Title:        arm_nn_mult_q15.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Description:  Q15 vector multiplication with variable output shifts
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * $Date:        09. October 2020
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * $Revision:    V.1.0.2
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Target Processor:  Cortex-M cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * -------------------------------------------------------------------- */
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #include "arm_nnsupportfunctions.h"
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** /**
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @ingroup groupSupport
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  */
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** /**
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @addtogroup NNBasicMath
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @{
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  */
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** /**
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @brief           Q7 vector multiplication with variable output shifts
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @param[in]       *pSrcA        pointer to the first input vector
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @param[in]       *pSrcB        pointer to the second input vector
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @param[out]      *pDst         pointer to the output vector
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @param[in]       out_shift     amount of right-shift for output
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * @param[in]       blockSize     number of samples in each vector
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  *
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * <b>Scaling and Overflow Behavior:</b>
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * \par
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * The function uses saturating arithmetic.
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  * Results outside of the allowable Q15 range [0x8000 0x7FFF] will be saturated.
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****  */
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** void arm_nn_mult_q15(q15_t *pSrcA, q15_t *pSrcB, q15_t *pDst, const uint16_t out_shift, uint32_t bl
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** {
+  26              		.loc 1 57 0
+  27              		.cfi_startproc
+  28              		@ args = 4, pretend = 0, frame = 40
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  32              		.cfi_def_cfa_offset 36
+  33              		.cfi_offset 4, -36
+  34              		.cfi_offset 5, -32
+  35              		.cfi_offset 6, -28
+  36              		.cfi_offset 7, -24
+  37              		.cfi_offset 8, -20
+  38              		.cfi_offset 9, -16
+  39              		.cfi_offset 10, -12
+  40              		.cfi_offset 11, -8
+  41              		.cfi_offset 14, -4
+  42 0004 2CD04DE2 		sub	sp, sp, #44
+  43              		.cfi_def_cfa_offset 80
+  44              		.loc 1 57 0
+  45 0008 03A0A0E1 		mov	r10, r3
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     uint32_t blkCnt; /* loop counters */
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #if defined(ARM_MATH_DSP)
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* Run the below code for Cortex-M4 and Cortex-M3 */
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     q31_t inA1, inA2, inB1, inB2; /* temporary input variables */
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     q15_t out1, out2, out3, out4; /* temporary output variables */
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     q31_t mul1, mul2, mul3, mul4; /* temporary variables */
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* loop Unrolling */
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     blkCnt = blockSize >> 2U;
+  69:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****      ** a second loop below computes the remaining 1 to 3 samples. */
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     while (blkCnt > 0U)
+  46              		.loc 1 72 0
+  47 000c 50309DE5 		ldr	r3, [sp, #80]
+  48              	.LVL1:
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     uint32_t blkCnt; /* loop counters */
+  49              		.loc 1 57 0
+  50 0010 10008DE5 		str	r0, [sp, #16]
+  51 0014 14108DE5 		str	r1, [sp, #20]
+  52              		.loc 1 72 0
+  53 0018 2331B0E1 		lsrs	r3, r3, #2
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     uint32_t blkCnt; /* loop counters */
+  54              		.loc 1 57 0
+  55 001c 18208DE5 		str	r2, [sp, #24]
+  56              	.LVL2:
+  57              		.loc 1 72 0
+  58 0020 1C308DE5 		str	r3, [sp, #28]
+  59 0024 5400000A 		beq	.L2
+  60 0028 03C0A0E1 		mov	ip, r3
+  61 002c 0130A0E3 		mov	r3, #1
+  62              	.LVL3:
+  63 0030 133AA0E1 		lsl	r3, r3, r10
+  64              	.LBB27:
+  73:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* read two samples at a time from sourceA */
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         inA1 = arm_nn_read_q15x2_ia((const q15_t **)&pSrcA);
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* read two samples at a time from sourceB */
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         inB1 = arm_nn_read_q15x2_ia((const q15_t **)&pSrcB);
+  78:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* read two samples at a time from sourceA */
+  79:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         inA2 = arm_nn_read_q15x2_ia((const q15_t **)&pSrcA);
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* read two samples at a time from sourceB */
+  81:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         inB2 = arm_nn_read_q15x2_ia((const q15_t **)&pSrcB);
+  82:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  83:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* multiply mul = sourceA * sourceB */
+  84:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         mul1 = (q31_t)((q15_t)(inA1 >> 16) * (q15_t)(inB1 >> 16));
+  85:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         mul2 = (q31_t)((q15_t)inA1 * (q15_t)inB1);
+  86:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         mul3 = (q31_t)((q15_t)(inA2 >> 16) * (q15_t)(inB2 >> 16));
+  87:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         mul4 = (q31_t)((q15_t)inA2 * (q15_t)inB2);
+  88:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  89:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* saturate result to 16 bit */
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out1 = (q15_t)__SSAT((q31_t)(mul1 + NN_ROUND(out_shift)) >> out_shift, 16);
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out2 = (q15_t)__SSAT((q31_t)(mul2 + NN_ROUND(out_shift)) >> out_shift, 16);
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out3 = (q15_t)__SSAT((q31_t)(mul3 + NN_ROUND(out_shift)) >> out_shift, 16);
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out4 = (q15_t)__SSAT((q31_t)(mul4 + NN_ROUND(out_shift)) >> out_shift, 16);
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  95:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* store the result */
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #ifndef ARM_MATH_BIG_ENDIAN
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out2, out1, 16);
+  65              		.loc 1 98 0
+  66 0034 0279A0E3 		mov	r7, #32768
+  67 0038 FF7F4FE3 		movt	r7, 65535
+  68              	.LBE27:
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+  69              		.loc 1 72 0
+  70 003c 08C08DE5 		str	ip, [sp, #8]
+  71 0040 A330A0E1 		lsr	r3, r3, #1
+  72 0044 189082E2 		add	r9, r2, #24
+  73 0048 01B0A0E1 		mov	fp, r1
+  74              	.LBB28:
+  75              		.loc 1 98 0
+  76 004c 04008DE5 		str	r0, [sp, #4]
+  77 0050 FF8F07E3 		movw	r8, #32767
+  78 0054 0350A0E1 		mov	r5, r3
+  79              	.LVL4:
+  80              	.L3:
+  81              	.LBE28:
+  82              	.LBB29:
+  83              	.LBB30:
+  84              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /*
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Copyright (C) 2010-2021 Arm Limited or its affiliates. All rights reserved.
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * SPDX-License-Identifier: Apache-2.0
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * not use this file except in compliance with the License.
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * You may obtain a copy of the License at
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * www.apache.org/licenses/LICENSE-2.0
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Unless required by applicable law or agreed to in writing, software
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * See the License for the specific language governing permissions and
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * limitations under the License.
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /* ----------------------------------------------------------------------
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Project:      CMSIS NN Library
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Title:        arm_nnsupportfunctions.h
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Description:  Public header file of support functions for CMSIS NN Library
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * $Date:        15. April 2021
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * $Revision:    V.5.5.0
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Target Processor:  Cortex-M CPUs
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * -------------------------------------------------------------------- */
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #ifndef _ARM_NNSUPPORTFUNCTIONS_H_
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define _ARM_NNSUPPORTFUNCTIONS_H_
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #include "arm_common_tables.h"
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #include "arm_math_types.h"
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #ifdef __cplusplus
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** extern "C" {
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #endif
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define LEFT_SHIFT(_shift) (_shift > 0 ? _shift : 0)
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define RIGHT_SHIFT(_shift) (_shift > 0 ? 0 : -_shift)
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define MASK_IF_ZERO(x) (x) == 0 ? ~0 : 0
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define MASK_IF_NON_ZERO(x) (x) != 0 ? ~0 : 0
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define SELECT_USING_MASK(mask, a, b) ((mask) & (a)) ^ (~(mask) & (b))
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define MAX(A, B) ((A) > (B) ? (A) : (B))
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define MIN(A, B) ((A) < (B) ? (A) : (B))
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** #define CLAMP(x, h, l) MAX(MIN((x), (h)), (l))
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Union for SIMD access of q31/q15/q7 types
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** union arm_nnword
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** {
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     q31_t word;
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     /**< q31 type */
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     q15_t half_words[2];
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     /**< q15 type */
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     q7_t bytes[4];
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     /**< q7 type */
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** };
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+  64:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Union for data type long long
+  65:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+  66:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** struct arm_nn_double
+  67:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** {
+  68:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     uint32_t low;
+  69:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     int32_t high;
+  70:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** };
+  71:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  72:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** union arm_nn_long_long
+  73:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** {
+  74:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     int64_t long_long;
+  75:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     struct arm_nn_double word;
+  76:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** };
+  77:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  78:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+  79:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @defgroup nndata_convert Neural Network Data Conversion Functions
+  80:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  81:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * Perform data type conversion in-between neural network operations
+  82:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  83:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+  84:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  85:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+  86:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Converts the elements of the q7 vector to q15 vector without left-shift
+  87:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       *pSrc points to the q7 input vector
+  88:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      *pDst points to the q15 output vector
+  89:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       blockSize length of the input vector
+  90:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+  91:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+  92:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_q7_to_q15_no_shift(const q7_t *pSrc, q15_t *pDst, uint32_t blockSize);
+  93:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+  94:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+  95:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Non-saturating addition of elements of a q7 vector
+  96:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       *input Pointer to the q7 input vector
+  97:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      *output Pointer to the q31 output variable.
+  98:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       block_size length of the input vector
+  99:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * \par Description:
+ 100:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 101:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * 2^24 samples can be added without saturating the result.
+ 102:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 103:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * The equation used for the conversion process is:
+ 104:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 105:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * <pre>
+ 106:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *  sum = input[0] + input[1] + .. + input[block_size -1]
+ 107:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * </pre>
+ 108:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 109:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * */
+ 110:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_nn_add_q7(const q7_t *input, q31_t *output, uint32_t block_size);
+ 111:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 112:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 113:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief  Converts the elements of the q7 vector to reordered q15 vector without left-shift
+ 114:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       *pSrc points to the q7 input vector
+ 115:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      *pDst points to the q15 output vector
+ 116:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       blockSize length of the input vector
+ 117:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return none.
+ 118:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 119:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 120:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_q7_to_q15_reordered_no_shift(const q7_t *pSrc, q15_t *pDst, uint32_t blockSize);
+ 121:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 122:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 123:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Converts the elements from a q7 vector to a q15 vector with an added offset
+ 124:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    src        pointer to the q7 input vector
+ 125:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]   dst        pointer to the q15 output vector
+ 126:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    block_size length of the input vector
+ 127:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    offset     q7 offset to be added to each input vector element.
+ 128:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 129:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * \par Description:
+ 130:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 131:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * The equation used for the conversion process is:
+ 132:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 133:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * <pre>
+ 134:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *  dst[n] = (q15_t) src[n] + offset;   0 <= n < block_size.
+ 135:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * </pre>
+ 136:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 137:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 138:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_q7_to_q15_with_offset(const q7_t *src, q15_t *dst, uint32_t block_size, q15_t offset);
+ 139:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 140:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 141:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Converts the elements of the q7 vector to reordered q15 vector with an added offset
+ 142:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       src        pointer to the q7 input vector
+ 143:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      dst        pointer to the q15 output vector
+ 144:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       block_size length of the input vector
+ 145:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       offset     offset to be added to each input vector element.
+ 146:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return none.
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 148:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @details  This function does the q7 to q15 expansion with re-ordering of bytes. Re-ordering is a
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *           the sign extension intrinsic(DSP extension). The tail (i.e., last (N % 4) elements) re
+ 150:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * original order.
+ 151:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_q7_to_q15_reordered_with_offset(const q7_t *src, q15_t *dst, uint32_t block_size, q15_t of
+ 154:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 155:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 156:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Converts the elements from a q7 vector and accumulate to a q15 vector
+ 157:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    *src       points to the q7 input vector
+ 158:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]   *dst       points to the q15 output vector
+ 159:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    block_size length of the input vector
+ 160:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 161:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * \par Description:
+ 162:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * The equation used for the conversion process is:
+ 164:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 165:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * <pre>
+ 166:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *  dst[n] += (q15_t) src[n] ;   0 <= n < block_size.
+ 167:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * </pre>
+ 168:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 169:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 170:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** void arm_nn_accumulate_q7_to_q15(q15_t *dst, const q7_t *src, uint32_t block_size);
+ 171:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 172:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 173:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Depthwise conv on an im2col buffer where the input channel equals output channel.
+ 174:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    row     pointer to row
+ 175:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    col     pointer to im2col buffer, always consists of 2 columns.
+ 176:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    num_ch   number of channels
+ 177:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    out_shift  pointer to per output channel requantization shift parameter.
+ 178:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    out_mult   pointer to per output channel requantization multiplier parameter.
+ 179:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    out_offset      output tensor offset.
+ 180:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    activation_min   minimum value to clamp the output to. Range : int8
+ 181:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    activation_max   maximum value to clamp the output to. Range : int8
+ 182:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    kernel_size   number of elements in one column.
+ 183:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]    output_bias per output channel bias. Range : int32
+ 184:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]   out         pointer to output
+ 185:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return     The function returns one of the two
+ 186:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *              1. The incremented output pointer for a successful operation or
+ 187:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *              2. NULL if implementation is not available.
+ 188:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 189:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @details     Supported framework: TensorFlow Lite micro.
+ 190:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 191:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** q7_t *arm_nn_depthwise_conv_s8_core(const q7_t *row,
+ 192:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const q15_t *col,
+ 193:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const uint16_t num_ch,
+ 194:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *out_shift,
+ 195:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *out_mult,
+ 196:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t out_offset,
+ 197:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_min,
+ 198:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_max,
+ 199:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const uint16_t kernel_size,
+ 200:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *const output_bias,
+ 201:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     q7_t *out);
+ 202:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 203:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 204:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief General Matrix-multiplication function with per-channel requantization.
+ 205:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       input_row    pointer to row operand
+ 206:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       input_col    pointer to col operand
+ 207:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       output_ch    number of rows of input_row
+ 208:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       col_batches  number of column batches. Range: 1 to 4
+ 209:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       output_shift  pointer to per output channel requantization shift parameter.
+ 210:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       output_mult   pointer to per output channel requantization multiplier parameter
+ 211:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       out_offset    output tensor offset.
+ 212:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       col_offset    input tensor(col) offset.
+ 213:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_offset    kernel offset(row). Not used.
+ 214:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       out_activation_min   minimum value to clamp the output to. Range : int8
+ 215:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       out_activation_max   maximum value to clamp the output to. Range : int8
+ 216:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_len       number of elements in each row
+ 217:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       bias          per output channel bias. Range : int32
+ 218:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in,out]   out           pointer to output
+ 219:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return     The function returns one of the two
+ 220:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *              1. The incremented output pointer for a successful operation or
+ 221:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *              2. NULL if implementation is not available.
+ 222:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 223:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @details   Supported framework: TensorFlow Lite
+ 224:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 225:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** q7_t *arm_nn_mat_mult_s8(const q7_t *input_row,
+ 226:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const q7_t *input_col,
+ 227:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const uint16_t output_ch,
+ 228:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const uint16_t col_batches,
+ 229:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t *output_shift,
+ 230:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t *output_mult,
+ 231:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t out_offset,
+ 232:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t col_offset,
+ 233:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t row_offset,
+ 234:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int16_t out_activation_min,
+ 235:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int16_t out_activation_max,
+ 236:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const uint16_t row_len,
+ 237:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          const int32_t *const bias,
+ 238:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                          q7_t *out);
+ 239:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 240:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 241:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief General Matrix-multiplication without requantization for one row & one column
+ 242:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_elements  number of row elements
+ 243:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_base      pointer to row operand
+ 244:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       col_base      pointer to col operand
+ 245:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      sum_col       pointer to store sum of column elements
+ 246:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      output        pointer to store result of multiply-accumulate
+ 247:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return     The function returns the multiply-accumulated result of the row by column.
+ 248:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 249:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @details Pseudo-code
+ 250:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      *output = 0
+ 251:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      sum_col = 0
+ 252:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      for (i = 0; i < row_elements; i++)
+ 253:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *          *output += row_base[i] * col_base[i]
+ 254:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *          sum_col += col_base[i]
+ 255:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 256:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 257:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** arm_status arm_nn_mat_mul_core_1x_s8(int32_t row_elements,
+ 258:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      const int8_t *row_base,
+ 259:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      const int8_t *col_base,
+ 260:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      int32_t *const sum_col,
+ 261:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      int32_t *const output);
+ 262:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 263:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 264:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief General Matrix-multiplication without requantization for four rows and one column
+ 265:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_elements  number of row elements
+ 266:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       offset        offset between rows. Can be the same as row_elements.
+ 267:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                                For e.g, in a 1x1 conv scenario with stride as 1.
+ 268:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_base      pointer to row operand
+ 269:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       col_base      pointer to col operand
+ 270:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      sum_col       pointer to store sum of column elements
+ 271:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]      output        pointer to store result(4 int32's) of multiply-accumulate
+ 272:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return     The function returns the multiply-accumulated result of the row by column
+ 273:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 274:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @details Pseudo-code
+ 275:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      output[0] = 0
+ 276:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *         ..
+ 277:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      output[3] = 0
+ 278:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      sum_col = 0
+ 279:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *      for (i = 0; i < row_elements; i++)
+ 280:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *          output[0] += row_base[i] * col_base[i]
+ 281:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                ..
+ 282:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *          output[3] += row_base[i + (row_elements * 3)] * col_base[i]
+ 283:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *          sum_col += col_base[i]
+ 284:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 285:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** arm_status arm_nn_mat_mul_core_4x_s8(const int32_t row_elements,
+ 286:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      const int32_t offset,
+ 287:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      const int8_t *row_base,
+ 288:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      const int8_t *col_base,
+ 289:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      int32_t *const sum_col,
+ 290:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                      int32_t *const output);
+ 291:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 292:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 293:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief General Matrix-multiplication function with per-channel requantization.
+ 294:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *        This function assumes:
+ 295:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *        - LHS input matrix NOT transposed (nt)
+ 296:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *        - RHS input matrix transposed (t)
+ 297:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 298:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *  @note This operation also performs the broadcast bias addition before the requantization
+ 299:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 300:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  lhs                Pointer to the LHS input matrix
+ 301:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  rhs                Pointer to the RHS input matrix
+ 302:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  bias               Pointer to the bias vector. The length of this vector is equal to
+ 303:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * output columns (or RHS input rows)
+ 304:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out] dst                Pointer to the output matrix with "m" rows and "n" columns
+ 305:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  dst_multipliers    Pointer to the multipliers vector needed for the per-channel requ
+ 306:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                                The length of this vector is equal to the number of output column
+ 307:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * rows)
+ 308:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  dst_shifts         Pointer to the shifts vector needed for the per-channel requantiz
+ 309:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * of this vector is equal to the number of output columns (or RHS input rows)
+ 310:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  lhs_rows           Number of LHS input rows
+ 311:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  rhs_rows           Number of RHS input rows
+ 312:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  rhs_cols           Number of LHS/RHS input columns
+ 313:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  lhs_offset         Offset to be applied to the LHS input value
+ 314:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  dst_offset         Offset to be applied the output result
+ 315:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  activation_min     Minimum value to clamp down the output. Range : int8
+ 316:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]  activation_max     Maximum value to clamp up the output. Range : int8
+ 317:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 318:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return     The function returns <code>ARM_MATH_SUCCESS</code>
+ 319:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 320:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 321:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** arm_status arm_nn_mat_mult_nt_t_s8(const q7_t *lhs,
+ 322:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const q7_t *rhs,
+ 323:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const q31_t *bias,
+ 324:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    q7_t *dst,
+ 325:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t *dst_multipliers,
+ 326:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t *dst_shifts,
+ 327:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t lhs_rows,
+ 328:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t rhs_rows,
+ 329:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t rhs_cols,
+ 330:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t lhs_offset,
+ 331:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t dst_offset,
+ 332:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t activation_min,
+ 333:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                    const int32_t activation_max);
+ 334:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 335:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 336:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief s8 Vector by Matrix (transposed) multiplication
+ 337:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 338:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs             Input left-hand side vector
+ 339:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs             Input right-hand side matrix (transposed)
+ 340:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      bias            Input bias
+ 341:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]     dst             Output vector
+ 342:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs_offset      Offset to be added to the input values of the left-hand side vec
+ 343:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                                 Range: -127 to 128
+ 344:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_offset      Not used
+ 345:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      dst_offset      Offset to be added to the output values. Range: -127 to 128
+ 346:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      dst_multiplier  Output multiplier
+ 347:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      dst_shift       Output shift
+ 348:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_cols        Number of columns in the right-hand side input matrix
+ 349:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_rows        Number of rows in the right-hand side input matrix
+ 350:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_min  Minimum value to clamp the output to. Range: int8
+ 351:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_max  Maximum value to clamp the output to. Range: int8
+ 352:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 353:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return         The function returns <code>ARM_MATH_SUCCESS</code>
+ 354:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 355:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 356:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** arm_status arm_nn_vec_mat_mult_t_s8(const q7_t *lhs,
+ 357:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const q7_t *rhs,
+ 358:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const q31_t *bias,
+ 359:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     q7_t *dst,
+ 360:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t lhs_offset,
+ 361:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t rhs_offset,
+ 362:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t dst_offset,
+ 363:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t dst_multiplier,
+ 364:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t dst_shift,
+ 365:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t rhs_cols,
+ 366:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t rhs_rows,
+ 367:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_min,
+ 368:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_max);
+ 369:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 370:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 371:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief s8 Vector by Matrix (transposed) multiplication with s16 output
+ 372:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 373:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs             Input left-hand side vector
+ 374:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs             Input right-hand side matrix (transposed)
+ 375:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[out]     dst             Output vector
+ 376:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs_offset      Offset to be added to the input values of the left-hand side
+ 377:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                                 vector. Range: -127 to 128
+ 378:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_offset      Not used
+ 379:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      scatter_offset  Address offset for dst. First output is stored at 'dst', the
+ 380:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                                 second at 'dst + scatter_offset' and so on.
+ 381:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      dst_multiplier  Output multiplier
+ 382:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      dst_shift       Output shift
+ 383:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_cols        Number of columns in the right-hand side input matrix
+ 384:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs_rows        Number of rows in the right-hand side input matrix
+ 385:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_min  Minimum value to clamp the output to. Range: int16
+ 386:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_max  Maximum value to clamp the output to. Range: int16
+ 387:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 388:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return         The function returns <code>ARM_MATH_SUCCESS</code>
+ 389:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 390:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 391:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** arm_status arm_nn_vec_mat_mult_t_svdf_s8(const q7_t *lhs,
+ 392:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const q7_t *rhs,
+ 393:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          q15_t *dst,
+ 394:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t lhs_offset,
+ 395:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t rhs_offset,
+ 396:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t scatter_offset,
+ 397:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t dst_multiplier,
+ 398:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t dst_shift,
+ 399:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t rhs_cols,
+ 400:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t rhs_rows,
+ 401:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t activation_min,
+ 402:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                          const int32_t activation_max);
+ 403:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 404:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 405:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Depthwise convolution of transposed rhs matrix with 4 lhs matrices. To be used in padded 
+ 406:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *        the padding is -lhs_offset(Range: int8). Dimensions are the same for lhs and rhs.
+ 407:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 408:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs             Input left-hand side matrix
+ 409:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs             Input right-hand side matrix (transposed)
+ 410:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs_offset      LHS matrix offset(input offset). Range: -127 to 128
+ 411:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      num_ch          Number of channels in LHS/RHS
+ 412:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_shift       Per channel output shift. Length of vector is equal to number of
+ 413:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_mult        Per channel output multiplier. Length of vector is equal to numb
+ 414:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_offset      Offset to be added to the output values. Range: -127 to 128
+ 415:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_min  Minimum value to clamp the output to. Range: int8
+ 416:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_max  Maximum value to clamp the output to. Range: int8
+ 417:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_x_col       (row_dimension * col_dimension) of LHS/RHS matrix
+ 418:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      output_bias     Per channel output bias. Length of vector is equal to number of 
+ 419:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out             Output pointer
+ 420:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 421:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return         The function returns one of the two
+ 422:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Updated output pointer if an implementaiton is available
+ 423:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - NULL if no implementation is available.
+ 424:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 425:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @note           If number of channels is not a multiple of 4, upto 3 elements outside the bounda
+ 426:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * out for the following.
+ 427:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output shift
+ 428:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output multiplier
+ 429:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output bias
+ 430:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - rhs
+ 431:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 432:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** q7_t *arm_nn_depthwise_conv_nt_t_padded_s8(const q7_t *lhs,
+ 433:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const q7_t *rhs,
+ 434:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t lhs_offset,
+ 435:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const uint16_t num_ch,
+ 436:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t *out_shift,
+ 437:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t *out_mult,
+ 438:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t out_offset,
+ 439:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t activation_min,
+ 440:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t activation_max,
+ 441:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const uint16_t row_x_col,
+ 442:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            const int32_t *const output_bias,
+ 443:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                            q7_t *out);
+ 444:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 445:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 446:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @brief Depthwise convolution of transposed rhs matrix with 4 lhs matrices. To be used in non-pad
+ 447:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *        Dimensions are the same for lhs and rhs.
+ 448:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 449:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs             Input left-hand side matrix
+ 450:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      rhs             Input right-hand side matrix (transposed)
+ 451:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      lhs_offset      LHS matrix offset(input offset). Range: -127 to 128
+ 452:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      num_ch          Number of channels in LHS/RHS
+ 453:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_shift       Per channel output shift. Length of vector is equal to number of
+ 454:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_mult        Per channel output multiplier. Length of vector is equal to numb
+ 455:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out_offset      Offset to be added to the output values. Range: -127 to 128
+ 456:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_min  Minimum value to clamp the output to. Range: int8
+ 457:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      activation_max  Maximum value to clamp the output to. Range: int8
+ 458:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]       row_x_col       (row_dimension * col_dimension) of LHS/RHS matrix
+ 459:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      output_bias     Per channel output bias. Length of vector is equal to number of 
+ 460:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @param[in]      out             Output pointer
+ 461:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 462:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @return         The function returns one of the two
+ 463:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Updated output pointer if an implementaiton is available
+ 464:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - NULL if no implementation is available.
+ 465:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *
+ 466:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * @note           If number of channels is not a multiple of 4, upto 3 elements outside the bounda
+ 467:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  * out for the following.
+ 468:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output shift
+ 469:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output multiplier
+ 470:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - Output bias
+ 471:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  *                  - rhs
+ 472:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 473:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** q7_t *arm_nn_depthwise_conv_nt_t_s8(const q7_t *lhs,
+ 474:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const q7_t *rhs,
+ 475:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t lhs_offset,
+ 476:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const uint16_t num_ch,
+ 477:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *out_shift,
+ 478:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *out_mult,
+ 479:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t out_offset,
+ 480:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_min,
+ 481:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t activation_max,
+ 482:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const uint16_t row_x_col,
+ 483:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     const int32_t *const output_bias,
+ 484:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****                                     q7_t *out);
+ 485:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 486:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** /**
+ 487:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****   @brief         Read 2 q15 elements and post increment pointer.
+ 488:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****   @param[in]     in_q15   Pointer to pointer that holds address of input.
+ 489:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****   @return        q31 value
+ 490:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****  */
+ 491:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** __STATIC_FORCEINLINE q31_t arm_nn_read_q15x2_ia(const q15_t **in_q15)
+ 492:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** {
+ 493:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     q31_t val;
+ 494:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 495:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     memcpy(&val, *in_q15, 4);
+  85              		.loc 2 495 0
+  86 0058 04609DE5 		ldr	r6, [sp, #4]
+  87 005c 0420A0E3 		mov	r2, #4
+  88 0060 24008DE2 		add	r0, sp, #36
+  89 0064 00F0D9F5 		pld	[r9]
+  90 0068 089089E2 		add	r9, r9, #8
+  91 006c 0610A0E1 		mov	r1, r6
+  92 0070 FEFFFFEB 		bl	memcpy
+  93              	.LVL5:
+ 496:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     *in_q15 += 2;
+ 497:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 498:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     return (val);
+  94              		.loc 2 498 0
+  95 0074 24309DE5 		ldr	r3, [sp, #36]
+  96              	.LBE30:
+  97              	.LBE29:
+  98              	.LBB32:
+  99              	.LBB33:
+ 495:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     *in_q15 += 2;
+ 100              		.loc 2 495 0
+ 101 0078 0B10A0E1 		mov	r1, fp
+ 102 007c 0420A0E3 		mov	r2, #4
+ 103 0080 24008DE2 		add	r0, sp, #36
+ 104              	.LBE33:
+ 105              	.LBE32:
+ 106              	.LBB36:
+ 107              	.LBB31:
+ 108              		.loc 2 498 0
+ 109 0084 0C308DE5 		str	r3, [sp, #12]
+ 110              	.LVL6:
+ 111              	.LBE31:
+ 112              	.LBE36:
+ 113              	.LBB37:
+ 114              	.LBB34:
+ 495:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     *in_q15 += 2;
+ 115              		.loc 2 495 0
+ 116 0088 FEFFFFEB 		bl	memcpy
+ 117              	.LVL7:
+ 118              	.LBE34:
+ 119              	.LBE37:
+ 120              	.LBB38:
+ 121              	.LBB39:
+ 122 008c 0420A0E3 		mov	r2, #4
+ 123 0090 24008DE2 		add	r0, sp, #36
+ 124 0094 021086E0 		add	r1, r6, r2
+ 125              	.LVL8:
+ 126              	.LBE39:
+ 127              	.LBE38:
+ 128              	.LBB43:
+ 129              	.LBB35:
+ 130              		.loc 2 498 0
+ 131 0098 24409DE5 		ldr	r4, [sp, #36]
+ 132              	.LVL9:
+ 133              	.LBE35:
+ 134              	.LBE43:
+ 135              	.LBB44:
+ 136              	.LBB40:
+ 495:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     *in_q15 += 2;
+ 137              		.loc 2 495 0
+ 138 009c 04608DE5 		str	r6, [sp, #4]
+ 139 00a0 FEFFFFEB 		bl	memcpy
+ 140              	.LVL10:
+ 141              	.LBE40:
+ 142              	.LBE44:
+ 143              	.LBB45:
+ 144              	.LBB46:
+ 145 00a4 0420A0E3 		mov	r2, #4
+ 146 00a8 24008DE2 		add	r0, sp, #36
+ 147 00ac 02108BE0 		add	r1, fp, r2
+ 148              	.LVL11:
+ 149              	.LBE46:
+ 150              	.LBE45:
+ 151              	.LBB50:
+ 152              	.LBB41:
+ 153              		.loc 2 498 0
+ 154 00b0 24609DE5 		ldr	r6, [sp, #36]
+ 155              	.LVL12:
+ 156              	.LBE41:
+ 157              	.LBE50:
+ 158              	.LBB51:
+ 159              	.LBB47:
+ 495:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h ****     *in_q15 += 2;
+ 160              		.loc 2 495 0
+ 161 00b4 FEFFFFEB 		bl	memcpy
+ 162              	.LVL13:
+ 163              	.LBE47:
+ 164              	.LBE51:
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out3 = (q15_t)__SSAT((q31_t)(mul3 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 165              		.loc 1 91 0
+ 166 00b8 0C309DE5 		ldr	r3, [sp, #12]
+ 167 00bc 08B08BE2 		add	fp, fp, #8
+ 168              	.LVL14:
+ 169              	.LBB52:
+ 170              	.LBB48:
+ 171              		.loc 2 498 0
+ 172 00c0 24209DE5 		ldr	r2, [sp, #36]
+ 173 00c4 04109DE5 		ldr	r1, [sp, #4]
+ 174              	.LBE48:
+ 175              	.LBE52:
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out3 = (q15_t)__SSAT((q31_t)(mul3 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 176              		.loc 1 91 0
+ 177 00c8 835400E1 		smlabb	r0, r3, r4, r5
+ 178 00cc 081081E2 		add	r1, r1, #8
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out2 = (q15_t)__SSAT((q31_t)(mul2 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 179              		.loc 1 90 0
+ 180 00d0 E45304E1 		smlatt	r4, r4, r3, r5
+ 181 00d4 04108DE5 		str	r1, [sp, #4]
+ 182              	.LVL15:
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out3 = (q15_t)__SSAT((q31_t)(mul3 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 183              		.loc 1 91 0
+ 184 00d8 500AA0E1 		asr	r0, r0, r10
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 185              		.loc 1 72 0
+ 186 00dc 08309DE5 		ldr	r3, [sp, #8]
+ 187              	.LBB53:
+ 188              		.loc 1 98 0
+ 189 00e0 070050E1 		cmp	r0, r7
+ 190              	.LBE53:
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out2 = (q15_t)__SSAT((q31_t)(mul2 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 191              		.loc 1 90 0
+ 192 00e4 544AA0E1 		asr	r4, r4, r10
+ 193              	.LBB54:
+ 194              		.loc 1 98 0
+ 195 00e8 0700A0B1 		movlt	r0, r7
+ 196              	.LBE54:
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 197              		.loc 1 93 0
+ 198 00ec 865201E1 		smlabb	r1, r6, r2, r5
+ 199              	.LVL16:
+ 200              	.LBB55:
+ 201              		.loc 1 98 0
+ 202 00f0 080050E1 		cmp	r0, r8
+ 203 00f4 0800A0A1 		movge	r0, r8
+ 204 00f8 070054E1 		cmp	r4, r7
+ 205              	.LBE55:
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 206              		.loc 1 93 0
+ 207 00fc 511AA0E1 		asr	r1, r1, r10
+ 208              	.LVL17:
+ 209              	.LBB56:
+ 210              		.loc 1 98 0
+ 211 0100 0740A0B1 		movlt	r4, r7
+ 212 0104 080054E1 		cmp	r4, r8
+ 213              	.LBE56:
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out4 = (q15_t)__SSAT((q31_t)(mul4 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 214              		.loc 1 92 0
+ 215 0108 E25606E1 		smlatt	r6, r2, r6, r5
+ 216              	.LVL18:
+ 217              	.LBB57:
+ 218              		.loc 1 98 0
+ 219 010c 0840A0A1 		movge	r4, r8
+ 220              	.LBE57:
+ 221              	.LBB58:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out4, out3, 16);
+ 222              		.loc 1 99 0
+ 223 0110 070051E1 		cmp	r1, r7
+ 224              	.LBE58:
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         out4 = (q15_t)__SSAT((q31_t)(mul4 + NN_ROUND(out_shift)) >> out_shift, 16);
+ 225              		.loc 1 92 0
+ 226 0114 566AA0E1 		asr	r6, r6, r10
+ 227              	.LBB59:
+ 228              		.loc 1 99 0
+ 229 0118 0710A0B1 		movlt	r1, r7
+ 230 011c 080051E1 		cmp	r1, r8
+ 231 0120 0810A0A1 		movge	r1, r8
+ 232 0124 070056E1 		cmp	r6, r7
+ 233 0128 0760A0B1 		movlt	r6, r7
+ 234 012c 080056E1 		cmp	r6, r8
+ 235 0130 0860A0A1 		movge	r6, r8
+ 236              	.LBE59:
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 237              		.loc 1 72 0
+ 238 0134 013053E2 		subs	r3, r3, #1
+ 239              	.LBB60:
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out4, out3, 16);
+ 240              		.loc 1 98 0
+ 241              		.syntax divided
+ 242              	@ 98 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c
+ 243 0138 144880E6 		pkhbt r4, r0, r4, lsl #16
+ 244              	@ 0 "" 2
+ 245              	.LVL19:
+ 246              		.arm
+ 247              		.syntax unified
+ 248              	.LBE60:
+ 249              	.LBB61:
+ 250              		.loc 1 99 0
+ 251              		.syntax divided
+ 252              	@ 99 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c
+ 253 013c 166881E6 		pkhbt r6, r1, r6, lsl #16
+ 254              	@ 0 "" 2
+ 255              		.arm
+ 256              		.syntax unified
+ 257              	.LBE61:
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out4, out3, 16);
+ 258              		.loc 1 98 0
+ 259 0140 204009E5 		str	r4, [r9, #-32]
+ 260              	.LVL20:
+ 261              		.loc 1 99 0
+ 262 0144 1C6009E5 		str	r6, [r9, #-28]
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 263              		.loc 1 72 0
+ 264 0148 08308DE5 		str	r3, [sp, #8]
+ 265 014c C1FFFF1A 		bne	.L3
+ 266 0150 1C309DE5 		ldr	r3, [sp, #28]
+ 267              	.LBB62:
+ 268              	.LBB49:
+ 496:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Include\arm_nnsupportfunctions.h **** 
+ 269              		.loc 2 496 0
+ 270 0154 14209DE5 		ldr	r2, [sp, #20]
+ 271 0158 8331A0E1 		lsl	r3, r3, #3
+ 272 015c 032082E0 		add	r2, r2, r3
+ 273 0160 14208DE5 		str	r2, [sp, #20]
+ 274              	.LBE49:
+ 275              	.LBE62:
+ 276              	.LBB63:
+ 277              	.LBB42:
+ 278 0164 10209DE5 		ldr	r2, [sp, #16]
+ 279 0168 032082E0 		add	r2, r2, r3
+ 280 016c 10208DE5 		str	r2, [sp, #16]
+ 281              	.LBE42:
+ 282              	.LBE63:
+ 283              		.loc 1 99 0
+ 284 0170 18209DE5 		ldr	r2, [sp, #24]
+ 285 0174 033082E0 		add	r3, r2, r3
+ 286 0178 18308DE5 		str	r3, [sp, #24]
+ 287              	.LVL21:
+ 288              	.L2:
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #else
+ 102:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 103:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out2, out1, 16);
+ 104:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *__SIMD32(pDst)++ = __PKHBT(out4, out3, 16);
+ 105:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 106:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #endif /* #ifndef ARM_MATH_BIG_ENDIAN */
+ 107:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 108:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* Decrement the blockSize loop counter */
+ 109:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         blkCnt--;
+ 110:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     }
+ 111:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 112:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+ 113:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****      ** No loop unrolling is used. */
+ 114:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     blkCnt = blockSize % 0x4U;
+ 115:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 116:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #else
+ 117:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 118:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* Run the below code for Cortex-M0 */
+ 119:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 120:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     /* Initialize blkCnt with number of samples */
+ 121:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     blkCnt = blockSize;
+ 122:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 123:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** #endif /* #if defined (ARM_MATH_DSP) */
+ 124:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     while (blkCnt > 0U)
+ 289              		.loc 1 125 0
+ 290 017c 50309DE5 		ldr	r3, [sp, #80]
+ 291 0180 03E013E2 		ands	lr, r3, #3
+ 292              	.LVL22:
+ 293 0184 2700000A 		beq	.L1
+ 126:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 127:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* C = A * B */
+ 128:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* Multiply the inputs and store the result in the destination buffer */
+ 129:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         *pDst++ = (q15_t)__SSAT(((q31_t)((q31_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> o
+ 294              		.loc 1 129 0
+ 295 0188 14509DE5 		ldr	r5, [sp, #20]
+ 296 018c 0130A0E3 		mov	r3, #1
+ 297 0190 10609DE5 		ldr	r6, [sp, #16]
+ 298 0194 133AA0E1 		lsl	r3, r3, r10
+ 299 0198 0219A0E3 		mov	r1, #32768
+ 300 019c 18709DE5 		ldr	r7, [sp, #24]
+ 301 01a0 B020D5E1 		ldrh	r2, [r5]
+ 302 01a4 A3C0A0E1 		lsr	ip, r3, #1
+ 303              	.LVL23:
+ 304 01a8 B040D6E1 		ldrh	r4, [r6]
+ 305 01ac FF1F4FE3 		movt	r1, 65535
+ 306 01b0 FF0F07E3 		movw	r0, #32767
+ 307 01b4 82C402E1 		smlabb	r2, r2, r4, ip
+ 308 01b8 522AA0E1 		asr	r2, r2, r10
+ 309 01bc 010052E1 		cmp	r2, r1
+ 310 01c0 0120A0B1 		movlt	r2, r1
+ 311 01c4 000052E1 		cmp	r2, r0
+ 312 01c8 0020A0A1 		movge	r2, r0
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 313              		.loc 1 125 0
+ 314 01cc 01005EE3 		cmp	lr, #1
+ 315              		.loc 1 129 0
+ 316 01d0 B020C7E1 		strh	r2, [r7]	@ movhi
+ 317              	.LVL24:
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 318              		.loc 1 125 0
+ 319 01d4 1300000A 		beq	.L1
+ 320              	.LVL25:
+ 321              		.loc 1 129 0
+ 322 01d8 B220D5E1 		ldrh	r2, [r5, #2]
+ 323 01dc B230D6E1 		ldrh	r3, [r6, #2]
+ 324 01e0 82C302E1 		smlabb	r2, r2, r3, ip
+ 325 01e4 522AA0E1 		asr	r2, r2, r10
+ 326 01e8 010052E1 		cmp	r2, r1
+ 327 01ec 0120A0B1 		movlt	r2, r1
+ 328 01f0 000052E1 		cmp	r2, r0
+ 329 01f4 0020A0A1 		movge	r2, r0
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 330              		.loc 1 125 0
+ 331 01f8 02005EE3 		cmp	lr, #2
+ 332              		.loc 1 129 0
+ 333 01fc B220C7E1 		strh	r2, [r7, #2]	@ movhi
+ 334              	.LVL26:
+ 125:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     {
+ 335              		.loc 1 125 0
+ 336 0200 0800000A 		beq	.L1
+ 337              	.LVL27:
+ 338              		.loc 1 129 0
+ 339 0204 B430D6E1 		ldrh	r3, [r6, #4]
+ 340 0208 B420D5E1 		ldrh	r2, [r5, #4]
+ 341 020c 83C203E1 		smlabb	r3, r3, r2, ip
+ 342 0210 53AAA0E1 		asr	r10, r3, r10
+ 343 0214 01005AE1 		cmp	r10, r1
+ 344 0218 01A0A0B1 		movlt	r10, r1
+ 345 021c 00005AE1 		cmp	r10, r0
+ 346 0220 00A0A0A1 		movge	r10, r0
+ 347 0224 B4A0C7E1 		strh	r10, [r7, #4]	@ movhi
+ 348              	.LVL28:
+ 349              	.L1:
+ 130:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** 
+ 131:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         /* Decrement the blockSize loop counter */
+ 132:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****         blkCnt--;
+ 133:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c ****     }
+ 134:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q15.c **** }
+ 350              		.loc 1 134 0
+ 351 0228 2CD08DE2 		add	sp, sp, #44
+ 352              		.cfi_def_cfa_offset 36
+ 353              		@ sp needed
+ 354 022c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 355              		.cfi_endproc
+ 356              	.LFE122:
+ 358              		.text
+ 359              	.Letext0:
+ 360              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 361              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 362              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 363              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 364              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 365              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 366              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 367              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/thir
+ 368              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/thir
+ 369              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/thir
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_mult_q15.c
+C:\Users\a5050395\AppData\Local\Temp\ccHVtcc8.s:17     .text.arm_nn_mult_q15:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccHVtcc8.s:23     .text.arm_nn_mult_q15:00000000 arm_nn_mult_q15
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+                           .group:00000000 wm4.arm_math_memory.h.27.15b48442bebd15b7684ae775c0e94421
+                           .group:00000000 wm4.none.h.38.52c167e5c66424d7c1fe8048a5bf9ef2
+                           .group:00000000 wm4.utils.h.27.57524573fe37b04009eecf3582a4c591
+                           .group:00000000 wm4.fast_math_functions.h.44.f0d080ca1ba957380c25e401a97da7cc
+                           .group:00000000 wm4.arm_common_tables.h.115.99deac85cf8f0a38da86d5f757adaa60
+                           .group:00000000 wm4.arm_nnsupportfunctions.h.40.02e2e72066f745a38156ef292fa21e7b
+
+UNDEFINED SYMBOLS
+memcpy

@@ -1,0 +1,220 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"perform.c"
+  13              		.section	.text.PerformInit,"ax",%progbits
+  14              		.align	2
+  15              		.global	PerformInit
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	PerformInit:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 0200A0E3 		mov	r0, #2
+  25 0008 FEFFFFEB 		bl	R_STB_StartModule
+  26 000c 0B3AA0E3 		mov	r3, #45056
+  27 0010 00C0E0E3 		mvn	ip, #0
+  28 0014 03384EE3 		movt	r3, 59395
+  29 0018 001000E3 		movw	r1, #:lower16:.LANCHOR0
+  30 001c 1820D3E5 		ldrb	r2, [r3, #24]	@ zero_extendqisi2
+  31 0020 001040E3 		movt	r1, #:upper16:.LANCHOR0
+  32 0024 0000A0E3 		mov	r0, #0
+  33 0028 012082E3 		orr	r2, r2, #1
+  34 002c 1820C3E5 		strb	r2, [r3, #24]
+  35 0030 00C083E5 		str	ip, [r3]
+  36 0034 2020D3E5 		ldrb	r2, [r3, #32]	@ zero_extendqisi2
+  37 0038 022082E3 		orr	r2, r2, #2
+  38 003c 2020C3E5 		strb	r2, [r3, #32]
+  39 0040 2020D3E5 		ldrb	r2, [r3, #32]	@ zero_extendqisi2
+  40 0044 1F20C0E7 		bfc	r2, #0, #1
+  41 0048 2020C3E5 		strb	r2, [r3, #32]
+  42 004c 1420D3E5 		ldrb	r2, [r3, #20]	@ zero_extendqisi2
+  43 0050 012082E3 		orr	r2, r2, #1
+  44 0054 1420C3E5 		strb	r2, [r3, #20]
+  45 0058 042093E5 		ldr	r2, [r3, #4]
+  46 005c 043093E5 		ldr	r3, [r3, #4]
+  47 0060 023043E0 		sub	r3, r3, r2
+  48 0064 003081E5 		str	r3, [r1]
+  49 0068 1080BDE8 		pop	{r4, pc}
+  51              		.section	.text.PerformSetStartTime,"ax",%progbits
+  52              		.align	2
+  53              		.global	PerformSetStartTime
+  54              		.syntax unified
+  55              		.arm
+  56              		.fpu neon
+  58              	PerformSetStartTime:
+  59              		@ args = 0, pretend = 0, frame = 0
+  60              		@ frame_needed = 0, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  62 0000 FF0050E3 		cmp	r0, #255
+  63 0004 1EFF2F81 		bxhi	lr
+  64 0008 0B3AA0E3 		mov	r3, #45056
+  65 000c 800080E0 		add	r0, r0, r0, lsl #1
+  66 0010 03384EE3 		movt	r3, 59395
+  67 0014 042093E5 		ldr	r2, [r3, #4]
+  68 0018 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  69 001c 003040E3 		movt	r3, #:upper16:.LANCHOR1
+  70 0020 002183E7 		str	r2, [r3, r0, lsl #2]
+  71 0024 1EFF2FE1 		bx	lr
+  73              		.section	.text.PerformSetEndTime,"ax",%progbits
+  74              		.align	2
+  75              		.global	PerformSetEndTime
+  76              		.syntax unified
+  77              		.arm
+  78              		.fpu neon
+  80              	PerformSetEndTime:
+  81              		@ args = 0, pretend = 0, frame = 0
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83              		@ link register save eliminated.
+  84 0000 FF0050E3 		cmp	r0, #255
+  85 0004 1EFF2F81 		bxhi	lr
+  86 0008 0B2AA0E3 		mov	r2, #45056
+  87 000c 800080E0 		add	r0, r0, r0, lsl #1
+  88 0010 003000E3 		movw	r3, #:lower16:.LANCHOR1
+  89 0014 03284EE3 		movt	r2, 59395
+  90 0018 003040E3 		movt	r3, #:upper16:.LANCHOR1
+  91 001c 042092E5 		ldr	r2, [r2, #4]
+  92 0020 000183E0 		add	r0, r3, r0, lsl #2
+  93 0024 042080E5 		str	r2, [r0, #4]
+  94 0028 1EFF2FE1 		bx	lr
+  96              		.section	.text.PerformGetElapsedTime_ns,"ax",%progbits
+  97              		.align	2
+  98              		.global	PerformGetElapsedTime_ns
+  99              		.syntax unified
+ 100              		.arm
+ 101              		.fpu neon
+ 103              	PerformGetElapsedTime_ns:
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              		@ link register save eliminated.
+ 107 0000 FF0050E3 		cmp	r0, #255
+ 108 0004 0D00008A 		bhi	.L10
+ 109 0008 800080E0 		add	r0, r0, r0, lsl #1
+ 110 000c 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 111 0010 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 112 0014 0001A0E1 		lsl	r0, r0, #2
+ 113 0018 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 114 001c 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 115 0020 00C083E0 		add	ip, r3, r0
+ 116 0024 001093E7 		ldr	r1, [r3, r0]
+ 117 0028 04009CE5 		ldr	r0, [ip, #4]
+ 118 002c 003092E5 		ldr	r3, [r2]
+ 119 0030 010040E0 		sub	r0, r0, r1
+ 120 0034 030040E0 		sub	r0, r0, r3
+ 121 0038 000260E0 		rsb	r0, r0, r0, lsl #4
+ 122 003c 1EFF2FE1 		bx	lr
+ 123              	.L10:
+ 124 0040 0000A0E3 		mov	r0, #0
+ 125 0044 1EFF2FE1 		bx	lr
+ 127              		.section	.text.PerformGetElapsedTime_us,"ax",%progbits
+ 128              		.align	2
+ 129              		.global	PerformGetElapsedTime_us
+ 130              		.syntax unified
+ 131              		.arm
+ 132              		.fpu neon
+ 134              	PerformGetElapsedTime_us:
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137              		@ link register save eliminated.
+ 138 0000 FF0050E3 		cmp	r0, #255
+ 139 0004 1000008A 		bhi	.L13
+ 140 0008 800080E0 		add	r0, r0, r0, lsl #1
+ 141 000c 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 142 0010 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 143 0014 0001A0E1 		lsl	r0, r0, #2
+ 144 0018 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 145 001c 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 146 0020 002083E0 		add	r2, r3, r0
+ 147 0024 000093E7 		ldr	r0, [r3, r0]
+ 148 0028 042092E5 		ldr	r2, [r2, #4]
+ 149 002c E13308E3 		movw	r3, #33761
+ 150 0030 001091E5 		ldr	r1, [r1]
+ 151 0034 0F3E43E3 		movt	r3, 15887
+ 152 0038 002042E0 		sub	r2, r2, r0
+ 153 003c 012042E0 		sub	r2, r2, r1
+ 154 0040 922383E0 		umull	r2, r3, r2, r3
+ 155 0044 2302A0E1 		lsr	r0, r3, #4
+ 156 0048 1EFF2FE1 		bx	lr
+ 157              	.L13:
+ 158 004c 0000A0E3 		mov	r0, #0
+ 159 0050 1EFF2FE1 		bx	lr
+ 161              		.section	.text.PerformGetElapsedTime_ms,"ax",%progbits
+ 162              		.align	2
+ 163              		.global	PerformGetElapsedTime_ms
+ 164              		.syntax unified
+ 165              		.arm
+ 166              		.fpu neon
+ 168              	PerformGetElapsedTime_ms:
+ 169              		@ args = 0, pretend = 0, frame = 0
+ 170              		@ frame_needed = 0, uses_anonymous_args = 0
+ 171              		@ link register save eliminated.
+ 172 0000 FF0050E3 		cmp	r0, #255
+ 173 0004 1000008A 		bhi	.L16
+ 174 0008 800080E0 		add	r0, r0, r0, lsl #1
+ 175 000c 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 176 0010 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 177 0014 0001A0E1 		lsl	r0, r0, #2
+ 178 0018 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 179 001c 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 180 0020 002083E0 		add	r2, r3, r0
+ 181 0024 000093E7 		ldr	r0, [r3, r0]
+ 182 0028 042092E5 		ldr	r2, [r2, #4]
+ 183 002c 173304E3 		movw	r3, #17175
+ 184 0030 001091E5 		ldr	r1, [r1]
+ 185 0034 333E4FE3 		movt	r3, 65075
+ 186 0038 002042E0 		sub	r2, r2, r0
+ 187 003c 012042E0 		sub	r2, r2, r1
+ 188 0040 922383E0 		umull	r2, r3, r2, r3
+ 189 0044 2308A0E1 		lsr	r0, r3, #16
+ 190 0048 1EFF2FE1 		bx	lr
+ 191              	.L16:
+ 192 004c 0000A0E3 		mov	r0, #0
+ 193 0050 1EFF2FE1 		bx	lr
+ 195              		.section	.bss.app_time,"aw",%nobits
+ 196              		.align	3
+ 197              		.set	.LANCHOR1,. + 0
+ 200              	app_time:
+ 201 0000 00000000 		.space	3072
+ 201      00000000 
+ 201      00000000 
+ 201      00000000 
+ 201      00000000 
+ 202              		.section	.bss.overhead,"aw",%nobits
+ 203              		.align	2
+ 204              		.set	.LANCHOR0,. + 0
+ 207              	overhead:
+ 208 0000 00000000 		.space	4
+ 209              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 perform.c
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:14     .text.PerformInit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:20     .text.PerformInit:00000000 PerformInit
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:204    .bss.overhead:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:52     .text.PerformSetStartTime:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:58     .text.PerformSetStartTime:00000000 PerformSetStartTime
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:197    .bss.app_time:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:74     .text.PerformSetEndTime:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:80     .text.PerformSetEndTime:00000000 PerformSetEndTime
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:97     .text.PerformGetElapsedTime_ns:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:103    .text.PerformGetElapsedTime_ns:00000000 PerformGetElapsedTime_ns
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:128    .text.PerformGetElapsedTime_us:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:134    .text.PerformGetElapsedTime_us:00000000 PerformGetElapsedTime_us
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:162    .text.PerformGetElapsedTime_ms:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:168    .text.PerformGetElapsedTime_ms:00000000 PerformGetElapsedTime_ms
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:196    .bss.app_time:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:200    .bss.app_time:00000000 app_time
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:203    .bss.overhead:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccsrxwFJ.s:207    .bss.overhead:00000000 overhead
+
+UNDEFINED SYMBOLS
+R_STB_StartModule

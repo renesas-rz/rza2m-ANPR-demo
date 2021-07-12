@@ -1,0 +1,1414 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"debug_log_numbers.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.DebugLogInt32,"ax",%progbits
+  17              		.align	2
+  18              		.global	DebugLogInt32
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	DebugLogInt32:
+  24              		.fnstart
+  25              	.LFB7:
+  26              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** /* Copyright 2018 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Implements debug logging for numbers by converting them into strings and then
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // calling the main DebugLog(char*) function. These are separated into a
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // different file so that platforms can just implement the string output version
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // of DebugLog() and then get the numerical variations without requiring any
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // more code.
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** #include "tensorflow/lite/micro/debug_log_numbers.h"
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** #include "tensorflow/lite/micro/debug_log.h"
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** namespace {
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // All input buffers to the number conversion functions must be this long.
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** static const int kFastToBufferSize = 48;
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Reverses a zero-terminated string in-place.
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* ReverseStringInPlace(char* start, char* end) {
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* p1 = start;
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* p2 = end - 1;
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   while (p1 < p2) {
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return start;
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Appends a string to a string, in-place. You need to pass in the maximum
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // string length as the second argument.
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* StrCatStr(char* main, int main_max_length, const char* to_append) {
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current = main;
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   while (*current != 0) {
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current_end = main + (main_max_length - 1);
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   while ((*to_append != 0) && (current < current_end)) {
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++to_append;
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = 0;
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Populates the provided buffer with an ASCII representation of the number.
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* FastUInt32ToBufferLeft(uint32_t i, char* buffer, int base) {
+  62:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* start = buffer;
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   do {
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     int32_t digit = i % base;
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     if (digit < 10) {
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       character = '0' + digit;
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       character = 'a' + (digit - 10);
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     }
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = character;
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   } while (i > 0);
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return buffer;
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+  78:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Populates the provided buffer with an ASCII representation of the number.
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* FastInt32ToBufferLeft(int32_t i, char* buffer) {
+  81:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   uint32_t u = i;
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   if (i < 0) {
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+  85:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return FastUInt32ToBufferLeft(u, buffer, 10);
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+  88:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Converts a number to a string and appends it to another.
+  90:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* StrCatInt32(char* main, int main_max_length, int32_t number) {
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastInt32ToBufferLeft(number, number_string);
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return StrCatStr(main, main_max_length, number_string);
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Converts a number to a string and appends it to another.
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* StrCatUInt32(char* main, int main_max_length, uint32_t number, int base) {
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+  99:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastUInt32ToBufferLeft(number, number_string, base);
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return StrCatStr(main, main_max_length, number_string);
+ 101:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 102:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 103:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Populates the provided buffer with ASCII representation of the float number.
+ 104:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // Avoids the use of any floating point instructions (since these aren't
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // supported on many microcontrollers) and as a consequence prints values with
+ 106:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** // power-of-two exponents.
+ 107:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** char* FastFloatToBufferLeft(float f, char* buffer) {
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current = buffer;
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current_end = buffer + (kFastToBufferSize - 1);
+ 110:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // Access the bit fields of the floating point value to avoid requiring any
+ 111:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // float instructions. These constants are derived from IEEE 754.
+ 112:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t sign_mask = 0x80000000;
+ 113:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t exponent_mask = 0x7f800000;
+ 114:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int32_t exponent_shift = 23;
+ 115:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int32_t exponent_bias = 127;
+ 116:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t fraction_mask = 0x007fffff;
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t u = *reinterpret_cast<uint32_t*>(&f);
+ 118:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int32_t exponent =
+ 119:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       ((u & exponent_mask) >> exponent_shift) - exponent_bias;
+ 120:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t fraction = (u & fraction_mask);
+ 121:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // Expect ~0x2B1B9D3 for fraction.
+ 122:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   if (u & sign_mask) {
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = '-';
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     current += 1;
+ 125:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 126:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = 0;
+ 127:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // These are special cases for infinities and not-a-numbers.
+ 128:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   if (exponent == 128) {
+ 129:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     if (fraction == 0) {
+ 130:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       current = StrCatStr(current, (current_end - current), "Inf");
+ 131:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       return current;
+ 132:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+ 133:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       current = StrCatStr(current, (current_end - current), "NaN");
+ 134:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       return current;
+ 135:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     }
+ 136:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 137:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // 0x007fffff (8388607) represents 0.99... for the fraction, so to print the
+ 138:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // correct decimal digits we need to scale our value before passing it to the
+ 139:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // conversion function. This scale should be 10000000/8388608 = 1.1920928955.
+ 140:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // We can approximate this using multiply-adds and right-shifts using the
+ 141:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // values in this array. The 1. portion of the number string is printed out
+ 142:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // in a fixed way before the fraction, below.
+ 143:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int32_t scale_shifts_size = 13;
+ 144:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int8_t scale_shifts[13] = {3,  4,  8,  11, 13, 14, 17,
+ 145:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****                                    18, 19, 20, 21, 22, 23};
+ 146:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   uint32_t scaled_fraction = fraction;
+ 147:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   for (int i = 0; i < scale_shifts_size; ++i) {
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     scaled_fraction += (fraction >> scale_shifts[i]);
+ 149:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 150:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = '1';
+ 151:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current += 1;
+ 152:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = '.';
+ 153:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current += 1;
+ 154:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = 0;
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatUInt32(current, (current_end - current), scaled_fraction, 10);
+ 156:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatStr(current, (current_end - current), "*2^");
+ 157:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatInt32(current, (current_end - current), exponent);
+ 158:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 159:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 160:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 161:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }  // namespace
+ 162:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 163:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** extern "C" void DebugLogInt32(int32_t i) {
+  27              		.loc 1 163 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 48
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  32 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+  33              		.save {r4, r5, r6, r7, lr}
+  34              		.cfi_def_cfa_offset 20
+  35              		.cfi_offset 4, -20
+  36              		.cfi_offset 5, -16
+  37              		.cfi_offset 6, -12
+  38              		.cfi_offset 7, -8
+  39              		.cfi_offset 14, -4
+  40              	.LBB35:
+  41              	.LBB36:
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+  42              		.loc 1 82 0
+  43 0004 004050E2 		subs	r4, r0, #0
+  44              	.LBE36:
+  45              	.LBE35:
+  46              		.loc 1 163 0
+  47              		.pad #52
+  48 0008 34D04DE2 		sub	sp, sp, #52
+  49              		.cfi_def_cfa_offset 72
+  50              	.LVL1:
+  51              	.LBB51:
+  52              	.LBB50:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+  53              		.loc 1 83 0
+  54 000c 2D30A0B3 		movlt	r3, #45
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+  55              		.loc 1 82 0
+  56 0010 0D00A0A1 		movge	r0, sp
+  57              	.LVL2:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+  58              		.loc 1 83 0
+  59 0014 01E08DB2 		addlt	lr, sp, #1
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+  60              		.loc 1 82 0
+  61 0018 00E0A0A1 		movge	lr, r0
+  62              	.LBB37:
+  63              	.LBB38:
+  64              	.LBB39:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+  65              		.loc 1 64 0
+  66 001c CD5C0CE3 		movw	r5, #52429
+  67              	.LBE39:
+  68              	.LBE38:
+  69              	.LBE37:
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+  70              		.loc 1 84 0
+  71 0020 004064B2 		rsblt	r4, r4, #0
+  72              	.LVL3:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+  73              		.loc 1 83 0
+  74 0024 0030CDB5 		strblt	r3, [sp]
+  75 0028 0D00A0B1 		movlt	r0, sp
+  76 002c 0E20A0E1 		mov	r2, lr
+  77              	.LBB49:
+  78              	.LBB48:
+  79              	.LBB40:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+  80              		.loc 1 64 0
+  81 0030 CC5C4CE3 		movt	r5, 52428
+  82 0034 000000EA 		b	.L3
+  83              	.LVL4:
+  84              	.L8:
+  85              	.LBE40:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+  86              		.loc 1 73 0
+  87 0038 0C20A0E1 		mov	r2, ip
+  88              	.LVL5:
+  89              	.L3:
+  90              	.LBB41:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+  91              		.loc 1 64 0
+  92 003c 946587E0 		umull	r6, r7, r4, r5
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+  93              		.loc 1 71 0
+  94 0040 02C0A0E1 		mov	ip, r2
+  95              	.LVL6:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+  96              		.loc 1 64 0
+  97 0044 A711A0E1 		lsr	r1, r7, #3
+  98              	.LVL7:
+  99 0048 013181E0 		add	r3, r1, r1, lsl #2
+ 100 004c 833044E0 		sub	r3, r4, r3, lsl #1
+ 101              	.LBE41:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 102              		.loc 1 73 0
+ 103 0050 004051E2 		subs	r4, r1, #0
+ 104              	.LVL8:
+ 105              	.LBB42:
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+ 106              		.loc 1 67 0
+ 107 0054 303083E2 		add	r3, r3, #48
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 108              		.loc 1 71 0
+ 109 0058 0130CCE4 		strb	r3, [ip], #1
+ 110              	.LVL9:
+ 111              	.LBE42:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 112              		.loc 1 73 0
+ 113 005c F5FFFF1A 		bne	.L8
+ 114              	.LBB43:
+ 115              	.LBB44:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 116              		.loc 1 35 0
+ 117 0060 0E0052E1 		cmp	r2, lr
+ 118              	.LBE44:
+ 119              	.LBE43:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+ 120              		.loc 1 74 0
+ 121 0064 0040CCE5 		strb	r4, [ip]
+ 122              	.LVL10:
+ 123              	.LBB47:
+ 124              	.LBB46:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 125              		.loc 1 35 0
+ 126 0068 0500009A 		bls	.L5
+ 127              	.LVL11:
+ 128              	.L6:
+ 129              	.LBB45:
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+ 130              		.loc 1 36 0
+ 131 006c 0030DEE5 		ldrb	r3, [lr]	@ zero_extendqisi2
+ 132              	.LVL12:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+ 133              		.loc 1 37 0
+ 134 0070 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+ 135 0074 0110CEE4 		strb	r1, [lr], #1
+ 136              	.LVL13:
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 137              		.loc 1 38 0
+ 138 0078 013042E4 		strb	r3, [r2], #-1
+ 139              	.LVL14:
+ 140              	.LBE45:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 141              		.loc 1 35 0
+ 142 007c 02005EE1 		cmp	lr, r2
+ 143 0080 F9FFFF3A 		bcc	.L6
+ 144              	.LVL15:
+ 145              	.L5:
+ 146              	.LBE46:
+ 147              	.LBE47:
+ 148              	.LBE48:
+ 149              	.LBE49:
+ 150              	.LBE50:
+ 151              	.LBE51:
+ 164:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+ 165:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastInt32ToBufferLeft(i, number_string);
+ 166:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   DebugLog(number_string);
+ 152              		.loc 1 166 0
+ 153 0084 FEFFFFEB 		bl	DebugLog
+ 154              	.LVL16:
+ 167:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 155              		.loc 1 167 0
+ 156 0088 34D08DE2 		add	sp, sp, #52
+ 157              		.cfi_def_cfa_offset 20
+ 158              		@ sp needed
+ 159 008c F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 160              		.cfi_endproc
+ 161              	.LFE7:
+ 162              		.fnend
+ 164              		.section	.text.DebugLogUInt32,"ax",%progbits
+ 165              		.align	2
+ 166              		.global	DebugLogUInt32
+ 167              		.syntax unified
+ 168              		.arm
+ 169              		.fpu neon
+ 171              	DebugLogUInt32:
+ 172              		.fnstart
+ 173              	.LFB8:
+ 168:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 169:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** extern "C" void DebugLogUInt32(uint32_t i) {
+ 174              		.loc 1 169 0
+ 175              		.cfi_startproc
+ 176              		@ args = 0, pretend = 0, frame = 48
+ 177              		@ frame_needed = 0, uses_anonymous_args = 0
+ 178              	.LVL17:
+ 179 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 180              		.save {r4, r5, r6, lr}
+ 181              		.cfi_def_cfa_offset 16
+ 182              		.cfi_offset 4, -16
+ 183              		.cfi_offset 5, -12
+ 184              		.cfi_offset 6, -8
+ 185              		.cfi_offset 14, -4
+ 186              	.LBB58:
+ 187              	.LBB59:
+ 188              	.LBB60:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 189              		.loc 1 64 0
+ 190 0004 CD6C0CE3 		movw	r6, #52429
+ 191              	.LVL18:
+ 192              	.LBE60:
+ 193              	.LBE59:
+ 194              	.LBE58:
+ 195              		.loc 1 169 0
+ 196              		.pad #48
+ 197 0008 30D04DE2 		sub	sp, sp, #48
+ 198              		.cfi_def_cfa_offset 64
+ 199              	.LVL19:
+ 200              	.LBB71:
+ 201              	.LBB69:
+ 202              	.LBB61:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 203              		.loc 1 64 0
+ 204 000c CC6C4CE3 		movt	r6, 52428
+ 205              	.LBE61:
+ 206              	.LBE69:
+ 207              	.LBE71:
+ 208              		.loc 1 169 0
+ 209 0010 0DE0A0E1 		mov	lr, sp
+ 210 0014 0D20A0E1 		mov	r2, sp
+ 211 0018 000000EA 		b	.L13
+ 212              	.LVL20:
+ 213              	.L17:
+ 214              	.LBB72:
+ 215              	.LBB70:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 216              		.loc 1 73 0
+ 217 001c 0C20A0E1 		mov	r2, ip
+ 218              	.LVL21:
+ 219              	.L13:
+ 220              	.LBB62:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 221              		.loc 1 64 0
+ 222 0020 904685E0 		umull	r4, r5, r0, r6
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 223              		.loc 1 71 0
+ 224 0024 02C0A0E1 		mov	ip, r2
+ 225              	.LVL22:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 226              		.loc 1 64 0
+ 227 0028 A511A0E1 		lsr	r1, r5, #3
+ 228              	.LVL23:
+ 229 002c 013181E0 		add	r3, r1, r1, lsl #2
+ 230 0030 833040E0 		sub	r3, r0, r3, lsl #1
+ 231              	.LBE62:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 232              		.loc 1 73 0
+ 233 0034 000051E2 		subs	r0, r1, #0
+ 234              	.LVL24:
+ 235              	.LBB63:
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+ 236              		.loc 1 67 0
+ 237 0038 303083E2 		add	r3, r3, #48
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 238              		.loc 1 71 0
+ 239 003c 0130CCE4 		strb	r3, [ip], #1
+ 240              	.LVL25:
+ 241              	.LBE63:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 242              		.loc 1 73 0
+ 243 0040 F5FFFF1A 		bne	.L17
+ 244              	.LBB64:
+ 245              	.LBB65:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 246              		.loc 1 35 0
+ 247 0044 0E0052E1 		cmp	r2, lr
+ 248              	.LBE65:
+ 249              	.LBE64:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+ 250              		.loc 1 74 0
+ 251 0048 0000CCE5 		strb	r0, [ip]
+ 252              	.LVL26:
+ 253              	.LBB68:
+ 254              	.LBB67:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 255              		.loc 1 35 0
+ 256 004c 0E30A081 		movhi	r3, lr
+ 257 0050 0500009A 		bls	.L15
+ 258              	.LVL27:
+ 259              	.L16:
+ 260              	.LBB66:
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+ 261              		.loc 1 36 0
+ 262 0054 0010D3E5 		ldrb	r1, [r3]	@ zero_extendqisi2
+ 263              	.LVL28:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+ 264              		.loc 1 37 0
+ 265 0058 0000D2E5 		ldrb	r0, [r2]	@ zero_extendqisi2
+ 266 005c 0100C3E4 		strb	r0, [r3], #1
+ 267              	.LVL29:
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 268              		.loc 1 38 0
+ 269 0060 011042E4 		strb	r1, [r2], #-1
+ 270              	.LVL30:
+ 271              	.LBE66:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 272              		.loc 1 35 0
+ 273 0064 020053E1 		cmp	r3, r2
+ 274 0068 F9FFFF3A 		bcc	.L16
+ 275              	.LVL31:
+ 276              	.L15:
+ 277              	.LBE67:
+ 278              	.LBE68:
+ 279              	.LBE70:
+ 280              	.LBE72:
+ 170:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+ 171:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastUInt32ToBufferLeft(i, number_string, 10);
+ 172:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   DebugLog(number_string);
+ 281              		.loc 1 172 0
+ 282 006c 0E00A0E1 		mov	r0, lr
+ 283 0070 FEFFFFEB 		bl	DebugLog
+ 284              	.LVL32:
+ 173:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 285              		.loc 1 173 0
+ 286 0074 30D08DE2 		add	sp, sp, #48
+ 287              		.cfi_def_cfa_offset 16
+ 288              	.LVL33:
+ 289              		@ sp needed
+ 290 0078 7080BDE8 		pop	{r4, r5, r6, pc}
+ 291              		.cfi_endproc
+ 292              	.LFE8:
+ 293              		.fnend
+ 295              		.section	.text.DebugLogHex,"ax",%progbits
+ 296              		.align	2
+ 297              		.global	DebugLogHex
+ 298              		.syntax unified
+ 299              		.arm
+ 300              		.fpu neon
+ 302              	DebugLogHex:
+ 303              		.fnstart
+ 304              	.LFB9:
+ 174:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 175:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** extern "C" void DebugLogHex(uint32_t i) {
+ 305              		.loc 1 175 0
+ 306              		.cfi_startproc
+ 307              		@ args = 0, pretend = 0, frame = 48
+ 308              		@ frame_needed = 0, uses_anonymous_args = 0
+ 309              	.LVL34:
+ 310 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 311              		.save {lr}
+ 312              		.cfi_def_cfa_offset 4
+ 313              		.cfi_offset 14, -4
+ 314              		.pad #52
+ 315 0004 34D04DE2 		sub	sp, sp, #52
+ 316              		.cfi_def_cfa_offset 56
+ 317              		.loc 1 175 0
+ 318 0008 0DC0A0E1 		mov	ip, sp
+ 319              	.LVL35:
+ 320 000c 0D20A0E1 		mov	r2, sp
+ 321 0010 000000EA 		b	.L21
+ 322              	.LVL36:
+ 323              	.L25:
+ 324              	.LBB79:
+ 325              	.LBB80:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 326              		.loc 1 73 0
+ 327 0014 0120A0E1 		mov	r2, r1
+ 328              	.LVL37:
+ 329              	.L21:
+ 330              	.LBB81:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 331              		.loc 1 64 0
+ 332 0018 0F3000E2 		and	r3, r0, #15
+ 333              	.LVL38:
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 334              		.loc 1 71 0
+ 335 001c 0210A0E1 		mov	r1, r2
+ 336              	.LVL39:
+ 337 0020 090053E3 		cmp	r3, #9
+ 338 0024 30308392 		addls	r3, r3, #48
+ 339 0028 57308382 		addhi	r3, r3, #87
+ 340              	.LVL40:
+ 341              	.LBE81:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 342              		.loc 1 73 0
+ 343 002c 2002B0E1 		lsrs	r0, r0, #4
+ 344              	.LVL41:
+ 345              	.LBB82:
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 346              		.loc 1 71 0
+ 347 0030 0130C1E4 		strb	r3, [r1], #1
+ 348              	.LVL42:
+ 349              	.LBE82:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 350              		.loc 1 73 0
+ 351 0034 F6FFFF1A 		bne	.L25
+ 352              	.LBB83:
+ 353              	.LBB84:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 354              		.loc 1 35 0
+ 355 0038 0C0052E1 		cmp	r2, ip
+ 356              	.LBE84:
+ 357              	.LBE83:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+ 358              		.loc 1 74 0
+ 359 003c 0000C1E5 		strb	r0, [r1]
+ 360              	.LVL43:
+ 361              	.LBB87:
+ 362              	.LBB86:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 363              		.loc 1 35 0
+ 364 0040 0C30A081 		movhi	r3, ip
+ 365 0044 0500009A 		bls	.L23
+ 366              	.LVL44:
+ 367              	.L24:
+ 368              	.LBB85:
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+ 369              		.loc 1 36 0
+ 370 0048 0010D3E5 		ldrb	r1, [r3]	@ zero_extendqisi2
+ 371              	.LVL45:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+ 372              		.loc 1 37 0
+ 373 004c 0000D2E5 		ldrb	r0, [r2]	@ zero_extendqisi2
+ 374 0050 0100C3E4 		strb	r0, [r3], #1
+ 375              	.LVL46:
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 376              		.loc 1 38 0
+ 377 0054 011042E4 		strb	r1, [r2], #-1
+ 378              	.LVL47:
+ 379              	.LBE85:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 380              		.loc 1 35 0
+ 381 0058 020053E1 		cmp	r3, r2
+ 382 005c F9FFFF3A 		bcc	.L24
+ 383              	.LVL48:
+ 384              	.L23:
+ 385              	.LBE86:
+ 386              	.LBE87:
+ 387              	.LBE80:
+ 388              	.LBE79:
+ 176:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+ 177:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastUInt32ToBufferLeft(i, number_string, 16);
+ 178:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   DebugLog(number_string);
+ 389              		.loc 1 178 0
+ 390 0060 0C00A0E1 		mov	r0, ip
+ 391 0064 FEFFFFEB 		bl	DebugLog
+ 392              	.LVL49:
+ 179:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 393              		.loc 1 179 0
+ 394 0068 34D08DE2 		add	sp, sp, #52
+ 395              		.cfi_def_cfa_offset 4
+ 396              	.LVL50:
+ 397              		@ sp needed
+ 398 006c 04F09DE4 		ldr	pc, [sp], #4
+ 399              		.cfi_endproc
+ 400              	.LFE9:
+ 401              		.fnend
+ 403              		.section	.text.DebugLogFloat,"ax",%progbits
+ 404              		.align	2
+ 405              		.global	DebugLogFloat
+ 406              		.syntax unified
+ 407              		.arm
+ 408              		.fpu neon
+ 410              	DebugLogFloat:
+ 411              		.fnstart
+ 412              	.LFB10:
+ 180:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** 
+ 181:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** extern "C" void DebugLogFloat(float i) {
+ 413              		.loc 1 181 0
+ 414              		.cfi_startproc
+ 415              		@ args = 0, pretend = 0, frame = 112
+ 416              		@ frame_needed = 0, uses_anonymous_args = 0
+ 417              	.LVL51:
+ 418 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 419              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+ 420              		.cfi_def_cfa_offset 32
+ 421              		.cfi_offset 4, -32
+ 422              		.cfi_offset 5, -28
+ 423              		.cfi_offset 6, -24
+ 424              		.cfi_offset 7, -20
+ 425              		.cfi_offset 8, -16
+ 426              		.cfi_offset 9, -12
+ 427              		.cfi_offset 10, -8
+ 428              		.cfi_offset 14, -4
+ 429              		.pad #112
+ 430 0004 70D04DE2 		sub	sp, sp, #112
+ 431              		.cfi_def_cfa_offset 144
+ 432              	.LVL52:
+ 433              	.LBB119:
+ 434              	.LBB120:
+ 117:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const int32_t exponent =
+ 435              		.loc 1 117 0
+ 436 0008 107A10EE 		vmov	r7, s0	@ int
+ 437              	.LVL53:
+ 126:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // These are special cases for infinities and not-a-numbers.
+ 438              		.loc 1 126 0
+ 439 000c 0050A0E3 		mov	r5, #0
+ 122:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = '-';
+ 440              		.loc 1 122 0
+ 441 0010 000057E3 		cmp	r7, #0
+ 119:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t fraction = (u & fraction_mask);
+ 442              		.loc 1 119 0
+ 443 0014 D74BE7E7 		ubfx	r4, r7, #23, #8
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     current += 1;
+ 444              		.loc 1 123 0
+ 445 0018 2D30A0B3 		movlt	r3, #45
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current_end = buffer + (kFastToBufferSize - 1);
+ 446              		.loc 1 108 0
+ 447 001c 10E08DA2 		addge	lr, sp, #16
+ 119:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   const uint32_t fraction = (u & fraction_mask);
+ 448              		.loc 1 119 0
+ 449 0020 7FC044E2 		sub	ip, r4, #127
+ 450              	.LVL54:
+ 124:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 451              		.loc 1 124 0
+ 452 0024 11608DB2 		addlt	r6, sp, #17
+ 123:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     current += 1;
+ 453              		.loc 1 123 0
+ 454 0028 1030CDB5 		strblt	r3, [sp, #16]
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char* current_end = buffer + (kFastToBufferSize - 1);
+ 455              		.loc 1 108 0
+ 456 002c 0E60A0A1 		movge	r6, lr
+ 457 0030 10E08DB2 		addlt	lr, sp, #16
+ 128:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     if (fraction == 0) {
+ 458              		.loc 1 128 0
+ 459 0034 80005CE3 		cmp	ip, #128
+ 120:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // Expect ~0x2B1B9D3 for fraction.
+ 460              		.loc 1 120 0
+ 461 0038 5770F6E7 		ubfx	r7, r7, #0, #23
+ 462              	.LVL55:
+ 126:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   // These are special cases for infinities and not-a-numbers.
+ 463              		.loc 1 126 0
+ 464 003c 0050C6E5 		strb	r5, [r6]
+ 128:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     if (fraction == 0) {
+ 465              		.loc 1 128 0
+ 466 0040 9400000A 		beq	.L69
+ 467              	.LVL56:
+ 145:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   uint32_t scaled_fraction = fraction;
+ 468              		.loc 1 145 0
+ 469 0044 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 470 0048 0DA0A0E1 		mov	r10, sp
+ 471 004c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 472 0050 907B81EE 		vdup.32	d17, r7
+ 473 0054 0F0093E8 		ldm	r3, {r0, r1, r2, r3}
+ 152:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current += 1;
+ 474              		.loc 1 152 0
+ 475 0058 2E90A0E3 		mov	r9, #46
+ 153:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = 0;
+ 476              		.loc 1 153 0
+ 477 005c 028086E2 		add	r8, r6, #2
+ 154:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatUInt32(current, (current_end - current), scaled_fraction, 10);
+ 478              		.loc 1 154 0
+ 479 0060 0250C6E5 		strb	r5, [r6, #2]
+ 150:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current += 1;
+ 480              		.loc 1 150 0
+ 481 0064 3150A0E3 		mov	r5, #49
+ 482 0068 0050C6E5 		strb	r5, [r6]
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatStr(current, (current_end - current), "*2^");
+ 483              		.loc 1 155 0
+ 484 006c 3F508DE2 		add	r5, sp, #63
+ 485              	.LVL57:
+ 145:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   uint32_t scaled_fraction = fraction;
+ 486              		.loc 1 145 0
+ 487 0070 0700AAE8 		stmia	r10!, {r0, r1, r2}
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatStr(current, (current_end - current), "*2^");
+ 488              		.loc 1 155 0
+ 489 0074 40108DE2 		add	r1, sp, #64
+ 490              	.LBB121:
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 491              		.loc 1 148 0
+ 492 0078 002BDDED 		vldr	d18, [sp]
+ 493 007c 7320AFE6 		sxtb	r2, r3
+ 494 0080 322AC8F2 		vmovl.s8 q9, d18
+ 495 0084 D800DDE1 		ldrsb	r0, [sp, #8]
+ 496              	.LBE121:
+ 145:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   uint32_t scaled_fraction = fraction;
+ 497              		.loc 1 145 0
+ 498 0088 0030CAE5 		strb	r3, [r10]
+ 499              	.LVL58:
+ 500              	.LBB122:
+ 501              	.LBB123:
+ 502              	.LBB124:
+ 503              	.LBB125:
+ 504              	.LBB126:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 505              		.loc 1 64 0
+ 506 008c CDAC0CE3 		movw	r10, #52429
+ 507              	.LBE126:
+ 508              	.LBE125:
+ 509              	.LBE124:
+ 510              	.LBE123:
+ 511              	.LBE122:
+ 512              	.LBB146:
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 513              		.loc 1 148 0
+ 514 0090 336AD0F2 		vmovl.s16 q11, d19
+ 515              	.LBE146:
+ 516              	.LBB147:
+ 517              	.LBB143:
+ 518              	.LBB137:
+ 519              	.LBB135:
+ 520              	.LBB127:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 521              		.loc 1 64 0
+ 522 0094 CCAC4CE3 		movt	r10, 52428
+ 523              	.LBE127:
+ 524              	.LBE135:
+ 525              	.LBE137:
+ 526              	.LBE143:
+ 527              	.LBE147:
+ 528              	.LBB148:
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 529              		.loc 1 148 0
+ 530 0098 322AD0F2 		vmovl.s16 q9, d18
+ 531 009c D930DDE1 		ldrsb	r3, [sp, #9]
+ 532 00a0 3700A0E1 		lsr	r0, r7, r0
+ 533 00a4 A603F9F3 		vneg.s32	d16, d22
+ 534 00a8 A353F9F3 		vneg.s32	d21, d19
+ 535 00ac A743F9F3 		vneg.s32	d20, d23
+ 536 00b0 A10460F3 		vshl.u32	d16, d17, d16
+ 537 00b4 370380E0 		add	r0, r0, r7, lsr r3
+ 538 00b8 A15465F3 		vshl.u32	d21, d17, d21
+ 539 00bc A223F9F3 		vneg.s32	d18, d18
+ 540 00c0 070080E0 		add	r0, r0, r7
+ 541 00c4 A14464F3 		vshl.u32	d20, d17, d20
+ 542 00c8 A50860F2 		vadd.i32	d16, d16, d21
+ 543              	.LBE148:
+ 152:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current += 1;
+ 544              		.loc 1 152 0
+ 545 00cc 0190C6E5 		strb	r9, [r6, #1]
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatStr(current, (current_end - current), "*2^");
+ 546              		.loc 1 155 0
+ 547 00d0 089045E0 		sub	r9, r5, r8
+ 548              	.LBB149:
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 549              		.loc 1 148 0
+ 550 00d4 DA60DDE1 		ldrsb	r6, [sp, #10]
+ 551              	.LVL59:
+ 552 00d8 A40860F2 		vadd.i32	d16, d16, d20
+ 553 00dc A12462F3 		vshl.u32	d18, d17, d18
+ 554 00e0 DB30DDE1 		ldrsb	r3, [sp, #11]
+ 555 00e4 A20860F2 		vadd.i32	d16, d16, d18
+ 556 00e8 370680E0 		add	r0, r0, r7, lsr r6
+ 557 00ec B00B60F2 		vpadd.i32	d16, d16, d16
+ 558 00f0 370380E0 		add	r0, r0, r7, lsr r3
+ 559 00f4 370280E0 		add	r0, r0, r7, lsr r2
+ 560              	.LBE149:
+ 155:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   current = StrCatStr(current, (current_end - current), "*2^");
+ 561              		.loc 1 155 0
+ 562 00f8 0120A0E1 		mov	r2, r1
+ 563              	.LBB150:
+ 148:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 564              		.loc 1 148 0
+ 565 00fc 903B10EE 		vmov.32	r3, d16[0]
+ 566 0100 030080E0 		add	r0, r0, r3
+ 567              	.LVL60:
+ 568 0104 000000EA 		b	.L37
+ 569              	.LVL61:
+ 570              	.L55:
+ 571              	.LBE150:
+ 572              	.LBB151:
+ 573              	.LBB144:
+ 574              	.LBB138:
+ 575              	.LBB136:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 576              		.loc 1 73 0
+ 577 0108 0620A0E1 		mov	r2, r6
+ 578              	.LVL62:
+ 579              	.L37:
+ 580              	.LBB128:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 581              		.loc 1 64 0
+ 582 010c 906A87E0 		umull	r6, r7, r0, r10
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 583              		.loc 1 71 0
+ 584 0110 0260A0E1 		mov	r6, r2
+ 585              	.LVL63:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 586              		.loc 1 64 0
+ 587 0114 A771A0E1 		lsr	r7, r7, #3
+ 588              	.LVL64:
+ 589 0118 073187E0 		add	r3, r7, r7, lsl #2
+ 590 011c 833040E0 		sub	r3, r0, r3, lsl #1
+ 591              	.LBE128:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 592              		.loc 1 73 0
+ 593 0120 000057E2 		subs	r0, r7, #0
+ 594              	.LVL65:
+ 595              	.LBB129:
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+ 596              		.loc 1 67 0
+ 597 0124 303083E2 		add	r3, r3, #48
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 598              		.loc 1 71 0
+ 599 0128 0130C6E4 		strb	r3, [r6], #1
+ 600              	.LVL66:
+ 601              	.LBE129:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 602              		.loc 1 73 0
+ 603 012c F5FFFF1A 		bne	.L55
+ 604              	.LBB130:
+ 605              	.LBB131:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 606              		.loc 1 35 0
+ 607 0130 010052E1 		cmp	r2, r1
+ 608              	.LBE131:
+ 609              	.LBE130:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+ 610              		.loc 1 74 0
+ 611 0134 0000C6E5 		strb	r0, [r6]
+ 612              	.LVL67:
+ 613              	.LBB134:
+ 614              	.LBB133:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 615              		.loc 1 35 0
+ 616 0138 0130A081 		movhi	r3, r1
+ 617 013c 0500009A 		bls	.L41
+ 618              	.LVL68:
+ 619              	.L42:
+ 620              	.LBB132:
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+ 621              		.loc 1 36 0
+ 622 0140 0000D3E5 		ldrb	r0, [r3]	@ zero_extendqisi2
+ 623              	.LVL69:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+ 624              		.loc 1 37 0
+ 625 0144 0060D2E5 		ldrb	r6, [r2]	@ zero_extendqisi2
+ 626 0148 0160C3E4 		strb	r6, [r3], #1
+ 627              	.LVL70:
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 628              		.loc 1 38 0
+ 629 014c 010042E4 		strb	r0, [r2], #-1
+ 630              	.LVL71:
+ 631              	.LBE132:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 632              		.loc 1 35 0
+ 633 0150 020053E1 		cmp	r3, r2
+ 634 0154 F9FFFF3A 		bcc	.L42
+ 635              	.LVL72:
+ 636              	.L41:
+ 637              	.LBE133:
+ 638              	.LBE134:
+ 639              	.LBE136:
+ 640              	.LBE138:
+ 641              	.LBB139:
+ 642              	.LBB140:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 643              		.loc 1 51 0
+ 644 0158 4030DDE5 		ldrb	r3, [sp, #64]	@ zero_extendqisi2
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   while ((*to_append != 0) && (current < current_end)) {
+ 645              		.loc 1 50 0
+ 646 015c 019049E2 		sub	r9, r9, #1
+ 647              	.LVL73:
+ 648 0160 099088E0 		add	r9, r8, r9
+ 649              	.LVL74:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 650              		.loc 1 51 0
+ 651 0164 000053E3 		cmp	r3, #0
+ 652 0168 09005811 		cmpne	r8, r9
+ 653 016c 6900002A 		bcs	.L56
+ 654 0170 0100A0E1 		mov	r0, r1
+ 655 0174 000000EA 		b	.L43
+ 656              	.LVL75:
+ 657              	.L57:
+ 658 0178 0280A0E1 		mov	r8, r2
+ 659              	.LVL76:
+ 660              	.L43:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+ 661              		.loc 1 52 0
+ 662 017c 0820A0E1 		mov	r2, r8
+ 663 0180 0130C2E4 		strb	r3, [r2], #1
+ 664              	.LVL77:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 665              		.loc 1 51 0
+ 666 0184 0130F0E5 		ldrb	r3, [r0, #1]!	@ zero_extendqisi2
+ 667              	.LVL78:
+ 668 0188 000053E3 		cmp	r3, #0
+ 669 018c 02005911 		cmpne	r9, r2
+ 670 0190 F8FFFF8A 		bhi	.L57
+ 671 0194 029045E0 		sub	r9, r5, r2
+ 672              	.LVL79:
+ 673 0198 099088E0 		add	r9, r8, r9
+ 674              	.LVL80:
+ 675              	.L39:
+ 676              	.LBE140:
+ 677              	.LBE139:
+ 678              	.LBE144:
+ 679              	.LBE151:
+ 680              	.LBB152:
+ 681              	.LBB153:
+ 682 019c 090052E1 		cmp	r2, r9
+ 683              	.LBE153:
+ 684              	.LBE152:
+ 685              	.LBB157:
+ 686              	.LBB145:
+ 687              	.LBB142:
+ 688              	.LBB141:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 689              		.loc 1 56 0
+ 690 01a0 0030A0E3 		mov	r3, #0
+ 691 01a4 0030C2E5 		strb	r3, [r2]
+ 692              	.LVL81:
+ 693              	.LBE141:
+ 694              	.LBE142:
+ 695              	.LBE145:
+ 696              	.LBE157:
+ 697              	.LBB158:
+ 698              	.LBB154:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 699              		.loc 1 51 0
+ 700 01a8 5800002A 		bcs	.L58
+ 701 01ac 006000E3 		movw	r6, #:lower16:.LC3
+ 702 01b0 2A00A0E3 		mov	r0, #42
+ 703 01b4 006040E3 		movt	r6, #:upper16:.LC3
+ 704 01b8 000000EA 		b	.L45
+ 705              	.LVL82:
+ 706              	.L59:
+ 707 01bc 0320A0E1 		mov	r2, r3
+ 708              	.LVL83:
+ 709              	.L45:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+ 710              		.loc 1 52 0
+ 711 01c0 0230A0E1 		mov	r3, r2
+ 712 01c4 0100C3E4 		strb	r0, [r3], #1
+ 713              	.LVL84:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 714              		.loc 1 51 0
+ 715 01c8 0100F6E5 		ldrb	r0, [r6, #1]!	@ zero_extendqisi2
+ 716              	.LVL85:
+ 717 01cc 000050E3 		cmp	r0, #0
+ 718 01d0 09005311 		cmpne	r3, r9
+ 719 01d4 F8FFFF3A 		bcc	.L59
+ 720 01d8 035045E0 		sub	r5, r5, r3
+ 721              	.LVL86:
+ 722 01dc 059082E0 		add	r9, r2, r5
+ 723              	.LVL87:
+ 724              	.L44:
+ 725              	.LBE154:
+ 726              	.LBE158:
+ 727              	.LBB159:
+ 728              	.LBB160:
+ 729              	.LBB161:
+ 730              	.LBB162:
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+ 731              		.loc 1 82 0
+ 732 01e0 00005CE3 		cmp	ip, #0
+ 733              	.LBE162:
+ 734              	.LBE161:
+ 735              	.LBE160:
+ 736              	.LBE159:
+ 737              	.LBB184:
+ 738              	.LBB155:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 739              		.loc 1 56 0
+ 740 01e4 0020A0E3 		mov	r2, #0
+ 741 01e8 0020C3E5 		strb	r2, [r3]
+ 742              	.LVL88:
+ 743              	.LBE155:
+ 744              	.LBE184:
+ 745              	.LBB185:
+ 746              	.LBB182:
+ 747              	.LBB177:
+ 748              	.LBB176:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+ 749              		.loc 1 83 0
+ 750 01ec 41608DB2 		addlt	r6, sp, #65
+ 751 01f0 2D20A0B3 		movlt	r2, #45
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *buffer++ = '-';
+ 752              		.loc 1 82 0
+ 753 01f4 0160A0A1 		movge	r6, r1
+ 754              	.LBB163:
+ 755              	.LBB164:
+ 756              	.LBB165:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 757              		.loc 1 64 0
+ 758 01f8 CD7C0CE3 		movw	r7, #52429
+ 759              	.LVL89:
+ 760              	.LBE165:
+ 761              	.LBE164:
+ 762              	.LBE163:
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 763              		.loc 1 84 0
+ 764 01fc 7FC064B2 		rsblt	ip, r4, #127
+ 765              	.LVL90:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     u = -u;
+ 766              		.loc 1 83 0
+ 767 0200 4020CDB5 		strblt	r2, [sp, #64]
+ 768 0204 0600A0E1 		mov	r0, r6
+ 769              	.LBB175:
+ 770              	.LBB174:
+ 771              	.LBB166:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 772              		.loc 1 64 0
+ 773 0208 CC7C4CE3 		movt	r7, 52428
+ 774 020c 000000EA 		b	.L47
+ 775              	.LVL91:
+ 776              	.L61:
+ 777              	.LBE166:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 778              		.loc 1 73 0
+ 779 0210 0800A0E1 		mov	r0, r8
+ 780              	.LVL92:
+ 781              	.L47:
+ 782              	.LBB167:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 783              		.loc 1 64 0
+ 784 0214 9C4785E0 		umull	r4, r5, ip, r7
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 785              		.loc 1 71 0
+ 786 0218 0080A0E1 		mov	r8, r0
+ 787              	.LVL93:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char character;
+ 788              		.loc 1 64 0
+ 789 021c A541A0E1 		lsr	r4, r5, #3
+ 790              	.LVL94:
+ 791 0220 042184E0 		add	r2, r4, r4, lsl #2
+ 792 0224 82204CE0 		sub	r2, ip, r2, lsl #1
+ 793              	.LBE167:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 794              		.loc 1 73 0
+ 795 0228 00C054E2 		subs	ip, r4, #0
+ 796              	.LVL95:
+ 797              	.LBB168:
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     } else {
+ 798              		.loc 1 67 0
+ 799 022c 302082E2 		add	r2, r2, #48
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     i /= base;
+ 800              		.loc 1 71 0
+ 801 0230 0120C8E4 		strb	r2, [r8], #1
+ 802              	.LVL96:
+ 803              	.LBE168:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *buffer = 0;
+ 804              		.loc 1 73 0
+ 805 0234 F5FFFF1A 		bne	.L61
+ 806              	.LBB169:
+ 807              	.LBB170:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 808              		.loc 1 35 0
+ 809 0238 060050E1 		cmp	r0, r6
+ 810              	.LBE170:
+ 811              	.LBE169:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   ReverseStringInPlace(start, buffer);
+ 812              		.loc 1 74 0
+ 813 023c 00C0C8E5 		strb	ip, [r8]
+ 814              	.LVL97:
+ 815              	.LBB173:
+ 816              	.LBB172:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 817              		.loc 1 35 0
+ 818 0240 0500009A 		bls	.L51
+ 819              	.LVL98:
+ 820              	.L52:
+ 821              	.LBB171:
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p1++ = *p2;
+ 822              		.loc 1 36 0
+ 823 0244 0020D6E5 		ldrb	r2, [r6]	@ zero_extendqisi2
+ 824              	.LVL99:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *p2-- = tmp;
+ 825              		.loc 1 37 0
+ 826 0248 00C0D0E5 		ldrb	ip, [r0]	@ zero_extendqisi2
+ 827 024c 01C0C6E4 		strb	ip, [r6], #1
+ 828              	.LVL100:
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   }
+ 829              		.loc 1 38 0
+ 830 0250 012040E4 		strb	r2, [r0], #-1
+ 831              	.LVL101:
+ 832              	.LBE171:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     char tmp = *p1;
+ 833              		.loc 1 35 0
+ 834 0254 000056E1 		cmp	r6, r0
+ 835 0258 F9FFFF3A 		bcc	.L52
+ 836              	.LVL102:
+ 837              	.L51:
+ 838              	.LBE172:
+ 839              	.LBE173:
+ 840              	.LBE174:
+ 841              	.LBE175:
+ 842              	.LBE176:
+ 843              	.LBE177:
+ 844              	.LBB178:
+ 845              	.LBB179:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 846              		.loc 1 51 0
+ 847 025c 4020DDE5 		ldrb	r2, [sp, #64]	@ zero_extendqisi2
+ 848 0260 000052E3 		cmp	r2, #0
+ 849 0264 09005311 		cmpne	r3, r9
+ 850 0268 0400002A 		bcs	.L49
+ 851              	.LVL103:
+ 852              	.L53:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+ 853              		.loc 1 52 0
+ 854 026c 0120C3E4 		strb	r2, [r3], #1
+ 855              	.LVL104:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 856              		.loc 1 51 0
+ 857 0270 0120F1E5 		ldrb	r2, [r1, #1]!	@ zero_extendqisi2
+ 858              	.LVL105:
+ 859 0274 000052E3 		cmp	r2, #0
+ 860 0278 09005311 		cmpne	r3, r9
+ 861 027c FAFFFF3A 		bcc	.L53
+ 862              	.LVL106:
+ 863              	.L49:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 864              		.loc 1 56 0
+ 865 0280 0020A0E3 		mov	r2, #0
+ 866              	.LBE179:
+ 867              	.LBE178:
+ 868              	.LBE182:
+ 869              	.LBE185:
+ 870              	.LBE120:
+ 871              	.LBE119:
+ 182:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   char number_string[kFastToBufferSize];
+ 183:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   FastFloatToBufferLeft(i, number_string);
+ 184:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   DebugLog(number_string);
+ 872              		.loc 1 184 0
+ 873 0284 0E00A0E1 		mov	r0, lr
+ 874              	.LVL107:
+ 875              	.LBB202:
+ 876              	.LBB198:
+ 877              	.LBB186:
+ 878              	.LBB183:
+ 879              	.LBB181:
+ 880              	.LBB180:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 881              		.loc 1 56 0
+ 882 0288 0020C3E5 		strb	r2, [r3]
+ 883              	.LVL108:
+ 884              	.LBE180:
+ 885              	.LBE181:
+ 886              	.LBE183:
+ 887              	.LBE186:
+ 888              	.LBE198:
+ 889              	.LBE202:
+ 890              		.loc 1 184 0
+ 891 028c FEFFFFEB 		bl	DebugLog
+ 892              	.LVL109:
+ 185:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 893              		.loc 1 185 0
+ 894 0290 70D08DE2 		add	sp, sp, #112
+ 895              		.cfi_remember_state
+ 896              		.cfi_def_cfa_offset 32
+ 897              		@ sp needed
+ 898 0294 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 899              	.LVL110:
+ 900              	.L69:
+ 901              		.cfi_restore_state
+ 902              	.LBB203:
+ 903              	.LBB199:
+ 129:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       current = StrCatStr(current, (current_end - current), "Inf");
+ 904              		.loc 1 129 0
+ 905 0298 050057E1 		cmp	r7, r5
+ 906              	.LBB187:
+ 907              	.LBB188:
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   while ((*to_append != 0) && (current < current_end)) {
+ 908              		.loc 1 50 0
+ 909 029c 3E108DE2 		add	r1, sp, #62
+ 910              	.LBE188:
+ 911              	.LBE187:
+ 129:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****       current = StrCatStr(current, (current_end - current), "Inf");
+ 912              		.loc 1 129 0
+ 913 02a0 0F00001A 		bne	.L31
+ 914              	.LVL111:
+ 915              	.LBB190:
+ 916              	.LBB189:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 917              		.loc 1 51 0
+ 918 02a4 010056E1 		cmp	r6, r1
+ 919 02a8 0700002A 		bcs	.L35
+ 920 02ac 002000E3 		movw	r2, #:lower16:.LC1
+ 921 02b0 4930A0E3 		mov	r3, #73
+ 922 02b4 002040E3 		movt	r2, #:upper16:.LC1
+ 923              	.LVL112:
+ 924              	.L33:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+ 925              		.loc 1 52 0
+ 926 02b8 0130C6E4 		strb	r3, [r6], #1
+ 927              	.LVL113:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 928              		.loc 1 51 0
+ 929 02bc 0130F2E5 		ldrb	r3, [r2, #1]!	@ zero_extendqisi2
+ 930              	.LVL114:
+ 931 02c0 000053E3 		cmp	r3, #0
+ 932 02c4 06005111 		cmpne	r1, r6
+ 933 02c8 FAFFFF8A 		bhi	.L33
+ 934              	.LVL115:
+ 935              	.L35:
+ 936              	.LBE189:
+ 937              	.LBE190:
+ 938              	.LBB191:
+ 939              	.LBB192:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 940              		.loc 1 56 0
+ 941 02cc 0030A0E3 		mov	r3, #0
+ 942              	.LBE192:
+ 943              	.LBE191:
+ 944              	.LBE199:
+ 945              	.LBE203:
+ 184:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 946              		.loc 1 184 0
+ 947 02d0 0E00A0E1 		mov	r0, lr
+ 948              	.LBB204:
+ 949              	.LBB200:
+ 950              	.LBB195:
+ 951              	.LBB193:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   return current;
+ 952              		.loc 1 56 0
+ 953 02d4 0030C6E5 		strb	r3, [r6]
+ 954              	.LVL116:
+ 955              	.LBE193:
+ 956              	.LBE195:
+ 957              	.LBE200:
+ 958              	.LBE204:
+ 184:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp **** }
+ 959              		.loc 1 184 0
+ 960 02d8 FEFFFFEB 		bl	DebugLog
+ 961              	.LVL117:
+ 962              		.loc 1 185 0
+ 963 02dc 70D08DE2 		add	sp, sp, #112
+ 964              		.cfi_remember_state
+ 965              		.cfi_def_cfa_offset 32
+ 966              		@ sp needed
+ 967 02e0 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 968              	.LVL118:
+ 969              	.L31:
+ 970              		.cfi_restore_state
+ 971              	.LBB205:
+ 972              	.LBB201:
+ 973              	.LBB196:
+ 974              	.LBB194:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 975              		.loc 1 51 0
+ 976 02e4 010056E1 		cmp	r6, r1
+ 977 02e8 F7FFFF2A 		bcs	.L35
+ 978 02ec 002000E3 		movw	r2, #:lower16:.LC2
+ 979 02f0 4E30A0E3 		mov	r3, #78
+ 980 02f4 002040E3 		movt	r2, #:upper16:.LC2
+ 981              	.LVL119:
+ 982              	.L36:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     ++current;
+ 983              		.loc 1 52 0
+ 984 02f8 0130C6E4 		strb	r3, [r6], #1
+ 985              	.LVL120:
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****     *current = *to_append;
+ 986              		.loc 1 51 0
+ 987 02fc 0130F2E5 		ldrb	r3, [r2, #1]!	@ zero_extendqisi2
+ 988              	.LVL121:
+ 989 0300 000053E3 		cmp	r3, #0
+ 990 0304 06005111 		cmpne	r1, r6
+ 991 0308 FAFFFF8A 		bhi	.L36
+ 992 030c EEFFFFEA 		b	.L35
+ 993              	.LVL122:
+ 994              	.L58:
+ 995              	.LBE194:
+ 996              	.LBE196:
+ 997              	.LBB197:
+ 998              	.LBB156:
+ 999 0310 0230A0E1 		mov	r3, r2
+ 1000 0314 B1FFFFEA 		b	.L44
+ 1001              	.LVL123:
+ 1002              	.L56:
+ 1003              	.LBE156:
+ 1004              	.LBE197:
+ 153:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log_numbers.cpp ****   *current = 0;
+ 1005              		.loc 1 153 0
+ 1006 0318 0820A0E1 		mov	r2, r8
+ 1007              	.LVL124:
+ 1008 031c 9EFFFFEA 		b	.L39
+ 1009              	.LBE201:
+ 1010              	.LBE205:
+ 1011              		.cfi_endproc
+ 1012              	.LFE10:
+ 1013              		.fnend
+ 1015              		.section	.rodata
+ 1016              		.align	2
+ 1017              		.set	.LANCHOR0,. + 0
+ 1018              	.LC0:
+ 1019 0000 03       		.byte	3
+ 1020 0001 04       		.byte	4
+ 1021 0002 08       		.byte	8
+ 1022 0003 0B       		.byte	11
+ 1023 0004 0D       		.byte	13
+ 1024 0005 0E       		.byte	14
+ 1025 0006 11       		.byte	17
+ 1026 0007 12       		.byte	18
+ 1027 0008 13       		.byte	19
+ 1028 0009 14       		.byte	20
+ 1029 000a 15       		.byte	21
+ 1030 000b 16       		.byte	22
+ 1031 000c 17       		.byte	23
+ 1032              		.section	.rodata.DebugLogFloat.str1.4,"aMS",%progbits,1
+ 1033              		.align	2
+ 1034              	.LC1:
+ 1035 0000 496E6600 		.ascii	"Inf\000"
+ 1036              	.LC2:
+ 1037 0004 4E614E00 		.ascii	"NaN\000"
+ 1038              	.LC3:
+ 1039 0008 2A325E00 		.ascii	"*2^\000"
+ 1040              		.text
+ 1041              	.Letext0:
+ 1042              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1043              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1044              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1045              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1046              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1047              		.file 7 "<built-in>"
+ 1048              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+DEFINED SYMBOLS
+                            *ABS*:00000000 debug_log_numbers.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:17     .text.DebugLogInt32:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:23     .text.DebugLogInt32:00000000 DebugLogInt32
+    .ARM.exidx.text.DebugLogInt32:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:165    .text.DebugLogUInt32:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:171    .text.DebugLogUInt32:00000000 DebugLogUInt32
+   .ARM.exidx.text.DebugLogUInt32:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:296    .text.DebugLogHex:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:302    .text.DebugLogHex:00000000 DebugLogHex
+      .ARM.exidx.text.DebugLogHex:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:404    .text.DebugLogFloat:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:410    .text.DebugLogFloat:00000000 DebugLogFloat
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1017   .rodata:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1038   .rodata.DebugLogFloat.str1.4:00000008 .LC3
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1034   .rodata.DebugLogFloat.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1036   .rodata.DebugLogFloat.str1.4:00000004 .LC2
+    .ARM.exidx.text.DebugLogFloat:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1016   .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccoQNCUW.s:1033   .rodata.DebugLogFloat.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+
+UNDEFINED SYMBOLS
+DebugLog
+__aeabi_unwind_cpp_pr0

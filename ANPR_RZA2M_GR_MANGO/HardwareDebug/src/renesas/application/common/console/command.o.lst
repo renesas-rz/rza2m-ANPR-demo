@@ -1,0 +1,630 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"command.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.cmd_version,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	cmd_version:
+  23              	.LFB5:
+  24              		.file 1 "../src/renesas/application/common/console/command.c"
+   1:../src/renesas/application/common/console/command.c **** /******************************************************************************
+   2:../src/renesas/application/common/console/command.c **** * DISCLAIMER
+   3:../src/renesas/application/common/console/command.c **** * This software is supplied by Renesas Electronics Corporation and is only
+   4:../src/renesas/application/common/console/command.c **** * intended for use with Renesas products. No other uses are authorized. This
+   5:../src/renesas/application/common/console/command.c **** * software is owned by Renesas Electronics Corporation and is protected under
+   6:../src/renesas/application/common/console/command.c **** * all applicable laws, including copyright laws.
+   7:../src/renesas/application/common/console/command.c **** * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING
+   8:../src/renesas/application/common/console/command.c **** * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT
+   9:../src/renesas/application/common/console/command.c **** * LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+  10:../src/renesas/application/common/console/command.c **** * AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED.
+  11:../src/renesas/application/common/console/command.c **** * TO THE MAXIMUM EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS
+  12:../src/renesas/application/common/console/command.c **** * ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES SHALL BE LIABLE
+  13:../src/renesas/application/common/console/command.c **** * FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR
+  14:../src/renesas/application/common/console/command.c **** * ANY REASON RELATED TO THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE
+  15:../src/renesas/application/common/console/command.c **** * BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  16:../src/renesas/application/common/console/command.c **** * Renesas reserves the right, without notice, to make changes to this software
+  17:../src/renesas/application/common/console/command.c **** * and to discontinue the availability of this software. By using this software,
+  18:../src/renesas/application/common/console/command.c **** * you agree to the additional terms and conditions found by accessing the
+  19:../src/renesas/application/common/console/command.c **** * following link:
+  20:../src/renesas/application/common/console/command.c **** * http://www.renesas.com/disclaimer
+  21:../src/renesas/application/common/console/command.c **** *******************************************************************************
+  22:../src/renesas/application/common/console/command.c **** * Copyright (C) 2015 Renesas Electronics Corporation. All rights reserved.
+  23:../src/renesas/application/common/console/command.c **** *******************************************************************************
+  24:../src/renesas/application/common/console/command.c **** * File Name    : command.c
+  25:../src/renesas/application/common/console/command.c **** * Version      : 1.10
+  26:../src/renesas/application/common/console/command.c **** * Device(s)    : Renesas
+  27:../src/renesas/application/common/console/command.c **** * Tool-Chain   : GNUARM-NONE-EABI v14.02
+  28:../src/renesas/application/common/console/command.c **** * OS           : N/A
+  29:../src/renesas/application/common/console/command.c **** * H/W Platform : RSK+
+  30:../src/renesas/application/common/console/command.c **** * Description  : The entry point of the main command handler and associated
+  31:../src/renesas/application/common/console/command.c **** *                commands
+  32:../src/renesas/application/common/console/command.c **** *******************************************************************************
+  33:../src/renesas/application/common/console/command.c **** * History      : DD.MM.YYYY Version Description
+  34:../src/renesas/application/common/console/command.c **** *              : 04.02.2010 1.00    First Release
+  35:../src/renesas/application/common/console/command.c **** *              : 10.06.2010 1.01    Updated type definitions.
+  36:../src/renesas/application/common/console/command.c **** *              : 09.06.2015 1.10    Updated high-ASCII password for GNU TC
+  37:../src/renesas/application/common/console/command.c **** *                                   Added FAT Stub check and warning
+  38:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  39:../src/renesas/application/common/console/command.c **** 
+  40:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  41:../src/renesas/application/common/console/command.c ****   WARNING!  IN ACCORDANCE WITH THE USER LICENCE THIS CODE MUST NOT BE CONVEYED
+  42:../src/renesas/application/common/console/command.c ****   OR REDISTRIBUTED IN COMBINATION WITH ANY SOFTWARE LICENSED UNDER TERMS THE
+  43:../src/renesas/application/common/console/command.c ****   SAME AS OR SIMILAR TO THE GNU GENERAL PUBLIC LICENCE
+  44:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  45:../src/renesas/application/common/console/command.c **** 
+  46:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  47:../src/renesas/application/common/console/command.c **** Includes   <System Includes> , "Project Includes"
+  48:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  49:../src/renesas/application/common/console/command.c **** #include <stdio.h>
+  50:../src/renesas/application/common/console/command.c **** #include <fcntl.h>
+  51:../src/renesas/application/common/console/command.c **** #include <string.h>
+  52:../src/renesas/application/common/console/command.c **** #include <stdlib.h>
+  53:../src/renesas/application/common/console/command.c **** #include <ctype.h>
+  54:../src/renesas/application/common/console/command.c **** 
+  55:../src/renesas/application/common/console/command.c **** #include "compiler_settings.h"
+  56:../src/renesas/application/common/console/command.c **** #include "driver.h"
+  57:../src/renesas/application/common/console/command.c **** #include "version.h"
+  58:../src/renesas/application/common/console/command.c **** #include "command.h"
+  59:../src/renesas/application/common/console/command.c **** 
+  60:../src/renesas/application/common/console/command.c **** #include "r_os_abstraction_api.h"
+  61:../src/renesas/application/common/console/command.c **** #include "r_devlink_wrapper.h"
+  62:../src/renesas/application/common/console/command.c **** #include "application_cfg.h"
+  63:../src/renesas/application/common/console/command.c **** 
+  64:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  65:../src/renesas/application/common/console/command.c **** Typedef definitions
+  66:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  67:../src/renesas/application/common/console/command.c **** 
+  68:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  69:../src/renesas/application/common/console/command.c **** Macro definitions
+  70:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  71:../src/renesas/application/common/console/command.c **** 
+  72:../src/renesas/application/common/console/command.c **** /* Define the number of characters printed on a line for the "mem" command */
+  73:../src/renesas/application/common/console/command.c **** #define CMD_PRV_MEM_COMMAND_CHAR_COUNT      (16)
+  74:../src/renesas/application/common/console/command.c **** #define CMD_LOGIN_AND_PASSWORD_STRING_PRV_   (32)
+  75:../src/renesas/application/common/console/command.c **** 
+  76:../src/renesas/application/common/console/command.c **** #define R_REGION_LARGE_CAPACITY_RAM  (78957)
+  77:../src/renesas/application/common/console/command.c **** 
+  78:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  79:../src/renesas/application/common/console/command.c **** Imported global variables and functions (from other files)
+  80:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+  81:../src/renesas/application/common/console/command.c **** 
+  82:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  83:../src/renesas/application/common/console/command.c ****  Exported global variables and functions (to be accessed by other files)
+  84:../src/renesas/application/common/console/command.c ****  ******************************************************************************/
+  85:../src/renesas/application/common/console/command.c **** 
+  86:../src/renesas/application/common/console/command.c **** 
+  87:../src/renesas/application/common/console/command.c **** /******************************************************************************
+  88:../src/renesas/application/common/console/command.c ****  Private global variables and functions
+  89:../src/renesas/application/common/console/command.c ****  ******************************************************************************/
+  90:../src/renesas/application/common/console/command.c **** 
+  91:../src/renesas/application/common/console/command.c **** static int16_t cmd_version(int iArgCount, char **ppszArgument, pst_comset_t pCom);
+  92:../src/renesas/application/common/console/command.c **** _Bool cmdCheckUserNameAndPassword(char *pszUserName, char *pszPassword);
+  93:../src/renesas/application/common/console/command.c **** int cmdUserName (int iArgCount, char **ppszArgument, pst_comset_t pCom);
+  94:../src/renesas/application/common/console/command.c **** int cmdChangePassword (int iArgCount, char **ppszArgument, pst_comset_t pCom);
+  95:../src/renesas/application/common/console/command.c **** 
+  96:../src/renesas/application/common/console/command.c **** /* Define the engineering exp symbols for Kilo, Mega, Giga, Tera, Peta, Exa, Zetta and Yotta */
+  97:../src/renesas/application/common/console/command.c **** static char * const gsp_eng_mult_chars = " kMGTPEZY";
+  98:../src/renesas/application/common/console/command.c **** 
+  99:../src/renesas/application/common/console/command.c **** /*****************************************************************************
+ 100:../src/renesas/application/common/console/command.c **** Global Variables
+ 101:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+ 102:../src/renesas/application/common/console/command.c **** char gpszLoginsAndPasswords[CMD_LOGIN_AND_PASSWORD_STRING_PRV_];
+ 103:../src/renesas/application/common/console/command.c **** _Bool  gbfLoginsLoaded = false;
+ 104:../src/renesas/application/common/console/command.c **** 
+ 105:../src/renesas/application/common/console/command.c **** /******************************************************************************
+ 106:../src/renesas/application/common/console/command.c **** Public Functions
+ 107:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+ 108:../src/renesas/application/common/console/command.c **** 
+ 109:../src/renesas/application/common/console/command.c **** /* Table that associates command letters, function pointer and a little
+ 110:../src/renesas/application/common/console/command.c ****    description of what the command does */
+ 111:../src/renesas/application/common/console/command.c **** static st_cmdfnass_t gs_cmd_command[] =
+ 112:../src/renesas/application/common/console/command.c **** {
+ 113:../src/renesas/application/common/console/command.c ****      {
+ 114:../src/renesas/application/common/console/command.c ****         "ver",
+ 115:../src/renesas/application/common/console/command.c ****         cmd_version,
+ 116:../src/renesas/application/common/console/command.c ****         "<CR> - Show the application version",
+ 117:../src/renesas/application/common/console/command.c ****      }
+ 118:../src/renesas/application/common/console/command.c **** };
+ 119:../src/renesas/application/common/console/command.c **** 
+ 120:../src/renesas/application/common/console/command.c **** /* Table that points to the above table and contains the number of entries */
+ 121:../src/renesas/application/common/console/command.c **** const st_command_table_t gs_cmd_tbl_command =
+ 122:../src/renesas/application/common/console/command.c **** {
+ 123:../src/renesas/application/common/console/command.c ****     "General Commands",
+ 124:../src/renesas/application/common/console/command.c ****     (pst_cmdfnass_t) gs_cmd_command,
+ 125:../src/renesas/application/common/console/command.c ****     ((sizeof(gs_cmd_command)) / sizeof(st_cmdfnass_t))
+ 126:../src/renesas/application/common/console/command.c **** };
+ 127:../src/renesas/application/common/console/command.c **** 
+ 128:../src/renesas/application/common/console/command.c **** /* Define the command tables required */
+ 129:../src/renesas/application/common/console/command.c **** pst_command_table_t gppCommands[32] =
+ 130:../src/renesas/application/common/console/command.c **** {
+ 131:../src/renesas/application/common/console/command.c ****     /* cast to pst_command_table_t */
+ 132:../src/renesas/application/common/console/command.c ****     (pst_command_table_t) &gs_cmd_tbl_command,
+ 133:../src/renesas/application/common/console/command.c **** 
+ 134:../src/renesas/application/common/console/command.c ****     /* Added space for additional 'sample code' */
+ 135:../src/renesas/application/common/console/command.c **** };
+ 136:../src/renesas/application/common/console/command.c **** 
+ 137:../src/renesas/application/common/console/command.c **** int32_t g_num_commands = (sizeof(gppCommands)) / sizeof(pst_command_table_t);
+ 138:../src/renesas/application/common/console/command.c **** 
+ 139:../src/renesas/application/common/console/command.c **** /* The default user name is admin and the password is password */
+ 140:../src/renesas/application/common/console/command.c **** /* Password is xor 129 protected */
+ 141:../src/renesas/application/common/console/command.c **** static const char gpszDefaultUser[] = "admin:\xF1\xE0\xF2\xF2\xF6\xEE\xF3\xE5";
+ 142:../src/renesas/application/common/console/command.c **** /******************************************************************************
+ 143:../src/renesas/application/common/console/command.c ****  Function Name: cmd_console
+ 144:../src/renesas/application/common/console/command.c ****  Description:   Function to process the console commands
+ 145:../src/renesas/application/common/console/command.c ****  Arguments:     IN  pIn - Pointer to the input file stream
+ 146:../src/renesas/application/common/console/command.c ****                 IN  pOut - Pointer to the file stream for echo of command input
+ 147:../src/renesas/application/common/console/command.c ****                 IN  pszPrompt - Pointer to a command prompt
+ 148:../src/renesas/application/common/console/command.c ****  Return value:  none
+ 149:../src/renesas/application/common/console/command.c ****  ******************************************************************************/
+ 150:../src/renesas/application/common/console/command.c **** void cmd_console(FILE* pIn, FILE *pOut, char *pszPrompt)
+ 151:../src/renesas/application/common/console/command.c **** {
+ 152:../src/renesas/application/common/console/command.c ****     pst_comset_t com = R_OS_Malloc(sizeof(st_comset_t), R_MEMORY_REGION_DEFAULT);
+ 153:../src/renesas/application/common/console/command.c ****     int32_t pos;
+ 154:../src/renesas/application/common/console/command.c **** 
+ 155:../src/renesas/application/common/console/command.c ****     g_num_commands = (sizeof(gppCommands)) / sizeof(pst_command_table_t);
+ 156:../src/renesas/application/common/console/command.c **** 
+ 157:../src/renesas/application/common/console/command.c ****     /* remove unused console command lists */
+ 158:../src/renesas/application/common/console/command.c ****     for (pos = (g_num_commands - 1); pos > 0; pos--)
+ 159:../src/renesas/application/common/console/command.c ****     {
+ 160:../src/renesas/application/common/console/command.c ****         /* check for null entry */
+ 161:../src/renesas/application/common/console/command.c ****         if (NULL == gppCommands[pos])
+ 162:../src/renesas/application/common/console/command.c ****         {
+ 163:../src/renesas/application/common/console/command.c ****             g_num_commands--;
+ 164:../src/renesas/application/common/console/command.c ****         }
+ 165:../src/renesas/application/common/console/command.c ****     }
+ 166:../src/renesas/application/common/console/command.c **** 
+ 167:../src/renesas/application/common/console/command.c ****     if (com)
+ 168:../src/renesas/application/common/console/command.c ****     {
+ 169:../src/renesas/application/common/console/command.c ****         while (1)
+ 170:../src/renesas/application/common/console/command.c ****         {
+ 171:../src/renesas/application/common/console/command.c ****             e_cmderr_t cmd_err = CMD_OK;
+ 172:../src/renesas/application/common/console/command.c **** 
+ 173:../src/renesas/application/common/console/command.c ****             /* Initialise the console for login */
+ 174:../src/renesas/application/common/console/command.c ****             memset(com, 0, sizeof(st_comset_t));
+ 175:../src/renesas/application/common/console/command.c ****             com->p_in = pIn;
+ 176:../src/renesas/application/common/console/command.c ****             com->p_out = pOut;
+ 177:../src/renesas/application/common/console/command.c **** #if 0
+ 178:../src/renesas/application/common/console/command.c ****             /* Print a welcome message */
+ 179:../src/renesas/application/common/console/command.c ****             show_welcome_msg(com->p_out, true);
+ 180:../src/renesas/application/common/console/command.c **** 
+ 181:../src/renesas/application/common/console/command.c ****             fflush(pOut);
+ 182:../src/renesas/application/common/console/command.c **** #endif
+ 183:../src/renesas/application/common/console/command.c ****             /* Process commands until the link is lost or the command returns a code greater than C
+ 184:../src/renesas/application/common/console/command.c ****             while (cmd_err < CMD_USER_EXIT)
+ 185:../src/renesas/application/common/console/command.c ****             {
+ 186:../src/renesas/application/common/console/command.c ****                 /* cast gppCommands to cpst_command_table_t * */
+ 187:../src/renesas/application/common/console/command.c ****                 cmd_err = console(com, (cpst_command_table_t *) gppCommands, g_num_commands, pIn, p
+ 188:../src/renesas/application/common/console/command.c ****             }
+ 189:../src/renesas/application/common/console/command.c **** 
+ 190:../src/renesas/application/common/console/command.c ****             /* CMD_ERROR_IN_IO is returned when the client disconnects check for an IP stream */
+ 191:../src/renesas/application/common/console/command.c ****             if ((CMD_ERROR_IN_IO == cmd_err) && (control(R_DEVLINK_FilePtrDescriptor(com->p_in), CT
+ 192:../src/renesas/application/common/console/command.c ****             {
+ 193:../src/renesas/application/common/console/command.c ****                 /* Log out */
+ 194:../src/renesas/application/common/console/command.c ****                 cmd_err = CMD_LOG_OUT;
+ 195:../src/renesas/application/common/console/command.c ****             }
+ 196:../src/renesas/application/common/console/command.c **** 
+ 197:../src/renesas/application/common/console/command.c ****             /* Check for the "exit<CR>" command return code */
+ 198:../src/renesas/application/common/console/command.c ****             if (CMD_LOG_OUT == cmd_err)
+ 199:../src/renesas/application/common/console/command.c ****             {
+ 200:../src/renesas/application/common/console/command.c ****                 fprintf(com->p_out, "\r\nBye!\r\n");
+ 201:../src/renesas/application/common/console/command.c ****                 fflush(pOut);
+ 202:../src/renesas/application/common/console/command.c **** 
+ 203:../src/renesas/application/common/console/command.c ****                 /* Do "exit" code */
+ 204:../src/renesas/application/common/console/command.c ****                 R_OS_Free((void*) &com);
+ 205:../src/renesas/application/common/console/command.c ****                 return;
+ 206:../src/renesas/application/common/console/command.c ****             }
+ 207:../src/renesas/application/common/console/command.c ****         }
+ 208:../src/renesas/application/common/console/command.c ****     }
+ 209:../src/renesas/application/common/console/command.c **** }
+ 210:../src/renesas/application/common/console/command.c **** /******************************************************************************
+ 211:../src/renesas/application/common/console/command.c ****  End of function cmd_console
+ 212:../src/renesas/application/common/console/command.c ****  ******************************************************************************/
+ 213:../src/renesas/application/common/console/command.c **** 
+ 214:../src/renesas/application/common/console/command.c **** /******************************************************************************
+ 215:../src/renesas/application/common/console/command.c **** Function Name: cmd_version
+ 216:../src/renesas/application/common/console/command.c **** Description:   Command to show the version
+ 217:../src/renesas/application/common/console/command.c **** Arguments:     IN  iArgCount - The number of arguments in the argument list
+ 218:../src/renesas/application/common/console/command.c ****                IN  ppszArgument - The argument list
+ 219:../src/renesas/application/common/console/command.c ****                IN  pCom - Pointer to the command object
+ 220:../src/renesas/application/common/console/command.c **** Return value:  CMD_OK for success
+ 221:../src/renesas/application/common/console/command.c **** ******************************************************************************/
+ 222:../src/renesas/application/common/console/command.c **** static int16_t cmd_version(int_t iArgCount, char_t **ppszArgument, pst_comset_t pCom)
+ 223:../src/renesas/application/common/console/command.c **** {
+  25              		.loc 1 223 0
+  26              		.cfi_startproc
+  27              		@ args = 0, pretend = 0, frame = 0
+  28              		@ frame_needed = 0, uses_anonymous_args = 0
+  29              	.LVL0:
+  30 0000 10402DE9 		push	{r4, lr}
+  31              		.cfi_def_cfa_offset 8
+  32              		.cfi_offset 4, -8
+  33              		.cfi_offset 14, -4
+ 224:../src/renesas/application/common/console/command.c ****     /* cast parameters to void to suppress unused parameter warning */
+ 225:../src/renesas/application/common/console/command.c ****     AVOID_UNUSED_WARNING;
+ 226:../src/renesas/application/common/console/command.c **** 
+ 227:../src/renesas/application/common/console/command.c ****     show_welcome_msg(pCom->p_out, false);
+  34              		.loc 1 227 0
+  35 0004 0010A0E3 		mov	r1, #0
+  36              	.LVL1:
+  37 0008 380C92E5 		ldr	r0, [r2, #3128]
+  38              	.LVL2:
+  39 000c FEFFFFEB 		bl	show_welcome_msg
+  40              	.LVL3:
+ 228:../src/renesas/application/common/console/command.c ****     return CMD_OK;
+ 229:../src/renesas/application/common/console/command.c **** }
+  41              		.loc 1 229 0
+  42 0010 0000A0E3 		mov	r0, #0
+  43 0014 1080BDE8 		pop	{r4, pc}
+  44              		.cfi_endproc
+  45              	.LFE5:
+  47              		.section	.text.cmd_console,"ax",%progbits
+  48              		.align	2
+  49              		.global	cmd_console
+  50              		.syntax unified
+  51              		.arm
+  52              		.fpu neon
+  54              	cmd_console:
+  55              	.LFB4:
+ 151:../src/renesas/application/common/console/command.c ****     pst_comset_t com = R_OS_Malloc(sizeof(st_comset_t), R_MEMORY_REGION_DEFAULT);
+  56              		.loc 1 151 0
+  57              		.cfi_startproc
+  58              		@ args = 0, pretend = 0, frame = 8
+  59              		@ frame_needed = 0, uses_anonymous_args = 0
+  60              	.LVL4:
+  61 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+  62              		.cfi_def_cfa_offset 20
+  63              		.cfi_offset 4, -20
+  64              		.cfi_offset 5, -16
+  65              		.cfi_offset 6, -12
+  66              		.cfi_offset 7, -8
+  67              		.cfi_offset 14, -4
+  68 0004 14D04DE2 		sub	sp, sp, #20
+  69              		.cfi_def_cfa_offset 40
+  70 0008 0060A0E1 		mov	r6, r0
+  71 000c 0150A0E1 		mov	r5, r1
+  72 0010 0270A0E1 		mov	r7, r2
+ 152:../src/renesas/application/common/console/command.c ****     int32_t pos;
+  73              		.loc 1 152 0
+  74 0014 0010A0E3 		mov	r1, #0
+  75              	.LVL5:
+  76 0018 EC0403E3 		movw	r0, #13548
+  77              	.LVL6:
+  78 001c FEFFFFEB 		bl	R_OS_Malloc
+  79              	.LVL7:
+  80 0020 0C008DE5 		str	r0, [sp, #12]
+ 155:../src/renesas/application/common/console/command.c **** 
+  81              		.loc 1 155 0
+  82 0024 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  83 0028 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  84 002c 2020A0E3 		mov	r2, #32
+  85 0030 002083E5 		str	r2, [r3]
+  86              	.LVL8:
+ 158:../src/renesas/application/common/console/command.c ****     {
+  87              		.loc 1 158 0
+  88 0034 1F30A0E3 		mov	r3, #31
+  89 0038 000000EA 		b	.L4
+  90              	.LVL9:
+  91              	.L5:
+ 158:../src/renesas/application/common/console/command.c ****     {
+  92              		.loc 1 158 0 is_stmt 0 discriminator 2
+  93 003c 013043E2 		sub	r3, r3, #1
+  94              	.LVL10:
+  95              	.L4:
+ 158:../src/renesas/application/common/console/command.c ****     {
+  96              		.loc 1 158 0 discriminator 1
+  97 0040 000053E3 		cmp	r3, #0
+  98 0044 0A0000DA 		ble	.L15
+ 161:../src/renesas/application/common/console/command.c ****         {
+  99              		.loc 1 161 0 is_stmt 1
+ 100 0048 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 101 004c 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 102 0050 032192E7 		ldr	r2, [r2, r3, lsl #2]
+ 103 0054 000052E3 		cmp	r2, #0
+ 104 0058 F7FFFF1A 		bne	.L5
+ 163:../src/renesas/application/common/console/command.c ****         }
+ 105              		.loc 1 163 0
+ 106 005c 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 107 0060 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 108 0064 001092E5 		ldr	r1, [r2]
+ 109 0068 011041E2 		sub	r1, r1, #1
+ 110 006c 001082E5 		str	r1, [r2]
+ 111 0070 F1FFFFEA 		b	.L5
+ 112              	.L15:
+ 167:../src/renesas/application/common/console/command.c ****     {
+ 113              		.loc 1 167 0
+ 114 0074 000050E3 		cmp	r0, #0
+ 115 0078 1100001A 		bne	.L11
+ 116 007c 2F0000EA 		b	.L3
+ 117              	.LVL11:
+ 118              	.L9:
+ 119              	.LBB2:
+ 187:../src/renesas/application/common/console/command.c ****             }
+ 120              		.loc 1 187 0
+ 121 0080 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 122 0084 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 123 0088 002093E5 		ldr	r2, [r3]
+ 124 008c 04708DE5 		str	r7, [sp, #4]
+ 125 0090 00508DE5 		str	r5, [sp]
+ 126 0094 0630A0E1 		mov	r3, r6
+ 127 0098 001000E3 		movw	r1, #:lower16:.LANCHOR1
+ 128 009c 001040E3 		movt	r1, #:upper16:.LANCHOR1
+ 129 00a0 0C009DE5 		ldr	r0, [sp, #12]
+ 130 00a4 FEFFFFEB 		bl	console
+ 131              	.LVL12:
+ 132 00a8 0040A0E1 		mov	r4, r0
+ 133              	.LVL13:
+ 134              	.L8:
+ 184:../src/renesas/application/common/console/command.c ****             {
+ 135              		.loc 1 184 0
+ 136 00ac 040054E3 		cmp	r4, #4
+ 137 00b0 F2FFFF9A 		bls	.L9
+ 191:../src/renesas/application/common/console/command.c ****             {
+ 138              		.loc 1 191 0
+ 139 00b4 070054E3 		cmp	r4, #7
+ 140 00b8 0A00000A 		beq	.L16
+ 141              	.LVL14:
+ 142              	.L10:
+ 198:../src/renesas/application/common/console/command.c ****             {
+ 143              		.loc 1 198 0
+ 144 00bc 060054E3 		cmp	r4, #6
+ 145 00c0 1200000A 		beq	.L17
+ 146              	.LVL15:
+ 147              	.L11:
+ 174:../src/renesas/application/common/console/command.c ****             com->p_in = pIn;
+ 148              		.loc 1 174 0
+ 149 00c4 EC2403E3 		movw	r2, #13548
+ 150 00c8 0010A0E3 		mov	r1, #0
+ 151 00cc 0C009DE5 		ldr	r0, [sp, #12]
+ 152 00d0 FEFFFFEB 		bl	memset
+ 153              	.LVL16:
+ 175:../src/renesas/application/common/console/command.c ****             com->p_out = pOut;
+ 154              		.loc 1 175 0
+ 155 00d4 0C309DE5 		ldr	r3, [sp, #12]
+ 156 00d8 346C83E5 		str	r6, [r3, #3124]
+ 176:../src/renesas/application/common/console/command.c **** #if 0
+ 157              		.loc 1 176 0
+ 158 00dc 385C83E5 		str	r5, [r3, #3128]
+ 171:../src/renesas/application/common/console/command.c **** 
+ 159              		.loc 1 171 0
+ 160 00e0 0040A0E3 		mov	r4, #0
+ 184:../src/renesas/application/common/console/command.c ****             {
+ 161              		.loc 1 184 0
+ 162 00e4 F0FFFFEA 		b	.L8
+ 163              	.LVL17:
+ 164              	.L16:
+ 191:../src/renesas/application/common/console/command.c ****             {
+ 165              		.loc 1 191 0 discriminator 1
+ 166 00e8 0C309DE5 		ldr	r3, [sp, #12]
+ 167 00ec 340C93E5 		ldr	r0, [r3, #3124]
+ 168 00f0 FEFFFFEB 		bl	R_DEVLINK_FilePtrDescriptor
+ 169              	.LVL18:
+ 170 00f4 0020A0E3 		mov	r2, #0
+ 171 00f8 0110A0E3 		mov	r1, #1
+ 172 00fc 0F1742E3 		movt	r1, 9999
+ 173 0100 FEFFFFEB 		bl	control
+ 174              	.LVL19:
+ 175 0104 000050E3 		cmp	r0, #0
+ 194:../src/renesas/application/common/console/command.c ****             }
+ 176              		.loc 1 194 0
+ 177 0108 0640A003 		moveq	r4, #6
+ 178              	.LVL20:
+ 179 010c EAFFFFEA 		b	.L10
+ 180              	.LVL21:
+ 181              	.L17:
+ 200:../src/renesas/application/common/console/command.c ****                 fflush(pOut);
+ 182              		.loc 1 200 0
+ 183 0110 10408DE2 		add	r4, sp, #16
+ 184              	.LVL22:
+ 185 0114 043034E5 		ldr	r3, [r4, #-4]!
+ 186 0118 383C93E5 		ldr	r3, [r3, #3128]
+ 187 011c 0820A0E3 		mov	r2, #8
+ 188 0120 0110A0E3 		mov	r1, #1
+ 189 0124 000000E3 		movw	r0, #:lower16:.LC0
+ 190 0128 000040E3 		movt	r0, #:upper16:.LC0
+ 191 012c FEFFFFEB 		bl	fwrite
+ 192              	.LVL23:
+ 201:../src/renesas/application/common/console/command.c **** 
+ 193              		.loc 1 201 0
+ 194 0130 0500A0E1 		mov	r0, r5
+ 195 0134 FEFFFFEB 		bl	fflush
+ 196              	.LVL24:
+ 204:../src/renesas/application/common/console/command.c ****                 return;
+ 197              		.loc 1 204 0
+ 198 0138 0400A0E1 		mov	r0, r4
+ 199 013c FEFFFFEB 		bl	R_OS_Free
+ 200              	.LVL25:
+ 201              	.L3:
+ 202              	.LBE2:
+ 209:../src/renesas/application/common/console/command.c **** /******************************************************************************
+ 203              		.loc 1 209 0
+ 204 0140 14D08DE2 		add	sp, sp, #20
+ 205              		.cfi_def_cfa_offset 20
+ 206              		@ sp needed
+ 207 0144 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 208              		.cfi_endproc
+ 209              	.LFE4:
+ 211              		.global	g_num_commands
+ 212              		.global	gppCommands
+ 213              		.global	gs_cmd_tbl_command
+ 214              		.global	gbfLoginsLoaded
+ 215              		.comm	gpszLoginsAndPasswords,32,4
+ 216              		.comm	g_rtc_handle,4,4
+ 217              		.section	.bss.gbfLoginsLoaded,"aw",%nobits
+ 220              	gbfLoginsLoaded:
+ 221 0000 00       		.space	1
+ 222              		.section	.data.g_num_commands,"aw",%progbits
+ 223              		.align	2
+ 224              		.set	.LANCHOR0,. + 0
+ 227              	g_num_commands:
+ 228 0000 20000000 		.word	32
+ 229              		.section	.data.gppCommands,"aw",%progbits
+ 230              		.align	2
+ 231              		.set	.LANCHOR1,. + 0
+ 234              	gppCommands:
+ 235 0000 00000000 		.word	gs_cmd_tbl_command
+ 236 0004 00000000 		.space	124
+ 236      00000000 
+ 236      00000000 
+ 236      00000000 
+ 236      00000000 
+ 237              		.section	.data.gs_cmd_command,"aw",%progbits
+ 238              		.align	2
+ 241              	gs_cmd_command:
+ 242 0000 00000000 		.word	.LC1
+ 243 0004 00000000 		.word	cmd_version
+ 244 0008 04000000 		.word	.LC2
+ 245              		.section	.rodata.cmd_console.str1.4,"aMS",%progbits,1
+ 246              		.align	2
+ 247              	.LC0:
+ 248 0000 0D0A4279 		.ascii	"\015\012Bye!\015\012\000"
+ 248      65210D0A 
+ 248      00
+ 249              		.section	.rodata.gs_cmd_tbl_command,"a",%progbits
+ 250              		.align	2
+ 253              	gs_cmd_tbl_command:
+ 254 0000 47656E65 		.ascii	"General Commands\000"
+ 254      72616C20 
+ 254      436F6D6D 
+ 254      616E6473 
+ 254      00
+ 255 0011 00000000 		.space	15
+ 255      00000000 
+ 255      00000000 
+ 255      000000
+ 256 0020 00000000 		.word	gs_cmd_command
+ 257 0024 01000000 		.word	1
+ 258              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 259              		.align	2
+ 260              	.LC1:
+ 261 0000 76657200 		.ascii	"ver\000"
+ 262              	.LC2:
+ 263 0004 3C43523E 		.ascii	"<CR> - Show the application version\000"
+ 263      202D2053 
+ 263      686F7720 
+ 263      74686520 
+ 263      6170706C 
+ 264              		.text
+ 265              	.Letext0:
+ 266              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 267              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 268              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 269              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 270              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 271              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 272              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 273              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 274              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 275              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 276              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 277              		.file 13 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 278              		.file 14 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/os_abstrac
+ 279              		.file 15 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 280              		.file 16 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/os_abstrac
+ 281              		.file 17 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/renesas/applica
+ 282              		.file 18 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/renesas/applica
+ 283              		.file 19 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 284              		.file 20 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/os_abstrac
+ 285              		.file 21 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 command.c
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:17     .text.cmd_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:22     .text.cmd_version:00000000 cmd_version
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:48     .text.cmd_console:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:54     .text.cmd_console:00000000 cmd_console
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:224    .data.g_num_commands:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:231    .data.gppCommands:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:247    .rodata.cmd_console.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:227    .data.g_num_commands:00000000 g_num_commands
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:234    .data.gppCommands:00000000 gppCommands
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:253    .rodata.gs_cmd_tbl_command:00000000 gs_cmd_tbl_command
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:220    .bss.gbfLoginsLoaded:00000000 gbfLoginsLoaded
+                            *COM*:00000020 gpszLoginsAndPasswords
+                            *COM*:00000004 g_rtc_handle
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:221    .bss.gbfLoginsLoaded:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:223    .data.g_num_commands:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:230    .data.gppCommands:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:238    .data.gs_cmd_command:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:241    .data.gs_cmd_command:00000000 gs_cmd_command
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:246    .rodata.cmd_console.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:250    .rodata.gs_cmd_tbl_command:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccVDtDdg.s:259    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.5cdadbb3efe495d1c9e38350b8c376c7
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.stddef.h.187.2ff233552538c6ff9b8575ca8ea52cb3
+                           .group:00000000 wm4.cdefs.h.47.e658329a094974ebad41b40c60502de7
+                           .group:00000000 wm4.stddef.h.39.ec95e8feac892e292b69dc7ae75b0d64
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:00000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:00000000 wm4._timeval.h.30.0e8bfd94e85db17dda3286ee81496fe6
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.30.bbece7fa40993a78092dcc5805132560
+                           .group:00000000 wm4.types.h.69.ed3eae3cf73030a737515151ebcab7a1
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.8188691c2279eac7a223caa50f6694b9
+                           .group:00000000 wm4._default_fcntl.h.6.b13d56891b95175b639f824a0fd1ed77
+                           .group:00000000 wm4.time.h.8.db4619001f026d0b4874c029fef0e91f
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.25.0e6a0fdbc9955f5707ed54246ed2e089
+                           .group:00000000 wm4.time.h.162.d096f2f5887c52e271c4dc33d795dc64
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+                           .group:00000000 wm4.fcntl.h.9.9336f33d7f5028f694c75e6e224e0cf7
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.ctype.h.2.56b1b2226dd0fb45614b0e18787c61f7
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.r_typedefs.h.38.e90d9de5300d9ae020e5db8c5af88b3e
+                           .group:00000000 wm4.r_startup_config.h.28.41a2bd9676f9208cac4163ceb2eb9006
+                           .group:00000000 wm4.r_compiler_abstraction_api.h.26.bb21b39b83806cb7bb8838b6f825dcff
+                           .group:00000000 wm4.driver.h.34.180df73e0731406f5e50150641059ede
+                           .group:00000000 wm4.r_os_abstraction_api.h.53.c40489f97d2474c70b40d43822d1406c
+                           .group:00000000 wm4.compiler_settings.h.55.412db3588640e7e83336e77c1cd11233
+                           .group:00000000 wm4.version.h.37.b633f0288abcc935cb6c7567cc49eb27
+                           .group:00000000 wm4.console.h.65.0505ce2943ec776ae45e7330e0618b5b
+                           .group:00000000 wm4.reent.h.91.b3ea049ebc5486622b61409b78486f84
+                           .group:00000000 wm4.r_devlink_wrapper.h.72.ad1de4c851513efa3aed0532ebca7ca2
+                           .group:00000000 wm4.application_cfg.h.34.5933f86187a4e016c22c12e023d46cf0
+
+UNDEFINED SYMBOLS
+show_welcome_msg
+R_OS_Malloc
+console
+memset
+R_DEVLINK_FilePtrDescriptor
+control
+fwrite
+fflush
+R_OS_Free

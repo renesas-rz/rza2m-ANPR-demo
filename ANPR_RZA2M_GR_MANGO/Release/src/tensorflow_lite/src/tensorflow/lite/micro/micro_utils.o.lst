@@ -1,0 +1,813 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"micro_utils.cpp"
+  13              		.section	.text._ZN6tflite12ElementCountERK14TfLiteIntArray,"ax",%progbits
+  14              		.align	2
+  15              		.global	_ZN6tflite12ElementCountERK14TfLiteIntArray
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	_ZN6tflite12ElementCountERK14TfLiteIntArray:
+  21              		.fnstart
+  22              	.LFB228:
+  23              		@ args = 0, pretend = 0, frame = 0
+  24              		@ frame_needed = 0, uses_anonymous_args = 0
+  25              		@ link register save eliminated.
+  26 0000 0030A0E1 		mov	r3, r0
+  27 0004 0020A0E3 		mov	r2, #0
+  28 0008 04C093E4 		ldr	ip, [r3], #4
+  29 000c 0100A0E3 		mov	r0, #1
+  30              	.L3:
+  31 0010 0C0052E1 		cmp	r2, ip
+  32 0014 1EFF2FA1 		bxge	lr
+  33 0018 041093E4 		ldr	r1, [r3], #4
+  34 001c 012082E2 		add	r2, r2, #1
+  35 0020 910000E0 		mul	r0, r1, r0
+  36 0024 F9FFFFEA 		b	.L3
+  37              		.cantunwind
+  38              		.fnend
+  40              		.section	.text._ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi,"ax",%progbits
+  41              		.align	2
+  42              		.global	_ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi
+  43              		.syntax unified
+  44              		.arm
+  45              		.fpu neon
+  47              	_ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi:
+  48              		.fnstart
+  49              	.LFB229:
+  50              		@ args = 0, pretend = 0, frame = 0
+  51              		@ frame_needed = 0, uses_anonymous_args = 0
+  52 0000 10402DE9 		push	{r4, lr}
+  53 0004 028B2DED 		vpush.64	{d8}
+  54 0008 100A08EE 		vmov	s16, r0	@ int
+  55 000c 200A80EE 		vdiv.f32	s0, s0, s1
+  56 0010 C88AB8EE 		vcvt.f32.s32	s16, s16
+  57 0014 FEFFFFEB 		bl	roundf
+  58 0018 008A38EE 		vadd.f32	s16, s16, s0
+  59 001c C88ABDEE 		vcvt.s32.f32	s16, s16
+  60 0020 103A18EE 		vmov	r3, s16	@ int
+  61 0024 028BBDEC 		vldm	sp!, {d8}
+  62 0028 1300E8E6 		usat	r0, #8, r3
+  63 002c 7000EFE6 		uxtb	r0, r0
+  64 0030 1080BDE8 		pop	{r4, pc}
+  65              		.cantunwind
+  66              		.fnend
+  68              		.section	.text._ZN6tflite30FloatToSymmetricQuantizedUInt8Eff,"ax",%progbits
+  69              		.align	2
+  70              		.global	_ZN6tflite30FloatToSymmetricQuantizedUInt8Eff
+  71              		.syntax unified
+  72              		.arm
+  73              		.fpu neon
+  75              	_ZN6tflite30FloatToSymmetricQuantizedUInt8Eff:
+  76              		.fnstart
+  77              	.LFB230:
+  78              		@ args = 0, pretend = 0, frame = 0
+  79              		@ frame_needed = 0, uses_anonymous_args = 0
+  80 0000 10402DE9 		push	{r4, lr}
+  81 0004 200A80EE 		vdiv.f32	s0, s0, s1
+  82 0008 FEFFFFEB 		bl	roundf
+  83 000c C07AFDEE 		vcvt.s32.f32	s15, s0
+  84 0010 900A17EE 		vmov	r0, s15	@ int
+  85 0014 FF0050E3 		cmp	r0, #255
+  86 0018 FF00A0A3 		movge	r0, #255
+  87 001c 010050E3 		cmp	r0, #1
+  88 0020 0100A0B3 		movlt	r0, #1
+  89 0024 7000EFE6 		uxtb	r0, r0
+  90 0028 1080BDE8 		pop	{r4, pc}
+  91              		.cantunwind
+  92              		.fnend
+  94              		.section	.text._ZN6tflite30FloatToAsymmetricQuantizedInt8Effi,"ax",%progbits
+  95              		.align	2
+  96              		.global	_ZN6tflite30FloatToAsymmetricQuantizedInt8Effi
+  97              		.syntax unified
+  98              		.arm
+  99              		.fpu neon
+ 101              	_ZN6tflite30FloatToAsymmetricQuantizedInt8Effi:
+ 102              		.fnstart
+ 103              	.LFB231:
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106 0000 10402DE9 		push	{r4, lr}
+ 107 0004 800080E2 		add	r0, r0, #128
+ 108 0008 FEFFFFEB 		bl	_ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi
+ 109 000c 800040E2 		sub	r0, r0, #128
+ 110 0010 7000AFE6 		sxtb	r0, r0
+ 111 0014 1080BDE8 		pop	{r4, pc}
+ 112              		.cantunwind
+ 113              		.fnend
+ 115              		.section	.text._ZN6tflite29FloatToSymmetricQuantizedInt8Eff,"ax",%progbits
+ 116              		.align	2
+ 117              		.global	_ZN6tflite29FloatToSymmetricQuantizedInt8Eff
+ 118              		.syntax unified
+ 119              		.arm
+ 120              		.fpu neon
+ 122              	_ZN6tflite29FloatToSymmetricQuantizedInt8Eff:
+ 123              		.fnstart
+ 124              	.LFB232:
+ 125              		@ args = 0, pretend = 0, frame = 0
+ 126              		@ frame_needed = 0, uses_anonymous_args = 0
+ 127              		@ link register save eliminated.
+ 128 0000 0000A0E3 		mov	r0, #0
+ 129 0004 FEFFFFEA 		b	_ZN6tflite30FloatToAsymmetricQuantizedInt8Effi
+ 130              		.cantunwind
+ 131              		.fnend
+ 133              		.section	.text._ZN6tflite30FloatToSymmetricQuantizedInt32Eff,"ax",%progbits
+ 134              		.align	2
+ 135              		.global	_ZN6tflite30FloatToSymmetricQuantizedInt32Eff
+ 136              		.syntax unified
+ 137              		.arm
+ 138              		.fpu neon
+ 140              	_ZN6tflite30FloatToSymmetricQuantizedInt32Eff:
+ 141              		.fnstart
+ 142              	.LFB233:
+ 143              		@ args = 0, pretend = 0, frame = 0
+ 144              		@ frame_needed = 0, uses_anonymous_args = 0
+ 145 0000 10402DE9 		push	{r4, lr}
+ 146 0004 200A80EE 		vdiv.f32	s0, s0, s1
+ 147 0008 FEFFFFEB 		bl	roundf
+ 148 000c 0A7ADFED 		vldr.32	s15, .L18
+ 149 0010 E70AB4EE 		vcmpe.f32	s0, s15
+ 150 0014 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 151 0018 670AB0CE 		vmovgt.f32	s0, s15
+ 152 001c 030000CA 		bgt	.L13
+ 153 0020 067ADFED 		vldr.32	s15, .L18+4
+ 154 0024 670AB4EE 		vcmp.f32	s0, s15
+ 155 0028 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 156 002c 670AB04E 		vmovmi.f32	s0, s15
+ 157              	.L13:
+ 158 0030 C07AFDEE 		vcvt.s32.f32	s15, s0
+ 159 0034 900A17EE 		vmov	r0, s15	@ int
+ 160 0038 1080BDE8 		pop	{r4, pc}
+ 161              	.L19:
+ 162              		.align	2
+ 163              	.L18:
+ 164 003c 0000004F 		.word	1325400064
+ 165 0040 000000CF 		.word	-822083584
+ 166              		.cantunwind
+ 167              		.fnend
+ 169              		.section	.text._ZN6tflite18AsymmetricQuantizeEPKfPaifi,"ax",%progbits
+ 170              		.align	2
+ 171              		.global	_ZN6tflite18AsymmetricQuantizeEPKfPaifi
+ 172              		.syntax unified
+ 173              		.arm
+ 174              		.fpu neon
+ 176              	_ZN6tflite18AsymmetricQuantizeEPKfPaifi:
+ 177              		.fnstart
+ 178              	.LFB234:
+ 179              		@ args = 0, pretend = 0, frame = 0
+ 180              		@ frame_needed = 0, uses_anonymous_args = 0
+ 181 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 182 0004 0160A0E1 		mov	r6, r1
+ 183 0008 028B2DED 		vpush.64	{d8}
+ 184 000c 0280A0E1 		mov	r8, r2
+ 185 0010 0370A0E1 		mov	r7, r3
+ 186 0014 0050A0E1 		mov	r5, r0
+ 187 0018 408AB0EE 		vmov.f32	s16, s0
+ 188 001c 0140A0E1 		mov	r4, r1
+ 189              	.L22:
+ 190 0020 063044E0 		sub	r3, r4, r6
+ 191 0024 030058E1 		cmp	r8, r3
+ 192 0028 050000DA 		ble	.L20
+ 193 002c 010AB5EC 		vldmia.32	r5!, {s0}
+ 194 0030 0700A0E1 		mov	r0, r7
+ 195 0034 480AF0EE 		vmov.f32	s1, s16
+ 196 0038 FEFFFFEB 		bl	_ZN6tflite30FloatToAsymmetricQuantizedInt8Effi
+ 197 003c 0100C4E4 		strb	r0, [r4], #1
+ 198 0040 F6FFFFEA 		b	.L22
+ 199              	.L20:
+ 200 0044 028BBDEC 		vldm	sp!, {d8}
+ 201 0048 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 202              		.cantunwind
+ 203              		.fnend
+ 205              		.section	.text._ZN6tflite18AsymmetricQuantizeEPKfPhifi,"ax",%progbits
+ 206              		.align	2
+ 207              		.global	_ZN6tflite18AsymmetricQuantizeEPKfPhifi
+ 208              		.syntax unified
+ 209              		.arm
+ 210              		.fpu neon
+ 212              	_ZN6tflite18AsymmetricQuantizeEPKfPhifi:
+ 213              		.fnstart
+ 214              	.LFB235:
+ 215              		@ args = 0, pretend = 0, frame = 0
+ 216              		@ frame_needed = 0, uses_anonymous_args = 0
+ 217 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 218 0004 0160A0E1 		mov	r6, r1
+ 219 0008 028B2DED 		vpush.64	{d8}
+ 220 000c 0280A0E1 		mov	r8, r2
+ 221 0010 0370A0E1 		mov	r7, r3
+ 222 0014 0050A0E1 		mov	r5, r0
+ 223 0018 408AB0EE 		vmov.f32	s16, s0
+ 224 001c 0140A0E1 		mov	r4, r1
+ 225              	.L26:
+ 226 0020 063044E0 		sub	r3, r4, r6
+ 227 0024 030058E1 		cmp	r8, r3
+ 228 0028 050000DA 		ble	.L24
+ 229 002c 010AB5EC 		vldmia.32	r5!, {s0}
+ 230 0030 0700A0E1 		mov	r0, r7
+ 231 0034 480AF0EE 		vmov.f32	s1, s16
+ 232 0038 FEFFFFEB 		bl	_ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi
+ 233 003c 0100C4E4 		strb	r0, [r4], #1
+ 234 0040 F6FFFFEA 		b	.L26
+ 235              	.L24:
+ 236 0044 028BBDEC 		vldm	sp!, {d8}
+ 237 0048 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 238              		.cantunwind
+ 239              		.fnend
+ 241              		.section	.text._ZN6tflite17SymmetricQuantizeEPKfPlif,"ax",%progbits
+ 242              		.align	2
+ 243              		.global	_ZN6tflite17SymmetricQuantizeEPKfPlif
+ 244              		.syntax unified
+ 245              		.arm
+ 246              		.fpu neon
+ 248              	_ZN6tflite17SymmetricQuantizeEPKfPlif:
+ 249              		.fnstart
+ 250              	.LFB236:
+ 251              		@ args = 0, pretend = 0, frame = 0
+ 252              		@ frame_needed = 0, uses_anonymous_args = 0
+ 253 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 254 0004 0160A0E1 		mov	r6, r1
+ 255 0008 028B2DED 		vpush.64	{d8}
+ 256 000c 0270A0E1 		mov	r7, r2
+ 257 0010 0050A0E1 		mov	r5, r0
+ 258 0014 0040A0E3 		mov	r4, #0
+ 259 0018 408AB0EE 		vmov.f32	s16, s0
+ 260              	.L30:
+ 261 001c 070054E1 		cmp	r4, r7
+ 262 0020 050000AA 		bge	.L28
+ 263 0024 010AB5EC 		vldmia.32	r5!, {s0}
+ 264 0028 480AF0EE 		vmov.f32	s1, s16
+ 265 002c FEFFFFEB 		bl	_ZN6tflite30FloatToSymmetricQuantizedInt32Eff
+ 266 0030 040186E7 		str	r0, [r6, r4, lsl #2]
+ 267 0034 014084E2 		add	r4, r4, #1
+ 268 0038 F7FFFFEA 		b	.L30
+ 269              	.L28:
+ 270 003c 028BBDEC 		vldm	sp!, {d8}
+ 271 0040 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 272              		.cantunwind
+ 273              		.fnend
+ 275              		.global	__aeabi_idiv
+ 276              		.section	.text._ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf,"ax",%progbits
+ 277              		.align	2
+ 278              		.global	_ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf
+ 279              		.syntax unified
+ 280              		.arm
+ 281              		.fpu neon
+ 283              	_ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf:
+ 284              		.fnstart
+ 285              	.LFB237:
+ 286              		@ args = 4, pretend = 0, frame = 8
+ 287              		@ frame_needed = 0, uses_anonymous_args = 0
+ 288 0000 F74F2DE9 		push	{r0, r1, r2, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 289 0004 0050A0E1 		mov	r5, r0
+ 290 0008 0140A0E1 		mov	r4, r1
+ 291 000c 0200A0E1 		mov	r0, r2
+ 292 0010 0310A0E1 		mov	r1, r3
+ 293 0014 0390A0E1 		mov	r9, r3
+ 294 0018 FEFFFFEB 		bl	__aeabi_idiv
+ 295 001c 30709DE5 		ldr	r7, [sp, #48]
+ 296 0020 00A1A0E1 		lsl	r10, r0, #2
+ 297 0024 00B0A0E1 		mov	fp, r0
+ 298 0028 0080A0E3 		mov	r8, #0
+ 299              	.L36:
+ 300 002c 090058E1 		cmp	r8, r9
+ 301 0030 110000AA 		bge	.L32
+ 302 0034 0530A0E1 		mov	r3, r5
+ 303 0038 0060A0E3 		mov	r6, #0
+ 304              	.L35:
+ 305 003c 0B0056E1 		cmp	r6, fp
+ 306 0040 080000AA 		bge	.L34
+ 307 0044 010AB3EC 		vldmia.32	r3!, {s0}
+ 308 0048 000AD7ED 		vldr.32	s1, [r7]
+ 309 004c 00308DE5 		str	r3, [sp]
+ 310 0050 04308DE5 		str	r3, [sp, #4]
+ 311 0054 FEFFFFEB 		bl	_ZN6tflite30FloatToSymmetricQuantizedInt32Eff
+ 312 0058 00309DE5 		ldr	r3, [sp]
+ 313 005c 060184E7 		str	r0, [r4, r6, lsl #2]
+ 314 0060 016086E2 		add	r6, r6, #1
+ 315 0064 F4FFFFEA 		b	.L35
+ 316              	.L34:
+ 317 0068 018088E2 		add	r8, r8, #1
+ 318 006c 0A5085E0 		add	r5, r5, r10
+ 319 0070 047087E2 		add	r7, r7, #4
+ 320 0074 0A4084E0 		add	r4, r4, r10
+ 321 0078 EBFFFFEA 		b	.L36
+ 322              	.L32:
+ 323 007c 0CD08DE2 		add	sp, sp, #12
+ 324              		@ sp needed
+ 325 0080 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 326              		.cantunwind
+ 327              		.fnend
+ 329              		.section	.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf,"ax",%progb
+ 330              		.align	2
+ 331              		.global	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+ 332              		.syntax unified
+ 333              		.arm
+ 334              		.fpu neon
+ 336              	_ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:
+ 337              		.fnstart
+ 338              	.LFB238:
+ 339              		@ args = 4, pretend = 0, frame = 24
+ 340              		@ frame_needed = 0, uses_anonymous_args = 0
+ 341 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 342              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 343 0004 0270A0E1 		mov	r7, r2
+ 344 0008 0160A0E1 		mov	r6, r1
+ 345 000c 068B2DED 		vpush.64	{d8, d9, d10}
+ 346              		.vsave {d8, d9, d10}
+ 347 0010 076186E0 		add	r6, r6, r7, lsl #2
+ 348              		.pad #28
+ 349 0014 1CD04DE2 		sub	sp, sp, #28
+ 350 0018 0040A0E1 		mov	r4, r0
+ 351 001c 0100A0E1 		mov	r0, r1
+ 352 0020 0350A0E1 		mov	r5, r3
+ 353 0024 FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 354 0028 049096E5 		ldr	r9, [r6, #4]
+ 355 002c 0910A0E1 		mov	r1, r9
+ 356 0030 FEFFFFEB 		bl	__aeabi_idiv
+ 357 0034 000057E3 		cmp	r7, #0
+ 358 0038 00A0A0E1 		mov	r10, r0
+ 359 003c 1300000A 		beq	.L46
+ 360 0040 030057E3 		cmp	r7, #3
+ 361 0044 0960A001 		moveq	r6, r9
+ 362 0048 0170A003 		moveq	r7, #1
+ 363 004c 1100000A 		beq	.L39
+ 364 0050 90419FE5 		ldr	r4, .L49+12
+ 365 0054 90019FE5 		ldr	r0, .L49+16
+ 366 0058 003094E5 		ldr	r3, [r4]
+ 367 005c 081093E5 		ldr	r1, [r3, #8]
+ 368 0060 FEFFFFEB 		bl	fputs
+ 369 0064 003094E5 		ldr	r3, [r4]
+ 370 0068 080093E5 		ldr	r0, [r3, #8]
+ 371 006c FEFFFFEB 		bl	fflush
+ 372 0070 003094E5 		ldr	r3, [r4]
+ 373 0074 74019FE5 		ldr	r0, .L49+20
+ 374 0078 081093E5 		ldr	r1, [r3, #8]
+ 375 007c FEFFFFEB 		bl	fputs
+ 376 0080 003094E5 		ldr	r3, [r4]
+ 377 0084 080093E5 		ldr	r0, [r3, #8]
+ 378 0088 FEFFFFEB 		bl	fflush
+ 379 008c FEFFFFEB 		bl	abort
+ 380              	.L46:
+ 381 0090 0070A0E1 		mov	r7, r0
+ 382 0094 0160A0E3 		mov	r6, #1
+ 383              	.L39:
+ 384 0098 0731A0E1 		lsl	r3, r7, #2
+ 385 009c 58B09DE5 		ldr	fp, [sp, #88]
+ 386 00a0 4D9A9FED 		vldr.32	s18, .L49
+ 387 00a4 0080A0E3 		mov	r8, #0
+ 388 00a8 4CAA9FED 		vldr.32	s20, .L49+4
+ 389 00ac 04308DE5 		str	r3, [sp, #4]
+ 390 00b0 0631A0E1 		lsl	r3, r6, #2
+ 391 00b4 00308DE5 		str	r3, [sp]
+ 392 00b8 003066E2 		rsb	r3, r6, #0
+ 393 00bc 08308DE5 		str	r3, [sp, #8]
+ 394              	.L45:
+ 395 00c0 090058E1 		cmp	r8, r9
+ 396 00c4 410000AA 		bge	.L38
+ 397 00c8 458ADFED 		vldr.32	s17, .L49+8
+ 398 00cc 0420A0E1 		mov	r2, r4
+ 399 00d0 0010A0E3 		mov	r1, #0
+ 400 00d4 688AB0EE 		vmov.f32	s16, s17
+ 401              	.L42:
+ 402 00d8 0A0051E1 		cmp	r1, r10
+ 403 00dc 10108DE5 		str	r1, [sp, #16]
+ 404 00e0 0F0000AA 		bge	.L41
+ 405 00e4 009AD2ED 		vldr.32	s19, [r2]
+ 406 00e8 480AB0EE 		vmov.f32	s0, s16
+ 407 00ec 0C208DE5 		str	r2, [sp, #12]
+ 408 00f0 690AF0EE 		vmov.f32	s1, s19
+ 409 00f4 FEFFFFEB 		bl	fminf
+ 410 00f8 408AB0EE 		vmov.f32	s16, s0
+ 411 00fc 690AF0EE 		vmov.f32	s1, s19
+ 412 0100 680AB0EE 		vmov.f32	s0, s17
+ 413 0104 FEFFFFEB 		bl	fmaxf
+ 414 0108 10109DE5 		ldr	r1, [sp, #16]
+ 415 010c 00309DE5 		ldr	r3, [sp]
+ 416 0110 0C209DE5 		ldr	r2, [sp, #12]
+ 417 0114 408AF0EE 		vmov.f32	s17, s0
+ 418 0118 011081E2 		add	r1, r1, #1
+ 419 011c 032082E0 		add	r2, r2, r3
+ 420 0120 ECFFFFEA 		b	.L42
+ 421              	.L41:
+ 422 0124 E80AF0EE 		vabs.f32	s1, s17
+ 423 0128 C80AB0EE 		vabs.f32	s0, s16
+ 424 012c FEFFFFEB 		bl	fmaxf
+ 425 0130 090A80EE 		vdiv.f32	s0, s0, s18
+ 426 0134 0500A0E1 		mov	r0, r5
+ 427 0138 0420A0E1 		mov	r2, r4
+ 428 013c 0010A0E3 		mov	r1, #0
+ 429 0140 000A8BED 		vstr.32	s0, [fp]
+ 430              	.L44:
+ 431 0144 0A0051E1 		cmp	r1, r10
+ 432 0148 060080E0 		add	r0, r0, r6
+ 433 014c 14008DE5 		str	r0, [sp, #20]
+ 434 0150 0C008DE5 		str	r0, [sp, #12]
+ 435 0154 10108DE5 		str	r1, [sp, #16]
+ 436 0158 160000AA 		bge	.L43
+ 437 015c 000A92ED 		vldr.32	s0, [r2]
+ 438 0160 007ADBED 		vldr.32	s15, [fp]
+ 439 0164 0C208DE5 		str	r2, [sp, #12]
+ 440 0168 270A80EE 		vdiv.f32	s0, s0, s15
+ 441 016c FEFFFFEB 		bl	roundf
+ 442 0170 C00AFDEE 		vcvt.s32.f32	s1, s0
+ 443 0174 4A0AB0EE 		vmov.f32	s0, s20
+ 444 0178 E00AF8EE 		vcvt.f32.s32	s1, s1
+ 445 017c FEFFFFEB 		bl	fmaxf
+ 446 0180 400AF0EE 		vmov.f32	s1, s0
+ 447 0184 490AB0EE 		vmov.f32	s0, s18
+ 448 0188 FEFFFFEB 		bl	fminf
+ 449 018c C07AFDEE 		vcvt.s32.f32	s15, s0
+ 450 0190 08309DE5 		ldr	r3, [sp, #8]
+ 451 0194 14009DE5 		ldr	r0, [sp, #20]
+ 452 0198 10109DE5 		ldr	r1, [sp, #16]
+ 453 019c 90CA17EE 		vmov	ip, s15	@ int
+ 454 01a0 0C209DE5 		ldr	r2, [sp, #12]
+ 455 01a4 03C0C0E7 		strb	ip, [r0, r3]
+ 456 01a8 011081E2 		add	r1, r1, #1
+ 457 01ac 00309DE5 		ldr	r3, [sp]
+ 458 01b0 032082E0 		add	r2, r2, r3
+ 459 01b4 E2FFFFEA 		b	.L44
+ 460              	.L43:
+ 461 01b8 04309DE5 		ldr	r3, [sp, #4]
+ 462 01bc 018088E2 		add	r8, r8, #1
+ 463 01c0 075085E0 		add	r5, r5, r7
+ 464 01c4 04B08BE2 		add	fp, fp, #4
+ 465 01c8 034084E0 		add	r4, r4, r3
+ 466 01cc BBFFFFEA 		b	.L45
+ 467              	.L38:
+ 468 01d0 1CD08DE2 		add	sp, sp, #28
+ 469              		@ sp needed
+ 470 01d4 068BBDEC 		vldm	sp!, {d8-d10}
+ 471 01d8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 472              	.L50:
+ 473              		.align	2
+ 474              	.L49:
+ 475 01dc 0000FE42 		.word	1123942400
+ 476 01e0 0000FEC2 		.word	-1023541248
+ 477 01e4 00000000 		.word	0
+ 478 01e8 00000000 		.word	_impure_ptr
+ 479 01ec 00000000 		.word	.LC0
+ 480 01f0 23000000 		.word	.LC1
+ 481              		.fnend
+ 483              		.section	.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf,"ax",%progbits
+ 484              		.align	2
+ 485              		.global	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf
+ 486              		.syntax unified
+ 487              		.arm
+ 488              		.fpu neon
+ 490              	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf:
+ 491              		.fnstart
+ 492              	.LFB239:
+ 493              		@ args = 0, pretend = 0, frame = 0
+ 494              		@ frame_needed = 0, uses_anonymous_args = 0
+ 495 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 496              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+ 497 0004 0040A0E1 		mov	r4, r0
+ 498 0008 048B2DED 		vpush.64	{d8, d9}
+ 499              		.vsave {d8, d9}
+ 500 000c 0100A0E1 		mov	r0, r1
+ 501 0010 0280A0E1 		mov	r8, r2
+ 502 0014 0360A0E1 		mov	r6, r3
+ 503 0018 2E8A9FED 		vldr.32	s16, .L57
+ 504 001c 0490A0E1 		mov	r9, r4
+ 505 0020 FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 506 0024 0050A0E3 		mov	r5, #0
+ 507 0028 0070A0E1 		mov	r7, r0
+ 508 002c 488AF0EE 		vmov.f32	s17, s16
+ 509              	.L53:
+ 510 0030 070055E1 		cmp	r5, r7
+ 511 0034 0A0000AA 		bge	.L52
+ 512 0038 019AB9EC 		vldmia.32	r9!, {s18}
+ 513 003c 015085E2 		add	r5, r5, #1
+ 514 0040 680AB0EE 		vmov.f32	s0, s17
+ 515 0044 490AF0EE 		vmov.f32	s1, s18
+ 516 0048 FEFFFFEB 		bl	fminf
+ 517 004c 408AF0EE 		vmov.f32	s17, s0
+ 518 0050 490AF0EE 		vmov.f32	s1, s18
+ 519 0054 480AB0EE 		vmov.f32	s0, s16
+ 520 0058 FEFFFFEB 		bl	fmaxf
+ 521 005c 408AB0EE 		vmov.f32	s16, s0
+ 522 0060 F2FFFFEA 		b	.L53
+ 523              	.L52:
+ 524 0064 C80AF0EE 		vabs.f32	s1, s16
+ 525 0068 0850A0E1 		mov	r5, r8
+ 526 006c E80AB0EE 		vabs.f32	s0, s17
+ 527 0070 FEFFFFEB 		bl	fmaxf
+ 528 0074 187ADFED 		vldr.32	s15, .L57+4
+ 529 0078 188ADFED 		vldr.32	s17, .L57+8
+ 530 007c 270A80EE 		vdiv.f32	s0, s0, s15
+ 531 0080 678AB0EE 		vmov.f32	s16, s15
+ 532 0084 000A86ED 		vstr.32	s0, [r6]
+ 533              	.L55:
+ 534 0088 083045E0 		sub	r3, r5, r8
+ 535 008c 030057E1 		cmp	r7, r3
+ 536 0090 0E0000DA 		ble	.L51
+ 537 0094 007AD6ED 		vldr.32	s15, [r6]
+ 538 0098 010AB4EC 		vldmia.32	r4!, {s0}
+ 539 009c 270A80EE 		vdiv.f32	s0, s0, s15
+ 540 00a0 FEFFFFEB 		bl	roundf
+ 541 00a4 C00AFDEE 		vcvt.s32.f32	s1, s0
+ 542 00a8 680AB0EE 		vmov.f32	s0, s17
+ 543 00ac E00AF8EE 		vcvt.f32.s32	s1, s1
+ 544 00b0 FEFFFFEB 		bl	fmaxf
+ 545 00b4 400AF0EE 		vmov.f32	s1, s0
+ 546 00b8 480AB0EE 		vmov.f32	s0, s16
+ 547 00bc FEFFFFEB 		bl	fminf
+ 548 00c0 C07AFDEE 		vcvt.s32.f32	s15, s0
+ 549 00c4 903A17EE 		vmov	r3, s15	@ int
+ 550 00c8 0130C5E4 		strb	r3, [r5], #1
+ 551 00cc EDFFFFEA 		b	.L55
+ 552              	.L51:
+ 553 00d0 048BBDEC 		vldm	sp!, {d8-d9}
+ 554 00d4 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 555              	.L58:
+ 556              		.align	2
+ 557              	.L57:
+ 558 00d8 00000000 		.word	0
+ 559 00dc 0000FE42 		.word	1123942400
+ 560 00e0 0000FEC2 		.word	-1023541248
+ 561              		.fnend
+ 563              		.section	.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf,"ax",%progbits
+ 564              		.align	2
+ 565              		.global	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf
+ 566              		.syntax unified
+ 567              		.arm
+ 568              		.fpu neon
+ 570              	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf:
+ 571              		.fnstart
+ 572              	.LFB240:
+ 573              		@ args = 0, pretend = 0, frame = 0
+ 574              		@ frame_needed = 0, uses_anonymous_args = 0
+ 575 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 576              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+ 577 0004 0040A0E1 		mov	r4, r0
+ 578 0008 048B2DED 		vpush.64	{d8, d9}
+ 579              		.vsave {d8, d9}
+ 580 000c 0100A0E1 		mov	r0, r1
+ 581 0010 0250A0E1 		mov	r5, r2
+ 582 0014 0390A0E1 		mov	r9, r3
+ 583 0018 2E8A9FED 		vldr.32	s16, .L65
+ 584 001c 0480A0E1 		mov	r8, r4
+ 585 0020 FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 586 0024 0060A0E3 		mov	r6, #0
+ 587 0028 0070A0E1 		mov	r7, r0
+ 588 002c 488AF0EE 		vmov.f32	s17, s16
+ 589              	.L61:
+ 590 0030 070056E1 		cmp	r6, r7
+ 591 0034 0A0000AA 		bge	.L60
+ 592 0038 019AB8EC 		vldmia.32	r8!, {s18}
+ 593 003c 016086E2 		add	r6, r6, #1
+ 594 0040 680AB0EE 		vmov.f32	s0, s17
+ 595 0044 490AF0EE 		vmov.f32	s1, s18
+ 596 0048 FEFFFFEB 		bl	fminf
+ 597 004c 408AF0EE 		vmov.f32	s17, s0
+ 598 0050 490AF0EE 		vmov.f32	s1, s18
+ 599 0054 480AB0EE 		vmov.f32	s0, s16
+ 600 0058 FEFFFFEB 		bl	fmaxf
+ 601 005c 408AB0EE 		vmov.f32	s16, s0
+ 602 0060 F2FFFFEA 		b	.L61
+ 603              	.L60:
+ 604 0064 C80AF0EE 		vabs.f32	s1, s16
+ 605 0068 025045E2 		sub	r5, r5, #2
+ 606 006c E80AB0EE 		vabs.f32	s0, s17
+ 607 0070 0060A0E3 		mov	r6, #0
+ 608 0074 FEFFFFEB 		bl	fmaxf
+ 609 0078 177ADFED 		vldr.32	s15, .L65+4
+ 610 007c 179A9FED 		vldr.32	s18, .L65+8
+ 611 0080 278AC0EE 		vdiv.f32	s17, s0, s15
+ 612 0084 678AB0EE 		vmov.f32	s16, s15
+ 613 0088 008AC9ED 		vstr.32	s17, [r9]
+ 614              	.L63:
+ 615 008c 070056E1 		cmp	r6, r7
+ 616 0090 0E0000AA 		bge	.L59
+ 617 0094 010AB4EC 		vldmia.32	r4!, {s0}
+ 618 0098 016086E2 		add	r6, r6, #1
+ 619 009c 280A80EE 		vdiv.f32	s0, s0, s17
+ 620 00a0 FEFFFFEB 		bl	roundf
+ 621 00a4 C00AFDEE 		vcvt.s32.f32	s1, s0
+ 622 00a8 490AB0EE 		vmov.f32	s0, s18
+ 623 00ac E00AF8EE 		vcvt.f32.s32	s1, s1
+ 624 00b0 FEFFFFEB 		bl	fmaxf
+ 625 00b4 400AF0EE 		vmov.f32	s1, s0
+ 626 00b8 480AB0EE 		vmov.f32	s0, s16
+ 627 00bc FEFFFFEB 		bl	fminf
+ 628 00c0 C07AFDEE 		vcvt.s32.f32	s15, s0
+ 629 00c4 903A17EE 		vmov	r3, s15	@ int
+ 630 00c8 B230E5E1 		strh	r3, [r5, #2]!	@ movhi
+ 631 00cc EEFFFFEA 		b	.L63
+ 632              	.L59:
+ 633 00d0 048BBDEC 		vldm	sp!, {d8-d9}
+ 634 00d4 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 635              	.L66:
+ 636              		.align	2
+ 637              	.L65:
+ 638 00d8 00000000 		.word	0
+ 639 00dc 00FEFF46 		.word	1191181824
+ 640 00e0 00FEFFC6 		.word	-956301824
+ 641              		.fnend
+ 643              		.section	.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf,"ax",%progbits
+ 644              		.align	2
+ 645              		.global	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf
+ 646              		.syntax unified
+ 647              		.arm
+ 648              		.fpu neon
+ 650              	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf:
+ 651              		.fnstart
+ 652              	.LFB241:
+ 653              		@ args = 0, pretend = 0, frame = 0
+ 654              		@ frame_needed = 0, uses_anonymous_args = 0
+ 655 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 656              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+ 657 0004 0040A0E1 		mov	r4, r0
+ 658 0008 048B2DED 		vpush.64	{d8, d9}
+ 659              		.vsave {d8, d9}
+ 660 000c 0100A0E1 		mov	r0, r1
+ 661 0010 0280A0E1 		mov	r8, r2
+ 662 0014 0390A0E1 		mov	r9, r3
+ 663 0018 2D8A9FED 		vldr.32	s16, .L73
+ 664 001c 0470A0E1 		mov	r7, r4
+ 665 0020 FEFFFFEB 		bl	_ZN6tflite12ElementCountERK14TfLiteIntArray
+ 666 0024 0050A0E3 		mov	r5, #0
+ 667 0028 0060A0E1 		mov	r6, r0
+ 668 002c 488AF0EE 		vmov.f32	s17, s16
+ 669              	.L69:
+ 670 0030 060055E1 		cmp	r5, r6
+ 671 0034 0A0000AA 		bge	.L68
+ 672 0038 019AB7EC 		vldmia.32	r7!, {s18}
+ 673 003c 015085E2 		add	r5, r5, #1
+ 674 0040 680AB0EE 		vmov.f32	s0, s17
+ 675 0044 490AF0EE 		vmov.f32	s1, s18
+ 676 0048 FEFFFFEB 		bl	fminf
+ 677 004c 408AF0EE 		vmov.f32	s17, s0
+ 678 0050 490AF0EE 		vmov.f32	s1, s18
+ 679 0054 480AB0EE 		vmov.f32	s0, s16
+ 680 0058 FEFFFFEB 		bl	fmaxf
+ 681 005c 408AB0EE 		vmov.f32	s16, s0
+ 682 0060 F2FFFFEA 		b	.L69
+ 683              	.L68:
+ 684 0064 C80AF0EE 		vabs.f32	s1, s16
+ 685 0068 0050A0E3 		mov	r5, #0
+ 686 006c 198A9FED 		vldr.32	s16, .L73+4
+ 687 0070 E80AB0EE 		vabs.f32	s0, s17
+ 688 0074 FEFFFFEB 		bl	fmaxf
+ 689 0078 179A9FED 		vldr.32	s18, .L73+8
+ 690 007c 088A20EE 		vmul.f32	s16, s0, s16
+ 691 0080 168ADFED 		vldr.32	s17, .L73+12
+ 692 0084 008A89ED 		vstr.32	s16, [r9]
+ 693              	.L71:
+ 694 0088 060055E1 		cmp	r5, r6
+ 695 008c 0E0000AA 		bge	.L67
+ 696 0090 010AB4EC 		vldmia.32	r4!, {s0}
+ 697 0094 080A80EE 		vdiv.f32	s0, s0, s16
+ 698 0098 FEFFFFEB 		bl	roundf
+ 699 009c C00AFDEE 		vcvt.s32.f32	s1, s0
+ 700 00a0 490AB0EE 		vmov.f32	s0, s18
+ 701 00a4 E00AF8EE 		vcvt.f32.s32	s1, s1
+ 702 00a8 FEFFFFEB 		bl	fmaxf
+ 703 00ac 400AF0EE 		vmov.f32	s1, s0
+ 704 00b0 680AB0EE 		vmov.f32	s0, s17
+ 705 00b4 FEFFFFEB 		bl	fminf
+ 706 00b8 C00ABDEE 		vcvt.s32.f32	s0, s0
+ 707 00bc 103A10EE 		vmov	r3, s0	@ int
+ 708 00c0 053188E7 		str	r3, [r8, r5, lsl #2]
+ 709 00c4 015085E2 		add	r5, r5, #1
+ 710 00c8 EEFFFFEA 		b	.L71
+ 711              	.L67:
+ 712 00cc 048BBDEC 		vldm	sp!, {d8-d9}
+ 713 00d0 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 714              	.L74:
+ 715              		.align	2
+ 716              	.L73:
+ 717 00d4 00000000 		.word	0
+ 718 00d8 00000030 		.word	805306368
+ 719 00dc 000000CF 		.word	-822083584
+ 720 00e0 0000004F 		.word	1325400064
+ 721              		.fnend
+ 723              		.section	.text._ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf,"ax",%progbits
+ 724              		.align	2
+ 725              		.global	_ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf
+ 726              		.syntax unified
+ 727              		.arm
+ 728              		.fpu neon
+ 730              	_ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf:
+ 731              		.fnstart
+ 732              	.LFB242:
+ 733              		@ args = 0, pretend = 0, frame = 0
+ 734              		@ frame_needed = 0, uses_anonymous_args = 0
+ 735              		@ link register save eliminated.
+ 736 0000 FEFFFFEA 		b	_ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf
+ 737              		.cantunwind
+ 738              		.fnend
+ 740              		.section	.text._ZN6tflite19SymmetricDequantizeEPKaifPf,"ax",%progbits
+ 741              		.align	2
+ 742              		.global	_ZN6tflite19SymmetricDequantizeEPKaifPf
+ 743              		.syntax unified
+ 744              		.arm
+ 745              		.fpu neon
+ 747              	_ZN6tflite19SymmetricDequantizeEPKaifPf:
+ 748              		.fnstart
+ 749              	.LFB243:
+ 750              		@ args = 0, pretend = 0, frame = 0
+ 751              		@ frame_needed = 0, uses_anonymous_args = 0
+ 752              		@ link register save eliminated.
+ 753 0000 0030A0E1 		mov	r3, r0
+ 754              	.L78:
+ 755 0004 00C043E0 		sub	ip, r3, r0
+ 756 0008 0C0051E1 		cmp	r1, ip
+ 757 000c 1EFF2FD1 		bxle	lr
+ 758 0010 D1C0D3E0 		ldrsb	ip, [r3], #1
+ 759 0014 90CA07EE 		vmov	s15, ip	@ int
+ 760 0018 E77AF8EE 		vcvt.f32.s32	s15, s15
+ 761 001c 807A67EE 		vmul.f32	s15, s15, s0
+ 762 0020 017AE2EC 		vstmia.32	r2!, {s15}
+ 763 0024 F6FFFFEA 		b	.L78
+ 764              		.cantunwind
+ 765              		.fnend
+ 767              		.section	.rodata._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf.str1.1,"a
+ 768              	.LC0:
+ 769 0000 7175616E 		.ascii	"quantized dimension must be 0 or 3\000"
+ 769      74697A65 
+ 769      64206469 
+ 769      6D656E73 
+ 769      696F6E20 
+ 770              	.LC1:
+ 771 0023 0A464154 		.ascii	"\012FATAL\012\000"
+ 771      414C0A00 
+ 772              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 micro_utils.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:14     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:20     .text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 _ZN6tflite12ElementCountERK14TfLiteIntArray
+.ARM.exidx.text._ZN6tflite12ElementCountERK14TfLiteIntArray:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:41     .text._ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:47     .text._ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi:00000000 _ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi
+.ARM.exidx.text._ZN6tflite31FloatToAsymmetricQuantizedUInt8Effi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:69     .text._ZN6tflite30FloatToSymmetricQuantizedUInt8Eff:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:75     .text._ZN6tflite30FloatToSymmetricQuantizedUInt8Eff:00000000 _ZN6tflite30FloatToSymmetricQuantizedUInt8Eff
+.ARM.exidx.text._ZN6tflite30FloatToSymmetricQuantizedUInt8Eff:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:95     .text._ZN6tflite30FloatToAsymmetricQuantizedInt8Effi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:101    .text._ZN6tflite30FloatToAsymmetricQuantizedInt8Effi:00000000 _ZN6tflite30FloatToAsymmetricQuantizedInt8Effi
+.ARM.exidx.text._ZN6tflite30FloatToAsymmetricQuantizedInt8Effi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:116    .text._ZN6tflite29FloatToSymmetricQuantizedInt8Eff:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:122    .text._ZN6tflite29FloatToSymmetricQuantizedInt8Eff:00000000 _ZN6tflite29FloatToSymmetricQuantizedInt8Eff
+.ARM.exidx.text._ZN6tflite29FloatToSymmetricQuantizedInt8Eff:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:134    .text._ZN6tflite30FloatToSymmetricQuantizedInt32Eff:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:140    .text._ZN6tflite30FloatToSymmetricQuantizedInt32Eff:00000000 _ZN6tflite30FloatToSymmetricQuantizedInt32Eff
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:164    .text._ZN6tflite30FloatToSymmetricQuantizedInt32Eff:0000003c $d
+.ARM.exidx.text._ZN6tflite30FloatToSymmetricQuantizedInt32Eff:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:170    .text._ZN6tflite18AsymmetricQuantizeEPKfPaifi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:176    .text._ZN6tflite18AsymmetricQuantizeEPKfPaifi:00000000 _ZN6tflite18AsymmetricQuantizeEPKfPaifi
+.ARM.exidx.text._ZN6tflite18AsymmetricQuantizeEPKfPaifi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:206    .text._ZN6tflite18AsymmetricQuantizeEPKfPhifi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:212    .text._ZN6tflite18AsymmetricQuantizeEPKfPhifi:00000000 _ZN6tflite18AsymmetricQuantizeEPKfPhifi
+.ARM.exidx.text._ZN6tflite18AsymmetricQuantizeEPKfPhifi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:242    .text._ZN6tflite17SymmetricQuantizeEPKfPlif:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:248    .text._ZN6tflite17SymmetricQuantizeEPKfPlif:00000000 _ZN6tflite17SymmetricQuantizeEPKfPlif
+.ARM.exidx.text._ZN6tflite17SymmetricQuantizeEPKfPlif:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:277    .text._ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:283    .text._ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf:00000000 _ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf
+.ARM.exidx.text._ZN6tflite27SymmetricPerChannelQuantizeEPKfPliiPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:330    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:336    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 _ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:475    .text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:000001dc $d
+.ARM.extab.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+.ARM.exidx.text._ZN6tflite33SignedSymmetricPerChannelQuantizeEPKfP14TfLiteIntArrayiPaPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:484    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:490    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf:00000000 _ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:558    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf:000000d8 $d
+.ARM.exidx.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPaPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:564    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:570    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf:00000000 _ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:638    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf:000000d8 $d
+.ARM.exidx.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPsPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:644    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:650    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf:00000000 _ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:717    .text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf:000000d4 $d
+.ARM.exidx.text._ZN6tflite23SignedSymmetricQuantizeEPKfP14TfLiteIntArrayPlPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:724    .text._ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:730    .text._ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf:00000000 _ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf
+.ARM.exidx.text._ZN6tflite17SymmetricQuantizeEPKfP14TfLiteIntArrayPhPf:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:741    .text._ZN6tflite19SymmetricDequantizeEPKaifPf:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdoqM1z.s:747    .text._ZN6tflite19SymmetricDequantizeEPKaifPf:00000000 _ZN6tflite19SymmetricDequantizeEPKaifPf
+.ARM.exidx.text._ZN6tflite19SymmetricDequantizeEPKaifPf:00000000 $d
+
+UNDEFINED SYMBOLS
+roundf
+__aeabi_idiv
+fputs
+fflush
+abort
+fminf
+fmaxf
+_impure_ptr
+__aeabi_unwind_cpp_pr1
+__aeabi_unwind_cpp_pr0

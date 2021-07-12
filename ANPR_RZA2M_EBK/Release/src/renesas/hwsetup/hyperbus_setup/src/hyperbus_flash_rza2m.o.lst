@@ -1,0 +1,210 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"hyperbus_flash_rza2m.c"
+  13              		.section	.text.HyperFlash_WriteWord,"ax",%progbits
+  14              		.align	2
+  15              		.global	HyperFlash_WriteWord
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	HyperFlash_WriteWord:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 30402DE9 		push	{r4, r5, lr}
+  24 0004 AA3A00E3 		movw	r3, #2730
+  25 0008 AA50A0E3 		mov	r5, #170
+  26 000c 544500E3 		movw	r4, #1364
+  27 0010 03E080E0 		add	lr, r0, r3
+  28 0014 70C0A0E3 		mov	ip, #112
+  29 0018 B35080E1 		strh	r5, [r0, r3]	@ movhi
+  30 001c 5550A0E3 		mov	r5, #85
+  31 0020 B45080E1 		strh	r5, [r0, r4]	@ movhi
+  32 0024 A040A0E3 		mov	r4, #160
+  33 0028 B34080E1 		strh	r4, [r0, r3]	@ movhi
+  34 002c B12080E1 		strh	r2, [r0, r1]	@ movhi
+  35              	.L2:
+  36 0030 B0C0CEE1 		strh	ip, [lr]	@ movhi
+  37 0034 B030D0E1 		ldrh	r3, [r0]
+  38 0038 800013E3 		tst	r3, #128
+  39 003c FBFFFF0A 		beq	.L2
+  40 0040 0000A0E3 		mov	r0, #0
+  41 0044 3080BDE8 		pop	{r4, r5, pc}
+  43              		.section	.text.HyperFlash_EraseSect,"ax",%progbits
+  44              		.align	2
+  45              		.global	HyperFlash_EraseSect
+  46              		.syntax unified
+  47              		.arm
+  48              		.fpu neon
+  50              	HyperFlash_EraseSect:
+  51              		@ args = 0, pretend = 0, frame = 0
+  52              		@ frame_needed = 0, uses_anonymous_args = 0
+  53 0000 70402DE9 		push	{r4, r5, r6, lr}
+  54 0004 AAEA00E3 		movw	lr, #2730
+  55 0008 AA50A0E3 		mov	r5, #170
+  56 000c 543500E3 		movw	r3, #1364
+  57 0010 5540A0E3 		mov	r4, #85
+  58 0014 8060A0E3 		mov	r6, #128
+  59 0018 0E2080E0 		add	r2, r0, lr
+  60 001c 70C0A0E3 		mov	ip, #112
+  61 0020 BE5080E1 		strh	r5, [r0, lr]	@ movhi
+  62 0024 B34080E1 		strh	r4, [r0, r3]	@ movhi
+  63 0028 BE6080E1 		strh	r6, [r0, lr]	@ movhi
+  64 002c 3060A0E3 		mov	r6, #48
+  65 0030 BE5080E1 		strh	r5, [r0, lr]	@ movhi
+  66 0034 B34080E1 		strh	r4, [r0, r3]	@ movhi
+  67 0038 B16080E1 		strh	r6, [r0, r1]	@ movhi
+  68              	.L8:
+  69 003c B0C0C2E1 		strh	ip, [r2]	@ movhi
+  70 0040 B030D0E1 		ldrh	r3, [r0]
+  71 0044 800013E3 		tst	r3, #128
+  72 0048 FBFFFF0A 		beq	.L8
+  73 004c 7010A0E3 		mov	r1, #112
+  74 0050 D030A0E3 		mov	r3, #208
+  75 0054 BE3080E1 		strh	r3, [r0, lr]	@ movhi
+  76              	.L9:
+  77 0058 B010C2E1 		strh	r1, [r2]	@ movhi
+  78 005c B030D0E1 		ldrh	r3, [r0]
+  79 0060 7330FFE6 		uxth	r3, r3
+  80 0064 800013E3 		tst	r3, #128
+  81 0068 FAFFFF0A 		beq	.L9
+  82 006c 0300E0E1 		mvn	r0, r3
+  83 0070 5000A0E7 		sbfx	r0, r0, #0, #1
+  84 0074 7080BDE8 		pop	{r4, r5, r6, pc}
+  86              		.section	.text.HyperFlash_ReadVCR,"ax",%progbits
+  87              		.align	2
+  88              		.global	HyperFlash_ReadVCR
+  89              		.syntax unified
+  90              		.arm
+  91              		.fpu neon
+  93              	HyperFlash_ReadVCR:
+  94              		@ args = 0, pretend = 0, frame = 0
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96 0000 04E02DE5 		str	lr, [sp, #-4]!
+  97 0004 AA3A00E3 		movw	r3, #2730
+  98 0008 AAE0A0E3 		mov	lr, #170
+  99 000c 541500E3 		movw	r1, #1364
+ 100 0010 55C0A0E3 		mov	ip, #85
+ 101 0014 C720A0E3 		mov	r2, #199
+ 102 0018 B3E080E1 		strh	lr, [r0, r3]	@ movhi
+ 103 001c B1C080E1 		strh	ip, [r0, r1]	@ movhi
+ 104 0020 B32080E1 		strh	r2, [r0, r3]	@ movhi
+ 105 0024 B000D0E1 		ldrh	r0, [r0]
+ 106 0028 04F09DE4 		ldr	pc, [sp], #4
+ 108              		.section	.text.HyperFlash_WriteVCR,"ax",%progbits
+ 109              		.align	2
+ 110              		.global	HyperFlash_WriteVCR
+ 111              		.syntax unified
+ 112              		.arm
+ 113              		.fpu neon
+ 115              	HyperFlash_WriteVCR:
+ 116              		@ args = 0, pretend = 0, frame = 0
+ 117              		@ frame_needed = 0, uses_anonymous_args = 0
+ 118 0000 AA3A00E3 		movw	r3, #2730
+ 119 0004 30402DE9 		push	{r4, r5, lr}
+ 120 0008 03C080E0 		add	ip, r0, r3
+ 121 000c AAE0A0E3 		mov	lr, #170
+ 122 0010 7020A0E3 		mov	r2, #112
+ 123 0014 544500E3 		movw	r4, #1364
+ 124 0018 B3E080E1 		strh	lr, [r0, r3]	@ movhi
+ 125 001c 5550A0E3 		mov	r5, #85
+ 126 0020 38E0A0E3 		mov	lr, #56
+ 127 0024 B45080E1 		strh	r5, [r0, r4]	@ movhi
+ 128 0028 B3E080E1 		strh	lr, [r0, r3]	@ movhi
+ 129 002c B010C0E1 		strh	r1, [r0]	@ movhi
+ 130              	.L18:
+ 131 0030 B020CCE1 		strh	r2, [ip]	@ movhi
+ 132 0034 B030D0E1 		ldrh	r3, [r0]
+ 133 0038 800013E3 		tst	r3, #128
+ 134 003c FBFFFF0A 		beq	.L18
+ 135 0040 0000A0E3 		mov	r0, #0
+ 136 0044 3080BDE8 		pop	{r4, r5, pc}
+ 138              		.section	.text.HyperFlash_ReadROMInfo,"ax",%progbits
+ 139              		.align	2
+ 140              		.global	HyperFlash_ReadROMInfo
+ 141              		.syntax unified
+ 142              		.arm
+ 143              		.fpu neon
+ 145              	HyperFlash_ReadROMInfo:
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148 0000 282081E2 		add	r2, r1, #40
+ 149 0004 023080E2 		add	r3, r0, #2
+ 150 0008 00C0A0E3 		mov	ip, #0
+ 151 000c 04E02DE5 		str	lr, [sp, #-4]!
+ 152 0010 98E0A0E3 		mov	lr, #152
+ 153 0014 BAEAC0E1 		strh	lr, [r0, #170]	@ movhi
+ 154              	.L23:
+ 155 0018 B2E053E1 		ldrh	lr, [r3, #-2]
+ 156 001c 10C08CE2 		add	ip, ip, #16
+ 157 0020 26F0D3F5 		pld	[r3, #38]
+ 158 0024 F0005CE3 		cmp	ip, #240
+ 159 0028 00F0D2F5 		pld	[r2]
+ 160 002c 203083E2 		add	r3, r3, #32
+ 161 0030 B8E242E1 		strh	lr, [r2, #-40]	@ movhi
+ 162 0034 202082E2 		add	r2, r2, #32
+ 163 0038 B0E253E1 		ldrh	lr, [r3, #-32]
+ 164 003c B6E442E1 		strh	lr, [r2, #-70]	@ movhi
+ 165 0040 BEE153E1 		ldrh	lr, [r3, #-30]
+ 166 0044 B4E442E1 		strh	lr, [r2, #-68]	@ movhi
+ 167 0048 BCE153E1 		ldrh	lr, [r3, #-28]
+ 168 004c B2E442E1 		strh	lr, [r2, #-66]	@ movhi
+ 169 0050 BAE153E1 		ldrh	lr, [r3, #-26]
+ 170 0054 B0E442E1 		strh	lr, [r2, #-64]	@ movhi
+ 171 0058 B8E153E1 		ldrh	lr, [r3, #-24]
+ 172 005c BEE342E1 		strh	lr, [r2, #-62]	@ movhi
+ 173 0060 B6E153E1 		ldrh	lr, [r3, #-22]
+ 174 0064 BCE342E1 		strh	lr, [r2, #-60]	@ movhi
+ 175 0068 B4E153E1 		ldrh	lr, [r3, #-20]
+ 176 006c BAE342E1 		strh	lr, [r2, #-58]	@ movhi
+ 177 0070 B2E153E1 		ldrh	lr, [r3, #-18]
+ 178 0074 B8E342E1 		strh	lr, [r2, #-56]	@ movhi
+ 179 0078 B0E153E1 		ldrh	lr, [r3, #-16]
+ 180 007c B6E342E1 		strh	lr, [r2, #-54]	@ movhi
+ 181 0080 BEE053E1 		ldrh	lr, [r3, #-14]
+ 182 0084 B4E342E1 		strh	lr, [r2, #-52]	@ movhi
+ 183 0088 BCE053E1 		ldrh	lr, [r3, #-12]
+ 184 008c B2E342E1 		strh	lr, [r2, #-50]	@ movhi
+ 185 0090 BAE053E1 		ldrh	lr, [r3, #-10]
+ 186 0094 B0E342E1 		strh	lr, [r2, #-48]	@ movhi
+ 187 0098 B8E053E1 		ldrh	lr, [r3, #-8]
+ 188 009c BEE242E1 		strh	lr, [r2, #-46]	@ movhi
+ 189 00a0 B6E053E1 		ldrh	lr, [r3, #-6]
+ 190 00a4 BCE242E1 		strh	lr, [r2, #-44]	@ movhi
+ 191 00a8 B4E053E1 		ldrh	lr, [r3, #-4]
+ 192 00ac BAE242E1 		strh	lr, [r2, #-42]	@ movhi
+ 193 00b0 D8FFFF1A 		bne	.L23
+ 194 00b4 1E3E81E2 		add	r3, r1, #480
+ 195 00b8 02CC81E2 		add	ip, r1, #512
+ 196 00bc 011040E0 		sub	r1, r0, r1
+ 197              	.L24:
+ 198 00c0 B32091E1 		ldrh	r2, [r1, r3]
+ 199 00c4 B220C3E0 		strh	r2, [r3], #2	@ movhi
+ 200 00c8 03005CE1 		cmp	ip, r3
+ 201 00cc FBFFFF1A 		bne	.L24
+ 202 00d0 F030A0E3 		mov	r3, #240
+ 203 00d4 B030C0E1 		strh	r3, [r0]	@ movhi
+ 204 00d8 04F09DE4 		ldr	pc, [sp], #4
+ 206              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 hyperbus_flash_rza2m.c
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:14     .text.HyperFlash_WriteWord:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:20     .text.HyperFlash_WriteWord:00000000 HyperFlash_WriteWord
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:44     .text.HyperFlash_EraseSect:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:50     .text.HyperFlash_EraseSect:00000000 HyperFlash_EraseSect
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:87     .text.HyperFlash_ReadVCR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:93     .text.HyperFlash_ReadVCR:00000000 HyperFlash_ReadVCR
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:109    .text.HyperFlash_WriteVCR:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:115    .text.HyperFlash_WriteVCR:00000000 HyperFlash_WriteVCR
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:139    .text.HyperFlash_ReadROMInfo:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGsNj9b.s:145    .text.HyperFlash_ReadROMInfo:00000000 HyperFlash_ReadROMInfo
+
+NO UNDEFINED SYMBOLS

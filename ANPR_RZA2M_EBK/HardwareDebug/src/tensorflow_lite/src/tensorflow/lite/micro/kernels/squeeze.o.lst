@@ -1,0 +1,1342 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"squeeze.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	_ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:
+  23              		.fnstart
+  24              	.LFB6834:
+  25              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/c/builtin_op_data.h"
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/c/common.h"
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/kernels/internal/quantization_util.h"
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/kernels/internal/reference/process_broadcast_shapes.h"
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/kernels/kernel_util.h"
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/kernels/op_macros.h"
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/micro/kernels/kernel_util.h"
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** #include "tensorflow/lite/micro/memory_helpers.h"
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** namespace tflite {
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** namespace {
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** struct SqueezeContext {
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   SqueezeContext(TfLiteContext* context, TfLiteNode* node)
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       : params(reinterpret_cast<TfLiteSqueezeParams*>(node->builtin_data)),
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         input(GetInput(context, node, 0)),
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteSqueezeParams* params;
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const TfLiteTensor* const input;
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteTensor* output;
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** };
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
+  26              		.loc 1 39 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 8
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31              	.LBB56:
+  32              	.LBB57:
+  33              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #define TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <stdint.h>
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include <limits>
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** namespace tflite {
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // A fair number of functions in this header have historically been inline.
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // It is ok to change functions to not be inline if the latency with
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // benchmark_model for MobileNet + MobileBERT is unaffected. If such a change is
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // made, move the newly non-inlined function declarations to the top of this
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // header file.
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetInput(context, node, kMyTensorIdx);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                              const TfLiteNode* node, int index);
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetInput` but returns boolean and uses output argument for tensor.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetInputSafe(context, node, kMyTensorIdx, &my_tensor));
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetInputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                           int index, const TfLiteTensor** tensor);
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetVariableInput(context, node, kMyTensorIdx);
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetVariableInput(TfLiteContext* context, const TfLiteNode* node,
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                int index);
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  64:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  65:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  66:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOutput(context, node, kMyTensorIdx);
+  67:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  68:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  69:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  70:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  71:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetOutput(TfLiteContext* context, const TfLiteNode* node,
+  72:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                         int index);
+  73:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  74:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetOutput` but returns boolean and uses output argument for tensor.
+  75:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  76:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  77:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  78:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetOutputSafe(context, node, kMyTensorIdx, &my_tensor));
+  79:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  80:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  81:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  82:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetOutputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  83:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index, TfLiteTensor** tensor);
+  84:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  85:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  86:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  87:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOptionalInputTensor(context, node, kIdx);
+  88:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  89:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  90:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  91:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  92:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+  93:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Deprecated. GetInput has the same functionality.
+  94:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetOptionalInputTensor(const TfLiteContext* context,
+  95:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                            const TfLiteNode* node, int index);
+  96:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+  97:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+  98:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  99:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 100:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetTemporary(context, node, kMyTensorIdx);
+ 101:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 102:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 103:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 104:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 105:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetTemporary(TfLiteContext* context, const TfLiteNode* node,
+ 106:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                            int index);
+ 107:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 108:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetTemporary` but returns boolean and uses output argument for
+ 109:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 110:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 111:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 112:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 113:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetTemporarySafe(context, node, kMyTensorIdx,
+ 114:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 115:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 116:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 117:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 118:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetTemporarySafe(const TfLiteContext* context,
+ 119:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               const TfLiteNode* node, int index,
+ 120:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                               TfLiteTensor** tensor);
+ 121:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 122:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+ 123:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 124:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetIntermediates(context, node, kMyTensorIdx);
+ 125:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 126:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 127:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 128:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 129:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetIntermediates(TfLiteContext* context,
+ 130:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                      const TfLiteNode* node, int index);
+ 131:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 132:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetIntermediates` but returns boolean and uses output argument for
+ 133:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 134:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 135:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 136:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 137:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     GetIntermediatesSafe(context, node, kMyTensorIdx,
+ 138:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 139:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 140:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** //
+ 141:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 142:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetIntermediatesSafe(const TfLiteContext* context,
+ 143:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   const TfLiteNode* node, int index,
+ 144:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****                                   TfLiteTensor** tensor);
+ 145:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 146:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumDimensions(const TfLiteTensor* t) { return t->dims->size; }
+ 148:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h ****   return t->dims->data[dim];
+ 150:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** }
+ 151:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** 
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumInputs(const TfLiteNode* node) { return node->inputs->size; }
+  34              		.loc 2 152 0
+  35 0000 003091E5 		ldr	r3, [r1]
+  36              	.LBE57:
+  37              	.LBE56:
+  38              		.loc 1 39 0
+  39 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  40              		.save {r4, r5, r6, r7, r8, lr}
+  41              		.cfi_def_cfa_offset 24
+  42              		.cfi_offset 4, -24
+  43              		.cfi_offset 5, -20
+  44              		.cfi_offset 6, -16
+  45              		.cfi_offset 7, -12
+  46              		.cfi_offset 8, -8
+  47              		.cfi_offset 14, -4
+  48 0008 0060A0E1 		mov	r6, r0
+  49              	.LVL1:
+  50              		.pad #24
+  51 000c 18D04DE2 		sub	sp, sp, #24
+  52              		.cfi_def_cfa_offset 48
+  53              	.LBB59:
+  54              	.LBB58:
+  55              		.loc 2 152 0
+  56 0010 005093E5 		ldr	r5, [r3]
+  57              	.LBE58:
+  58              	.LBE59:
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TF_LITE_ENSURE_EQ(context, NumInputs(node), 1);
+  59              		.loc 1 40 0
+  60 0014 010055E3 		cmp	r5, #1
+  61 0018 4A00001A 		bne	.L78
+  62              	.LBB60:
+  63              	.LBB61:
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+  64              		.loc 2 153 0
+  65 001c 043091E5 		ldr	r3, [r1, #4]
+  66 0020 0170A0E1 		mov	r7, r1
+  67              	.LVL2:
+  68 0024 004093E5 		ldr	r4, [r3]
+  69              	.LBE61:
+  70              	.LBE60:
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+  71              		.loc 1 41 0
+  72 0028 010054E3 		cmp	r4, #1
+  73 002c 1000000A 		beq	.L4
+  74              	.LVL3:
+  75              		.loc 1 41 0 is_stmt 0 discriminator 1
+  76 0030 00E000E3 		movw	lr, #:lower16:.LC3
+  77 0034 00C000E3 		movw	ip, #:lower16:.LC5
+  78 0038 00E040E3 		movt	lr, #:upper16:.LC3
+  79 003c 00C040E3 		movt	ip, #:upper16:.LC5
+  80 0040 002000E3 		movw	r2, #:lower16:.LC1
+  81 0044 001000E3 		movw	r1, #:lower16:.LC2
+  82              	.LVL4:
+  83 0048 0C508DE5 		str	r5, [sp, #12]
+  84 004c 002040E3 		movt	r2, #:upper16:.LC1
+  85 0050 08408DE5 		str	r4, [sp, #8]
+  86 0054 001040E3 		movt	r1, #:upper16:.LC2
+  87 0058 144090E5 		ldr	r4, [r0, #20]
+  88 005c 2930A0E3 		mov	r3, #41
+  89 0060 00508DE8 		stm	sp, {ip, lr}
+  90 0064 34FF2FE1 		blx	r4
+  91              	.LVL5:
+  92 0068 0500A0E1 		mov	r0, r5
+  93              	.LVL6:
+  94              	.L73:
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   SqueezeContext op_context(context, node);
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const int input_num_dims = NumDimensions(op_context.input);
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const int num_squeeze_dims = op_context.params->num_squeeze_dims;
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   // Determines number of dimensions of output tensor after squeeze.
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const TfLiteIntArray* input_dims = op_context.input->dims;
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const TfLiteIntArray* output_dims = op_context.output->dims;
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const int* squeeze_dims = op_context.params->squeeze_dims;
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   constexpr int max_squeeze_dims = 8;
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TF_LITE_ENSURE(context, input_num_dims <= max_squeeze_dims);
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   bool should_squeeze[max_squeeze_dims] = {};
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   if (num_squeeze_dims == 0) {
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     for (int idx = 0; idx < input_num_dims; ++idx) {
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+  62:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   } else {
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     for (int idx = 0; idx < num_squeeze_dims; ++idx) {
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       int current = squeeze_dims[idx] < 0 ? squeeze_dims[idx] + input_num_dims
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                                           : squeeze_dims[idx];
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TF_LITE_ENSURE(context, current >= 0 && current < input_num_dims &&
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                                   input_dims->data[current] == 1);
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       should_squeeze[current] = true;
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   }
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   // Ensure output dimensions are big enough.
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   for (int in_idx = 0, out_idx = 0; in_idx < input_num_dims; ++in_idx) {
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   }
+  78:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return kTfLiteOk;
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }
+  95              		.loc 1 80 0 is_stmt 1
+  96 006c 18D08DE2 		add	sp, sp, #24
+  97              		.cfi_remember_state
+  98              		.cfi_def_cfa_offset 24
+  99              		@ sp needed
+ 100 0070 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 101              	.LVL7:
+ 102              	.L4:
+ 103              		.cfi_restore_state
+ 104              	.LBB62:
+ 105              	.LBB63:
+ 106              	.LBB64:
+ 107              	.LBB65:
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 108              		.loc 1 32 0
+ 109 0074 0020A0E3 		mov	r2, #0
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         input(GetInput(context, node, 0)),
+ 110              		.loc 1 31 0
+ 111 0078 145091E5 		ldr	r5, [r1, #20]
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 112              		.loc 1 32 0
+ 113 007c FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 114              	.LVL8:
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteSqueezeParams* params;
+ 115              		.loc 1 33 0
+ 116 0080 0710A0E1 		mov	r1, r7
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 117              		.loc 1 32 0
+ 118 0084 0080A0E1 		mov	r8, r0
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteSqueezeParams* params;
+ 119              		.loc 1 33 0
+ 120 0088 0020A0E3 		mov	r2, #0
+ 121 008c 0600A0E1 		mov	r0, r6
+ 122 0090 FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 123              	.LVL9:
+ 124 0094 08E098E5 		ldr	lr, [r8, #8]
+ 125              	.LVL10:
+ 126              	.LBE65:
+ 127              	.LBE64:
+ 128              	.LBB66:
+ 129              	.LBB67:
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 130              		.loc 2 147 0
+ 131 0098 00109EE5 		ldr	r1, [lr]
+ 132              	.LVL11:
+ 133              	.LBE67:
+ 134              	.LBE66:
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   bool should_squeeze[max_squeeze_dims] = {};
+ 135              		.loc 1 53 0
+ 136 009c 080051E3 		cmp	r1, #8
+ 137 00a0 BA0000CA 		bgt	.L79
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+ 138              		.loc 1 45 0
+ 139 00a4 207095E5 		ldr	r7, [r5, #32]
+ 140              	.LVL12:
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+ 141              		.loc 1 54 0
+ 142 00a8 0020A0E3 		mov	r2, #0
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   const int* squeeze_dims = op_context.params->squeeze_dims;
+ 143              		.loc 1 49 0
+ 144 00ac 088090E5 		ldr	r8, [r0, #8]
+ 145              	.LVL13:
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+ 146              		.loc 1 54 0
+ 147 00b0 14208DE5 		str	r2, [sp, #20]
+ 148              	.LBB68:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     for (int idx = 0; idx < input_num_dims; ++idx) {
+ 149              		.loc 1 56 0
+ 150 00b4 020057E1 		cmp	r7, r2
+ 151              	.LBE68:
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+ 152              		.loc 1 54 0
+ 153 00b8 10208DE5 		str	r2, [sp, #16]
+ 154              	.LBB75:
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     for (int idx = 0; idx < input_num_dims; ++idx) {
+ 155              		.loc 1 56 0
+ 156 00bc 3400000A 		beq	.L7
+ 157              	.LVL14:
+ 158 00c0 04C045C2 		subgt	ip, r5, #4
+ 159              	.LBB69:
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       int current = squeeze_dims[idx] < 0 ? squeeze_dims[idx] + input_num_dims
+ 160              		.loc 1 63 0
+ 161 00c4 0A0000CA 		bgt	.L26
+ 162 00c8 BD0000EA 		b	.L8
+ 163              	.LVL15:
+ 164              	.L80:
+ 165              	.LBB70:
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                                   input_dims->data[current] == 1);
+ 166              		.loc 1 66 0
+ 167 00cc 03018EE0 		add	r0, lr, r3, lsl #2
+ 168 00d0 040090E5 		ldr	r0, [r0, #4]
+ 169 00d4 010050E3 		cmp	r0, #1
+ 170 00d8 0D00001A 		bne	.L24
+ 171              	.LBE70:
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       int current = squeeze_dims[idx] < 0 ? squeeze_dims[idx] + input_num_dims
+ 172              		.loc 1 63 0
+ 173 00dc 012082E2 		add	r2, r2, #1
+ 174              	.LVL16:
+ 175              	.LBB71:
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 176              		.loc 1 68 0
+ 177 00e0 18508DE2 		add	r5, sp, #24
+ 178              	.LBE71:
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       int current = squeeze_dims[idx] < 0 ? squeeze_dims[idx] + input_num_dims
+ 179              		.loc 1 63 0
+ 180 00e4 020057E1 		cmp	r7, r2
+ 181              	.LBB72:
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 182              		.loc 1 68 0
+ 183 00e8 033085E0 		add	r3, r5, r3
+ 184              	.LVL17:
+ 185 00ec 080043E5 		strb	r0, [r3, #-8]
+ 186              	.LBE72:
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       int current = squeeze_dims[idx] < 0 ? squeeze_dims[idx] + input_num_dims
+ 187              		.loc 1 63 0
+ 188 00f0 B300000A 		beq	.L8
+ 189              	.LVL18:
+ 190              	.L26:
+ 191              	.LBB73:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                                           : squeeze_dims[idx];
+ 192              		.loc 1 64 0
+ 193 00f4 0430BCE5 		ldr	r3, [ip, #4]!
+ 194 00f8 000053E3 		cmp	r3, #0
+ 195 00fc 013083B0 		addlt	r3, r3, r1
+ 196              	.LVL19:
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                                   input_dims->data[current] == 1);
+ 197              		.loc 1 66 0
+ 198 0100 030051E1 		cmp	r1, r3
+ 199 0104 0000A0C3 		movgt	r0, #0
+ 200 0108 0100A0D3 		movle	r0, #1
+ 201 010c A30F90E1 		orrs	r0, r0, r3, lsr #31
+ 202 0110 EDFFFF0A 		beq	.L80
+ 203              	.L24:
+ 204 0114 003000E3 		movw	r3, #:lower16:.LC8
+ 205              	.LVL20:
+ 206 0118 002000E3 		movw	r2, #:lower16:.LC1
+ 207              	.LVL21:
+ 208 011c 003040E3 		movt	r3, #:upper16:.LC8
+ 209 0120 001000E3 		movw	r1, #:lower16:.LC6
+ 210              	.LVL22:
+ 211 0124 00308DE5 		str	r3, [sp]
+ 212              	.LVL23:
+ 213 0128 0600A0E1 		mov	r0, r6
+ 214 012c 002040E3 		movt	r2, #:upper16:.LC1
+ 215 0130 001040E3 		movt	r1, #:upper16:.LC6
+ 216 0134 144096E5 		ldr	r4, [r6, #20]
+ 217 0138 4330A0E3 		mov	r3, #67
+ 218 013c 34FF2FE1 		blx	r4
+ 219              	.LVL24:
+ 220 0140 0100A0E3 		mov	r0, #1
+ 221 0144 C8FFFFEA 		b	.L73
+ 222              	.LVL25:
+ 223              	.L78:
+ 224              	.LBE73:
+ 225              	.LBE69:
+ 226              	.LBE75:
+ 227              	.LBE63:
+ 228              	.LBE62:
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TF_LITE_ENSURE_EQ(context, NumOutputs(node), 1);
+ 229              		.loc 1 40 0 discriminator 1
+ 230 0148 00C000E3 		movw	ip, #:lower16:.LC3
+ 231 014c 003000E3 		movw	r3, #:lower16:.LC4
+ 232 0150 00C040E3 		movt	ip, #:upper16:.LC3
+ 233 0154 0140A0E3 		mov	r4, #1
+ 234 0158 003040E3 		movt	r3, #:upper16:.LC4
+ 235 015c 002000E3 		movw	r2, #:lower16:.LC1
+ 236 0160 001000E3 		movw	r1, #:lower16:.LC2
+ 237              	.LVL26:
+ 238 0164 08508DE5 		str	r5, [sp, #8]
+ 239 0168 002040E3 		movt	r2, #:upper16:.LC1
+ 240 016c 145090E5 		ldr	r5, [r0, #20]
+ 241 0170 001040E3 		movt	r1, #:upper16:.LC2
+ 242 0174 00308DE5 		str	r3, [sp]
+ 243 0178 04C08DE5 		str	ip, [sp, #4]
+ 244 017c 2830A0E3 		mov	r3, #40
+ 245 0180 0C408DE5 		str	r4, [sp, #12]
+ 246 0184 35FF2FE1 		blx	r5
+ 247              	.LVL27:
+ 248 0188 0400A0E1 		mov	r0, r4
+ 249              		.loc 1 80 0 discriminator 1
+ 250 018c 18D08DE2 		add	sp, sp, #24
+ 251              		.cfi_remember_state
+ 252              		.cfi_def_cfa_offset 24
+ 253              		@ sp needed
+ 254 0190 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 255              	.LVL28:
+ 256              	.L7:
+ 257              		.cfi_restore_state
+ 258              	.LBB82:
+ 259              	.LBB80:
+ 260              	.LBB76:
+ 261              	.LBB74:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 262              		.loc 1 57 0
+ 263 0194 000051E3 		cmp	r1, #0
+ 264 0198 770000DA 		ble	.L21
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 265              		.loc 1 58 0
+ 266 019c 04209EE5 		ldr	r2, [lr, #4]
+ 267 01a0 010052E3 		cmp	r2, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 268              		.loc 1 59 0
+ 269 01a4 1020CD05 		strbeq	r2, [sp, #16]
+ 270              	.LVL29:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 271              		.loc 1 57 0
+ 272 01a8 010051E3 		cmp	r1, #1
+ 273 01ac 8B00000A 		beq	.L12
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 274              		.loc 1 58 0
+ 275 01b0 08309EE5 		ldr	r3, [lr, #8]
+ 276 01b4 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 277              		.loc 1 59 0
+ 278 01b8 1130CD05 		strbeq	r3, [sp, #17]
+ 279              	.LVL30:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 280              		.loc 1 57 0
+ 281 01bc 020051E3 		cmp	r1, #2
+ 282 01c0 1B00000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 283              		.loc 1 58 0
+ 284 01c4 0C309EE5 		ldr	r3, [lr, #12]
+ 285 01c8 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 286              		.loc 1 59 0
+ 287 01cc 1230CD05 		strbeq	r3, [sp, #18]
+ 288              	.LVL31:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 289              		.loc 1 57 0
+ 290 01d0 030051E3 		cmp	r1, #3
+ 291 01d4 1600000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 292              		.loc 1 58 0
+ 293 01d8 10309EE5 		ldr	r3, [lr, #16]
+ 294 01dc 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 295              		.loc 1 59 0
+ 296 01e0 1330CD05 		strbeq	r3, [sp, #19]
+ 297              	.LVL32:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 298              		.loc 1 57 0
+ 299 01e4 040051E3 		cmp	r1, #4
+ 300 01e8 1100000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 301              		.loc 1 58 0
+ 302 01ec 14309EE5 		ldr	r3, [lr, #20]
+ 303 01f0 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 304              		.loc 1 59 0
+ 305 01f4 1430CD05 		strbeq	r3, [sp, #20]
+ 306              	.LVL33:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 307              		.loc 1 57 0
+ 308 01f8 050051E3 		cmp	r1, #5
+ 309 01fc 0C00000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 310              		.loc 1 58 0
+ 311 0200 18309EE5 		ldr	r3, [lr, #24]
+ 312 0204 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 313              		.loc 1 59 0
+ 314 0208 1530CD05 		strbeq	r3, [sp, #21]
+ 315              	.LVL34:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 316              		.loc 1 57 0
+ 317 020c 060051E3 		cmp	r1, #6
+ 318 0210 0700000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 319              		.loc 1 58 0
+ 320 0214 1C309EE5 		ldr	r3, [lr, #28]
+ 321 0218 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 322              		.loc 1 59 0
+ 323 021c 1630CD05 		strbeq	r3, [sp, #22]
+ 324              	.LVL35:
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       if (input_dims->data[idx] == 1) {
+ 325              		.loc 1 57 0
+ 326 0220 070051E3 		cmp	r1, #7
+ 327 0224 0200000A 		beq	.L14
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         should_squeeze[idx] = true;
+ 328              		.loc 1 58 0
+ 329 0228 20309EE5 		ldr	r3, [lr, #32]
+ 330 022c 010053E3 		cmp	r3, #1
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       }
+ 331              		.loc 1 59 0
+ 332 0230 1730CD05 		strbeq	r3, [sp, #23]
+ 333              	.LVL36:
+ 334              	.L14:
+ 335              	.LBE74:
+ 336              	.LBE76:
+ 337              	.LBB77:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 338              		.loc 1 74 0
+ 339 0234 1030DDE5 		ldrb	r3, [sp, #16]	@ zero_extendqisi2
+ 340 0238 000053E3 		cmp	r3, #0
+ 341 023c 5100001A 		bne	.L38
+ 342              	.LVL37:
+ 343              	.L35:
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 344              		.loc 1 75 0
+ 345 0240 043098E5 		ldr	r3, [r8, #4]
+ 346 0244 030052E1 		cmp	r2, r3
+ 347 0248 680000CA 		bgt	.L28
+ 348              	.LVL38:
+ 349              	.L27:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 350              		.loc 1 73 0
+ 351 024c 010051E3 		cmp	r1, #1
+ 352 0250 490000DA 		ble	.L21
+ 353              	.LVL39:
+ 354              	.L36:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 355              		.loc 1 74 0
+ 356 0254 1130DDE5 		ldrb	r3, [sp, #17]	@ zero_extendqisi2
+ 357 0258 000053E3 		cmp	r3, #0
+ 358 025c 0500001A 		bne	.L29
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 359              		.loc 1 75 0
+ 360 0260 043188E0 		add	r3, r8, r4, lsl #2
+ 361 0264 08209EE5 		ldr	r2, [lr, #8]
+ 362 0268 014084E2 		add	r4, r4, #1
+ 363              	.LVL40:
+ 364 026c 043093E5 		ldr	r3, [r3, #4]
+ 365 0270 030052E1 		cmp	r2, r3
+ 366 0274 5D0000CA 		bgt	.L28
+ 367              	.L29:
+ 368              	.LVL41:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 369              		.loc 1 73 0
+ 370 0278 020051E3 		cmp	r1, #2
+ 371 027c 3E0000DA 		ble	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 372              		.loc 1 74 0
+ 373 0280 1230DDE5 		ldrb	r3, [sp, #18]	@ zero_extendqisi2
+ 374 0284 000053E3 		cmp	r3, #0
+ 375 0288 0500001A 		bne	.L30
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 376              		.loc 1 75 0
+ 377 028c 043188E0 		add	r3, r8, r4, lsl #2
+ 378 0290 0C209EE5 		ldr	r2, [lr, #12]
+ 379 0294 014084E2 		add	r4, r4, #1
+ 380              	.LVL42:
+ 381 0298 043093E5 		ldr	r3, [r3, #4]
+ 382 029c 030052E1 		cmp	r2, r3
+ 383 02a0 520000CA 		bgt	.L28
+ 384              	.L30:
+ 385              	.LVL43:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 386              		.loc 1 73 0
+ 387 02a4 030051E3 		cmp	r1, #3
+ 388 02a8 3300000A 		beq	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 389              		.loc 1 74 0
+ 390 02ac 1330DDE5 		ldrb	r3, [sp, #19]	@ zero_extendqisi2
+ 391 02b0 000053E3 		cmp	r3, #0
+ 392 02b4 0500001A 		bne	.L31
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 393              		.loc 1 75 0
+ 394 02b8 042188E0 		add	r2, r8, r4, lsl #2
+ 395 02bc 10309EE5 		ldr	r3, [lr, #16]
+ 396 02c0 014084E2 		add	r4, r4, #1
+ 397              	.LVL44:
+ 398 02c4 042092E5 		ldr	r2, [r2, #4]
+ 399 02c8 030052E1 		cmp	r2, r3
+ 400 02cc 470000BA 		blt	.L28
+ 401              	.L31:
+ 402              	.LVL45:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 403              		.loc 1 73 0
+ 404 02d0 040051E3 		cmp	r1, #4
+ 405 02d4 2800000A 		beq	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 406              		.loc 1 74 0
+ 407 02d8 1430DDE5 		ldrb	r3, [sp, #20]	@ zero_extendqisi2
+ 408 02dc 000053E3 		cmp	r3, #0
+ 409 02e0 0500001A 		bne	.L32
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 410              		.loc 1 75 0
+ 411 02e4 042188E0 		add	r2, r8, r4, lsl #2
+ 412 02e8 14309EE5 		ldr	r3, [lr, #20]
+ 413 02ec 014084E2 		add	r4, r4, #1
+ 414              	.LVL46:
+ 415 02f0 042092E5 		ldr	r2, [r2, #4]
+ 416 02f4 030052E1 		cmp	r2, r3
+ 417 02f8 3C0000BA 		blt	.L28
+ 418              	.L32:
+ 419              	.LVL47:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 420              		.loc 1 73 0
+ 421 02fc 050051E3 		cmp	r1, #5
+ 422 0300 1D00000A 		beq	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 423              		.loc 1 74 0
+ 424 0304 1530DDE5 		ldrb	r3, [sp, #21]	@ zero_extendqisi2
+ 425 0308 000053E3 		cmp	r3, #0
+ 426 030c 0500001A 		bne	.L33
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 427              		.loc 1 75 0
+ 428 0310 042188E0 		add	r2, r8, r4, lsl #2
+ 429 0314 18309EE5 		ldr	r3, [lr, #24]
+ 430 0318 014084E2 		add	r4, r4, #1
+ 431              	.LVL48:
+ 432 031c 042092E5 		ldr	r2, [r2, #4]
+ 433 0320 030052E1 		cmp	r2, r3
+ 434 0324 310000BA 		blt	.L28
+ 435              	.L33:
+ 436              	.LVL49:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 437              		.loc 1 73 0
+ 438 0328 060051E3 		cmp	r1, #6
+ 439 032c 1200000A 		beq	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 440              		.loc 1 74 0
+ 441 0330 1630DDE5 		ldrb	r3, [sp, #22]	@ zero_extendqisi2
+ 442 0334 000053E3 		cmp	r3, #0
+ 443 0338 0500001A 		bne	.L34
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 444              		.loc 1 75 0
+ 445 033c 042188E0 		add	r2, r8, r4, lsl #2
+ 446 0340 1C309EE5 		ldr	r3, [lr, #28]
+ 447 0344 014084E2 		add	r4, r4, #1
+ 448              	.LVL50:
+ 449 0348 042092E5 		ldr	r2, [r2, #4]
+ 450 034c 030052E1 		cmp	r2, r3
+ 451 0350 260000BA 		blt	.L28
+ 452              	.L34:
+ 453              	.LVL51:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 454              		.loc 1 73 0
+ 455 0354 070051E3 		cmp	r1, #7
+ 456 0358 0700000A 		beq	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 457              		.loc 1 74 0
+ 458 035c 1730DDE5 		ldrb	r3, [sp, #23]	@ zero_extendqisi2
+ 459 0360 000053E3 		cmp	r3, #0
+ 460 0364 0400001A 		bne	.L21
+ 461              	.LVL52:
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 462              		.loc 1 75 0
+ 463 0368 044188E0 		add	r4, r8, r4, lsl #2
+ 464              	.LVL53:
+ 465 036c 20309EE5 		ldr	r3, [lr, #32]
+ 466 0370 042094E5 		ldr	r2, [r4, #4]
+ 467 0374 030052E1 		cmp	r2, r3
+ 468 0378 1C0000BA 		blt	.L28
+ 469              	.LVL54:
+ 470              	.L21:
+ 471              	.LBE77:
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }
+ 472              		.loc 1 79 0
+ 473 037c 0000A0E3 		mov	r0, #0
+ 474              	.LBE80:
+ 475              	.LBE82:
+ 476              		.loc 1 80 0
+ 477 0380 18D08DE2 		add	sp, sp, #24
+ 478              		.cfi_remember_state
+ 479              		.cfi_def_cfa_offset 24
+ 480              		@ sp needed
+ 481 0384 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 482              	.LVL55:
+ 483              	.L38:
+ 484              		.cfi_restore_state
+ 485              	.LBB83:
+ 486              	.LBB81:
+ 487              	.LBB78:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 488              		.loc 1 74 0
+ 489 0388 0040A0E3 		mov	r4, #0
+ 490 038c B0FFFFEA 		b	.L36
+ 491              	.LVL56:
+ 492              	.L79:
+ 493              	.LBE78:
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   bool should_squeeze[max_squeeze_dims] = {};
+ 494              		.loc 1 53 0
+ 495 0390 003000E3 		movw	r3, #:lower16:.LC7
+ 496 0394 002000E3 		movw	r2, #:lower16:.LC1
+ 497 0398 003040E3 		movt	r3, #:upper16:.LC7
+ 498 039c 001000E3 		movw	r1, #:lower16:.LC6
+ 499 03a0 00308DE5 		str	r3, [sp]
+ 500              	.LVL57:
+ 501 03a4 0600A0E1 		mov	r0, r6
+ 502 03a8 002040E3 		movt	r2, #:upper16:.LC1
+ 503 03ac 001040E3 		movt	r1, #:upper16:.LC6
+ 504 03b0 145096E5 		ldr	r5, [r6, #20]
+ 505              	.LVL58:
+ 506 03b4 3530A0E3 		mov	r3, #53
+ 507 03b8 35FF2FE1 		blx	r5
+ 508              	.LVL59:
+ 509 03bc 0400A0E1 		mov	r0, r4
+ 510 03c0 29FFFFEA 		b	.L73
+ 511              	.LVL60:
+ 512              	.L8:
+ 513              	.LBB79:
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     if (!should_squeeze[in_idx]) {
+ 514              		.loc 1 73 0
+ 515 03c4 000051E3 		cmp	r1, #0
+ 516 03c8 EBFFFFDA 		ble	.L21
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 517              		.loc 1 74 0
+ 518 03cc 1030DDE5 		ldrb	r3, [sp, #16]	@ zero_extendqisi2
+ 519 03d0 000053E3 		cmp	r3, #0
+ 520 03d4 0600001A 		bne	.L37
+ 521 03d8 04209EE5 		ldr	r2, [lr, #4]
+ 522 03dc 97FFFFEA 		b	.L35
+ 523              	.LVL61:
+ 524              	.L12:
+ 525 03e0 1030DDE5 		ldrb	r3, [sp, #16]	@ zero_extendqisi2
+ 526 03e4 000053E3 		cmp	r3, #0
+ 527 03e8 E3FFFF1A 		bne	.L21
+ 528 03ec 93FFFFEA 		b	.L35
+ 529              	.LVL62:
+ 530              	.L28:
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     }
+ 531              		.loc 1 75 0
+ 532 03f0 FEFFFFEB 		bl	abort
+ 533              	.LVL63:
+ 534              	.L37:
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****       TFLITE_CHECK_GE(output_dims->data[out_idx++], input_dims->data[in_idx]);
+ 535              		.loc 1 74 0
+ 536 03f4 0040A0E3 		mov	r4, #0
+ 537 03f8 93FFFFEA 		b	.L27
+ 538              	.LBE79:
+ 539              	.LBE81:
+ 540              	.LBE83:
+ 541              		.cfi_endproc
+ 542              	.LFE6834:
+ 543              		.fnend
+ 545              		.section	.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 546              		.align	2
+ 547              		.syntax unified
+ 548              		.arm
+ 549              		.fpu neon
+ 551              	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:
+ 552              		.fnstart
+ 553              	.LFB6835:
+  81:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+ 554              		.loc 1 82 0
+ 555              		.cfi_startproc
+ 556              		@ args = 0, pretend = 0, frame = 0
+ 557              		@ frame_needed = 0, uses_anonymous_args = 0
+ 558              	.LVL64:
+ 559 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 560              		.save {r4, r5, r6, lr}
+ 561              		.cfi_def_cfa_offset 16
+ 562              		.cfi_offset 4, -16
+ 563              		.cfi_offset 5, -12
+ 564              		.cfi_offset 6, -8
+ 565              		.cfi_offset 14, -4
+ 566              	.LBB87:
+ 567              	.LBB88:
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 568              		.loc 1 32 0
+ 569 0004 0020A0E3 		mov	r2, #0
+ 570              	.LBE88:
+ 571              	.LBE87:
+ 572              		.loc 1 82 0
+ 573              		.pad #16
+ 574 0008 10D04DE2 		sub	sp, sp, #16
+ 575              		.cfi_def_cfa_offset 32
+ 576              		.loc 1 82 0
+ 577 000c 0050A0E1 		mov	r5, r0
+ 578              	.LVL65:
+ 579 0010 0160A0E1 		mov	r6, r1
+ 580              	.LVL66:
+ 581              	.LBB90:
+ 582              	.LBB89:
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 583              		.loc 1 32 0
+ 584 0014 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 585              	.LVL67:
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteSqueezeParams* params;
+ 586              		.loc 1 33 0
+ 587 0018 0610A0E1 		mov	r1, r6
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****         output(GetOutput(context, node, 0)) {}
+ 588              		.loc 1 32 0
+ 589 001c 0040A0E1 		mov	r4, r0
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TfLiteSqueezeParams* params;
+ 590              		.loc 1 33 0
+ 591 0020 0020A0E3 		mov	r2, #0
+ 592 0024 0500A0E1 		mov	r0, r5
+ 593 0028 FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 594              	.LVL68:
+ 595              	.LBE89:
+ 596              	.LBE90:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   SqueezeContext op_context(context, node);
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  85:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   if (op_context.input->type == kTfLiteString) {
+ 597              		.loc 1 85 0
+ 598 002c 0030D4E5 		ldrb	r3, [r4]	@ zero_extendqisi2
+ 599 0030 050053E3 		cmp	r3, #5
+ 600 0034 1D00000A 		beq	.L86
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     TF_LITE_KERNEL_LOG(context, "Type %s (%d) not supported.",
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                        TfLiteTypeGetName(op_context.input->type),
+  88:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                        op_context.input->type);
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****     return kTfLiteError;
+  90:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   }
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   TF_LITE_ENSURE_EQ(context, op_context.input->bytes, op_context.output->bytes);
+ 601              		.loc 1 92 0
+ 602 0038 183094E5 		ldr	r3, [r4, #24]
+ 603 003c 18C090E5 		ldr	ip, [r0, #24]
+ 604 0040 0C0053E1 		cmp	r3, ip
+ 605 0044 1200000A 		beq	.L84
+ 606              		.loc 1 92 0 is_stmt 0 discriminator 1
+ 607 0048 000000E3 		movw	r0, #:lower16:.LC10
+ 608 004c 00E000E3 		movw	lr, #:lower16:.LC11
+ 609 0050 000040E3 		movt	r0, #:upper16:.LC10
+ 610 0054 00E040E3 		movt	lr, #:upper16:.LC11
+ 611 0058 002000E3 		movw	r2, #:lower16:.LC1
+ 612 005c 001000E3 		movw	r1, #:lower16:.LC2
+ 613 0060 08308DE5 		str	r3, [sp, #8]
+ 614 0064 002040E3 		movt	r2, #:upper16:.LC1
+ 615 0068 04008DE5 		str	r0, [sp, #4]
+ 616 006c 001040E3 		movt	r1, #:upper16:.LC2
+ 617 0070 0CC08DE5 		str	ip, [sp, #12]
+ 618 0074 0500A0E1 		mov	r0, r5
+ 619 0078 00E08DE5 		str	lr, [sp]
+ 620 007c 5C30A0E3 		mov	r3, #92
+ 621 0080 144095E5 		ldr	r4, [r5, #20]
+ 622 0084 34FF2FE1 		blx	r4
+ 623              	.LVL69:
+ 624 0088 0100A0E3 		mov	r0, #1
+ 625              	.LVL70:
+ 626              	.L83:
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   memcpy(op_context.output->data.raw, op_context.input->data.raw,
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****          op_context.input->bytes);
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return kTfLiteOk;
+  96:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }
+ 627              		.loc 1 96 0 is_stmt 1
+ 628 008c 10D08DE2 		add	sp, sp, #16
+ 629              		.cfi_remember_state
+ 630              		.cfi_def_cfa_offset 16
+ 631              		@ sp needed
+ 632 0090 7080BDE8 		pop	{r4, r5, r6, pc}
+ 633              	.LVL71:
+ 634              	.L84:
+ 635              		.cfi_restore_state
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return kTfLiteOk;
+ 636              		.loc 1 94 0
+ 637 0094 0320A0E1 		mov	r2, r3
+ 638 0098 041094E5 		ldr	r1, [r4, #4]
+ 639 009c 040090E5 		ldr	r0, [r0, #4]
+ 640 00a0 FEFFFFEB 		bl	memcpy
+ 641              	.LVL72:
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }
+ 642              		.loc 1 95 0
+ 643 00a4 0000A0E3 		mov	r0, #0
+ 644              		.loc 1 96 0
+ 645 00a8 10D08DE2 		add	sp, sp, #16
+ 646              		.cfi_remember_state
+ 647              		.cfi_def_cfa_offset 16
+ 648              		@ sp needed
+ 649 00ac 7080BDE8 		pop	{r4, r5, r6, pc}
+ 650              	.LVL73:
+ 651              	.L86:
+ 652              		.cfi_restore_state
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****                        TfLiteTypeGetName(op_context.input->type),
+ 653              		.loc 1 86 0
+ 654 00b0 0300A0E1 		mov	r0, r3
+ 655 00b4 146095E5 		ldr	r6, [r5, #20]
+ 656              	.LVL74:
+ 657 00b8 FEFFFFEB 		bl	TfLiteTypeGetName
+ 658              	.LVL75:
+ 659 00bc 001000E3 		movw	r1, #:lower16:.LC9
+ 660 00c0 0020A0E1 		mov	r2, r0
+ 661 00c4 0030D4E5 		ldrb	r3, [r4]	@ zero_extendqisi2
+ 662 00c8 0500A0E1 		mov	r0, r5
+ 663 00cc 001040E3 		movt	r1, #:upper16:.LC9
+ 664 00d0 36FF2FE1 		blx	r6
+ 665              	.LVL76:
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   }
+ 666              		.loc 1 89 0
+ 667 00d4 0100A0E3 		mov	r0, #1
+ 668 00d8 EBFFFFEA 		b	.L83
+ 669              		.cfi_endproc
+ 670              	.LFE6835:
+ 671              		.fnend
+ 673              		.section	.text._ZN6tflite16Register_SQUEEZEEv,"ax",%progbits
+ 674              		.align	2
+ 675              		.global	_ZN6tflite16Register_SQUEEZEEv
+ 676              		.syntax unified
+ 677              		.arm
+ 678              		.fpu neon
+ 680              	_ZN6tflite16Register_SQUEEZEEv:
+ 681              		.fnstart
+ 682              	.LFB6836:
+  97:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+  98:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }  // namespace
+  99:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** 
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** TfLiteRegistration Register_SQUEEZE() {
+ 683              		.loc 1 100 0
+ 684              		.cfi_startproc
+ 685              		@ args = 0, pretend = 0, frame = 0
+ 686              		@ frame_needed = 0, uses_anonymous_args = 0
+ 687              	.LVL77:
+ 101:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return {/*init=*/nullptr,
+ 102:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*free=*/nullptr,
+ 103:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*prepare=*/Prepare,
+ 104:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*invoke=*/Eval,
+ 105:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*profiling_string=*/nullptr,
+ 106:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*builtin_code=*/0,
+ 107:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*custom_name=*/nullptr,
+ 108:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****           /*version=*/0};
+ 688              		.loc 1 108 0
+ 689 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return {/*init=*/nullptr,
+ 690              		.loc 1 100 0
+ 691 0004 10402DE9 		push	{r4, lr}
+ 692              		.cfi_def_cfa_offset 8
+ 693              		.cfi_offset 4, -8
+ 694              		.cfi_offset 14, -4
+ 695              		.loc 1 108 0
+ 696 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+ 100:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp ****   return {/*init=*/nullptr,
+ 697              		.loc 1 100 0
+ 698 000c 0040A0E1 		mov	r4, r0
+ 699              		.loc 1 108 0
+ 700 0010 00E0A0E1 		mov	lr, r0
+ 701 0014 0F00BCE8 		ldmia	ip!, {r0, r1, r2, r3}
+ 702              	.LVL78:
+ 703 0018 0F00AEE8 		stmia	lr!, {r0, r1, r2, r3}
+ 704 001c 0F009CE8 		ldm	ip, {r0, r1, r2, r3}
+ 705 0020 0F008EE8 		stm	lr, {r0, r1, r2, r3}
+ 109:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/squeeze.cpp **** }
+ 706              		.loc 1 109 0
+ 707 0024 0400A0E1 		mov	r0, r4
+ 708 0028 1080BDE8 		pop	{r4, pc}
+ 709              		.cfi_endproc
+ 710              	.LFE6836:
+ 711              		.cantunwind
+ 712              		.fnend
+ 714              		.weak	_ZN11flatbuffers25flatbuffer_version_stringE
+ 715              		.section	.rodata
+ 716              		.align	2
+ 717              		.set	.LANCHOR0,. + 0
+ 718              	.LC0:
+ 719 0000 00000000 		.word	0
+ 720 0004 00000000 		.word	0
+ 721 0008 00000000 		.word	_ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode
+ 722 000c 00000000 		.word	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+ 723 0010 00000000 		.word	0
+ 724 0014 00000000 		.word	0
+ 725 0018 00000000 		.word	0
+ 726 001c 00000000 		.word	0
+ 727              		.section	.data._ZN11flatbuffers25flatbuffer_version_stringE,"aw",%progbits
+ 728              		.align	2
+ 731              	_ZN11flatbuffers25flatbuffer_version_stringE:
+ 732 0000 00000000 		.word	.LC12
+ 733              		.section	.rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%progbit
+ 734              		.align	2
+ 735              	.LC9:
+ 736 0000 54797065 		.ascii	"Type %s (%d) not supported.\000"
+ 736      20257320 
+ 736      28256429 
+ 736      206E6F74 
+ 736      20737570 
+ 737              	.LC10:
+ 738 001c 6F705F63 		.ascii	"op_context.output->bytes\000"
+ 738      6F6E7465 
+ 738      78742E6F 
+ 738      75747075 
+ 738      742D3E62 
+ 739 0035 000000   		.space	3
+ 740              	.LC11:
+ 741 0038 6F705F63 		.ascii	"op_context.input->bytes\000"
+ 741      6F6E7465 
+ 741      78742E69 
+ 741      6E707574 
+ 741      2D3E6279 
+ 742              		.section	.rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%prog
+ 743              		.align	2
+ 744              	.LC1:
+ 745 0000 2E2E2F73 		.ascii	"../src/tensorflow_lite/src/tensorflow/lite/micro/ke"
+ 745      72632F74 
+ 745      656E736F 
+ 745      72666C6F 
+ 745      775F6C69 
+ 746 0033 726E656C 		.ascii	"rnels/squeeze.cpp\000"
+ 746      732F7371 
+ 746      7565657A 
+ 746      652E6370 
+ 746      7000
+ 747 0045 000000   		.space	3
+ 748              	.LC2:
+ 749 0048 25733A25 		.ascii	"%s:%d %s != %s (%d != %d)\000"
+ 749      64202573 
+ 749      20213D20 
+ 749      25732028 
+ 749      25642021 
+ 750 0062 0000     		.space	2
+ 751              	.LC3:
+ 752 0064 3100     		.ascii	"1\000"
+ 753 0066 0000     		.space	2
+ 754              	.LC4:
+ 755 0068 4E756D49 		.ascii	"NumInputs(node)\000"
+ 755      6E707574 
+ 755      73286E6F 
+ 755      64652900 
+ 756              	.LC5:
+ 757 0078 4E756D4F 		.ascii	"NumOutputs(node)\000"
+ 757      75747075 
+ 757      7473286E 
+ 757      6F646529 
+ 757      00
+ 758 0089 000000   		.space	3
+ 759              	.LC6:
+ 760 008c 25733A25 		.ascii	"%s:%d %s was not true.\000"
+ 760      64202573 
+ 760      20776173 
+ 760      206E6F74 
+ 760      20747275 
+ 761 00a3 00       		.space	1
+ 762              	.LC7:
+ 763 00a4 696E7075 		.ascii	"input_num_dims <= max_squeeze_dims\000"
+ 763      745F6E75 
+ 763      6D5F6469 
+ 763      6D73203C 
+ 763      3D206D61 
+ 764 00c7 00       		.space	1
+ 765              	.LC8:
+ 766 00c8 63757272 		.ascii	"current >= 0 && current < input_num_dims && input_d"
+ 766      656E7420 
+ 766      3E3D2030 
+ 766      20262620 
+ 766      63757272 
+ 767 00fb 696D732D 		.ascii	"ims->data[current] == 1\000"
+ 767      3E646174 
+ 767      615B6375 
+ 767      7272656E 
+ 767      745D203D 
+ 768              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 769              		.align	2
+ 770              	.LC12:
+ 771 0000 466C6174 		.ascii	"FlatBuffers 1.12.0\000"
+ 771      42756666 
+ 771      65727320 
+ 771      312E3132 
+ 771      2E3000
+ 772              		.text
+ 773              	.Letext0:
+ 774              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 775              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 776              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 777              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 778              		.file 7 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+ 779              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+ 780              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/t
+ 781              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 782              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 783              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 784              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 785              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 786              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 787              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 788              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 789              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 790              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 791              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 792              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 793              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 794              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 795              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 796              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 797              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 798              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 799              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 800              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 801              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 802              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 803              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 804              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 805              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 806              		.file 35 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 807              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 808              		.file 37 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 809              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 810              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 811              		.file 40 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 812              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 813              		.file 42 "<built-in>"
+ 814              		.file 43 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 815              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 816              		.file 45 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 817              		.file 46 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+ 818              		.file 47 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 819              		.file 48 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 820              		.file 49 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 821              		.file 50 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 822              		.file 51 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 823              		.file 52 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+ 824              		.file 53 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+ 825              		.file 54 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_RDK/src/tensorflow_lite/src/
+DEFINED SYMBOLS
+                            *ABS*:00000000 squeeze.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:17     .text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:22     .text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:751    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000064 .LC3
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:756    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000078 .LC5
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:744    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:748    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000048 .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:765    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000c8 .LC8
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:759    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:0000008c .LC6
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:754    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000068 .LC4
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:762    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000a4 .LC7
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:546    .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:551    .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:737    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:0000001c .LC10
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:740    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000038 .LC11
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:735    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC9
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:674    .text._ZN6tflite16Register_SQUEEZEEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:680    .text._ZN6tflite16Register_SQUEEZEEv:00000000 _ZN6tflite16Register_SQUEEZEEv
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:717    .rodata:00000000 .LANCHOR0
+.ARM.exidx.text._ZN6tflite16Register_SQUEEZEEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:731    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 _ZN11flatbuffers25flatbuffer_version_stringE
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:716    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:728    .data._ZN11flatbuffers25flatbuffer_version_stringE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:734    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:743    .rodata._ZN6tflite12_GLOBAL__N_17PrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccGzZWgC.s:769    .rodata.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+                           .group:00000000 wm4.cmath.44.b3bcbb5fe53ec6617dec8aa8eb7b03cc
+                           .group:00000000 wm4.cppmath.h.27.51580d700716589df4b364298e2ef577
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.cstddef.40.7f59894b65c26f8fc669473914a0ef3e
+                           .group:00000000 wm4.stdarg.h.31.250806951830a1b6a3066ee41cf22414
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.wchar.h.2.f837619576d797e948eb58c44fac4678
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.wchar.h.21.454a0b75f45497599b41aa0e6acf289d
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.locale.h.8.27d0fe4c0abbb6f8893a1fa7c1799fd9
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.98.3bf7680ffcc8d24d09fa83ac1339c79d
+                           .group:00000000 wm4.wctype.h.2.898a9b94aa35d125e245195b099726a8
+                           .group:00000000 wm4.wctype.h.21.aec4d35c940c33b3f9c6f879c49edcd8
+                           .group:00000000 wm4.cwctype.54.6582aca101688c1c3785d03bc15e2af6
+                           .group:00000000 wm4.locale_facets.h.56.0d4bb655ce5e76ea564363ed7c5a34fc
+                           .group:00000000 wm4.typeinfo.30.04014f5b1b4fb021c5662653bc27c750
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.atomic_base.h.31.692a6b53cef50ad728d4af54dfbd4448
+                           .group:00000000 wm4.base.h.81.f7b1ec2a44bbbae0afe7a7a890202b81
+                           .group:00000000 wm4.flatbuffers.h.2690.8dde7194088843c14d4d121ab864e44f
+
+UNDEFINED SYMBOLS
+_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+abort
+__aeabi_unwind_cpp_pr0
+memcpy
+TfLiteTypeGetName

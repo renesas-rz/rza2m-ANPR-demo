@@ -1,0 +1,716 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"svdf.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	_ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj:
+  23              		.fnstart
+  24              	.LFB4176:
+  25              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/micro/kernels/svdf.h"
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include <math.h>
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/c/builtin_op_data.h"
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/c/common.h"
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/kernels/internal/common.h"
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/kernels/internal/quantization_util.h"
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/kernels/kernel_util.h"
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/kernels/op_macros.h"
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/micro/kernels/activation_utils.h"
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/micro/kernels/kernel_util.h"
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** #include "tensorflow/lite/micro/micro_utils.h"
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** namespace tflite {
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** namespace {
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** void* Init(TfLiteContext* context, const char* buffer, size_t length) {
+  26              		.loc 1 34 0
+  27              		.cfi_startproc
+  28              		@ args = 0, pretend = 0, frame = 0
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
+  31              		.loc 1 35 0
+  32 0000 383090E5 		ldr	r3, [r0, #56]
+  33 0004 000053E3 		cmp	r3, #0
+  34 0008 0100000A 		beq	.L7
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   return context->AllocatePersistentBuffer(context, sizeof(OpData));
+  35              		.loc 1 36 0
+  36 000c 2010A0E3 		mov	r1, #32
+  37              	.LVL1:
+  38 0010 13FF2FE1 		bx	r3
+  39              	.LVL2:
+  40              	.L7:
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
+  41              		.loc 1 34 0 discriminator 1
+  42 0014 10402DE9 		push	{r4, lr}
+  43              		.save {r4, lr}
+  44              		.cfi_def_cfa_offset 8
+  45              		.cfi_offset 4, -8
+  46              		.cfi_offset 14, -4
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TFLITE_DCHECK(context->AllocatePersistentBuffer != nullptr);
+  47              		.loc 1 35 0 discriminator 1
+  48 0018 FEFFFFEB 		bl	abort
+  49              	.LVL3:
+  50              		.cfi_endproc
+  51              	.LFE4176:
+  52              		.fnend
+  54              		.section	.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+  55              		.align	2
+  56              		.syntax unified
+  57              		.arm
+  58              		.fpu neon
+  60              	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:
+  61              		.fnstart
+  62              	.LFB4177:
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** }
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
+  63              		.loc 1 39 0
+  64              		.cfi_startproc
+  65              		@ args = 0, pretend = 0, frame = 8
+  66              		@ frame_needed = 0, uses_anonymous_args = 0
+  67              	.LVL4:
+  68 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  69              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  70              		.cfi_def_cfa_offset 36
+  71              		.cfi_offset 4, -36
+  72              		.cfi_offset 5, -32
+  73              		.cfi_offset 6, -28
+  74              		.cfi_offset 7, -24
+  75              		.cfi_offset 8, -20
+  76              		.cfi_offset 9, -16
+  77              		.cfi_offset 10, -12
+  78              		.cfi_offset 11, -8
+  79              		.cfi_offset 14, -4
+  80              		.pad #36
+  81 0004 24D04DE2 		sub	sp, sp, #36
+  82              		.cfi_def_cfa_offset 72
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   auto* params = reinterpret_cast<TfLiteSVDFParams*>(node->builtin_data);
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TFLITE_DCHECK(node->user_data != nullptr);
+  83              		.loc 1 41 0
+  84 0008 106091E5 		ldr	r6, [r1, #16]
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   auto* params = reinterpret_cast<TfLiteSVDFParams*>(node->builtin_data);
+  85              		.loc 1 40 0
+  86 000c 14A091E5 		ldr	r10, [r1, #20]
+  87              	.LVL5:
+  88              		.loc 1 41 0
+  89 0010 000056E3 		cmp	r6, #0
+  90 0014 7300000A 		beq	.L10
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const OpData& data = *(static_cast<const OpData*>(node->user_data));
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const TfLiteEvalTensor* input =
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       tflite::micro::GetEvalInput(context, node, kSvdfInputTensor);
+  91              		.loc 1 45 0
+  92 0018 003000E3 		movw	r3, #:lower16:_ZN6tflite16kSvdfInputTensorE
+  93              	.LBB34:
+  94              	.LBB35:
+  95              	.LBB36:
+  96              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #define TENSORFLOW_LITE_MICRO_KERNELS_KERNEL_UTIL_H_
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include <cstdint>
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/compatibility.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** #include "tensorflow/lite/kernels/internal/types.h"
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace tflite {
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** namespace micro {
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns a mutable tensor for a given input index. is_variable must be checked
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // during prepare when the full TfLiteTensor is available.
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetMutableEvalInput(const TfLiteContext* context,
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              const TfLiteNode* node,
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                              int index) {
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+  97              		.loc 2 34 0
+  98 001c 000050E3 		cmp	r0, #0
+  99              	.LBE36:
+ 100              	.LBE35:
+ 101              	.LBE34:
+ 102              		.loc 1 45 0
+ 103 0020 003040E3 		movt	r3, #:upper16:_ZN6tflite16kSvdfInputTensorE
+ 104 0024 0040A0E1 		mov	r4, r0
+ 105              	.LVL6:
+ 106 0028 003093E5 		ldr	r3, [r3]
+ 107 002c 1C308DE5 		str	r3, [sp, #28]
+ 108              	.LVL7:
+ 109              	.LBB41:
+ 110              	.LBB39:
+ 111              	.LBB37:
+ 112              		.loc 2 34 0
+ 113 0030 6C00000A 		beq	.L10
+ 114 0034 0150A0E1 		mov	r5, r1
+ 115 0038 0310A0E1 		mov	r1, r3
+ 116              	.LVL8:
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->inputs->data[index]);
+ 117              		.loc 2 36 0
+ 118 003c 003095E5 		ldr	r3, [r5]
+ 119              	.LVL9:
+ 120 0040 542090E5 		ldr	r2, [r0, #84]
+ 121 0044 013183E0 		add	r3, r3, r1, lsl #2
+ 122 0048 041093E5 		ldr	r1, [r3, #4]
+ 123              	.LVL10:
+ 124 004c 32FF2FE1 		blx	r2
+ 125              	.LVL11:
+ 126              	.LBE37:
+ 127              	.LBE39:
+ 128              	.LBE41:
+ 129              	.LBB42:
+ 130              	.LBB43:
+ 131              	.LBB44:
+ 132 0050 002000E3 		movw	r2, #:lower16:_ZN6tflite25kSvdfWeightsFeatureTensorE
+ 133 0054 003095E5 		ldr	r3, [r5]
+ 134 0058 002040E3 		movt	r2, #:upper16:_ZN6tflite25kSvdfWeightsFeatureTensorE
+ 135 005c 547094E5 		ldr	r7, [r4, #84]
+ 136 0060 002092E5 		ldr	r2, [r2]
+ 137              	.LBE44:
+ 138              	.LBE43:
+ 139              	.LBE42:
+ 140              	.LBB49:
+ 141              	.LBB40:
+ 142              	.LBB38:
+ 143 0064 0090A0E1 		mov	r9, r0
+ 144              	.LVL12:
+ 145              	.LBE38:
+ 146              	.LBE40:
+ 147              	.LBE49:
+ 148              	.LBB50:
+ 149              	.LBB47:
+ 150              	.LBB45:
+ 151 0068 0400A0E1 		mov	r0, r4
+ 152 006c 023183E0 		add	r3, r3, r2, lsl #2
+ 153 0070 041093E5 		ldr	r1, [r3, #4]
+ 154 0074 37FF2FE1 		blx	r7
+ 155              	.LVL13:
+ 156              	.LBE45:
+ 157              	.LBE47:
+ 158              	.LBE50:
+ 159              	.LBB51:
+ 160              	.LBB52:
+ 161              	.LBB53:
+ 162 0078 002000E3 		movw	r2, #:lower16:_ZN6tflite22kSvdfWeightsTimeTensorE
+ 163 007c 003095E5 		ldr	r3, [r5]
+ 164 0080 002040E3 		movt	r2, #:upper16:_ZN6tflite22kSvdfWeightsTimeTensorE
+ 165 0084 548094E5 		ldr	r8, [r4, #84]
+ 166 0088 002092E5 		ldr	r2, [r2]
+ 167              	.LBE53:
+ 168              	.LBE52:
+ 169              	.LBE51:
+ 170              	.LBB56:
+ 171              	.LBB48:
+ 172              	.LBB46:
+ 173 008c 0070A0E1 		mov	r7, r0
+ 174              	.LVL14:
+ 175              	.LBE46:
+ 176              	.LBE48:
+ 177              	.LBE56:
+ 178              	.LBB57:
+ 179              	.LBB55:
+ 180              	.LBB54:
+ 181 0090 0400A0E1 		mov	r0, r4
+ 182 0094 023183E0 		add	r3, r3, r2, lsl #2
+ 183 0098 041093E5 		ldr	r1, [r3, #4]
+ 184 009c 38FF2FE1 		blx	r8
+ 185              	.LVL15:
+ 186 00a0 003095E5 		ldr	r3, [r5]
+ 187 00a4 0080A0E1 		mov	r8, r0
+ 188              	.LVL16:
+ 189              	.LBE54:
+ 190              	.LBE55:
+ 191              	.LBE57:
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const TfLiteEvalTensor* weights_feature =
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       tflite::micro::GetEvalInput(context, node, kSvdfWeightsFeatureTensor);
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const TfLiteEvalTensor* weights_time =
+  49:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       tflite::micro::GetEvalInput(context, node, kSvdfWeightsTimeTensor);
+  50:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const TfLiteEvalTensor* bias =
+  51:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       (NumInputs(node) == 5)
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           ? tflite::micro::GetEvalInput(context, node, kSvdfBiasTensor)
+ 192              		.loc 1 52 0
+ 193 00a8 002093E5 		ldr	r2, [r3]
+ 194 00ac 050052E3 		cmp	r2, #5
+ 195 00b0 0020A013 		movne	r2, #0
+ 196 00b4 1C208D15 		strne	r2, [sp, #28]
+ 197 00b8 3F00000A 		beq	.L23
+ 198              	.L11:
+ 199              	.LVL17:
+ 200              	.LBB58:
+ 201              	.LBB59:
+ 202              		.loc 2 36 0
+ 203 00bc 001000E3 		movw	r1, #:lower16:_ZN6tflite31kSvdfInputActivationStateTensorE
+ 204 00c0 542094E5 		ldr	r2, [r4, #84]
+ 205 00c4 001040E3 		movt	r1, #:upper16:_ZN6tflite31kSvdfInputActivationStateTensorE
+ 206 00c8 0400A0E1 		mov	r0, r4
+ 207 00cc 001091E5 		ldr	r1, [r1]
+ 208 00d0 013183E0 		add	r3, r3, r1, lsl #2
+ 209 00d4 041093E5 		ldr	r1, [r3, #4]
+ 210 00d8 32FF2FE1 		blx	r2
+ 211              	.LVL18:
+ 212              	.LBE59:
+ 213              	.LBE58:
+ 214              	.LBB61:
+ 215              	.LBB62:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given input index in a node.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline const TfLiteEvalTensor* GetEvalInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                             const TfLiteNode* node, int index) {
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return GetMutableEvalInput(context, node, index);
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** 
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** // Returns the TfLiteEvalTensor struct for a given output index in a node.
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** inline TfLiteEvalTensor* GetEvalOutput(const TfLiteContext* context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****                                        const TfLiteNode* node, int index) {
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(context != nullptr);
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   TFLITE_DCHECK(node != nullptr);
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h ****   return context->GetEvalTensor(context, node->outputs->data[index]);
+ 216              		.loc 2 50 0
+ 217 00dc 001000E3 		movw	r1, #:lower16:_ZN6tflite17kSvdfOutputTensorE
+ 218 00e0 043095E5 		ldr	r3, [r5, #4]
+ 219 00e4 001040E3 		movt	r1, #:upper16:_ZN6tflite17kSvdfOutputTensorE
+ 220              	.LBE62:
+ 221              	.LBE61:
+ 222              	.LBB64:
+ 223              	.LBB60:
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 224              		.loc 2 36 0
+ 225 00e8 00B0A0E1 		mov	fp, r0
+ 226              	.LVL19:
+ 227              	.LBE60:
+ 228              	.LBE64:
+ 229              	.LBB65:
+ 230              	.LBB63:
+ 231              		.loc 2 50 0
+ 232 00ec 001091E5 		ldr	r1, [r1]
+ 233 00f0 0400A0E1 		mov	r0, r4
+ 234 00f4 542094E5 		ldr	r2, [r4, #84]
+ 235 00f8 013183E0 		add	r3, r3, r1, lsl #2
+ 236 00fc 041093E5 		ldr	r1, [r3, #4]
+ 237 0100 32FF2FE1 		blx	r2
+ 238              	.LVL20:
+ 239              	.LBE63:
+ 240              	.LBE65:
+  53:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           : nullptr;
+  54:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TfLiteEvalTensor* activation_state = tflite::micro::GetMutableEvalInput(
+  55:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       context, node, kSvdfInputActivationStateTensor);
+  56:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   TfLiteEvalTensor* output =
+  57:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       tflite::micro::GetEvalOutput(context, node, kSvdfOutputTensor);
+  58:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  59:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   switch (weights_feature->type) {
+ 241              		.loc 1 59 0
+ 242 0104 0830D7E5 		ldrb	r3, [r7, #8]	@ zero_extendqisi2
+ 243 0108 010053E3 		cmp	r3, #1
+ 244 010c 1A00000A 		beq	.L13
+ 245 0110 090053E3 		cmp	r3, #9
+ 246 0114 0A00000A 		beq	.L14
+  60:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     case kTfLiteFloat32: {
+  61:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       EvalFloatSvdfReference(
+  62:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           context, node, input, weights_feature, weights_time, bias, params,
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           data.scratch_tensor_index, activation_state, output);
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       return kTfLiteOk;
+  65:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       break;
+  66:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     }
+  67:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  68:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     case kTfLiteInt8: {
+  69:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       EvalIntegerSvdfReference(context, node, input, weights_feature,
+  70:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****                                weights_time, bias, params, activation_state,
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****                                output, data);
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       return kTfLiteOk;
+  73:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       break;
+  74:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     }
+  75:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  76:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****     default:
+  77:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       TF_LITE_KERNEL_LOG(context, "Type %s not currently supported.",
+ 247              		.loc 1 77 0
+ 248 0118 0300A0E1 		mov	r0, r3
+ 249 011c 145094E5 		ldr	r5, [r4, #20]
+ 250              	.LVL21:
+ 251 0120 FEFFFFEB 		bl	TfLiteTypeGetName
+ 252              	.LVL22:
+ 253 0124 001000E3 		movw	r1, #:lower16:.LC1
+ 254 0128 0020A0E1 		mov	r2, r0
+ 255 012c 001040E3 		movt	r1, #:upper16:.LC1
+ 256 0130 0400A0E1 		mov	r0, r4
+ 257 0134 35FF2FE1 		blx	r5
+ 258              	.LVL23:
+  78:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****                          TfLiteTypeGetName(weights_feature->type));
+  79:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       return kTfLiteError;
+ 259              		.loc 1 79 0
+ 260 0138 0100A0E3 		mov	r0, #1
+  80:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   }
+  81:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   return kTfLiteOk;
+  82:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** }
+ 261              		.loc 1 82 0
+ 262 013c 24D08DE2 		add	sp, sp, #36
+ 263              		.cfi_remember_state
+ 264              		.cfi_def_cfa_offset 36
+ 265              		@ sp needed
+ 266 0140 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 267              	.LVL24:
+ 268              	.L14:
+ 269              		.cfi_restore_state
+  71:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       return kTfLiteOk;
+ 270              		.loc 1 71 0
+ 271 0144 1CC09DE5 		ldr	ip, [sp, #28]
+ 272 0148 0730A0E1 		mov	r3, r7
+ 273 014c 10008DE5 		str	r0, [sp, #16]
+ 274 0150 0920A0E1 		mov	r2, r9
+ 275 0154 0400A0E1 		mov	r0, r4
+ 276 0158 14608DE5 		str	r6, [sp, #20]
+ 277 015c 0CB08DE5 		str	fp, [sp, #12]
+ 278 0160 0510A0E1 		mov	r1, r5
+ 279 0164 08A08DE5 		str	r10, [sp, #8]
+ 280 0168 00118DE8 		stm	sp, {r8, ip}
+ 281 016c FEFFFFEB 		bl	_ZN6tflite24EvalIntegerSvdfReferenceEP13TfLiteContextP10TfLiteNodePK16TfLiteEvalTensorS6_S6_S6_
+ 282              	.LVL25:
+  72:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       break;
+ 283              		.loc 1 72 0
+ 284 0170 0000A0E3 		mov	r0, #0
+ 285              		.loc 1 82 0
+ 286 0174 24D08DE2 		add	sp, sp, #36
+ 287              		.cfi_remember_state
+ 288              		.cfi_def_cfa_offset 36
+ 289              		@ sp needed
+ 290 0178 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 291              	.LVL26:
+ 292              	.L13:
+ 293              		.cfi_restore_state
+  63:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       return kTfLiteOk;
+ 294              		.loc 1 63 0
+ 295 017c 14008DE5 		str	r0, [sp, #20]
+ 296 0180 0730A0E1 		mov	r3, r7
+ 297 0184 10B08DE5 		str	fp, [sp, #16]
+ 298 0188 0400A0E1 		mov	r0, r4
+ 299 018c 10C096E5 		ldr	ip, [r6, #16]
+ 300 0190 0920A0E1 		mov	r2, r9
+ 301 0194 1CE09DE5 		ldr	lr, [sp, #28]
+ 302 0198 0510A0E1 		mov	r1, r5
+ 303 019c 08A08DE5 		str	r10, [sp, #8]
+ 304 01a0 0CC08DE5 		str	ip, [sp, #12]
+ 305 01a4 04E08DE5 		str	lr, [sp, #4]
+ 306 01a8 00808DE5 		str	r8, [sp]
+ 307 01ac FEFFFFEB 		bl	_ZN6tflite22EvalFloatSvdfReferenceEP13TfLiteContextP10TfLiteNodePK16TfLiteEvalTensorS6_S6_S6_PK
+ 308              	.LVL27:
+  64:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****       break;
+ 309              		.loc 1 64 0
+ 310 01b0 0000A0E3 		mov	r0, #0
+ 311              		.loc 1 82 0
+ 312 01b4 24D08DE2 		add	sp, sp, #36
+ 313              		.cfi_remember_state
+ 314              		.cfi_def_cfa_offset 36
+ 315              		@ sp needed
+ 316 01b8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 317              	.LVL28:
+ 318              	.L23:
+ 319              		.cfi_restore_state
+ 320              	.LBB66:
+ 321              	.LBB67:
+ 322              	.LBB68:
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/src/tensorflow/lite/micro/kernels\kernel_util.h **** }
+ 323              		.loc 2 36 0 discriminator 1
+ 324 01bc 001000E3 		movw	r1, #:lower16:_ZN6tflite15kSvdfBiasTensorE
+ 325 01c0 542094E5 		ldr	r2, [r4, #84]
+ 326 01c4 001040E3 		movt	r1, #:upper16:_ZN6tflite15kSvdfBiasTensorE
+ 327 01c8 0400A0E1 		mov	r0, r4
+ 328 01cc 001091E5 		ldr	r1, [r1]
+ 329 01d0 013183E0 		add	r3, r3, r1, lsl #2
+ 330 01d4 041093E5 		ldr	r1, [r3, #4]
+ 331 01d8 32FF2FE1 		blx	r2
+ 332              	.LVL29:
+ 333 01dc 003095E5 		ldr	r3, [r5]
+ 334              	.LBE68:
+ 335              	.LBE67:
+ 336              	.LBE66:
+  52:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           : nullptr;
+ 337              		.loc 1 52 0 discriminator 1
+ 338 01e0 1C008DE5 		str	r0, [sp, #28]
+ 339 01e4 B4FFFFEA 		b	.L11
+ 340              	.LVL30:
+ 341              	.L10:
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   const OpData& data = *(static_cast<const OpData*>(node->user_data));
+ 342              		.loc 1 41 0 discriminator 1
+ 343 01e8 FEFFFFEB 		bl	abort
+ 344              	.LVL31:
+ 345              		.cfi_endproc
+ 346              	.LFE4177:
+ 347              		.fnend
+ 349              		.section	.text._ZN6tflite13Register_SVDFEv,"ax",%progbits
+ 350              		.align	2
+ 351              		.global	_ZN6tflite13Register_SVDFEv
+ 352              		.syntax unified
+ 353              		.arm
+ 354              		.fpu neon
+ 356              	_ZN6tflite13Register_SVDFEv:
+ 357              		.fnstart
+ 358              	.LFB4178:
+  83:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  84:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** }  // namespace
+  85:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** 
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** TfLiteRegistration Register_SVDF() {
+ 359              		.loc 1 86 0
+ 360              		.cfi_startproc
+ 361              		@ args = 0, pretend = 0, frame = 0
+ 362              		@ frame_needed = 0, uses_anonymous_args = 0
+ 363              	.LVL32:
+  87:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   return {/*init=*/Init,
+  88:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*free=*/nullptr,
+  89:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*prepare=*/PrepareSvdf,
+  90:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*invoke=*/Eval,
+  91:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*profiling_string=*/nullptr,
+  92:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*builtin_code=*/0,
+  93:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*custom_name=*/nullptr,
+  94:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****           /*version=*/0};
+ 364              		.loc 1 94 0
+ 365 0000 00C000E3 		movw	ip, #:lower16:.LANCHOR0
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   return {/*init=*/Init,
+ 366              		.loc 1 86 0
+ 367 0004 10402DE9 		push	{r4, lr}
+ 368              		.cfi_def_cfa_offset 8
+ 369              		.cfi_offset 4, -8
+ 370              		.cfi_offset 14, -4
+ 371              		.loc 1 94 0
+ 372 0008 00C040E3 		movt	ip, #:upper16:.LANCHOR0
+  86:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp ****   return {/*init=*/Init,
+ 373              		.loc 1 86 0
+ 374 000c 0040A0E1 		mov	r4, r0
+ 375              		.loc 1 94 0
+ 376 0010 00E0A0E1 		mov	lr, r0
+ 377 0014 0F00BCE8 		ldmia	ip!, {r0, r1, r2, r3}
+ 378              	.LVL33:
+ 379 0018 0F00AEE8 		stmia	lr!, {r0, r1, r2, r3}
+ 380 001c 0F009CE8 		ldm	ip, {r0, r1, r2, r3}
+ 381 0020 0F008EE8 		stm	lr, {r0, r1, r2, r3}
+  95:../src/tensorflow_lite/src/tensorflow/lite/micro/kernels/svdf.cpp **** }
+ 382              		.loc 1 95 0
+ 383 0024 0400A0E1 		mov	r0, r4
+ 384 0028 1080BDE8 		pop	{r4, pc}
+ 385              		.cfi_endproc
+ 386              	.LFE4178:
+ 387              		.cantunwind
+ 388              		.fnend
+ 390              		.section	.rodata
+ 391              		.align	2
+ 392              		.set	.LANCHOR0,. + 0
+ 393              	.LC0:
+ 394 0000 00000000 		.word	_ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj
+ 395 0004 00000000 		.word	0
+ 396 0008 00000000 		.word	_ZN6tflite11PrepareSvdfEP13TfLiteContextP10TfLiteNode
+ 397 000c 00000000 		.word	_ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+ 398 0010 00000000 		.word	0
+ 399 0014 00000000 		.word	0
+ 400 0018 00000000 		.word	0
+ 401 001c 00000000 		.word	0
+ 402              		.section	.rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%progbit
+ 403              		.align	2
+ 404              	.LC1:
+ 405 0000 54797065 		.ascii	"Type %s not currently supported.\000"
+ 405      20257320 
+ 405      6E6F7420 
+ 405      63757272 
+ 405      656E746C 
+ 406              		.text
+ 407              	.Letext0:
+ 408              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 409              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 410              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 411              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 412              		.file 7 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 413              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 414              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 415              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 416              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 417              		.file 12 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 418              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 419              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 420              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 421              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 422              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 423              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 424              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 425              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 426              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 427              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 428              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 429              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 430              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 431              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 432              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 433              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 434              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 435              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 436              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 437              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 438              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 439              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 440              		.file 35 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 441              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 442              		.file 37 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 443              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 444              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 445              		.file 40 "<built-in>"
+ 446              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 447              		.file 42 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 448              		.file 43 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 449              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 450              		.file 45 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 451              		.file 46 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 452              		.file 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 453              		.file 48 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 svdf.cpp
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:17     .text._ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:22     .text._ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj:00000000 _ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_14InitEP13TfLiteContextPKcj:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:55     .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:60     .text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:404    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC1
+.ARM.exidx.text._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:350    .text._ZN6tflite13Register_SVDFEv:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:356    .text._ZN6tflite13Register_SVDFEv:00000000 _ZN6tflite13Register_SVDFEv
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:392    .rodata:00000000 .LANCHOR0
+.ARM.exidx.text._ZN6tflite13Register_SVDFEv:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:391    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc41B19e.s:403    .rodata._ZN6tflite12_GLOBAL__N_14EvalEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.wchar.h.2.f837619576d797e948eb58c44fac4678
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.wchar.h.41.2307b469886c2ca55d92707971ac50ce
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.locale.h.8.27d0fe4c0abbb6f8893a1fa7c1799fd9
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.alloc_traits.h.31.c41c7c4789404962122a4e991dfa3abf
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.c3e9cb15e5af2807c4650345134c1a8a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.31.bccc014fee6fc3f930045d809df6f486
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.cmath.44.b3bcbb5fe53ec6617dec8aa8eb7b03cc
+                           .group:00000000 wm4.detect_platform.h.19.a1891273c0cad215067ddb8219400136
+                           .group:00000000 wm4.fixedpoint.h.567.8a6371d9452be19811601bace78b0abc
+                           .group:00000000 wm4.cppmath.h.27.51580d700716589df4b364298e2ef577
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+
+UNDEFINED SYMBOLS
+abort
+__aeabi_unwind_cpp_pr0
+_ZN6tflite16kSvdfInputTensorE
+_ZN6tflite25kSvdfWeightsFeatureTensorE
+_ZN6tflite22kSvdfWeightsTimeTensorE
+_ZN6tflite31kSvdfInputActivationStateTensorE
+_ZN6tflite17kSvdfOutputTensorE
+TfLiteTypeGetName
+_ZN6tflite24EvalIntegerSvdfReferenceEP13TfLiteContextP10TfLiteNodePK16TfLiteEvalTensorS6_S6_S6_PK16TfLiteSVDFParamsPS4_SA_RKNS_6OpDataE
+_ZN6tflite22EvalFloatSvdfReferenceEP13TfLiteContextP10TfLiteNodePK16TfLiteEvalTensorS6_S6_S6_PK16TfLiteSVDFParamsiPS4_SA_
+_ZN6tflite15kSvdfBiasTensorE
+_ZN6tflite11PrepareSvdfEP13TfLiteContextP10TfLiteNode

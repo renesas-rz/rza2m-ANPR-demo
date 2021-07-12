@@ -1,0 +1,3385 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"network_CNN_FE.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._Z7paddingPfS_Pi,"ax",%progbits
+  17              		.align	2
+  18              		.global	_Z7paddingPfS_Pi
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_Z7paddingPfS_Pi:
+  24              		.fnstart
+  25              	.LFB227:
+  26              		.file 1 "../src/neural_networks/Translator/network_CNN_FE.cpp"
+   1:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+   2:../src/neural_networks/Translator/network_CNN_FE.cpp **** * DISCLAIMER
+   3:../src/neural_networks/Translator/network_CNN_FE.cpp **** * This software is supplied by Renesas Electronics Corporation and is only intended for use with Re
+   4:../src/neural_networks/Translator/network_CNN_FE.cpp **** * other uses are authorized. This software is owned by Renesas Electronics Corporation and is prote
+   5:../src/neural_networks/Translator/network_CNN_FE.cpp **** * applicable laws, including copyright laws. 
+   6:../src/neural_networks/Translator/network_CNN_FE.cpp **** * THIS SOFTWARE IS PROVIDED 'AS IS' AND RENESAS MAKES NO WARRANTIES REGARDING
+   7:../src/neural_networks/Translator/network_CNN_FE.cpp **** * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF 
+   8:../src/neural_networks/Translator/network_CNN_FE.cpp **** * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIM
+   9:../src/neural_networks/Translator/network_CNN_FE.cpp **** * EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS AF
+  10:../src/neural_networks/Translator/network_CNN_FE.cpp **** * SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY RE
+  11:../src/neural_networks/Translator/network_CNN_FE.cpp **** * SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  12:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Renesas reserves the right, without notice, to make changes to this software and to discontinue t
+  13:../src/neural_networks/Translator/network_CNN_FE.cpp **** * this software. By using this software, you agree to the additional terms and conditions found by 
+  14:../src/neural_networks/Translator/network_CNN_FE.cpp **** * following link:
+  15:../src/neural_networks/Translator/network_CNN_FE.cpp **** * http://www.renesas.com/disclaimer 
+  16:../src/neural_networks/Translator/network_CNN_FE.cpp **** *
+  17:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Changed from original python code to C source code.
+  18:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Copyright (C) 2017 Renesas Electronics Corporation. All rights reserved.
+  19:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+  20:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+  21:../src/neural_networks/Translator/network_CNN_FE.cpp **** * File Name    : network_CNN_FE.c
+  22:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Version      : 1.00
+  23:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : Definitions of all functions
+  24:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+  25:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+  26:../src/neural_networks/Translator/network_CNN_FE.cpp **** * History : DD.MM.YYYY Version  Description
+  27:../src/neural_networks/Translator/network_CNN_FE.cpp **** *         : 16.06.2017 1.00     First Release
+  28:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+  29:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  30:../src/neural_networks/Translator/network_CNN_FE.cpp **** #include <math.h>
+  31:../src/neural_networks/Translator/network_CNN_FE.cpp **** #include "stdlib.h"
+  32:../src/neural_networks/Translator/network_CNN_FE.cpp **** #include "Typedef.h"
+  33:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  34:../src/neural_networks/Translator/network_CNN_FE.cpp **** #include "layer_graph_CNN_FE.h"
+  35:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  36:../src/neural_networks/Translator/network_CNN_FE.cpp **** #define C_FP32 1
+  37:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+  38:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: padding
+  39:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Padding operation
+  40:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Creates a new output matrix with zero's padded on the original input 
+  41:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+  42:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dPad		- Pointer to the padding output
+  43:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions 
+  44:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, input channels, input height, input width, output height, output width ,pad top, pad lef
+  45:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+  46:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+  47:../src/neural_networks/Translator/network_CNN_FE.cpp **** void padding(TPrecision *__restrict__ dData, TPrecision *__restrict__ dPad, TsInt *__restrict__ iSh
+  48:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+  27              		.loc 1 48 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 48
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  32 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  33              		.cfi_def_cfa_offset 36
+  34              		.cfi_offset 4, -36
+  35              		.cfi_offset 5, -32
+  36              		.cfi_offset 6, -28
+  37              		.cfi_offset 7, -24
+  38              		.cfi_offset 8, -20
+  39              		.cfi_offset 9, -16
+  40              		.cfi_offset 10, -12
+  41              		.cfi_offset 11, -8
+  42              		.cfi_offset 14, -4
+  43 0004 01A0A0E1 		mov	r10, r1
+  49:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+  50:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iN = iShapes[0];		// Number of examples
+  44              		.loc 1 50 0
+  45 0008 003092E5 		ldr	r3, [r2]
+  48:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+  46              		.loc 1 48 0
+  47 000c 34D04DE2 		sub	sp, sp, #52
+  48              		.cfi_def_cfa_offset 88
+  48:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+  49              		.loc 1 48 0
+  50 0010 0070A0E1 		mov	r7, r0
+  51:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];		// Number of channels
+  51              		.loc 1 51 0
+  52 0014 041092E5 		ldr	r1, [r2, #4]
+  53              	.LVL1:
+  52:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];		// Input image height
+  53:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];		// Input image width
+  54:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPH = iShapes[4];		// Output height
+  54              		.loc 1 54 0
+  55 0018 108092E5 		ldr	r8, [r2, #16]
+  50:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];		// Number of channels
+  56              		.loc 1 50 0
+  57 001c 20308DE5 		str	r3, [sp, #32]
+  58              	.LVL2:
+  55:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPW = iShapes[5];		// Output width
+  59              		.loc 1 55 0
+  60 0020 144092E5 		ldr	r4, [r2, #20]
+  56:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_top = iShapes[6];	// Number of pixels to be added to the height
+  57:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_left = iShapes[7];	// Number of pixels to be added to the width
+  58:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  59:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Padding operation
+  60:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for(iD1=0; iD1 < iN*iC*iPH*iPW; iD1++)
+  61              		.loc 1 60 0
+  62 0024 910303E0 		mul	r3, r1, r3
+  63              	.LVL3:
+  51:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];		// Input image height
+  64              		.loc 1 51 0
+  65 0028 04108DE5 		str	r1, [sp, #4]
+  66              	.LVL4:
+  52:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];		// Input image width
+  67              		.loc 1 52 0
+  68 002c 085092E5 		ldr	r5, [r2, #8]
+  69              	.LVL5:
+  56:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_top = iShapes[6];	// Number of pixels to be added to the height
+  70              		.loc 1 56 0
+  71 0030 181092E5 		ldr	r1, [r2, #24]
+  72              	.LVL6:
+  53:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPH = iShapes[4];		// Output height
+  73              		.loc 1 53 0
+  74 0034 0C9092E5 		ldr	r9, [r2, #12]
+  75              	.LVL7:
+  57:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  76              		.loc 1 57 0
+  77 0038 1C2092E5 		ldr	r2, [r2, #28]
+  78              	.LVL8:
+  56:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_left = iShapes[7];	// Number of pixels to be added to the width
+  79              		.loc 1 56 0
+  80 003c 00108DE5 		str	r1, [sp]
+  81              	.LVL9:
+  57:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  82              		.loc 1 57 0
+  83 0040 08208DE5 		str	r2, [sp, #8]
+  84              	.LVL10:
+  85              		.loc 1 60 0
+  86 0044 980302E0 		mul	r2, r8, r3
+  87              	.LVL11:
+  88 0048 940202E0 		mul	r2, r4, r2
+  89 004c 000052E3 		cmp	r2, #0
+  90 0050 030000DA 		ble	.L4
+  91 0054 0221A0E1 		lsl	r2, r2, #2
+  92 0058 0010A0E3 		mov	r1, #0
+  93              	.LVL12:
+  94 005c 0A00A0E1 		mov	r0, r10
+  95              	.LVL13:
+  96 0060 FEFFFFEB 		bl	memset
+  97              	.LVL14:
+  98              	.L4:
+  61:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=0;
+  62:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  63:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for(iD1=0; iD1 < iN; iD1++)
+  99              		.loc 1 63 0
+ 100 0064 20309DE5 		ldr	r3, [sp, #32]
+ 101 0068 000053E3 		cmp	r3, #0
+ 102 006c 490000DA 		ble	.L1
+ 103 0070 04309DE5 		ldr	r3, [sp, #4]
+ 104 0074 08009DE5 		ldr	r0, [sp, #8]
+ 105 0078 00109DE5 		ldr	r1, [sp]
+ 106 007c 000053E3 		cmp	r3, #0
+ 107 0080 092080E0 		add	r2, r0, r9
+ 108 0084 016085E0 		add	r6, r5, r1
+ 109 0088 10208DE5 		str	r2, [sp, #16]
+ 110 008c 410000DA 		ble	.L1
+ 111 0090 980302E0 		mul	r2, r8, r3
+ 112 0094 1C708DE5 		str	r7, [sp, #28]
+ 113 0098 0471A0E1 		lsl	r7, r4, #2
+ 114              	.LVL15:
+ 115 009c 930503E0 		mul	r3, r3, r5
+ 116 00a0 09B1A0E1 		lsl	fp, r9, #2
+ 117 00a4 990505E0 		mul	r5, r9, r5
+ 118              	.LVL16:
+ 119 00a8 0221A0E1 		lsl	r2, r2, #2
+ 120 00ac 0331A0E1 		lsl	r3, r3, #2
+ 121 00b0 940202E0 		mul	r2, r4, r2
+ 122 00b4 990303E0 		mul	r3, r9, r3
+ 123 00b8 940808E0 		mul	r8, r4, r8
+ 124              	.LVL17:
+ 125 00bc 28208DE5 		str	r2, [sp, #40]
+ 126 00c0 2C308DE5 		str	r3, [sp, #44]
+ 127 00c4 0531A0E1 		lsl	r3, r5, #2
+ 128 00c8 940124E0 		mla	r4, r4, r1, r0
+ 129              	.LVL18:
+ 130 00cc 14308DE5 		str	r3, [sp, #20]
+  64:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+  65:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		for(iD2 = 0; iD2 < iC; iD2++)
+  66:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+  67:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			for(iD3 = pad_top; iD3 < iH + pad_top; iD3++)
+  68:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{				
+  69:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				for(iD4 = pad_left; iD4 < iW + pad_left; iD4++)
+  70:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				{
+  71:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					dPad[(iD1*iC*iPH*iPW)+(iD2*iPH*iPW)+(iD3*iPW)+(iD4)] = dData[(iD1*iC*iH*iW)+(iD2*iH*iW)+((iD3-
+ 131              		.loc 1 71 0 discriminator 1
+ 132 00d0 0030A0E3 		mov	r3, #0
+ 133 00d4 0821A0E1 		lsl	r2, r8, #2
+ 134 00d8 24308DE5 		str	r3, [sp, #36]
+ 135 00dc 04318AE0 		add	r3, r10, r4, lsl #2
+ 136 00e0 0C208DE5 		str	r2, [sp, #12]
+ 137 00e4 18308DE5 		str	r3, [sp, #24]
+ 138              	.LVL19:
+ 139              	.L7:
+ 140 00e8 00309DE5 		ldr	r3, [sp]
+ 141 00ec 060053E1 		cmp	r3, r6
+ 142 00f0 1A0000AA 		bge	.L9
+ 143              		.loc 1 71 0 is_stmt 0
+ 144 00f4 1CA09DE5 		ldr	r10, [sp, #28]
+ 145 00f8 0080A0E3 		mov	r8, #0
+ 146 00fc 18909DE5 		ldr	r9, [sp, #24]
+ 147              	.LVL20:
+ 148              	.L6:
+ 149 0100 08309DE5 		ldr	r3, [sp, #8]
+ 150 0104 10209DE5 		ldr	r2, [sp, #16]
+ 151 0108 020053E1 		cmp	r3, r2
+ 152 010c 0B0000AA 		bge	.L10
+ 153 0110 00409DE5 		ldr	r4, [sp]
+ 154 0114 0A50A0E1 		mov	r5, r10
+ 155 0118 0930A0E1 		mov	r3, r9
+ 156              	.L8:
+ 157              	.LVL21:
+ 158 011c 0510A0E1 		mov	r1, r5
+ 159 0120 0300A0E1 		mov	r0, r3
+  67:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{				
+ 160              		.loc 1 67 0 is_stmt 1 discriminator 3
+ 161 0124 014084E2 		add	r4, r4, #1
+ 162              	.LVL22:
+ 163 0128 0B20A0E1 		mov	r2, fp
+ 164 012c FEFFFFEB 		bl	memcpy
+ 165              	.LVL23:
+ 166 0130 060054E1 		cmp	r4, r6
+ 167 0134 0B5085E0 		add	r5, r5, fp
+ 168 0138 073080E0 		add	r3, r0, r7
+ 169 013c F6FFFF1A 		bne	.L8
+ 170              	.LVL24:
+ 171              	.L10:
+ 172 0140 0C309DE5 		ldr	r3, [sp, #12]
+  65:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 173              		.loc 1 65 0
+ 174 0144 018088E2 		add	r8, r8, #1
+ 175              	.LVL25:
+ 176 0148 039089E0 		add	r9, r9, r3
+ 177 014c 04309DE5 		ldr	r3, [sp, #4]
+ 178 0150 080053E1 		cmp	r3, r8
+ 179 0154 14309DE5 		ldr	r3, [sp, #20]
+ 180 0158 03A08AE0 		add	r10, r10, r3
+ 181 015c E7FFFF1A 		bne	.L6
+ 182              	.LVL26:
+ 183              	.L9:
+ 184 0160 18209DE5 		ldr	r2, [sp, #24]
+ 185 0164 28109DE5 		ldr	r1, [sp, #40]
+  63:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 186              		.loc 1 63 0
+ 187 0168 24309DE5 		ldr	r3, [sp, #36]
+ 188 016c 012082E0 		add	r2, r2, r1
+ 189 0170 18208DE5 		str	r2, [sp, #24]
+ 190 0174 013083E2 		add	r3, r3, #1
+ 191 0178 20209DE5 		ldr	r2, [sp, #32]
+ 192 017c 24308DE5 		str	r3, [sp, #36]
+ 193              	.LVL27:
+ 194 0180 030052E1 		cmp	r2, r3
+ 195 0184 1C309DE5 		ldr	r3, [sp, #28]
+ 196              	.LVL28:
+ 197 0188 2C209DE5 		ldr	r2, [sp, #44]
+ 198 018c 023083E0 		add	r3, r3, r2
+ 199 0190 1C308DE5 		str	r3, [sp, #28]
+ 200 0194 D3FFFF1A 		bne	.L7
+ 201              	.LVL29:
+ 202              	.L1:
+  72:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				}
+  73:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			}
+  74:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		}
+  75:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+  76:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 203              		.loc 1 76 0
+ 204 0198 34D08DE2 		add	sp, sp, #52
+ 205              		.cfi_def_cfa_offset 36
+ 206              	.LVL30:
+ 207              		@ sp needed
+ 208 019c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 209              		.cfi_endproc
+ 210              	.LFE227:
+ 211              		.cantunwind
+ 212              		.fnend
+ 214              		.section	.text._Z15avgpool_paddingPfS_Pi,"ax",%progbits
+ 215              		.align	2
+ 216              		.global	_Z15avgpool_paddingPfS_Pi
+ 217              		.syntax unified
+ 218              		.arm
+ 219              		.fpu neon
+ 221              	_Z15avgpool_paddingPfS_Pi:
+ 222              		.fnstart
+ 223              	.LFB228:
+  77:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+  78:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+  79:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: averae pooling padding
+  80:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Padding operation
+  81:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Creates a new output matrix with zero's padded on the original input 
+  82:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+  83:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dPad		- Pointer to the padding output
+  84:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions 
+  85:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, input channels, input height, input width, output height, output width ,pad top, pad lef
+  86:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+  87:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+  88:../src/neural_networks/Translator/network_CNN_FE.cpp **** void avgpool_padding(TPrecision *__restrict__ dData, TPrecision *__restrict__ dPad, TsInt *__restri
+  89:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 224              		.loc 1 89 0
+ 225              		.cfi_startproc
+ 226              		@ args = 0, pretend = 0, frame = 48
+ 227              		@ frame_needed = 0, uses_anonymous_args = 0
+ 228              	.LVL31:
+  90:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+  91:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iN = iShapes[0];		// Number of examples
+ 229              		.loc 1 91 0
+ 230 0000 003092E5 		ldr	r3, [r2]
+  89:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+ 231              		.loc 1 89 0
+ 232 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 233              		.cfi_def_cfa_offset 36
+ 234              		.cfi_offset 4, -36
+ 235              		.cfi_offset 5, -32
+ 236              		.cfi_offset 6, -28
+ 237              		.cfi_offset 7, -24
+ 238              		.cfi_offset 8, -20
+ 239              		.cfi_offset 9, -16
+ 240              		.cfi_offset 10, -12
+ 241              		.cfi_offset 11, -8
+ 242              		.cfi_offset 14, -4
+ 243 0008 34D04DE2 		sub	sp, sp, #52
+ 244              		.cfi_def_cfa_offset 88
+  89:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;
+ 245              		.loc 1 89 0
+ 246 000c 00A0A0E1 		mov	r10, r0
+  92:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];		// Number of channels
+  93:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];		// Input image height
+  94:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];		// Input image width
+  95:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPH = iShapes[4];		// Output height
+ 247              		.loc 1 95 0
+ 248 0010 10C092E5 		ldr	ip, [r2, #16]
+  91:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];		// Number of channels
+ 249              		.loc 1 91 0
+ 250 0014 0300A0E1 		mov	r0, r3
+ 251              	.LVL32:
+ 252 0018 20308DE5 		str	r3, [sp, #32]
+ 253              	.LVL33:
+  92:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];		// Number of channels
+ 254              		.loc 1 92 0
+ 255 001c 043092E5 		ldr	r3, [r2, #4]
+  96:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPW = iShapes[5];		// Output width
+  97:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_top = iShapes[6];	// Number of pixels to be added to the height
+ 256              		.loc 1 97 0
+ 257 0020 184092E5 		ldr	r4, [r2, #24]
+  93:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];		// Input image width
+ 258              		.loc 1 93 0
+ 259 0024 088092E5 		ldr	r8, [r2, #8]
+  92:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];		// Input image height
+ 260              		.loc 1 92 0
+ 261 0028 03E0A0E1 		mov	lr, r3
+ 262 002c 04308DE5 		str	r3, [sp, #4]
+ 263              	.LVL34:
+  98:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_left = iShapes[7];	// Number of pixels to be added to the width
+  99:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 100:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Padding operation
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for(iD1=0; iD1 < iN*iC*iPH*iPW; iD1++)
+ 264              		.loc 1 101 0
+ 265 0030 9E000EE0 		mul	lr, lr, r0
+  96:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_top = iShapes[6];	// Number of pixels to be added to the height
+ 266              		.loc 1 96 0
+ 267 0034 143092E5 		ldr	r3, [r2, #20]
+ 268              	.LVL35:
+  94:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iPH = iShapes[4];		// Output height
+ 269              		.loc 1 94 0
+ 270 0038 0C0092E5 		ldr	r0, [r2, #12]
+ 271              	.LVL36:
+  98:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_left = iShapes[7];	// Number of pixels to be added to the width
+ 272              		.loc 1 98 0
+ 273 003c 1C2092E5 		ldr	r2, [r2, #28]
+ 274              	.LVL37:
+  97:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt pad_left = iShapes[7];	// Number of pixels to be added to the width
+ 275              		.loc 1 97 0
+ 276 0040 00408DE5 		str	r4, [sp]
+ 277              	.LVL38:
+ 278              		.loc 1 101 0
+ 279 0044 9C0E0EE0 		mul	lr, ip, lr
+  98:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 280              		.loc 1 98 0
+ 281 0048 08208DE5 		str	r2, [sp, #8]
+ 282              	.LVL39:
+ 283              		.loc 1 101 0
+ 284 004c 930E0EE0 		mul	lr, r3, lr
+ 285 0050 00005EE3 		cmp	lr, #0
+ 286 0054 3C0000DA 		ble	.L27
+ 287 0058 5121A0E7 		sbfx	r2, r1, #2, #1
+ 288              	.LVL40:
+ 289 005c 032002E2 		and	r2, r2, #3
+ 290 0060 0E0052E1 		cmp	r2, lr
+ 291 0064 0E20A021 		movcs	r2, lr
+ 292 0068 06005EE3 		cmp	lr, #6
+ 293              		.loc 1 101 0 is_stmt 0 discriminator 2
+ 294 006c 0E20A0D1 		movle	r2, lr
+ 295 0070 880000CA 		bgt	.L46
+ 296              	.LVL41:
+ 297              	.L18:
+ 102:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 298              		.loc 1 102 0 is_stmt 1
+ 299 0074 0040A0E3 		mov	r4, #0
+ 300 0078 010052E3 		cmp	r2, #1
+ 301 007c 7A444CE3 		movt	r4, 50298
+ 302 0080 004081E5 		str	r4, [r1]	@ float
+ 303              	.LVL42:
+ 304 0084 8100000A 		beq	.L40
+ 305 0088 020052E3 		cmp	r2, #2
+ 306 008c 044081E5 		str	r4, [r1, #4]	@ float
+ 307              	.LVL43:
+ 308 0090 7E00000A 		beq	.L40
+ 309 0094 030052E3 		cmp	r2, #3
+ 310 0098 084081E5 		str	r4, [r1, #8]	@ float
+ 311              	.LVL44:
+ 312 009c 7B00000A 		beq	.L40
+ 313 00a0 040052E3 		cmp	r2, #4
+ 314 00a4 0C4081E5 		str	r4, [r1, #12]	@ float
+ 315              	.LVL45:
+ 316 00a8 7800000A 		beq	.L40
+ 317 00ac 050052E3 		cmp	r2, #5
+ 318 00b0 104081E5 		str	r4, [r1, #16]	@ float
+ 319              	.LVL46:
+ 320 00b4 7500000A 		beq	.L40
+ 321 00b8 144081E5 		str	r4, [r1, #20]	@ float
+ 322              	.LVL47:
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 323              		.loc 1 101 0
+ 324 00bc 0640A0E3 		mov	r4, #6
+ 325              	.LVL48:
+ 326              	.L20:
+ 327 00c0 02005EE1 		cmp	lr, r2
+ 328 00c4 2000000A 		beq	.L27
+ 329              	.L19:
+ 330 00c8 02904EE0 		sub	r9, lr, r2
+ 331 00cc 01604EE2 		sub	r6, lr, #1
+ 332 00d0 045049E2 		sub	r5, r9, #4
+ 333 00d4 026046E0 		sub	r6, r6, r2
+ 334 00d8 2551A0E1 		lsr	r5, r5, #2
+ 335 00dc 020056E3 		cmp	r6, #2
+ 336 00e0 015085E2 		add	r5, r5, #1
+ 337 00e4 0571A0E1 		lsl	r7, r5, #2
+ 338 00e8 0C00009A 		bls	.L22
+ 339 00ec 022181E0 		add	r2, r1, r2, lsl #2
+ 340 00f0 0060A0E3 		mov	r6, #0
+ 341              		.loc 1 102 0
+ 342 00f4 6B0BDFED 		vldr	d16, .L47
+ 343 00f8 6C1BDFED 		vldr	d17, .L47+8
+ 344              	.L24:
+ 345 00fc 016086E2 		add	r6, r6, #1
+ 346 0100 102082E2 		add	r2, r2, #16
+ 347 0104 060055E1 		cmp	r5, r6
+ 348              		.loc 1 102 0 is_stmt 0 discriminator 2
+ 349 0108 040B42ED 		vstr	d16, [r2, #-16]
+ 350 010c 021B42ED 		vstr	d17, [r2, #-8]
+ 351 0110 F9FFFF8A 		bhi	.L24
+ 352 0114 090057E1 		cmp	r7, r9
+ 353 0118 074084E0 		add	r4, r4, r7
+ 354 011c 0A00000A 		beq	.L27
+ 355              	.L22:
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 356              		.loc 1 101 0 is_stmt 1
+ 357 0120 016084E2 		add	r6, r4, #1
+ 358              		.loc 1 102 0
+ 359 0124 0050A0E3 		mov	r5, #0
+ 360 0128 042181E0 		add	r2, r1, r4, lsl #2
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 361              		.loc 1 101 0
+ 362 012c 06005EE1 		cmp	lr, r6
+ 363              		.loc 1 102 0
+ 364 0130 7A544CE3 		movt	r5, 50298
+ 365 0134 005082E5 		str	r5, [r2]	@ float
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 366              		.loc 1 101 0
+ 367 0138 030000DA 		ble	.L27
+ 368 013c 024084E2 		add	r4, r4, #2
+ 369              		.loc 1 102 0
+ 370 0140 045082E5 		str	r5, [r2, #4]	@ float
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 371              		.loc 1 101 0
+ 372 0144 0E0054E1 		cmp	r4, lr
+ 373              		.loc 1 102 0
+ 374 0148 085082B5 		strlt	r5, [r2, #8]	@ float
+ 375              	.L27:
+ 376              	.LVL49:
+ 103:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 104:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for(iD1=0; iD1 < iN; iD1++)
+ 377              		.loc 1 104 0
+ 378 014c 20209DE5 		ldr	r2, [sp, #32]
+ 379 0150 000052E3 		cmp	r2, #0
+ 380 0154 4B0000DA 		ble	.L15
+ 381 0158 04209DE5 		ldr	r2, [sp, #4]
+ 382 015c 08909DE5 		ldr	r9, [sp, #8]
+ 383 0160 00509DE5 		ldr	r5, [sp]
+ 384 0164 000052E3 		cmp	r2, #0
+ 385 0168 00E089E0 		add	lr, r9, r0
+ 386 016c 056088E0 		add	r6, r8, r5
+ 387 0170 0CE08DE5 		str	lr, [sp, #12]
+ 388 0174 430000DA 		ble	.L15
+ 389 0178 9C020EE0 		mul	lr, ip, r2
+ 390 017c 0140A0E1 		mov	r4, r1
+ 391 0180 0371A0E1 		lsl	r7, r3, #2
+ 392 0184 1CA08DE5 		str	r10, [sp, #28]
+ 393 0188 920801E0 		mul	r1, r2, r8
+ 394              	.LVL50:
+ 395 018c 00B1A0E1 		lsl	fp, r0, #2
+ 396 0190 930C02E0 		mul	r2, r3, ip
+ 397 0194 0EE1A0E1 		lsl	lr, lr, #2
+ 398 0198 0111A0E1 		lsl	r1, r1, #2
+ 399 019c 90080CE0 		mul	ip, r0, r8
+ 400              	.LVL51:
+ 401 01a0 0221A0E1 		lsl	r2, r2, #2
+ 402 01a4 930E0EE0 		mul	lr, r3, lr
+ 403 01a8 10208DE5 		str	r2, [sp, #16]
+ 404 01ac 900102E0 		mul	r2, r0, r1
+ 405 01b0 28E08DE5 		str	lr, [sp, #40]
+ 406 01b4 05E0A0E1 		mov	lr, r5
+ 407 01b8 939523E0 		mla	r3, r3, r5, r9
+ 408              	.LVL52:
+ 409 01bc 2C208DE5 		str	r2, [sp, #44]
+ 410 01c0 0C21A0E1 		lsl	r2, ip, #2
+ 411 01c4 033184E0 		add	r3, r4, r3, lsl #2
+ 412 01c8 14208DE5 		str	r2, [sp, #20]
+ 105:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 106:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		for(iD2 = 0; iD2 < iC; iD2++)
+ 107:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 108:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			for(iD3 = pad_top; iD3 < iH + pad_top; iD3++)
+ 109:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{				
+ 110:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				for(iD4 = pad_left; iD4 < iW + pad_left; iD4++)
+ 111:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				{
+ 112:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					dPad[(iD1*iC*iPH*iPW)+(iD2*iPH*iPW)+(iD3*iPW)+(iD4)] = dData[(iD1*iC*iH*iW)+(iD2*iH*iW)+((iD3-
+ 413              		.loc 1 112 0 discriminator 1
+ 414 01cc 0020A0E3 		mov	r2, #0
+ 415 01d0 24208DE5 		str	r2, [sp, #36]
+ 416 01d4 18308DE5 		str	r3, [sp, #24]
+ 417              	.LVL53:
+ 418              	.L30:
+ 419 01d8 00309DE5 		ldr	r3, [sp]
+ 420 01dc 060053E1 		cmp	r3, r6
+ 421 01e0 1A0000AA 		bge	.L32
+ 422              		.loc 1 112 0 is_stmt 0
+ 423 01e4 1CA09DE5 		ldr	r10, [sp, #28]
+ 424 01e8 0080A0E3 		mov	r8, #0
+ 425 01ec 18909DE5 		ldr	r9, [sp, #24]
+ 426              	.LVL54:
+ 427              	.L29:
+ 428 01f0 08309DE5 		ldr	r3, [sp, #8]
+ 429 01f4 0C209DE5 		ldr	r2, [sp, #12]
+ 430 01f8 020053E1 		cmp	r3, r2
+ 431 01fc 0B0000AA 		bge	.L33
+ 432 0200 00409DE5 		ldr	r4, [sp]
+ 433 0204 0A50A0E1 		mov	r5, r10
+ 434 0208 0930A0E1 		mov	r3, r9
+ 435              	.L31:
+ 436              	.LVL55:
+ 437 020c 0510A0E1 		mov	r1, r5
+ 438 0210 0300A0E1 		mov	r0, r3
+ 108:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{				
+ 439              		.loc 1 108 0 is_stmt 1 discriminator 3
+ 440 0214 014084E2 		add	r4, r4, #1
+ 441              	.LVL56:
+ 442 0218 0B20A0E1 		mov	r2, fp
+ 443 021c FEFFFFEB 		bl	memcpy
+ 444              	.LVL57:
+ 445 0220 060054E1 		cmp	r4, r6
+ 446 0224 0B5085E0 		add	r5, r5, fp
+ 447 0228 073080E0 		add	r3, r0, r7
+ 448 022c F6FFFF1A 		bne	.L31
+ 449              	.LVL58:
+ 450              	.L33:
+ 451 0230 10309DE5 		ldr	r3, [sp, #16]
+ 106:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 452              		.loc 1 106 0
+ 453 0234 018088E2 		add	r8, r8, #1
+ 454              	.LVL59:
+ 455 0238 039089E0 		add	r9, r9, r3
+ 456 023c 04309DE5 		ldr	r3, [sp, #4]
+ 457 0240 080053E1 		cmp	r3, r8
+ 458 0244 14309DE5 		ldr	r3, [sp, #20]
+ 459 0248 03A08AE0 		add	r10, r10, r3
+ 460 024c E7FFFF1A 		bne	.L29
+ 461              	.LVL60:
+ 462              	.L32:
+ 463 0250 18209DE5 		ldr	r2, [sp, #24]
+ 464 0254 28109DE5 		ldr	r1, [sp, #40]
+ 104:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 465              		.loc 1 104 0
+ 466 0258 24309DE5 		ldr	r3, [sp, #36]
+ 467 025c 012082E0 		add	r2, r2, r1
+ 468 0260 18208DE5 		str	r2, [sp, #24]
+ 469 0264 013083E2 		add	r3, r3, #1
+ 470 0268 20209DE5 		ldr	r2, [sp, #32]
+ 471 026c 24308DE5 		str	r3, [sp, #36]
+ 472              	.LVL61:
+ 473 0270 030052E1 		cmp	r2, r3
+ 474 0274 1C309DE5 		ldr	r3, [sp, #28]
+ 475              	.LVL62:
+ 476 0278 2C209DE5 		ldr	r2, [sp, #44]
+ 477 027c 023083E0 		add	r3, r3, r2
+ 478 0280 1C308DE5 		str	r3, [sp, #28]
+ 479 0284 D3FFFF1A 		bne	.L30
+ 480              	.LVL63:
+ 481              	.L15:
+ 113:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				}
+ 114:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			}
+ 115:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		}
+ 116:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+ 117:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 482              		.loc 1 117 0
+ 483 0288 34D08DE2 		add	sp, sp, #52
+ 484              		.cfi_remember_state
+ 485              		.cfi_def_cfa_offset 36
+ 486              	.LVL64:
+ 487              		@ sp needed
+ 488 028c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 489              	.LVL65:
+ 490              	.L40:
+ 491              		.cfi_restore_state
+ 101:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		dPad[iD1]=-1000;
+ 492              		.loc 1 101 0
+ 493 0290 0240A0E1 		mov	r4, r2
+ 494 0294 89FFFFEA 		b	.L20
+ 495              	.LVL66:
+ 496              	.L46:
+ 497 0298 000052E3 		cmp	r2, #0
+ 498 029c 0240A001 		moveq	r4, r2
+ 499              	.LVL67:
+ 500 02a0 88FFFF0A 		beq	.L19
+ 501 02a4 72FFFFEA 		b	.L18
+ 502              	.L48:
+ 503              		.align	3
+ 504              	.L47:
+ 505 02a8 00007AC4 		.word	-998637568
+ 506 02ac 00007AC4 		.word	-998637568
+ 507 02b0 00007AC4 		.word	-998637568
+ 508 02b4 00007AC4 		.word	-998637568
+ 509              		.cfi_endproc
+ 510              	.LFE228:
+ 511              		.cantunwind
+ 512              		.fnend
+ 514              		.section	.text._Z23convolution_without_padPfPKfS1_S_PiS2_,"ax",%progbits
+ 515              		.align	2
+ 516              		.global	_Z23convolution_without_padPfPKfS1_S_PiS2_
+ 517              		.syntax unified
+ 518              		.arm
+ 519              		.fpu neon
+ 521              	_Z23convolution_without_padPfPKfS1_S_PiS2_:
+ 522              		.fnstart
+ 523              	.LFB229:
+ 118:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 119:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 120:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 121:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: convolution_without_pad
+ 122:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Convolution layer without padding operation.
+ 123:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Performs elementwise multiplication of selected input data and weights and add them up with
+ 124:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				   by taking in the filter size and strides as the convolution parameters
+ 125:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+ 126:../src/neural_networks/Translator/network_CNN_FE.cpp **** *			 	 dWeights	- Pointer to the weights
+ 127:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dBiases	- Pointer to the biases
+ 128:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dOut		- Pointer to the convolution output (to be filled with values during convolution operat
+ 129:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions 
+ 130:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, Channels, input height, input width, No. of filters, channels, filter height, filter wid
+ 131:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					  output height, output width, stride height, stride width)
+ 132:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 133:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 134:../src/neural_networks/Translator/network_CNN_FE.cpp **** void convolution_without_pad(TPrecision *__restrict__ dData,const TPrecision *__restrict__ dWeights
+ 524              		.loc 1 134 0
+ 525              		.cfi_startproc
+ 526              		@ args = 8, pretend = 0, frame = 208
+ 527              		@ frame_needed = 0, uses_anonymous_args = 0
+ 528              	.LVL68:
+ 529 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 530              		.cfi_def_cfa_offset 36
+ 531              		.cfi_offset 4, -36
+ 532              		.cfi_offset 5, -32
+ 533              		.cfi_offset 6, -28
+ 534              		.cfi_offset 7, -24
+ 535              		.cfi_offset 8, -20
+ 536              		.cfi_offset 9, -16
+ 537              		.cfi_offset 10, -12
+ 538              		.cfi_offset 11, -8
+ 539              		.cfi_offset 14, -4
+ 540 0004 D4D04DE2 		sub	sp, sp, #212
+ 541              		.cfi_def_cfa_offset 248
+ 542              		.loc 1 134 0
+ 543 0008 F8C09DE5 		ldr	ip, [sp, #248]
+ 544 000c CC208DE5 		str	r2, [sp, #204]
+ 135:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;   // Dimensions
+ 136:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iItr1,iItr2,iItr3;
+ 137:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iN = iShapes[0];     // Number of examples
+ 545              		.loc 1 137 0
+ 546 0010 00209CE5 		ldr	r2, [ip]
+ 547              	.LVL69:
+ 134:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iD1,iD2,iD3,iD4;   // Dimensions
+ 548              		.loc 1 134 0
+ 549 0014 14108DE5 		str	r1, [sp, #20]
+ 550 0018 10008DE5 		str	r0, [sp, #16]
+ 551              		.loc 1 137 0
+ 552 001c 02E0A0E1 		mov	lr, r2
+ 553 0020 94208DE5 		str	r2, [sp, #148]
+ 554              	.LVL70:
+ 138:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];     // Number of channels
+ 555              		.loc 1 138 0
+ 556 0024 04209CE5 		ldr	r2, [ip, #4]
+ 557              	.LVL71:
+ 139:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];     // Input image height
+ 140:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];     // Input image width
+ 141:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iF = iShapes[4];     // Number of filters
+ 142:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iFH = iShapes[6];    // Filter height
+ 143:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iFW = iShapes[7];    // Filter width
+ 144:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[8];    // Output height
+ 145:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[9];    // Output width
+ 146:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 147:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iSH = iShapes[10];  // Stride height
+ 148:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iSW = iShapes[11];  // Stride width
+ 149:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 150:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iws, ihs;
+ 151:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 152:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Executes C Convolution or ccrx complier or ccrl complier
+ 153:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	#if defined C_FP32 || defined __CCRX__ || defined __CCRL__
+ 154:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TPrecision dvalue;		
+ 155:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Filtering operation
+ 156:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for (iD1=0; iD1<iN; iD1++)
+ 558              		.loc 1 156 0
+ 559 0028 00005EE3 		cmp	lr, #0
+ 139:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];     // Input image height
+ 560              		.loc 1 139 0
+ 561 002c 08109CE5 		ldr	r1, [ip, #8]
+ 562              	.LVL72:
+ 143:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[8];    // Output height
+ 563              		.loc 1 143 0
+ 564 0030 1CB09CE5 		ldr	fp, [ip, #28]
+ 138:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];     // Number of channels
+ 565              		.loc 1 138 0
+ 566 0034 0260A0E1 		mov	r6, r2
+ 567 0038 30208DE5 		str	r2, [sp, #48]
+ 568              	.LVL73:
+ 140:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iF = iShapes[4];     // Number of filters
+ 569              		.loc 1 140 0
+ 570 003c 0C209CE5 		ldr	r2, [ip, #12]
+ 571              	.LVL74:
+ 572 0040 02E0A0E1 		mov	lr, r2
+ 573              	.LVL75:
+ 574 0044 04208DE5 		str	r2, [sp, #4]
+ 575              	.LVL76:
+ 141:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iFH = iShapes[6];    // Filter height
+ 576              		.loc 1 141 0
+ 577 0048 10209CE5 		ldr	r2, [ip, #16]
+ 578              	.LVL77:
+ 579 004c 0250A0E1 		mov	r5, r2
+ 580 0050 98208DE5 		str	r2, [sp, #152]
+ 581              	.LVL78:
+ 142:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iFW = iShapes[7];    // Filter width
+ 582              		.loc 1 142 0
+ 583 0054 18209CE5 		ldr	r2, [ip, #24]
+ 584              	.LVL79:
+ 585 0058 0270A0E1 		mov	r7, r2
+ 586 005c 74208DE5 		str	r2, [sp, #116]
+ 587              	.LVL80:
+ 144:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[9];    // Output width
+ 588              		.loc 1 144 0
+ 589 0060 20209CE5 		ldr	r2, [ip, #32]
+ 590              	.LVL81:
+ 591 0064 0280A0E1 		mov	r8, r2
+ 592 0068 78208DE5 		str	r2, [sp, #120]
+ 593              	.LVL82:
+ 145:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 594              		.loc 1 145 0
+ 595 006c 24209CE5 		ldr	r2, [ip, #36]
+ 596              	.LVL83:
+ 597 0070 0240A0E1 		mov	r4, r2
+ 598 0074 7C208DE5 		str	r2, [sp, #124]
+ 599              	.LVL84:
+ 147:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iSW = iShapes[11];  // Stride width
+ 600              		.loc 1 147 0
+ 601 0078 28209CE5 		ldr	r2, [ip, #40]
+ 602              	.LVL85:
+ 603 007c 0290A0E1 		mov	r9, r2
+ 604 0080 9C208DE5 		str	r2, [sp, #156]
+ 605              	.LVL86:
+ 148:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 606              		.loc 1 148 0
+ 607 0084 2C209CE5 		ldr	r2, [ip, #44]
+ 608              	.LVL87:
+ 609 0088 A0208DE5 		str	r2, [sp, #160]
+ 610              	.LVL88:
+ 611              		.loc 1 156 0
+ 612 008c 1B0100DA 		ble	.L49
+ 613 0090 000055E3 		cmp	r5, #0
+ 614 0094 02A0A0E1 		mov	r10, r2
+ 615 0098 180100DA 		ble	.L49
+ 616 009c 980502E0 		mul	r2, r8, r5
+ 617              	.LVL89:
+ 618              		.loc 1 156 0 is_stmt 0 discriminator 1
+ 619 00a0 00C0A0E3 		mov	ip, #0
+ 620              	.LVL90:
+ 621 00a4 70C08DE5 		str	ip, [sp, #112]
+ 622 00a8 0450A0E1 		mov	r5, r4
+ 623              	.LVL91:
+ 624 00ac 0441A0E1 		lsl	r4, r4, #2
+ 625              	.LVL92:
+ 626 00b0 68308DE5 		str	r3, [sp, #104]
+ 627 00b4 0030A0E3 		mov	r3, #0
+ 628              	.LVL93:
+ 629 00b8 910600E0 		mul	r0, r1, r6
+ 630              	.LVL94:
+ 631 00bc 02C1A0E1 		lsl	ip, r2, #2
+ 632 00c0 10209DE5 		ldr	r2, [sp, #16]
+ 633 00c4 A8408DE5 		str	r4, [sp, #168]
+ 634 00c8 0A41A0E1 		lsl	r4, r10, #2
+ 635 00cc 8C308DE5 		str	r3, [sp, #140]
+ 636 00d0 0630A0E1 		mov	r3, r6
+ 637 00d4 3C2082E2 		add	r2, r2, #60
+ 638 00d8 A4408DE5 		str	r4, [sp, #164]
+ 639 00dc 6C208DE5 		str	r2, [sp, #108]
+ 640 00e0 9E0102E0 		mul	r2, lr, r1
+ 641 00e4 0E41A0E1 		lsl	r4, lr, #2
+ 642 00e8 0760A0E1 		mov	r6, r7
+ 643              	.LVL95:
+ 644 00ec 930703E0 		mul	r3, r3, r7
+ 645              	.LVL96:
+ 646 00f0 0011A0E1 		lsl	r1, r0, #2
+ 647              	.LVL97:
+ 648 00f4 08408DE5 		str	r4, [sp, #8]
+ 649 00f8 0B41A0E1 		lsl	r4, fp, #2
+ 650 00fc 34208DE5 		str	r2, [sp, #52]
+ 651 0100 9B0606E0 		mul	r6, fp, r6
+ 652 0104 02A0A0E1 		mov	r10, r2
+ 653              	.LVL98:
+ 654 0108 0C408DE5 		str	r4, [sp, #12]
+ 655 010c 950802E0 		mul	r2, r5, r8
+ 656 0110 0E40A0E1 		mov	r4, lr
+ 657 0114 03E1A0E1 		lsl	lr, r3, #2
+ 658              	.LVL99:
+ 659 0118 940907E0 		mul	r7, r4, r9
+ 660              	.LVL100:
+ 661 011c 38608DE5 		str	r6, [sp, #56]
+ 662 0120 0221A0E1 		lsl	r2, r2, #2
+ 663 0124 940101E0 		mul	r1, r4, r1
+ 664 0128 B4208DE5 		str	r2, [sp, #180]
+ 665 012c 950C02E0 		mul	r2, r5, ip
+ 666 0130 0780A0E1 		mov	r8, r7
+ 667              	.LVL101:
+ 668 0134 AC708DE5 		str	r7, [sp, #172]
+ 669 0138 9B0303E0 		mul	r3, fp, r3
+ 670 013c 0A71A0E1 		lsl	r7, r10, #2
+ 671 0140 C4108DE5 		str	r1, [sp, #196]
+ 672 0144 0611A0E1 		lsl	r1, r6, #2
+ 673 0148 C0208DE5 		str	r2, [sp, #192]
+ 674 014c 0821A0E1 		lsl	r2, r8, #2
+ 675 0150 3C708DE5 		str	r7, [sp, #60]
+ 676 0154 B0208DE5 		str	r2, [sp, #176]
+ 677 0158 940002E0 		mul	r2, r4, r0
+ 678 015c 40108DE5 		str	r1, [sp, #64]
+ 679 0160 B8308DE5 		str	r3, [sp, #184]
+ 680 0164 C8208DE5 		str	r2, [sp, #200]
+ 681 0168 9B0E02E0 		mul	r2, fp, lr
+ 682 016c BC208DE5 		str	r2, [sp, #188]
+ 683              	.LVL102:
+ 684              	.L53:
+ 685 0170 78309DE5 		ldr	r3, [sp, #120]
+ 686 0174 000053E3 		cmp	r3, #0
+ 687 0178 CE0000DA 		ble	.L55
+ 688 017c 0030A0E3 		mov	r3, #0
+ 689 0180 CC209DE5 		ldr	r2, [sp, #204]
+ 690 0184 60308DE5 		str	r3, [sp, #96]
+ 691 0188 0BA0A0E1 		mov	r10, fp
+ 692 018c 88308DE5 		str	r3, [sp, #136]
+ 693 0190 14309DE5 		ldr	r3, [sp, #20]
+ 694 0194 5C208DE5 		str	r2, [sp, #92]
+ 695 0198 3C3083E2 		add	r3, r3, #60
+ 696 019c 64308DE5 		str	r3, [sp, #100]
+ 697 01a0 68309DE5 		ldr	r3, [sp, #104]
+ 698 01a4 58308DE5 		str	r3, [sp, #88]
+ 699              	.LVL103:
+ 700              	.L56:
+ 701 01a8 7C309DE5 		ldr	r3, [sp, #124]
+ 702 01ac 000053E3 		cmp	r3, #0
+ 703 01b0 AA0000DA 		ble	.L58
+ 704 01b4 5C309DE5 		ldr	r3, [sp, #92]
+ 705              		.loc 1 156 0
+ 706 01b8 74B09DE5 		ldr	fp, [sp, #116]
+ 707 01bc 001A93ED 		vldr.32	s2, [r3]
+ 708 01c0 70309DE5 		ldr	r3, [sp, #112]
+ 709 01c4 0B80A0E1 		mov	r8, fp
+ 710 01c8 54308DE5 		str	r3, [sp, #84]
+ 711 01cc 6C309DE5 		ldr	r3, [sp, #108]
+ 712 01d0 50308DE5 		str	r3, [sp, #80]
+ 713 01d4 58309DE5 		ldr	r3, [sp, #88]
+ 714 01d8 4C308DE5 		str	r3, [sp, #76]
+ 715 01dc 0030A0E3 		mov	r3, #0
+ 716 01e0 84308DE5 		str	r3, [sp, #132]
+ 717              	.LVL104:
+ 718              	.L59:
+ 719 01e4 74309DE5 		ldr	r3, [sp, #116]
+ 720 01e8 0A90A0E1 		mov	r9, r10
+ 721 01ec 00B0A0E3 		mov	fp, #0
+ 722 01f0 80B08DE5 		str	fp, [sp, #128]
+ 723 01f4 033048E0 		sub	r3, r8, r3
+ 724 01f8 44308DE5 		str	r3, [sp, #68]
+ 725              	.LVL105:
+ 726 01fc 50309DE5 		ldr	r3, [sp, #80]
+ 727              	.LVL106:
+ 728 0200 48308DE5 		str	r3, [sp, #72]
+ 729 0204 4C309DE5 		ldr	r3, [sp, #76]
+ 730 0208 90308DE5 		str	r3, [sp, #144]
+ 731              	.LVL107:
+ 732              	.L57:
+ 157:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 158:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    for (iD2=0; iD2<iF; iD2++)
+ 159:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 160:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	for (iD3=0; iD3<iHp;iD3++)
+ 161:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 162:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		ihs = iD3 * iSH;
+ 163:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		for (iD4=0; iD4<iWp; iD4++)
+ 164:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 165:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			iws = iD4 * iSW;
+ 166:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				dvalue=0;
+ 167:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				for(iItr1=0; iItr1<iC; iItr1++)
+ 733              		.loc 1 167 0 is_stmt 1
+ 734 020c 30309DE5 		ldr	r3, [sp, #48]
+ 166:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				for(iItr1=0; iItr1<iC; iItr1++)
+ 735              		.loc 1 166 0
+ 736 0210 BE7ADFED 		vldr.32	s15, .L77
+ 737              		.loc 1 167 0
+ 738 0214 000053E3 		cmp	r3, #0
+ 739 0218 6B0000DA 		ble	.L60
+ 740 021c 01308BE2 		add	r3, fp, #1
+ 741 0220 07C049E2 		sub	ip, r9, #7
+ 742 0224 1E0159E3 		cmp	r9, #-2147483641
+ 743 0228 03005CA1 		cmpge	ip, r3
+ 744 022c 64209DE5 		ldr	r2, [sp, #100]
+ 745 0230 0130A0C3 		movgt	r3, #1
+ 746 0234 0030A0D3 		movle	r3, #0
+ 747 0238 18308DE5 		str	r3, [sp, #24]
+ 748 023c 48309DE5 		ldr	r3, [sp, #72]
+ 749 0240 28208DE5 		str	r2, [sp, #40]
+ 750 0244 24308DE5 		str	r3, [sp, #36]
+ 751 0248 60309DE5 		ldr	r3, [sp, #96]
+ 752 024c 20308DE5 		str	r3, [sp, #32]
+ 753 0250 54309DE5 		ldr	r3, [sp, #84]
+ 754 0254 1C308DE5 		str	r3, [sp, #28]
+ 755 0258 0030A0E3 		mov	r3, #0
+ 756 025c 2C308DE5 		str	r3, [sp, #44]
+ 757              	.LVL108:
+ 758              	.L67:
+ 168:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				{
+ 169:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					for(iItr2=ihs; iItr2<(ihs+iFH); iItr2++)
+ 759              		.loc 1 169 0 discriminator 1
+ 760 0260 44309DE5 		ldr	r3, [sp, #68]
+ 761 0264 030058E1 		cmp	r8, r3
+ 762 0268 410000DA 		ble	.L61
+ 763              		.loc 1 169 0 is_stmt 0
+ 764 026c 1C408DE2 		add	r4, sp, #28
+ 765 0270 03E0A0E1 		mov	lr, r3
+ 766 0274 F00094E8 		ldm	r4, {r4, r5, r6, r7}
+ 767              	.LVL109:
+ 768              	.L66:
+ 170:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					{
+ 171:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						for(iItr3=iws; iItr3<(iws+iFW); iItr3++)
+ 769              		.loc 1 171 0 is_stmt 1 discriminator 3
+ 770 0278 09005BE1 		cmp	fp, r9
+ 771 027c 320000AA 		bge	.L62
+ 772 0280 18309DE5 		ldr	r3, [sp, #24]
+ 773 0284 000053E3 		cmp	r3, #0
+ 774 0288 9E00000A 		beq	.L70
+ 775              		.loc 1 171 0 is_stmt 0
+ 776 028c 0720A0E1 		mov	r2, r7
+ 777 0290 0630A0E1 		mov	r3, r6
+ 778 0294 0B10A0E1 		mov	r1, fp
+ 779              	.LVL110:
+ 780              	.L64:
+ 172:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						{
+ 173:../src/neural_networks/Translator/network_CNN_FE.cpp **** 							dvalue += dData[(iD1*iC*iH*iW)+(iItr1*iH*iW)+(iItr2*iW)+iItr3] * dWeights[(iD2*iC*iFH*iFW)+(
+ 781              		.loc 1 173 0 is_stmt 1 discriminator 2
+ 782 0298 0F5A53ED 		vldr.32	s11, [r3, #-60]
+ 783 029c 090081E2 		add	r0, r1, #9
+ 784 02a0 0F6A12ED 		vldr.32	s12, [r2, #-60]
+ 785 02a4 0C0050E1 		cmp	r0, ip
+ 786 02a8 0E6A52ED 		vldr.32	s13, [r2, #-56]
+ 787 02ac 081081E2 		add	r1, r1, #8
+ 788              	.LVL111:
+ 789 02b0 0E7A13ED 		vldr.32	s14, [r3, #-56]
+ 790 02b4 0D1A52ED 		vldr.32	s3, [r2, #-52]
+ 791 02b8 867A45EE 		vmla.f32	s15, s11, s12
+ 792              	.LVL112:
+ 793 02bc 0D2A13ED 		vldr.32	s4, [r3, #-52]
+ 794 02c0 0C2A53ED 		vldr.32	s5, [r3, #-48]
+ 795 02c4 0C3A12ED 		vldr.32	s6, [r2, #-48]
+ 796 02c8 0B3A53ED 		vldr.32	s7, [r3, #-44]
+ 797 02cc 0B4A12ED 		vldr.32	s8, [r2, #-44]
+ 798 02d0 0A4A53ED 		vldr.32	s9, [r3, #-40]
+ 799 02d4 877A46EE 		vmla.f32	s15, s13, s14
+ 800              	.LVL113:
+ 801 02d8 0A5A12ED 		vldr.32	s10, [r2, #-40]
+ 802 02dc 095A53ED 		vldr.32	s11, [r3, #-36]
+ 803 02e0 096A12ED 		vldr.32	s12, [r2, #-36]
+ 804 02e4 086A53ED 		vldr.32	s13, [r3, #-32]
+ 805 02e8 087A12ED 		vldr.32	s14, [r2, #-32]
+ 806 02ec 00F0D3F5 		pld	[r3]
+ 807 02f0 203083E2 		add	r3, r3, #32
+ 808 02f4 827A41EE 		vmla.f32	s15, s3, s4
+ 809              	.LVL114:
+ 810 02f8 00F0D2F5 		pld	[r2]
+ 811 02fc 202082E2 		add	r2, r2, #32
+ 812 0300 837A42EE 		vmla.f32	s15, s5, s6
+ 813              	.LVL115:
+ 814 0304 847A43EE 		vmla.f32	s15, s7, s8
+ 815              	.LVL116:
+ 816 0308 857A44EE 		vmla.f32	s15, s9, s10
+ 817              	.LVL117:
+ 818 030c 867A45EE 		vmla.f32	s15, s11, s12
+ 819              	.LVL118:
+ 820 0310 877A46EE 		vmla.f32	s15, s13, s14
+ 821              	.LVL119:
+ 822 0314 DFFFFFBA 		blt	.L64
+ 823              	.L63:
+ 824 0318 10009DE5 		ldr	r0, [sp, #16]
+ 825 031c 042081E0 		add	r2, r1, r4
+ 826 0320 0B3041E0 		sub	r3, r1, fp
+ 827 0324 053083E0 		add	r3, r3, r5
+ 828 0328 022180E0 		add	r2, r0, r2, lsl #2
+ 829 032c 14009DE5 		ldr	r0, [sp, #20]
+ 830 0330 033180E0 		add	r3, r0, r3, lsl #2
+ 831              	.L65:
+ 832              		.loc 1 173 0 is_stmt 0
+ 833 0334 017AB2EC 		vldmia.32	r2!, {s14}
+ 171:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						{
+ 834              		.loc 1 171 0 is_stmt 1
+ 835 0338 011081E2 		add	r1, r1, #1
+ 836              	.LVL120:
+ 837              		.loc 1 173 0
+ 838 033c 016AF3EC 		vldmia.32	r3!, {s13}
+ 171:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						{
+ 839              		.loc 1 171 0
+ 840 0340 090051E1 		cmp	r1, r9
+ 841              		.loc 1 173 0
+ 842 0344 877A46EE 		vmla.f32	s15, s13, s14
+ 843              	.LVL121:
+ 171:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						{
+ 844              		.loc 1 171 0
+ 845 0348 F9FFFFBA 		blt	.L65
+ 846              	.LVL122:
+ 847              	.L62:
+ 848 034c 04309DE5 		ldr	r3, [sp, #4]
+ 169:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					{
+ 849              		.loc 1 169 0 discriminator 2
+ 850 0350 01E08EE2 		add	lr, lr, #1
+ 851              	.LVL123:
+ 852 0354 08005EE1 		cmp	lr, r8
+ 853 0358 0A5085E0 		add	r5, r5, r10
+ 854 035c 034084E0 		add	r4, r4, r3
+ 855 0360 08309DE5 		ldr	r3, [sp, #8]
+ 856 0364 036086E0 		add	r6, r6, r3
+ 857 0368 0C309DE5 		ldr	r3, [sp, #12]
+ 858 036c 037087E0 		add	r7, r7, r3
+ 859 0370 C0FFFF1A 		bne	.L66
+ 860              	.LVL124:
+ 861              	.L61:
+ 862 0374 1C209DE5 		ldr	r2, [sp, #28]
+ 863 0378 34109DE5 		ldr	r1, [sp, #52]
+ 167:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				{
+ 864              		.loc 1 167 0 discriminator 2
+ 865 037c 2C309DE5 		ldr	r3, [sp, #44]
+ 866 0380 012082E0 		add	r2, r2, r1
+ 867 0384 1C208DE5 		str	r2, [sp, #28]
+ 868 0388 013083E2 		add	r3, r3, #1
+ 869 038c 30209DE5 		ldr	r2, [sp, #48]
+ 870 0390 2C308DE5 		str	r3, [sp, #44]
+ 871              	.LVL125:
+ 872 0394 030052E1 		cmp	r2, r3
+ 873 0398 20309DE5 		ldr	r3, [sp, #32]
+ 874              	.LVL126:
+ 875 039c 38209DE5 		ldr	r2, [sp, #56]
+ 876 03a0 023083E0 		add	r3, r3, r2
+ 877 03a4 3C209DE5 		ldr	r2, [sp, #60]
+ 878 03a8 20308DE5 		str	r3, [sp, #32]
+ 879 03ac 24309DE5 		ldr	r3, [sp, #36]
+ 880 03b0 023083E0 		add	r3, r3, r2
+ 881 03b4 40209DE5 		ldr	r2, [sp, #64]
+ 882 03b8 24308DE5 		str	r3, [sp, #36]
+ 883 03bc 28309DE5 		ldr	r3, [sp, #40]
+ 884 03c0 023083E0 		add	r3, r3, r2
+ 885 03c4 28308DE5 		str	r3, [sp, #40]
+ 886 03c8 A4FFFF1A 		bne	.L67
+ 887              	.LVL127:
+ 888              	.L60:
+ 163:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 889              		.loc 1 163 0 discriminator 2
+ 890 03cc 80309DE5 		ldr	r3, [sp, #128]
+ 891 03d0 7C209DE5 		ldr	r2, [sp, #124]
+ 174:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						}
+ 175:../src/neural_networks/Translator/network_CNN_FE.cpp **** 					}
+ 176:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				}
+ 177:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				dOut[(iD1*iF*iHp*iWp)+(iD2*iHp*iWp)+(iD3*iWp)+iD4] = dvalue + dBiases[iD2];	// out = (data*weig
+ 892              		.loc 1 177 0 discriminator 2
+ 893 03d4 817A77EE 		vadd.f32	s15, s15, s2
+ 163:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 894              		.loc 1 163 0 discriminator 2
+ 895 03d8 013083E2 		add	r3, r3, #1
+ 896 03dc 030052E1 		cmp	r2, r3
+ 897 03e0 80308DE5 		str	r3, [sp, #128]
+ 898              	.LVL128:
+ 899 03e4 A4209DE5 		ldr	r2, [sp, #164]
+ 900 03e8 48309DE5 		ldr	r3, [sp, #72]
+ 901              	.LVL129:
+ 902 03ec 023083E0 		add	r3, r3, r2
+ 903 03f0 48308DE5 		str	r3, [sp, #72]
+ 904 03f4 A0309DE5 		ldr	r3, [sp, #160]
+ 905 03f8 03B08BE0 		add	fp, fp, r3
+ 906              	.LVL130:
+ 907 03fc 039089E0 		add	r9, r9, r3
+ 908              		.loc 1 177 0 discriminator 2
+ 909 0400 90309DE5 		ldr	r3, [sp, #144]
+ 910 0404 017AE3EC 		vstmia.32	r3!, {s15}
+ 911 0408 90308DE5 		str	r3, [sp, #144]
+ 163:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 912              		.loc 1 163 0 discriminator 2
+ 913 040c 7EFFFF1A 		bne	.L57
+ 914 0410 4C209DE5 		ldr	r2, [sp, #76]
+ 915 0414 A8109DE5 		ldr	r1, [sp, #168]
+ 160:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 916              		.loc 1 160 0
+ 917 0418 84309DE5 		ldr	r3, [sp, #132]
+ 918 041c 012082E0 		add	r2, r2, r1
+ 919 0420 4C208DE5 		str	r2, [sp, #76]
+ 920 0424 013083E2 		add	r3, r3, #1
+ 921 0428 78209DE5 		ldr	r2, [sp, #120]
+ 922 042c 84308DE5 		str	r3, [sp, #132]
+ 923              	.LVL131:
+ 924 0430 030052E1 		cmp	r2, r3
+ 925 0434 50309DE5 		ldr	r3, [sp, #80]
+ 926              	.LVL132:
+ 927 0438 B0209DE5 		ldr	r2, [sp, #176]
+ 928 043c 023083E0 		add	r3, r3, r2
+ 929 0440 AC209DE5 		ldr	r2, [sp, #172]
+ 930 0444 50308DE5 		str	r3, [sp, #80]
+ 931 0448 54309DE5 		ldr	r3, [sp, #84]
+ 932 044c 023083E0 		add	r3, r3, r2
+ 933 0450 54308DE5 		str	r3, [sp, #84]
+ 934 0454 9C309DE5 		ldr	r3, [sp, #156]
+ 935 0458 038088E0 		add	r8, r8, r3
+ 936 045c 60FFFF1A 		bne	.L59
+ 937              	.LVL133:
+ 938              	.L58:
+ 939 0460 58209DE5 		ldr	r2, [sp, #88]
+ 940 0464 B4109DE5 		ldr	r1, [sp, #180]
+ 158:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 941              		.loc 1 158 0
+ 942 0468 88309DE5 		ldr	r3, [sp, #136]
+ 943 046c 012082E0 		add	r2, r2, r1
+ 944 0470 58208DE5 		str	r2, [sp, #88]
+ 945 0474 013083E2 		add	r3, r3, #1
+ 946 0478 98209DE5 		ldr	r2, [sp, #152]
+ 947 047c 88308DE5 		str	r3, [sp, #136]
+ 948              	.LVL134:
+ 949 0480 030052E1 		cmp	r2, r3
+ 950 0484 5C309DE5 		ldr	r3, [sp, #92]
+ 951              	.LVL135:
+ 952 0488 B8209DE5 		ldr	r2, [sp, #184]
+ 953 048c 043083E2 		add	r3, r3, #4
+ 954 0490 5C308DE5 		str	r3, [sp, #92]
+ 955 0494 60309DE5 		ldr	r3, [sp, #96]
+ 956 0498 023083E0 		add	r3, r3, r2
+ 957 049c BC209DE5 		ldr	r2, [sp, #188]
+ 958 04a0 60308DE5 		str	r3, [sp, #96]
+ 959 04a4 64309DE5 		ldr	r3, [sp, #100]
+ 960 04a8 023083E0 		add	r3, r3, r2
+ 961 04ac 64308DE5 		str	r3, [sp, #100]
+ 962 04b0 3CFFFF1A 		bne	.L56
+ 963 04b4 0AB0A0E1 		mov	fp, r10
+ 964              	.LVL136:
+ 965              	.L55:
+ 966 04b8 68209DE5 		ldr	r2, [sp, #104]
+ 967 04bc C0109DE5 		ldr	r1, [sp, #192]
+ 156:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 968              		.loc 1 156 0
+ 969 04c0 8C309DE5 		ldr	r3, [sp, #140]
+ 970 04c4 012082E0 		add	r2, r2, r1
+ 971 04c8 68208DE5 		str	r2, [sp, #104]
+ 972 04cc 013083E2 		add	r3, r3, #1
+ 973 04d0 94209DE5 		ldr	r2, [sp, #148]
+ 974 04d4 8C308DE5 		str	r3, [sp, #140]
+ 975              	.LVL137:
+ 976 04d8 030052E1 		cmp	r2, r3
+ 977 04dc 6C309DE5 		ldr	r3, [sp, #108]
+ 978              	.LVL138:
+ 979 04e0 C4209DE5 		ldr	r2, [sp, #196]
+ 980 04e4 023083E0 		add	r3, r3, r2
+ 981 04e8 C8209DE5 		ldr	r2, [sp, #200]
+ 982 04ec 6C308DE5 		str	r3, [sp, #108]
+ 983 04f0 70309DE5 		ldr	r3, [sp, #112]
+ 984 04f4 023083E0 		add	r3, r3, r2
+ 985 04f8 70308DE5 		str	r3, [sp, #112]
+ 986 04fc 1BFFFF1A 		bne	.L53
+ 987              	.LVL139:
+ 988              	.L49:
+ 178:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		}
+ 179:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	}
+ 180:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    }
+ 181:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+ 182:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	#endif
+ 183:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 989              		.loc 1 183 0
+ 990 0500 D4D08DE2 		add	sp, sp, #212
+ 991              		.cfi_remember_state
+ 992              		.cfi_def_cfa_offset 36
+ 993              		@ sp needed
+ 994 0504 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 995              	.LVL140:
+ 996              	.L70:
+ 997              		.cfi_restore_state
+ 171:../src/neural_networks/Translator/network_CNN_FE.cpp **** 						{
+ 998              		.loc 1 171 0
+ 999 0508 0B10A0E1 		mov	r1, fp
+ 1000 050c 81FFFFEA 		b	.L63
+ 1001              	.L78:
+ 1002              		.align	2
+ 1003              	.L77:
+ 1004 0510 00000000 		.word	0
+ 1005              		.cfi_endproc
+ 1006              	.LFE229:
+ 1007              		.cantunwind
+ 1008              		.fnend
+ 1010              		.section	.text._Z4reluPfS_i,"ax",%progbits
+ 1011              		.align	2
+ 1012              		.global	_Z4reluPfS_i
+ 1013              		.syntax unified
+ 1014              		.arm
+ 1015              		.fpu neon
+ 1017              	_Z4reluPfS_i:
+ 1018              		.fnstart
+ 1019              	.LFB230:
+ 184:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 185:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 186:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: relu
+ 187:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Rectified Linear Unit (ReLU)
+ 188:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                - element wise operation and replaces all negative values by zero to introduce non
+ 189:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData	- Array of input data
+ 190:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                iShapes	- Size of the input array
+ 191:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 192:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 193:../src/neural_networks/Translator/network_CNN_FE.cpp **** void relu(TPrecision *__restrict__ dData, TPrecision *__restrict__ dOut, TsInt iShapes )
+ 194:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 1020              		.loc 1 194 0
+ 1021              		.cfi_startproc
+ 1022              		@ args = 0, pretend = 0, frame = 0
+ 1023              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1024              		@ link register save eliminated.
+ 1025              	.LVL141:
+ 195:../src/neural_networks/Translator/network_CNN_FE.cpp ****     TsInt iRow;
+ 196:../src/neural_networks/Translator/network_CNN_FE.cpp ****     for (iRow=0; iRow<iShapes; iRow++)
+ 1026              		.loc 1 196 0
+ 1027 0000 000052E3 		cmp	r2, #0
+ 1028 0004 1EFF2FD1 		bxle	lr
+ 1029 0008 022180E0 		add	r2, r0, r2, lsl #2
+ 1030              	.LVL142:
+ 197:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 198:../src/neural_networks/Translator/network_CNN_FE.cpp ****         if (dData[iRow] < 0)
+ 1031              		.loc 1 198 0
+ 1032 000c 0030A0E3 		mov	r3, #0
+ 1033              	.LVL143:
+ 1034              	.L81:
+ 1035 0010 017AF0EC 		vldmia.32	r0!, {s15}
+ 1036 0014 C07AF5EE 		vcmpe.f32	s15, #0
+ 1037 0018 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 1038 001c 0300004A 		bmi	.L88
+ 196:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 1039              		.loc 1 196 0
+ 1040 0020 020050E1 		cmp	r0, r2
+ 199:../src/neural_networks/Translator/network_CNN_FE.cpp ****         {
+ 200:../src/neural_networks/Translator/network_CNN_FE.cpp ****         	dOut[iRow] = 0;
+ 201:../src/neural_networks/Translator/network_CNN_FE.cpp ****         }
+ 202:../src/neural_networks/Translator/network_CNN_FE.cpp ****         else
+ 203:../src/neural_networks/Translator/network_CNN_FE.cpp ****         {
+ 204:../src/neural_networks/Translator/network_CNN_FE.cpp ****         	dOut[iRow] = dData[iRow];      // output
+ 1041              		.loc 1 204 0
+ 1042 0024 017AE1EC 		vstmia.32	r1!, {s15}
+ 196:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 1043              		.loc 1 196 0
+ 1044 0028 F8FFFF1A 		bne	.L81
+ 1045 002c 1EFF2FE1 		bx	lr
+ 1046              	.L88:
+ 1047 0030 020050E1 		cmp	r0, r2
+ 200:../src/neural_networks/Translator/network_CNN_FE.cpp ****         }
+ 1048              		.loc 1 200 0
+ 1049 0034 043081E4 		str	r3, [r1], #4	@ float
+ 196:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 1050              		.loc 1 196 0
+ 1051 0038 F4FFFF1A 		bne	.L81
+ 1052 003c 1EFF2FE1 		bx	lr
+ 1053              		.cfi_endproc
+ 1054              	.LFE230:
+ 1055              		.cantunwind
+ 1056              		.fnend
+ 1058              		.section	.text._Z27average_pooling_without_padPfS_Pi,"ax",%progbits
+ 1059              		.align	2
+ 1060              		.global	_Z27average_pooling_without_padPfS_Pi
+ 1061              		.syntax unified
+ 1062              		.arm
+ 1063              		.fpu neon
+ 1065              	_Z27average_pooling_without_padPfS_Pi:
+ 1066              		.fnstart
+ 1067              	.LFB231:
+ 205:../src/neural_networks/Translator/network_CNN_FE.cpp ****         }
+ 206:../src/neural_networks/Translator/network_CNN_FE.cpp ****     }
+ 207:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 208:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 209:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 210:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: average_pooling_without_pad
+ 211:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - AVERAGE pooling layer without padding operation.
+ 212:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Creates a new output matrix where each element is the average of a region in the original i
+ 213:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+ 214:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dOut		- Pointer to the average pooling output
+ 215:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions 
+ 216:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, input channels, input height, input width, output height, output width, pool height, 
+ 217:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					   pool width, stride height, stride width, pooling type)
+ 218:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 219:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 220:../src/neural_networks/Translator/network_CNN_FE.cpp **** void average_pooling_without_pad(TPrecision *__restrict__ dData, TPrecision *__restrict__ dOut, TsI
+ 221:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 1068              		.loc 1 221 0
+ 1069              		.cfi_startproc
+ 1070              		@ args = 0, pretend = 0, frame = 144
+ 1071              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1072              	.LVL144:
+ 222:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sD1,sD2,sD3,sD4;			// Array dimension
+ 223:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sInnerItr,sOuterItr,sOffset;
+ 224:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iN = iShapes[0];
+ 1073              		.loc 1 224 0
+ 1074 0000 003092E5 		ldr	r3, [r2]
+ 221:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sD1,sD2,sD3,sD4;			// Array dimension
+ 1075              		.loc 1 221 0
+ 1076 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1077              		.cfi_def_cfa_offset 36
+ 1078              		.cfi_offset 4, -36
+ 1079              		.cfi_offset 5, -32
+ 1080              		.cfi_offset 6, -28
+ 1081              		.cfi_offset 7, -24
+ 1082              		.cfi_offset 8, -20
+ 1083              		.cfi_offset 9, -16
+ 1084              		.cfi_offset 10, -12
+ 1085              		.cfi_offset 11, -8
+ 1086              		.cfi_offset 14, -4
+ 1087 0008 94D04DE2 		sub	sp, sp, #148
+ 1088              		.cfi_def_cfa_offset 184
+ 225:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 226:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 227:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];			// Input data width
+ 228:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[4];			// Output data height
+ 229:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 230:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 231:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PH = iShapes[6];			// Pool height
+ 1089              		.loc 1 231 0
+ 1090 000c 184092E5 		ldr	r4, [r2, #24]
+ 221:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sD1,sD2,sD3,sD4;			// Array dimension
+ 1091              		.loc 1 221 0
+ 1092 0010 0090A0E1 		mov	r9, r0
+ 224:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 1093              		.loc 1 224 0
+ 1094 0014 03C0A0E1 		mov	ip, r3
+ 232:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PW = iShapes[7];			// Pool width
+ 233:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_H = iShapes[8];	// Stride height
+ 234:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 235:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 236:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWs, iHs;
+ 237:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TPrecision dAve;
+ 238:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 239:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Average pooling operation
+ 240:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for (sD1=0; sD1<iN; sD1++)
+ 1095              		.loc 1 240 0
+ 1096 0018 00005CE3 		cmp	ip, #0
+ 228:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1097              		.loc 1 228 0
+ 1098 001c 10C092E5 		ldr	ip, [r2, #16]
+ 233:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 1099              		.loc 1 233 0
+ 1100 0020 206092E5 		ldr	r6, [r2, #32]
+ 231:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PW = iShapes[7];			// Pool width
+ 1101              		.loc 1 231 0
+ 1102 0024 0450A0E1 		mov	r5, r4
+ 224:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 1103              		.loc 1 224 0
+ 1104 0028 54308DE5 		str	r3, [sp, #84]
+ 226:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];			// Input data width
+ 1105              		.loc 1 226 0
+ 1106 002c 080092E5 		ldr	r0, [r2, #8]
+ 1107              	.LVL145:
+ 228:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1108              		.loc 1 228 0
+ 1109 0030 0CE0A0E1 		mov	lr, ip
+ 225:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 1110              		.loc 1 225 0
+ 1111 0034 043092E5 		ldr	r3, [r2, #4]
+ 227:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[4];			// Output data height
+ 1112              		.loc 1 227 0
+ 1113 0038 0CB092E5 		ldr	fp, [r2, #12]
+ 228:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1114              		.loc 1 228 0
+ 1115 003c 44C08DE5 		str	ip, [sp, #68]
+ 231:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PW = iShapes[7];			// Pool width
+ 1116              		.loc 1 231 0
+ 1117 0040 5C408DE5 		str	r4, [sp, #92]
+ 229:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1118              		.loc 1 229 0
+ 1119 0044 14C092E5 		ldr	ip, [r2, #20]
+ 232:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_H = iShapes[8];	// Stride height
+ 1120              		.loc 1 232 0
+ 1121 0048 1C4092E5 		ldr	r4, [r2, #28]
+ 234:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1122              		.loc 1 234 0
+ 1123 004c 242092E5 		ldr	r2, [r2, #36]
+ 1124              	.LVL146:
+ 225:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 1125              		.loc 1 225 0
+ 1126 0050 58308DE5 		str	r3, [sp, #88]
+ 1127              	.LVL147:
+ 229:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1128              		.loc 1 229 0
+ 1129 0054 18C08DE5 		str	ip, [sp, #24]
+ 1130              	.LVL148:
+ 232:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_H = iShapes[8];	// Stride height
+ 1131              		.loc 1 232 0
+ 1132 0058 60408DE5 		str	r4, [sp, #96]
+ 1133              	.LVL149:
+ 233:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 1134              		.loc 1 233 0
+ 1135 005c 64608DE5 		str	r6, [sp, #100]
+ 1136              	.LVL150:
+ 234:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1137              		.loc 1 234 0
+ 1138 0060 1C208DE5 		str	r2, [sp, #28]
+ 1139              	.LVL151:
+ 1140              		.loc 1 240 0
+ 1141 0064 D60000DA 		ble	.L89
+ 1142 0068 0270A0E1 		mov	r7, r2
+ 1143 006c 0520A0E1 		mov	r2, r5
+ 1144              	.LVL152:
+ 1145 0070 920402E0 		mul	r2, r2, r4
+ 1146 0074 000053E3 		cmp	r3, #0
+ 1147 0078 0450A0E1 		mov	r5, r4
+ 1148              	.LVL153:
+ 1149 007c 902A03EE 		vmov	s7, r2	@ int
+ 1150 0080 CF0000DA 		ble	.L89
+ 1151 0084 0E40A0E1 		mov	r4, lr
+ 1152              	.LVL154:
+ 1153 0088 0320A0E1 		mov	r2, r3
+ 1154 008c 9E0303E0 		mul	r3, lr, r3
+ 1155              	.LVL155:
+ 1156              		.loc 1 240 0 is_stmt 0 discriminator 1
+ 1157 0090 00E0A0E3 		mov	lr, #0
+ 1158              	.LVL156:
+ 1159 0094 0E80A0E1 		mov	r8, lr
+ 1160 0098 40E08DE5 		str	lr, [sp, #64]
+ 1161 009c 0CE0A0E1 		mov	lr, ip
+ 1162 00a0 0CC1A0E1 		lsl	ip, ip, #2
+ 1163              	.LVL157:
+ 1164 00a4 38108DE5 		str	r1, [sp, #56]
+ 1165 00a8 0BA1A0E1 		lsl	r10, fp, #2
+ 1166 00ac 68C08DE5 		str	ip, [sp, #104]
+ 1167 00b0 90020CE0 		mul	ip, r0, r2
+ 1168 00b4 0721A0E1 		lsl	r2, r7, #2
+ 1169              	.LVL158:
+ 1170 00b8 50808DE5 		str	r8, [sp, #80]
+ 1171 00bc 0331A0E1 		lsl	r3, r3, #2
+ 1172 00c0 20208DE5 		str	r2, [sp, #32]
+ 1173 00c4 9B0002E0 		mul	r2, fp, r0
+ 1174 00c8 0E00A0E1 		mov	r0, lr
+ 1175              	.LVL159:
+ 1176 00cc 0C11A0E1 		lsl	r1, ip, #2
+ 1177              	.LVL160:
+ 1178 00d0 900303E0 		mul	r3, r0, r3
+ 1179 00d4 07E045E2 		sub	lr, r5, #7
+ 1180              	.LVL161:
+ 1181 00d8 0270A0E1 		mov	r7, r2
+ 1182              	.LVL162:
+ 1183 00dc 78208DE5 		str	r2, [sp, #120]
+ 1184 00e0 642089E2 		add	r2, r9, #100
+ 1185 00e4 8CE08DE5 		str	lr, [sp, #140]
+ 1186 00e8 3C208DE5 		str	r2, [sp, #60]
+ 1187 00ec 900402E0 		mul	r2, r0, r4
+ 1188 00f0 80308DE5 		str	r3, [sp, #128]
+ 1189 00f4 9B060EE0 		mul	lr, fp, r6
+ 1190 00f8 0231A0E1 		lsl	r3, r2, #2
+ 1191 00fc 74308DE5 		str	r3, [sp, #116]
+ 1192 0100 9B0103E0 		mul	r3, fp, r1
+ 1193 0104 0E40A0E1 		mov	r4, lr
+ 1194              	.LVL163:
+ 1195 0108 6CE08DE5 		str	lr, [sp, #108]
+ 1196 010c 07E1A0E1 		lsl	lr, r7, #2
+ 1197 0110 84308DE5 		str	r3, [sp, #132]
+ 1198 0114 0431A0E1 		lsl	r3, r4, #2
+ 1199 0118 7CE08DE5 		str	lr, [sp, #124]
+ 1200 011c 04E0A0E1 		mov	lr, r4
+ 1201 0120 70308DE5 		str	r3, [sp, #112]
+ 1202 0124 9B0C03E0 		mul	r3, fp, ip
+ 1203 0128 88308DE5 		str	r3, [sp, #136]
+ 1204 012c 0930A0E1 		mov	r3, r9
+ 1205 0130 0A90A0E1 		mov	r9, r10
+ 1206              	.LVL164:
+ 1207 0134 03A0A0E1 		mov	r10, r3
+ 1208              	.LVL165:
+ 1209              	.L93:
+ 1210 0138 44309DE5 		ldr	r3, [sp, #68]
+ 1211 013c 000053E3 		cmp	r3, #0
+ 1212 0140 8D0000DA 		ble	.L95
+ 1213              		.loc 1 240 0
+ 1214 0144 40309DE5 		ldr	r3, [sp, #64]
+ 1215 0148 34308DE5 		str	r3, [sp, #52]
+ 1216 014c 3C309DE5 		ldr	r3, [sp, #60]
+ 1217 0150 30308DE5 		str	r3, [sp, #48]
+ 1218 0154 38309DE5 		ldr	r3, [sp, #56]
+ 1219 0158 2C308DE5 		str	r3, [sp, #44]
+ 1220 015c 0030A0E3 		mov	r3, #0
+ 1221 0160 4C308DE5 		str	r3, [sp, #76]
+ 1222              	.LVL166:
+ 1223              	.L92:
+ 1224 0164 18309DE5 		ldr	r3, [sp, #24]
+ 1225 0168 000053E3 		cmp	r3, #0
+ 1226 016c 700000DA 		ble	.L97
+ 1227 0170 0030A0E3 		mov	r3, #0
+ 1228 0174 E34AB8EE 		vcvt.f32.s32	s8, s7
+ 1229 0178 10308DE5 		str	r3, [sp, #16]
+ 1230 017c 48308DE5 		str	r3, [sp, #72]
+ 1231 0180 34309DE5 		ldr	r3, [sp, #52]
+ 1232 0184 14308DE5 		str	r3, [sp, #20]
+ 1233 0188 30309DE5 		ldr	r3, [sp, #48]
+ 1234 018c 28308DE5 		str	r3, [sp, #40]
+ 1235 0190 2C309DE5 		ldr	r3, [sp, #44]
+ 1236 0194 24308DE5 		str	r3, [sp, #36]
+ 1237              	.LVL167:
+ 1238              	.L94:
+ 1239 0198 5C309DE5 		ldr	r3, [sp, #92]
+ 241:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 242:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    for (sD2=0; sD2<iC; sD2++)
+ 243:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 244:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	for (sD3=0; sD3<iHp; sD3++)
+ 245:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 246:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		iHs = sD3 * stride_H;
+ 1240              		.loc 1 246 0 is_stmt 1
+ 1241 019c 0060A0E3 		mov	r6, #0
+ 1242 01a0 10209DE5 		ldr	r2, [sp, #16]
+ 1243 01a4 8CC09DE5 		ldr	ip, [sp, #140]
+ 1244 01a8 60009DE5 		ldr	r0, [sp, #96]
+ 1245 01ac 028083E0 		add	r8, r3, r2
+ 1246 01b0 28309DE5 		ldr	r3, [sp, #40]
+ 1247 01b4 08608DE5 		str	r6, [sp, #8]
+ 1248 01b8 04308DE5 		str	r3, [sp, #4]
+ 1249 01bc 24309DE5 		ldr	r3, [sp, #36]
+ 1250 01c0 0C308DE5 		str	r3, [sp, #12]
+ 1251              	.LVL168:
+ 1252              	.L96:
+ 247:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		for (sD4=0; sD4<iWp; sD4++)
+ 248:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 249:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			iWs = sD4 * stride_W;
+ 250:../src/neural_networks/Translator/network_CNN_FE.cpp ****                                 dAve = 0.0;
+ 251:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			for(sInnerItr=iHs; sInnerItr<(iHs+PH); sInnerItr++)
+ 1253              		.loc 1 251 0
+ 1254 01c4 10309DE5 		ldr	r3, [sp, #16]
+ 250:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			for(sInnerItr=iHs; sInnerItr<(iHs+PH); sInnerItr++)
+ 1255              		.loc 1 250 0
+ 1256 01c8 817ADFED 		vldr.32	s15, .L114
+ 1257              		.loc 1 251 0
+ 1258 01cc 080053E1 		cmp	r3, r8
+ 1259 01d0 2F0000AA 		bge	.L98
+ 1260 01d4 017086E2 		add	r7, r6, #1
+ 1261 01d8 04509DE5 		ldr	r5, [sp, #4]
+ 1262 01dc 14409DE5 		ldr	r4, [sp, #20]
+ 1263 01e0 1E0150E3 		cmp	r0, #-2147483641
+ 1264 01e4 07005CA1 		cmpge	ip, r7
+ 1265 01e8 0170A0C3 		movgt	r7, #1
+ 1266 01ec 0070A0D3 		movle	r7, #0
+ 1267 01f0 03E0A0E1 		mov	lr, r3
+ 1268              	.LVL169:
+ 1269              	.L103:
+ 252:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			{
+ 253:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				for(sOuterItr=iWs; sOuterItr<(iWs+PW); sOuterItr++)
+ 1270              		.loc 1 253 0 discriminator 3
+ 1271 01f4 000056E1 		cmp	r6, r0
+ 1272 01f8 200000AA 		bge	.L99
+ 1273 01fc 000057E3 		cmp	r7, #0
+ 1274 0200 7100000A 		beq	.L108
+ 1275              		.loc 1 253 0 is_stmt 0
+ 1276 0204 0530A0E1 		mov	r3, r5
+ 1277 0208 0620A0E1 		mov	r2, r6
+ 1278              	.LVL170:
+ 1279              	.L101:
+ 254:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 255:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					sOffset = (sD1*iC*iH*iW)+(sD2*iH*iW)+(sInnerItr*iW)+sOuterItr;
+ 256:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					dAve += dData[sOffset];
+ 1280              		.loc 1 256 0 is_stmt 1 discriminator 2
+ 1281 020c 196A53ED 		vldr.32	s13, [r3, #-100]
+ 1282 0210 091082E2 		add	r1, r2, #9
+ 1283 0214 187A13ED 		vldr.32	s14, [r3, #-96]
+ 1284 0218 01005CE1 		cmp	ip, r1
+ 1285 021c 174A53ED 		vldr.32	s9, [r3, #-92]
+ 1286 0220 082082E2 		add	r2, r2, #8
+ 1287              	.LVL171:
+ 1288 0224 165A13ED 		vldr.32	s10, [r3, #-88]
+ 1289 0228 A67A77EE 		vadd.f32	s15, s15, s13
+ 1290              	.LVL172:
+ 1291 022c 155A53ED 		vldr.32	s11, [r3, #-84]
+ 1292 0230 146A13ED 		vldr.32	s12, [r3, #-80]
+ 1293 0234 136A53ED 		vldr.32	s13, [r3, #-76]
+ 1294 0238 877A77EE 		vadd.f32	s15, s15, s14
+ 1295              	.LVL173:
+ 1296 023c 127A13ED 		vldr.32	s14, [r3, #-72]
+ 1297 0240 00F0D3F5 		pld	[r3]
+ 1298 0244 203083E2 		add	r3, r3, #32
+ 1299 0248 A47A77EE 		vadd.f32	s15, s15, s9
+ 1300              	.LVL174:
+ 1301 024c 857A77EE 		vadd.f32	s15, s15, s10
+ 1302              	.LVL175:
+ 1303 0250 A57A77EE 		vadd.f32	s15, s15, s11
+ 1304              	.LVL176:
+ 1305 0254 867A77EE 		vadd.f32	s15, s15, s12
+ 1306              	.LVL177:
+ 1307 0258 A67A77EE 		vadd.f32	s15, s15, s13
+ 1308              	.LVL178:
+ 1309 025c 877A77EE 		vadd.f32	s15, s15, s14
+ 1310              	.LVL179:
+ 1311 0260 E9FFFFCA 		bgt	.L101
+ 1312              	.L100:
+ 1313 0264 043082E0 		add	r3, r2, r4
+ 1314 0268 03318AE0 		add	r3, r10, r3, lsl #2
+ 1315              	.L102:
+ 1316              	.LVL180:
+ 1317              		.loc 1 256 0 is_stmt 0
+ 1318 026c 017AB3EC 		vldmia.32	r3!, {s14}
+ 253:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 1319              		.loc 1 253 0 is_stmt 1
+ 1320 0270 012082E2 		add	r2, r2, #1
+ 1321              	.LVL181:
+ 1322 0274 000052E1 		cmp	r2, r0
+ 1323              		.loc 1 256 0
+ 1324 0278 877A77EE 		vadd.f32	s15, s15, s14
+ 1325              	.LVL182:
+ 253:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 1326              		.loc 1 253 0
+ 1327 027c FAFFFFBA 		blt	.L102
+ 1328              	.LVL183:
+ 1329              	.L99:
+ 251:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			{
+ 1330              		.loc 1 251 0 discriminator 2
+ 1331 0280 01E08EE2 		add	lr, lr, #1
+ 1332              	.LVL184:
+ 1333 0284 0B4084E0 		add	r4, r4, fp
+ 1334 0288 08005EE1 		cmp	lr, r8
+ 1335 028c 095085E0 		add	r5, r5, r9
+ 1336 0290 D7FFFF1A 		bne	.L103
+ 1337              	.LVL185:
+ 1338              	.L98:
+ 257:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				}
+ 258:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			}
+ 259:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			dOut[(sD1*iC*iHp*iWp)+(sD2*iHp*iWp)+(sD3*iWp)+sD4] = dAve/(PH*PW);
+ 1339              		.loc 1 259 0 discriminator 2
+ 1340 0294 847A87EE 		vdiv.f32	s14, s15, s8
+ 247:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 1341              		.loc 1 247 0 discriminator 2
+ 1342 0298 08309DE5 		ldr	r3, [sp, #8]
+ 1343 029c 18209DE5 		ldr	r2, [sp, #24]
+ 1344 02a0 013083E2 		add	r3, r3, #1
+ 1345 02a4 030052E1 		cmp	r2, r3
+ 1346 02a8 08308DE5 		str	r3, [sp, #8]
+ 1347              	.LVL186:
+ 1348 02ac 20209DE5 		ldr	r2, [sp, #32]
+ 1349 02b0 04309DE5 		ldr	r3, [sp, #4]
+ 1350              	.LVL187:
+ 1351 02b4 023083E0 		add	r3, r3, r2
+ 1352 02b8 04308DE5 		str	r3, [sp, #4]
+ 1353 02bc 1C309DE5 		ldr	r3, [sp, #28]
+ 1354 02c0 036086E0 		add	r6, r6, r3
+ 1355              	.LVL188:
+ 1356 02c4 030080E0 		add	r0, r0, r3
+ 1357 02c8 03C08CE0 		add	ip, ip, r3
+ 1358              		.loc 1 259 0 discriminator 2
+ 1359 02cc 0C309DE5 		ldr	r3, [sp, #12]
+ 1360 02d0 017AA3EC 		vstmia.32	r3!, {s14}
+ 1361 02d4 0C308DE5 		str	r3, [sp, #12]
+ 247:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 1362              		.loc 1 247 0 discriminator 2
+ 1363 02d8 B9FFFF1A 		bne	.L96
+ 1364 02dc 24209DE5 		ldr	r2, [sp, #36]
+ 1365 02e0 68109DE5 		ldr	r1, [sp, #104]
+ 244:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 1366              		.loc 1 244 0
+ 1367 02e4 48309DE5 		ldr	r3, [sp, #72]
+ 1368 02e8 012082E0 		add	r2, r2, r1
+ 1369 02ec 24208DE5 		str	r2, [sp, #36]
+ 1370 02f0 013083E2 		add	r3, r3, #1
+ 1371 02f4 44209DE5 		ldr	r2, [sp, #68]
+ 1372 02f8 48308DE5 		str	r3, [sp, #72]
+ 1373              	.LVL189:
+ 1374 02fc 030052E1 		cmp	r2, r3
+ 1375 0300 28309DE5 		ldr	r3, [sp, #40]
+ 1376              	.LVL190:
+ 1377 0304 70209DE5 		ldr	r2, [sp, #112]
+ 1378 0308 023083E0 		add	r3, r3, r2
+ 1379 030c 64209DE5 		ldr	r2, [sp, #100]
+ 1380 0310 28308DE5 		str	r3, [sp, #40]
+ 1381 0314 10309DE5 		ldr	r3, [sp, #16]
+ 1382 0318 023083E0 		add	r3, r3, r2
+ 1383 031c 6C209DE5 		ldr	r2, [sp, #108]
+ 1384 0320 10308DE5 		str	r3, [sp, #16]
+ 1385              	.LVL191:
+ 1386 0324 14309DE5 		ldr	r3, [sp, #20]
+ 1387 0328 023083E0 		add	r3, r3, r2
+ 1388 032c 14308DE5 		str	r3, [sp, #20]
+ 1389 0330 98FFFF1A 		bne	.L94
+ 1390              	.LVL192:
+ 1391              	.L97:
+ 1392 0334 2C209DE5 		ldr	r2, [sp, #44]
+ 1393 0338 74109DE5 		ldr	r1, [sp, #116]
+ 242:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 1394              		.loc 1 242 0
+ 1395 033c 4C309DE5 		ldr	r3, [sp, #76]
+ 1396 0340 012082E0 		add	r2, r2, r1
+ 1397 0344 2C208DE5 		str	r2, [sp, #44]
+ 1398 0348 013083E2 		add	r3, r3, #1
+ 1399 034c 58209DE5 		ldr	r2, [sp, #88]
+ 1400 0350 4C308DE5 		str	r3, [sp, #76]
+ 1401              	.LVL193:
+ 1402 0354 030052E1 		cmp	r2, r3
+ 1403 0358 30309DE5 		ldr	r3, [sp, #48]
+ 1404              	.LVL194:
+ 1405 035c 7C209DE5 		ldr	r2, [sp, #124]
+ 1406 0360 023083E0 		add	r3, r3, r2
+ 1407 0364 78209DE5 		ldr	r2, [sp, #120]
+ 1408 0368 30308DE5 		str	r3, [sp, #48]
+ 1409 036c 34309DE5 		ldr	r3, [sp, #52]
+ 1410 0370 023083E0 		add	r3, r3, r2
+ 1411 0374 34308DE5 		str	r3, [sp, #52]
+ 1412 0378 79FFFF1A 		bne	.L92
+ 1413              	.LVL195:
+ 1414              	.L95:
+ 1415 037c 38209DE5 		ldr	r2, [sp, #56]
+ 1416 0380 80109DE5 		ldr	r1, [sp, #128]
+ 240:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 1417              		.loc 1 240 0
+ 1418 0384 50309DE5 		ldr	r3, [sp, #80]
+ 1419 0388 012082E0 		add	r2, r2, r1
+ 1420 038c 38208DE5 		str	r2, [sp, #56]
+ 1421 0390 013083E2 		add	r3, r3, #1
+ 1422 0394 54209DE5 		ldr	r2, [sp, #84]
+ 1423 0398 50308DE5 		str	r3, [sp, #80]
+ 1424              	.LVL196:
+ 1425 039c 030052E1 		cmp	r2, r3
+ 1426 03a0 3C309DE5 		ldr	r3, [sp, #60]
+ 1427              	.LVL197:
+ 1428 03a4 84209DE5 		ldr	r2, [sp, #132]
+ 1429 03a8 023083E0 		add	r3, r3, r2
+ 1430 03ac 88209DE5 		ldr	r2, [sp, #136]
+ 1431 03b0 3C308DE5 		str	r3, [sp, #60]
+ 1432 03b4 40309DE5 		ldr	r3, [sp, #64]
+ 1433 03b8 023083E0 		add	r3, r3, r2
+ 1434 03bc 40308DE5 		str	r3, [sp, #64]
+ 1435 03c0 5CFFFF1A 		bne	.L93
+ 1436              	.LVL198:
+ 1437              	.L89:
+ 260:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		}
+ 261:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	}
+ 262:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    }
+ 263:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}		
+ 264:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 1438              		.loc 1 264 0
+ 1439 03c4 94D08DE2 		add	sp, sp, #148
+ 1440              		.cfi_remember_state
+ 1441              		.cfi_def_cfa_offset 36
+ 1442              		@ sp needed
+ 1443 03c8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1444              	.LVL199:
+ 1445              	.L108:
+ 1446              		.cfi_restore_state
+ 253:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 1447              		.loc 1 253 0
+ 1448 03cc 0620A0E1 		mov	r2, r6
+ 1449 03d0 A3FFFFEA 		b	.L100
+ 1450              	.L115:
+ 1451              		.align	2
+ 1452              	.L114:
+ 1453 03d4 00000000 		.word	0
+ 1454              		.cfi_endproc
+ 1455              	.LFE231:
+ 1456              		.cantunwind
+ 1457              		.fnend
+ 1459              		.section	.text._Z23max_pooling_without_padPfS_Pi,"ax",%progbits
+ 1460              		.align	2
+ 1461              		.global	_Z23max_pooling_without_padPfS_Pi
+ 1462              		.syntax unified
+ 1463              		.arm
+ 1464              		.fpu neon
+ 1466              	_Z23max_pooling_without_padPfS_Pi:
+ 1467              		.fnstart
+ 1468              	.LFB232:
+ 265:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 266:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 267:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: max_pooling_without_pad
+ 268:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - MAX Pooling layer without padding operation.
+ 269:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - taking the most responsive node of the given TsInterest region
+ 270:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Creates a new output matrix where each element is the max of a region in the original input
+ 271:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+ 272:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dOut		- Pointer to the max pooling output
+ 273:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions 
+ 274:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, input channels, input height, input width, output height, output width, pool height, 
+ 275:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					  pool width, stride height, stride width, pooling type)
+ 276:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 277:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 278:../src/neural_networks/Translator/network_CNN_FE.cpp **** void max_pooling_without_pad(TPrecision *__restrict__ dData, TPrecision *__restrict__ dOut, TsInt *
+ 279:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 1469              		.loc 1 279 0
+ 1470              		.cfi_startproc
+ 1471              		@ args = 0, pretend = 0, frame = 88
+ 1472              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1473              	.LVL200:
+ 1474 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1475              		.cfi_def_cfa_offset 36
+ 1476              		.cfi_offset 4, -36
+ 1477              		.cfi_offset 5, -32
+ 1478              		.cfi_offset 6, -28
+ 1479              		.cfi_offset 7, -24
+ 1480              		.cfi_offset 8, -20
+ 1481              		.cfi_offset 9, -16
+ 1482              		.cfi_offset 10, -12
+ 1483              		.cfi_offset 11, -8
+ 1484              		.cfi_offset 14, -4
+ 1485 0004 5CD04DE2 		sub	sp, sp, #92
+ 1486              		.cfi_def_cfa_offset 128
+ 280:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sD1,sD2,sD3,sD4;			// Array dimension
+ 281:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt sInnerItr,sOuterItr,sOffset;
+ 282:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iN = iShapes[0];
+ 283:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 284:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 285:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];			// Input data width
+ 286:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[4];			// Output data height
+ 287:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 288:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 289:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PH = iShapes[6];			// Pool height
+ 1487              		.loc 1 289 0
+ 1488 0008 186092E5 		ldr	r6, [r2, #24]
+ 282:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 1489              		.loc 1 282 0
+ 1490 000c 003092E5 		ldr	r3, [r2]
+ 286:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1491              		.loc 1 286 0
+ 1492 0010 104092E5 		ldr	r4, [r2, #16]
+ 1493              		.loc 1 289 0
+ 1494 0014 3C608DE5 		str	r6, [sp, #60]
+ 290:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt PW = iShapes[7];			// Pool width
+ 1495              		.loc 1 290 0
+ 1496 0018 1C6092E5 		ldr	r6, [r2, #28]
+ 282:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iC = iShapes[1];			//Input Channels
+ 1497              		.loc 1 282 0
+ 1498 001c 03C0A0E1 		mov	ip, r3
+ 1499 0020 30308DE5 		str	r3, [sp, #48]
+ 1500              	.LVL201:
+ 286:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1501              		.loc 1 286 0
+ 1502 0024 0450A0E1 		mov	r5, r4
+ 283:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 1503              		.loc 1 283 0
+ 1504 0028 043092E5 		ldr	r3, [r2, #4]
+ 1505              	.LVL202:
+ 291:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_H = iShapes[8];	// Stride height
+ 292:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 293:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 294:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWs, iHs, flag;
+ 295:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TPrecision dMax;
+ 296:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 297:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// MAX pooling operation
+ 298:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for (sD1=0; sD1<iN; sD1++)
+ 1506              		.loc 1 298 0
+ 1507 002c 00005CE3 		cmp	ip, #0
+ 286:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iWp = iShapes[5];			// Output data width
+ 1508              		.loc 1 286 0
+ 1509 0030 1C408DE5 		str	r4, [sp, #28]
+ 290:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_H = iShapes[8];	// Stride height
+ 1510              		.loc 1 290 0
+ 1511 0034 04608DE5 		str	r6, [sp, #4]
+ 287:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1512              		.loc 1 287 0
+ 1513 0038 144092E5 		ldr	r4, [r2, #20]
+ 291:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 1514              		.loc 1 291 0
+ 1515 003c 206092E5 		ldr	r6, [r2, #32]
+ 283:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iH = iShapes[2];			// Input data height
+ 1516              		.loc 1 283 0
+ 1517 0040 34308DE5 		str	r3, [sp, #52]
+ 1518              	.LVL203:
+ 284:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iW = iShapes[3];			// Input data width
+ 1519              		.loc 1 284 0
+ 1520 0044 08E092E5 		ldr	lr, [r2, #8]
+ 1521              	.LVL204:
+ 285:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iHp = iShapes[4];			// Output data height
+ 1522              		.loc 1 285 0
+ 1523 0048 0CC092E5 		ldr	ip, [r2, #12]
+ 1524              	.LVL205:
+ 287:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1525              		.loc 1 287 0
+ 1526 004c 38408DE5 		str	r4, [sp, #56]
+ 1527              	.LVL206:
+ 291:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt stride_W = iShapes[9];	// Stride width
+ 1528              		.loc 1 291 0
+ 1529 0050 40608DE5 		str	r6, [sp, #64]
+ 1530              	.LVL207:
+ 292:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1531              		.loc 1 292 0
+ 1532 0054 249092E5 		ldr	r9, [r2, #36]
+ 1533              	.LVL208:
+ 1534              		.loc 1 298 0
+ 1535 0058 7F0000DA 		ble	.L116
+ 1536 005c 000053E3 		cmp	r3, #0
+ 1537 0060 7D0000DA 		ble	.L116
+ 1538 0064 0320A0E1 		mov	r2, r3
+ 1539              	.LVL209:
+ 1540 0068 950303E0 		mul	r3, r5, r3
+ 1541              	.LVL210:
+ 1542 006c 18008DE5 		str	r0, [sp, #24]
+ 1543              		.loc 1 298 0 is_stmt 0 discriminator 1
+ 1544 0070 0000A0E3 		mov	r0, #0
+ 1545              	.LVL211:
+ 1546 0074 14108DE5 		str	r1, [sp, #20]
+ 1547 0078 9E0201E0 		mul	r1, lr, r2
+ 1548              	.LVL212:
+ 1549 007c 28008DE5 		str	r0, [sp, #40]
+ 1550 0080 09B1A0E1 		lsl	fp, r9, #2
+ 1551 0084 0331A0E1 		lsl	r3, r3, #2
+ 1552 0088 940500E0 		mul	r0, r4, r5
+ 1553 008c 0CA1A0E1 		lsl	r10, ip, #2
+ 1554 0090 940303E0 		mul	r3, r4, r3
+ 1555 0094 0111A0E1 		lsl	r1, r1, #2
+ 1556 0098 0471A0E1 		lsl	r7, r4, #2
+ 1557 009c 9C0E02E0 		mul	r2, ip, lr
+ 1558              	.LVL213:
+ 1559 00a0 2C708DE5 		str	r7, [sp, #44]
+ 1560 00a4 50308DE5 		str	r3, [sp, #80]
+ 1561 00a8 0031A0E1 		lsl	r3, r0, #2
+ 1562 00ac 9C060EE0 		mul	lr, ip, r6
+ 1563              	.LVL214:
+ 1564 00b0 48308DE5 		str	r3, [sp, #72]
+ 1565 00b4 0221A0E1 		lsl	r2, r2, #2
+ 1566 00b8 9C0103E0 		mul	r3, ip, r1
+ 1567 00bc 4C208DE5 		str	r2, [sp, #76]
+ 1568 00c0 54308DE5 		str	r3, [sp, #84]
+ 1569 00c4 0E31A0E1 		lsl	r3, lr, #2
+ 1570 00c8 44308DE5 		str	r3, [sp, #68]
+ 1571 00cc 0B30A0E1 		mov	r3, fp
+ 1572 00d0 09B0A0E1 		mov	fp, r9
+ 1573 00d4 0390A0E1 		mov	r9, r3
+ 1574              	.LVL215:
+ 1575 00d8 18309DE5 		ldr	r3, [sp, #24]
+ 1576              	.LVL216:
+ 1577              	.L129:
+ 1578 00dc 10308DE5 		str	r3, [sp, #16]
+ 1579 00e0 14309DE5 		ldr	r3, [sp, #20]
+ 1580 00e4 0C308DE5 		str	r3, [sp, #12]
+ 1581 00e8 0030A0E3 		mov	r3, #0
+ 1582 00ec 24308DE5 		str	r3, [sp, #36]
+ 1583              	.LVL217:
+ 1584              	.L128:
+ 299:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 300:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    for (sD2=0; sD2<iC; sD2++)
+ 301:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 302:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	for (sD3=0; sD3<iHp; sD3++)
+ 1585              		.loc 1 302 0 is_stmt 1 discriminator 1
+ 1586 00f0 1C309DE5 		ldr	r3, [sp, #28]
+ 1587 00f4 000053E3 		cmp	r3, #0
+ 1588 00f8 3B0000DA 		ble	.L119
+ 1589              		.loc 1 302 0 is_stmt 0
+ 1590 00fc 0C509DE5 		ldr	r5, [sp, #12]
+ 1591 0100 0070A0E3 		mov	r7, #0
+ 1592 0104 10309DE5 		ldr	r3, [sp, #16]
+ 1593 0108 20708DE5 		str	r7, [sp, #32]
+ 1594 010c 08308DE5 		str	r3, [sp, #8]
+ 1595              	.LVL218:
+ 1596              	.L127:
+ 303:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 304:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		iHs = sD3 * stride_H;
+ 305:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		for (sD4=0; sD4<iWp; sD4++)
+ 1597              		.loc 1 305 0 is_stmt 1
+ 1598 0110 38309DE5 		ldr	r3, [sp, #56]
+ 1599 0114 000053E3 		cmp	r3, #0
+ 1600 0118 2C309DD5 		ldrle	r3, [sp, #44]
+ 1601 011c 038085D0 		addle	r8, r5, r3
+ 1602 0120 240000DA 		ble	.L120
+ 1603 0124 3C309DE5 		ldr	r3, [sp, #60]
+ 1604 0128 00C0A0E3 		mov	ip, #0
+ 1605 012c 08609DE5 		ldr	r6, [sp, #8]
+ 1606 0130 074083E0 		add	r4, r3, r7
+ 1607 0134 2C309DE5 		ldr	r3, [sp, #44]
+ 1608 0138 038085E0 		add	r8, r5, r3
+ 1609              	.LVL219:
+ 1610              	.L126:
+ 306:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 307:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			iWs = sD4 * stride_W;
+ 308:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			flag = 0;
+ 309:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			for(sInnerItr=iHs; sInnerItr<(iHs+PH); sInnerItr++)
+ 1611              		.loc 1 309 0
+ 1612 013c 040057E1 		cmp	r7, r4
+ 1613 0140 170000AA 		bge	.L121
+ 1614 0144 04309DE5 		ldr	r3, [sp, #4]
+ 1615 0148 0610A0E1 		mov	r1, r6
+ 1616 014c 07E0A0E1 		mov	lr, r7
+ 1617 0150 0C0083E0 		add	r0, r3, ip
+ 1618 0154 0030A0E3 		mov	r3, #0
+ 1619              	.LVL220:
+ 1620              	.L125:
+ 310:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			{
+ 311:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				for(sOuterItr=iWs; sOuterItr<(iWs+PW); sOuterItr++)
+ 1621              		.loc 1 311 0 discriminator 1
+ 1622 0158 00005CE1 		cmp	ip, r0
+ 1623 015c 0C0000AA 		bge	.L122
+ 1624              	.LVL221:
+ 312:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 313:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					sOffset = (sD1*iC*iH*iW)+(sD2*iH*iW)+(sInnerItr*iW)+sOuterItr;
+ 314:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					if(flag == 0)
+ 1625              		.loc 1 314 0
+ 1626 0160 000053E3 		cmp	r3, #0
+ 1627 0164 3E00000A 		beq	.L139
+ 1628 0168 0120A0E1 		mov	r2, r1
+ 1629 016c 0C30A0E1 		mov	r3, ip
+ 1630              	.LVL222:
+ 1631              	.L123:
+ 315:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					{
+ 316:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    						dMax=dData[sOffset];
+ 317:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    						flag = 1;
+ 318:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					}
+ 319:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					else
+ 320:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					{
+ 321:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    						if(dMax < dData[sOffset])
+ 1632              		.loc 1 321 0
+ 1633 0170 007A92ED 		vldr.32	s14, [r2]
+ 322:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    							dMax = dData[sOffset];
+ 1634              		.loc 1 322 0
+ 1635 0174 677AB4EE 		vcmp.f32	s14, s15
+ 1636 0178 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 1637 017c 477AF0CE 		vmovgt.f32	s15, s14
+ 1638              	.LVL223:
+ 1639              	.L124:
+ 311:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				{
+ 1640              		.loc 1 311 0 discriminator 2
+ 1641 0180 013083E2 		add	r3, r3, #1
+ 1642              	.LVL224:
+ 1643 0184 042082E2 		add	r2, r2, #4
+ 1644 0188 000053E1 		cmp	r3, r0
+ 1645 018c F7FFFF1A 		bne	.L123
+ 1646 0190 0130A0E3 		mov	r3, #1
+ 1647              	.LVL225:
+ 1648              	.L122:
+ 309:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			{
+ 1649              		.loc 1 309 0 discriminator 2
+ 1650 0194 01E08EE2 		add	lr, lr, #1
+ 1651              	.LVL226:
+ 1652 0198 0A1081E0 		add	r1, r1, r10
+ 1653 019c 04005EE1 		cmp	lr, r4
+ 1654 01a0 ECFFFF1A 		bne	.L125
+ 1655              	.LVL227:
+ 1656              	.L121:
+ 323:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    					}
+ 324:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    				}
+ 325:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			}
+ 326:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    			dOut[(sD1*iC*iHp*iWp)+(sD2*iHp*iWp)+(sD3*iWp)+sD4] = dMax;
+ 1657              		.loc 1 326 0 discriminator 2
+ 1658 01a4 017AE5EC 		vstmia.32	r5!, {s15}
+ 1659              	.LVL228:
+ 305:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		{
+ 1660              		.loc 1 305 0 discriminator 2
+ 1661 01a8 080055E1 		cmp	r5, r8
+ 1662 01ac 096086E0 		add	r6, r6, r9
+ 1663 01b0 0BC08CE0 		add	ip, ip, fp
+ 1664              	.LVL229:
+ 1665 01b4 E0FFFF1A 		bne	.L126
+ 1666              	.LVL230:
+ 1667              	.L120:
+ 302:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	{
+ 1668              		.loc 1 302 0 discriminator 2
+ 1669 01b8 20309DE5 		ldr	r3, [sp, #32]
+ 1670 01bc 0850A0E1 		mov	r5, r8
+ 1671 01c0 1C209DE5 		ldr	r2, [sp, #28]
+ 1672 01c4 013083E2 		add	r3, r3, #1
+ 1673 01c8 030052E1 		cmp	r2, r3
+ 1674 01cc 20308DE5 		str	r3, [sp, #32]
+ 1675              	.LVL231:
+ 1676 01d0 44209DE5 		ldr	r2, [sp, #68]
+ 1677 01d4 08309DE5 		ldr	r3, [sp, #8]
+ 1678              	.LVL232:
+ 1679 01d8 023083E0 		add	r3, r3, r2
+ 1680 01dc 08308DE5 		str	r3, [sp, #8]
+ 1681 01e0 40309DE5 		ldr	r3, [sp, #64]
+ 1682 01e4 037087E0 		add	r7, r7, r3
+ 1683              	.LVL233:
+ 1684 01e8 C8FFFF1A 		bne	.L127
+ 1685              	.LVL234:
+ 1686              	.L119:
+ 1687 01ec 0C209DE5 		ldr	r2, [sp, #12]
+ 1688 01f0 48109DE5 		ldr	r1, [sp, #72]
+ 300:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    {
+ 1689              		.loc 1 300 0 discriminator 2
+ 1690 01f4 24309DE5 		ldr	r3, [sp, #36]
+ 1691 01f8 012082E0 		add	r2, r2, r1
+ 1692 01fc 0C208DE5 		str	r2, [sp, #12]
+ 1693 0200 013083E2 		add	r3, r3, #1
+ 1694 0204 34209DE5 		ldr	r2, [sp, #52]
+ 1695 0208 24308DE5 		str	r3, [sp, #36]
+ 1696              	.LVL235:
+ 1697 020c 030052E1 		cmp	r2, r3
+ 1698 0210 10309DE5 		ldr	r3, [sp, #16]
+ 1699              	.LVL236:
+ 1700 0214 4C209DE5 		ldr	r2, [sp, #76]
+ 1701 0218 023083E0 		add	r3, r3, r2
+ 1702 021c 10308DE5 		str	r3, [sp, #16]
+ 1703 0220 B2FFFF1A 		bne	.L128
+ 1704 0224 14209DE5 		ldr	r2, [sp, #20]
+ 1705 0228 50109DE5 		ldr	r1, [sp, #80]
+ 298:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 1706              		.loc 1 298 0
+ 1707 022c 28309DE5 		ldr	r3, [sp, #40]
+ 1708 0230 012082E0 		add	r2, r2, r1
+ 1709 0234 14208DE5 		str	r2, [sp, #20]
+ 1710 0238 013083E2 		add	r3, r3, #1
+ 1711 023c 30209DE5 		ldr	r2, [sp, #48]
+ 1712 0240 28308DE5 		str	r3, [sp, #40]
+ 1713              	.LVL237:
+ 1714 0244 030052E1 		cmp	r2, r3
+ 1715 0248 18309DE5 		ldr	r3, [sp, #24]
+ 1716              	.LVL238:
+ 1717 024c 54209DE5 		ldr	r2, [sp, #84]
+ 1718 0250 023083E0 		add	r3, r3, r2
+ 1719 0254 18308DE5 		str	r3, [sp, #24]
+ 1720 0258 9FFFFF1A 		bne	.L129
+ 1721              	.LVL239:
+ 1722              	.L116:
+ 327:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    		}
+ 328:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    	}
+ 329:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    }
+ 330:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}		
+ 331:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 1723              		.loc 1 331 0
+ 1724 025c 5CD08DE2 		add	sp, sp, #92
+ 1725              		.cfi_remember_state
+ 1726              		.cfi_def_cfa_offset 36
+ 1727              		@ sp needed
+ 1728 0260 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1729              	.LVL240:
+ 1730              	.L139:
+ 1731              		.cfi_restore_state
+ 316:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	    						flag = 1;
+ 1732              		.loc 1 316 0
+ 1733 0264 007AD1ED 		vldr.32	s15, [r1]
+ 1734              	.LVL241:
+ 1735 0268 0120A0E1 		mov	r2, r1
+ 1736 026c 0C30A0E1 		mov	r3, ip
+ 1737 0270 C2FFFFEA 		b	.L124
+ 1738              		.cfi_endproc
+ 1739              	.LFE232:
+ 1740              		.cantunwind
+ 1741              		.fnend
+ 1743              		.section	.text._Z19pooling_without_padPfS_Pi,"ax",%progbits
+ 1744              		.align	2
+ 1745              		.global	_Z19pooling_without_padPfS_Pi
+ 1746              		.syntax unified
+ 1747              		.arm
+ 1748              		.fpu neon
+ 1750              	_Z19pooling_without_padPfS_Pi:
+ 1751              		.fnstart
+ 1752              	.LFB233:
+ 332:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 333:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 334:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: pooling_without_pad
+ 335:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Pooling layer without padding operation.
+ 336:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 - Creates a new output matrix where each element is filled based on the pooling type
+ 337:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					(either max pooling or average pooling)
+ 338:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData		- Pointer to the input data
+ 339:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 dOut		- Pointer to the pooling output
+ 340:../src/neural_networks/Translator/network_CNN_FE.cpp **** *				 iShapes	- Dimensions
+ 341:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					( N, input channels, input height, input width, output height, output width, pool height,
+ 342:../src/neural_networks/Translator/network_CNN_FE.cpp **** *					  pool width, stride height, stride width, pooling type)
+ 343:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 344:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 345:../src/neural_networks/Translator/network_CNN_FE.cpp **** void pooling_without_pad(TPrecision *__restrict__ dData, TPrecision *__restrict__ dOut, TsInt *__re
+ 346:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 1753              		.loc 1 346 0
+ 1754              		.cfi_startproc
+ 1755              		@ args = 0, pretend = 0, frame = 0
+ 1756              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1757              		@ link register save eliminated.
+ 1758              	.LVL242:
+ 347:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt ipool_type = iShapes[10];		//Type of Pooling
+ 348:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	if (ipool_type == 0){		// MAX pooling
+ 1759              		.loc 1 348 0
+ 1760 0000 283092E5 		ldr	r3, [r2, #40]
+ 1761 0004 000053E3 		cmp	r3, #0
+ 1762 0008 0000000A 		beq	.L142
+ 349:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		max_pooling_without_pad(dData, dOut, iShapes);
+ 350:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+ 351:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	else{						// AVERAGE pooling
+ 352:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		average_pooling_without_pad(dData, dOut, iShapes);
+ 1763              		.loc 1 352 0
+ 1764 000c FEFFFFEA 		b	_Z27average_pooling_without_padPfS_Pi
+ 1765              	.LVL243:
+ 1766              	.L142:
+ 349:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		max_pooling_without_pad(dData, dOut, iShapes);
+ 1767              		.loc 1 349 0
+ 1768 0010 FEFFFFEA 		b	_Z23max_pooling_without_padPfS_Pi
+ 1769              	.LVL244:
+ 1770              		.cfi_endproc
+ 1771              	.LFE233:
+ 1772              		.cantunwind
+ 1773              		.fnend
+ 1775              		.section	.text._Z12innerproductPfPKfS1_S_PiS2_,"ax",%progbits
+ 1776              		.align	2
+ 1777              		.global	_Z12innerproductPfPKfS1_S_PiS2_
+ 1778              		.syntax unified
+ 1779              		.arm
+ 1780              		.fpu neon
+ 1782              	_Z12innerproductPfPKfS1_S_PiS2_:
+ 1783              		.fnstart
+ 1784              	.LFB234:
+ 353:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+ 354:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 355:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 356:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 357:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		/************************************************************************************************
+ 358:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: innerproduct
+ 359:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Fully connected layer
+ 360:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                - Performs dot product of data and weights and add them up with biases
+ 361:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                   (Matrix Multiplication of data and weights and addition of biases)
+ 362:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : data           - Array of input data
+ 363:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                weight_trans   - Array of weights (transposed)
+ 364:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                biases 		- Array of biases
+ 365:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                out            - Placeholder for the output
+ 366:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                shapes         - Dimensions of data and weights (N, D, F, D)
+ 367:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 368:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 369:../src/neural_networks/Translator/network_CNN_FE.cpp **** void innerproduct(TPrecision *__restrict__ data,const TPrecision *__restrict__ weights,const TPreci
+ 1785              		.loc 1 369 0
+ 1786              		.cfi_startproc
+ 1787              		@ args = 8, pretend = 0, frame = 56
+ 1788              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1789              	.LVL245:
+ 1790 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 1791              		.cfi_def_cfa_offset 36
+ 1792              		.cfi_offset 4, -36
+ 1793              		.cfi_offset 5, -32
+ 1794              		.cfi_offset 6, -28
+ 1795              		.cfi_offset 7, -24
+ 1796              		.cfi_offset 8, -20
+ 1797              		.cfi_offset 9, -16
+ 1798              		.cfi_offset 10, -12
+ 1799              		.cfi_offset 11, -8
+ 1800              		.cfi_offset 14, -4
+ 1801 0004 3CD04DE2 		sub	sp, sp, #60
+ 1802              		.cfi_def_cfa_offset 96
+ 1803              		.loc 1 369 0
+ 1804 0008 60C09DE5 		ldr	ip, [sp, #96]
+ 1805 000c 34208DE5 		str	r2, [sp, #52]
+ 370:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iRow, iColumn;
+ 371:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iInneritr;
+ 372:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt N = shapes[0];
+ 1806              		.loc 1 372 0
+ 1807 0010 00209CE5 		ldr	r2, [ip]
+ 1808              	.LVL246:
+ 369:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt iRow, iColumn;
+ 1809              		.loc 1 369 0
+ 1810 0014 1C008DE5 		str	r0, [sp, #28]
+ 1811 0018 18108DE5 		str	r1, [sp, #24]
+ 1812              		.loc 1 372 0
+ 1813 001c 0240A0E1 		mov	r4, r2
+ 1814 0020 2C208DE5 		str	r2, [sp, #44]
+ 1815              	.LVL247:
+ 373:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt D = shapes[1];
+ 374:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt F = shapes[3];
+ 1816              		.loc 1 374 0
+ 1817 0024 0C209CE5 		ldr	r2, [ip, #12]
+ 1818              	.LVL248:
+ 375:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 376:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	// Execute C Innerproduct or CCRX complier or CCRL complier    
+ 377:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	#if defined C_FP32 || defined __CCRX__ || defined __CCRL__
+ 378:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TPrecision dSum = 0;
+ 379:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 380:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	for(iRow=0; iRow<N; iRow++)
+ 1819              		.loc 1 380 0
+ 1820 0028 000054E3 		cmp	r4, #0
+ 373:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	TsInt D = shapes[1];
+ 1821              		.loc 1 373 0
+ 1822 002c 04E09CE5 		ldr	lr, [ip, #4]
+ 1823              	.LVL249:
+ 374:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 1824              		.loc 1 374 0
+ 1825 0030 0250A0E1 		mov	r5, r2
+ 1826 0034 0C208DE5 		str	r2, [sp, #12]
+ 1827              	.LVL250:
+ 1828              		.loc 1 380 0
+ 1829 0038 7A0000DA 		ble	.L143
+ 1830 003c 000052E3 		cmp	r2, #0
+ 1831 0040 780000DA 		ble	.L143
+ 1832 0044 02C1A0E1 		lsl	ip, r2, #2
+ 1833 0048 0E61A0E1 		lsl	r6, lr, #2
+ 1834 004c 8541A0E1 		lsl	r4, r5, #3
+ 1835              	.LVL251:
+ 1836 0050 24308DE5 		str	r3, [sp, #36]
+ 1837 0054 05108CE0 		add	r1, ip, r5
+ 1838              	.LVL252:
+ 1839 0058 30608DE5 		str	r6, [sp, #48]
+ 1840 005c 0111A0E1 		lsl	r1, r1, #2
+ 1841 0060 09204EE2 		sub	r2, lr, #9
+ 1842              	.LVL253:
+ 1843 0064 0720C2E3 		bic	r2, r2, #7
+ 1844 0068 20108DE5 		str	r1, [sp, #32]
+ 1845              		.loc 1 380 0 is_stmt 0 discriminator 1
+ 1846 006c 0010A0E3 		mov	r1, #0
+ 1847 0070 0160A0E1 		mov	r6, r1
+ 1848 0074 10108DE5 		str	r1, [sp, #16]
+ 1849 0078 0510A0E1 		mov	r1, r5
+ 1850 007c 8552A0E1 		lsl	r5, r5, #5
+ 1851              	.LVL254:
+ 1852 0080 0192A0E1 		lsl	r9, r1, #4
+ 1853 0084 08B082E2 		add	fp, r2, #8
+ 1854 0088 00A064E2 		rsb	r10, r4, #0
+ 1855 008c 28608DE5 		str	r6, [sp, #40]
+ 1856 0090 3C3080E2 		add	r3, r0, #60
+ 1857              	.LVL255:
+ 1858 0094 14308DE5 		str	r3, [sp, #20]
+ 1859              	.LVL256:
+ 1860              	.L147:
+ 1861 0098 34309DE5 		ldr	r3, [sp, #52]
+ 1862 009c 0080A0E3 		mov	r8, #0
+ 1863 00a0 04308DE5 		str	r3, [sp, #4]
+ 1864 00a4 18309DE5 		ldr	r3, [sp, #24]
+ 1865 00a8 00308DE5 		str	r3, [sp]
+ 1866 00ac 24309DE5 		ldr	r3, [sp, #36]
+ 1867 00b0 08308DE5 		str	r3, [sp, #8]
+ 1868              	.LVL257:
+ 1869              	.L146:
+ 381:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 382:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		for(iColumn=0; iColumn<F; iColumn++)
+ 383:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 384:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			dSum = 0;
+ 385:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			for(iInneritr=0; iInneritr<D;iInneritr++)
+ 1870              		.loc 1 385 0 is_stmt 1 discriminator 3
+ 1871 00b4 00005EE3 		cmp	lr, #0
+ 1872 00b8 5E7ADFED 		vldr.32	s15, .L159
+ 1873 00bc 3B0000DA 		ble	.L148
+ 1874 00c0 08005EE3 		cmp	lr, #8
+ 1875 00c4 590000DA 		ble	.L154
+ 1876 00c8 00309DE5 		ldr	r3, [sp]
+ 1877 00cc 20209DE5 		ldr	r2, [sp, #32]
+ 1878              		.loc 1 385 0 is_stmt 0
+ 1879 00d0 0310A0E1 		mov	r1, r3
+ 1880 00d4 020083E0 		add	r0, r3, r2
+ 1881 00d8 14309DE5 		ldr	r3, [sp, #20]
+ 1882 00dc 0020A0E3 		mov	r2, #0
+ 1883              	.LVL258:
+ 1884              	.L150:
+ 386:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{
+ 387:../src/neural_networks/Translator/network_CNN_FE.cpp **** 				dSum += data[(iRow*D)+iInneritr] * weights[(iInneritr*F)+iColumn];
+ 1885              		.loc 1 387 0 is_stmt 1 discriminator 2
+ 1886 00e0 0F5A53ED 		vldr.32	s11, [r3, #-60]
+ 1887 00e4 0C6081E0 		add	r6, r1, ip
+ 1888 00e8 006A91ED 		vldr.32	s12, [r1]
+ 1889 00ec 0A7080E0 		add	r7, r0, r10
+ 1890 00f0 006AD6ED 		vldr.32	s13, [r6]
+ 1891 00f4 046081E0 		add	r6, r1, r4
+ 1892 00f8 0E7A13ED 		vldr.32	s14, [r3, #-56]
+ 1893 00fc 082082E2 		add	r2, r2, #8
+ 1894              	.LVL259:
+ 1895 0100 001AD6ED 		vldr.32	s3, [r6]
+ 1896 0104 096081E0 		add	r6, r1, r9
+ 1897 0108 867A45EE 		vmla.f32	s15, s11, s12
+ 1898              	.LVL260:
+ 1899 010c 0B0052E1 		cmp	r2, fp
+ 1900 0110 0D2A13ED 		vldr.32	s4, [r3, #-52]
+ 1901 0114 051081E0 		add	r1, r1, r5
+ 1902 0118 002AD7ED 		vldr.32	s5, [r7]
+ 1903 011c 0C7080E0 		add	r7, r0, ip
+ 1904 0120 0C3A13ED 		vldr.32	s6, [r3, #-48]
+ 1905 0124 003AD6ED 		vldr.32	s7, [r6]
+ 1906 0128 046080E0 		add	r6, r0, r4
+ 1907 012c 0B4A13ED 		vldr.32	s8, [r3, #-44]
+ 1908 0130 0A4A53ED 		vldr.32	s9, [r3, #-40]
+ 1909 0134 877A46EE 		vmla.f32	s15, s13, s14
+ 1910              	.LVL261:
+ 1911 0138 005A90ED 		vldr.32	s10, [r0]
+ 1912 013c 050080E0 		add	r0, r0, r5
+ 1913 0140 096A13ED 		vldr.32	s12, [r3, #-36]
+ 1914 0144 005AD7ED 		vldr.32	s11, [r7]
+ 1915 0148 087A13ED 		vldr.32	s14, [r3, #-32]
+ 1916 014c 006AD6ED 		vldr.32	s13, [r6]
+ 1917 0150 00F0D3F5 		pld	[r3]
+ 1918 0154 203083E2 		add	r3, r3, #32
+ 1919 0158 827A41EE 		vmla.f32	s15, s3, s4
+ 1920              	.LVL262:
+ 1921 015c 837A42EE 		vmla.f32	s15, s5, s6
+ 1922              	.LVL263:
+ 1923 0160 847A43EE 		vmla.f32	s15, s7, s8
+ 1924              	.LVL264:
+ 1925 0164 857A44EE 		vmla.f32	s15, s9, s10
+ 1926              	.LVL265:
+ 1927 0168 867A45EE 		vmla.f32	s15, s11, s12
+ 1928              	.LVL266:
+ 1929 016c 877A46EE 		vmla.f32	s15, s13, s14
+ 1930              	.LVL267:
+ 1931 0170 DAFFFF1A 		bne	.L150
+ 1932              	.LVL268:
+ 1933              	.L149:
+ 1934 0174 1C009DE5 		ldr	r0, [sp, #28]
+ 1935 0178 0C309DE5 		ldr	r3, [sp, #12]
+ 1936 017c 10109DE5 		ldr	r1, [sp, #16]
+ 1937 0180 021081E0 		add	r1, r1, r2
+ 1938 0184 928323E0 		mla	r3, r2, r3, r8
+ 1939 0188 011180E0 		add	r1, r0, r1, lsl #2
+ 1940 018c 18009DE5 		ldr	r0, [sp, #24]
+ 1941 0190 033180E0 		add	r3, r0, r3, lsl #2
+ 1942              	.L151:
+ 1943              	.LVL269:
+ 1944              		.loc 1 387 0 is_stmt 0
+ 1945 0194 007A93ED 		vldr.32	s14, [r3]
+ 385:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{
+ 1946              		.loc 1 385 0 is_stmt 1
+ 1947 0198 012082E2 		add	r2, r2, #1
+ 1948              	.LVL270:
+ 1949              		.loc 1 387 0
+ 1950 019c 016AF1EC 		vldmia.32	r1!, {s13}
+ 385:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{
+ 1951              		.loc 1 385 0
+ 1952 01a0 02005EE1 		cmp	lr, r2
+ 1953 01a4 0C3083E0 		add	r3, r3, ip
+ 1954              		.loc 1 387 0
+ 1955 01a8 877A46EE 		vmla.f32	s15, s13, s14
+ 1956              	.LVL271:
+ 385:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{
+ 1957              		.loc 1 385 0
+ 1958 01ac F8FFFFCA 		bgt	.L151
+ 1959              	.LVL272:
+ 1960              	.L148:
+ 388:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			}
+ 389:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			out[(iRow*F)+iColumn] = dSum + biases[iColumn];				// output
+ 1961              		.loc 1 389 0 discriminator 2
+ 1962 01b0 04309DE5 		ldr	r3, [sp, #4]
+ 382:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 1963              		.loc 1 382 0 discriminator 2
+ 1964 01b4 018088E2 		add	r8, r8, #1
+ 1965              	.LVL273:
+ 1966              		.loc 1 389 0 discriminator 2
+ 1967 01b8 017AB3EC 		vldmia.32	r3!, {s14}
+ 1968 01bc 04308DE5 		str	r3, [sp, #4]
+ 382:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 1969              		.loc 1 382 0 discriminator 2
+ 1970 01c0 0C309DE5 		ldr	r3, [sp, #12]
+ 1971              		.loc 1 389 0 discriminator 2
+ 1972 01c4 277A77EE 		vadd.f32	s15, s14, s15
+ 382:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 1973              		.loc 1 382 0 discriminator 2
+ 1974 01c8 080053E1 		cmp	r3, r8
+ 1975 01cc 00309DE5 		ldr	r3, [sp]
+ 1976 01d0 043083E2 		add	r3, r3, #4
+ 1977 01d4 00308DE5 		str	r3, [sp]
+ 1978              		.loc 1 389 0 discriminator 2
+ 1979 01d8 08309DE5 		ldr	r3, [sp, #8]
+ 1980 01dc 017AE3EC 		vstmia.32	r3!, {s15}
+ 1981 01e0 08308DE5 		str	r3, [sp, #8]
+ 382:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		{
+ 1982              		.loc 1 382 0 discriminator 2
+ 1983 01e4 B2FFFF1A 		bne	.L146
+ 1984 01e8 24209DE5 		ldr	r2, [sp, #36]
+ 380:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	{
+ 1985              		.loc 1 380 0
+ 1986 01ec 28309DE5 		ldr	r3, [sp, #40]
+ 1987 01f0 0C2082E0 		add	r2, r2, ip
+ 1988 01f4 24208DE5 		str	r2, [sp, #36]
+ 1989 01f8 013083E2 		add	r3, r3, #1
+ 1990 01fc 2C209DE5 		ldr	r2, [sp, #44]
+ 1991 0200 28308DE5 		str	r3, [sp, #40]
+ 1992              	.LVL274:
+ 1993 0204 030052E1 		cmp	r2, r3
+ 1994 0208 10309DE5 		ldr	r3, [sp, #16]
+ 1995              	.LVL275:
+ 1996 020c 30209DE5 		ldr	r2, [sp, #48]
+ 1997 0210 0E3083E0 		add	r3, r3, lr
+ 1998 0214 10308DE5 		str	r3, [sp, #16]
+ 1999 0218 14309DE5 		ldr	r3, [sp, #20]
+ 2000 021c 023083E0 		add	r3, r3, r2
+ 2001 0220 14308DE5 		str	r3, [sp, #20]
+ 2002 0224 9BFFFF1A 		bne	.L147
+ 2003              	.LVL276:
+ 2004              	.L143:
+ 390:../src/neural_networks/Translator/network_CNN_FE.cpp **** 		}
+ 391:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	}
+ 392:../src/neural_networks/Translator/network_CNN_FE.cpp **** 	#endif
+ 393:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 2005              		.loc 1 393 0
+ 2006 0228 3CD08DE2 		add	sp, sp, #60
+ 2007              		.cfi_remember_state
+ 2008              		.cfi_def_cfa_offset 36
+ 2009              		@ sp needed
+ 2010 022c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 2011              	.LVL277:
+ 2012              	.L154:
+ 2013              		.cfi_restore_state
+ 385:../src/neural_networks/Translator/network_CNN_FE.cpp **** 			{
+ 2014              		.loc 1 385 0
+ 2015 0230 0020A0E3 		mov	r2, #0
+ 2016 0234 CEFFFFEA 		b	.L149
+ 2017              	.L160:
+ 2018              		.align	2
+ 2019              	.L159:
+ 2020 0238 00000000 		.word	0
+ 2021              		.cfi_endproc
+ 2022              	.LFE234:
+ 2023              		.cantunwind
+ 2024              		.fnend
+ 2026              		.section	.text._Z7softmaxPfS_i,"ax",%progbits
+ 2027              		.align	2
+ 2028              		.global	_Z7softmaxPfS_i
+ 2029              		.syntax unified
+ 2030              		.arm
+ 2031              		.fpu neon
+ 2033              	_Z7softmaxPfS_i:
+ 2034              		.fnstart
+ 2035              	.LFB235:
+ 394:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 395:../src/neural_networks/Translator/network_CNN_FE.cpp **** /**************************************************************************************************
+ 396:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Function Name: softmax
+ 397:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Description  : - Activation function
+ 398:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                - Squashes an array of arbitrary real values to an array of real values 
+ 399:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                  in the range(0, 1) that add up to 1	
+ 400:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Arguments    : dData      - Array of input data
+ 401:../src/neural_networks/Translator/network_CNN_FE.cpp **** *                iShapes	- Size of the input array
+ 402:../src/neural_networks/Translator/network_CNN_FE.cpp **** * Return Value : no return value
+ 403:../src/neural_networks/Translator/network_CNN_FE.cpp **** ***************************************************************************************************
+ 404:../src/neural_networks/Translator/network_CNN_FE.cpp **** void softmax(TPrecision *__restrict__ dData, TPrecision *__restrict__ dOut, TsInt iShapes )
+ 405:../src/neural_networks/Translator/network_CNN_FE.cpp **** {
+ 2036              		.loc 1 405 0
+ 2037              		.cfi_startproc
+ 2038              		@ args = 0, pretend = 0, frame = 0
+ 2039              		@ frame_needed = 0, uses_anonymous_args = 0
+ 2040              	.LVL278:
+ 406:../src/neural_networks/Translator/network_CNN_FE.cpp ****     TPrecision dMax, dSum = 0;
+ 407:../src/neural_networks/Translator/network_CNN_FE.cpp ****     TsInt iRow;
+ 408:../src/neural_networks/Translator/network_CNN_FE.cpp **** 
+ 409:../src/neural_networks/Translator/network_CNN_FE.cpp ****     dMax = dData[0];
+ 410:../src/neural_networks/Translator/network_CNN_FE.cpp ****     for (iRow = 1; iRow < iShapes; iRow++)
+ 2041              		.loc 1 410 0
+ 2042 0000 010052E3 		cmp	r2, #1
+ 405:../src/neural_networks/Translator/network_CNN_FE.cpp ****     TPrecision dMax, dSum = 0;
+ 2043              		.loc 1 405 0
+ 2044 0004 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 2045              		.cfi_def_cfa_offset 32
+ 2046              		.cfi_offset 4, -32
+ 2047              		.cfi_offset 5, -28
+ 2048              		.cfi_offset 6, -24
+ 2049              		.cfi_offset 7, -20
+ 2050              		.cfi_offset 8, -16
+ 2051              		.cfi_offset 9, -12
+ 2052              		.cfi_offset 10, -8
+ 2053              		.cfi_offset 14, -4
+ 2054 0008 028B2DED 		vpush.64	{d8}
+ 2055              		.cfi_def_cfa_offset 40
+ 2056              		.cfi_offset 80, -40
+ 2057              		.cfi_offset 81, -36
+ 409:../src/neural_networks/Translator/network_CNN_FE.cpp ****     for (iRow = 1; iRow < iShapes; iRow++)
+ 2058              		.loc 1 409 0
+ 2059 000c 008AD0ED 		vldr.32	s17, [r0]
+ 2060              	.LVL279:
+ 2061              		.loc 1 410 0
+ 2062 0010 B80000DA 		ble	.L183
+ 2063 0014 090052E3 		cmp	r2, #9
+ 2064 0018 AF0000DA 		ble	.L174
+ 2065 001c 0AE042E2 		sub	lr, r2, #10
+ 2066 0020 783080E2 		add	r3, r0, #120
+ 2067 0024 07E0CEE3 		bic	lr, lr, #7
+ 2068 0028 01C0A0E3 		mov	ip, #1
+ 2069 002c 09E08EE2 		add	lr, lr, #9
+ 2070              	.LVL280:
+ 2071              	.L165:
+ 411:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 412:../src/neural_networks/Translator/network_CNN_FE.cpp ****         if (dData[iRow] > dMax)
+ 2072              		.loc 1 412 0
+ 2073 0030 1D6A13ED 		vldr.32	s12, [r3, #-116]
+ 2074 0034 08C08CE2 		add	ip, ip, #8
+ 2075 0038 1C6A53ED 		vldr.32	s13, [r3, #-112]
+ 2076 003c 1B7A13ED 		vldr.32	s14, [r3, #-108]
+ 2077 0040 1A7A53ED 		vldr.32	s15, [r3, #-104]
+ 2078 0044 E86AB4EE 		vcmpe.f32	s12, s17
+ 2079 0048 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2080 004c 468AF0CE 		vmovgt.f32	s17, s12
+ 2081 0050 E68AF4EE 		vcmpe.f32	s17, s13
+ 2082 0054 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2083 0058 668AF04E 		vmovmi.f32	s17, s13
+ 2084 005c C78AF4EE 		vcmpe.f32	s17, s14
+ 2085 0060 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2086 0064 478AF04E 		vmovmi.f32	s17, s14
+ 2087 0068 197A13ED 		vldr.32	s14, [r3, #-100]
+ 2088 006c E78AF4EE 		vcmpe.f32	s17, s15
+ 2089 0070 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2090 0074 687AF05E 		vmovpl.f32	s15, s17
+ 2091 0078 188A53ED 		vldr.32	s17, [r3, #-96]
+ 2092 007c C77AF4EE 		vcmpe.f32	s15, s14
+ 2093 0080 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2094 0084 677AB05E 		vmovpl.f32	s14, s15
+ 2095 0088 177A53ED 		vldr.32	s15, [r3, #-92]
+ 2096 008c E87AB4EE 		vcmpe.f32	s14, s17
+ 2097 0090 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2098 0094 478AF05E 		vmovpl.f32	s17, s14
+ 2099 0098 167A13ED 		vldr.32	s14, [r3, #-88]
+ 2100 009c E78AF4EE 		vcmpe.f32	s17, s15
+ 2101 00a0 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2102 00a4 687AF05E 		vmovpl.f32	s15, s17
+ 2103 00a8 C77AF4EE 		vcmpe.f32	s15, s14
+ 2104 00ac 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2105 00b0 678AF05E 		vmovpl.f32	s17, s15
+ 2106 00b4 478AF04E 		vmovmi.f32	s17, s14
+ 2107              	.LVL281:
+ 2108 00b8 0E005CE1 		cmp	ip, lr
+ 2109 00bc 00F0D3F5 		pld	[r3]
+ 2110 00c0 203083E2 		add	r3, r3, #32
+ 2111 00c4 D9FFFF1A 		bne	.L165
+ 2112              	.LVL282:
+ 2113              	.L164:
+ 2114 00c8 0C3180E0 		add	r3, r0, ip, lsl #2
+ 2115              	.L166:
+ 2116              	.LVL283:
+ 2117 00cc 017AF3EC 		vldmia.32	r3!, {s15}
+ 410:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2118              		.loc 1 410 0
+ 2119 00d0 01C08CE2 		add	ip, ip, #1
+ 2120 00d4 E78AF4EE 		vcmpe.f32	s17, s15
+ 2121 00d8 10FAF1EE 		vmrs	APSR_nzcv, FPSCR
+ 2122 00dc 678AF04E 		vmovmi.f32	s17, s15
+ 2123              	.LVL284:
+ 2124 00e0 0C0052E1 		cmp	r2, ip
+ 2125 00e4 F8FFFFCA 		bgt	.L166
+ 2126              	.LVL285:
+ 2127              	.L163:
+ 2128 00e8 080052E3 		cmp	r2, #8
+ 2129 00ec 0190A0E1 		mov	r9, r1
+ 2130 00f0 0080A0E1 		mov	r8, r0
+ 2131 00f4 0270A0E1 		mov	r7, r2
+ 2132              	.LVL286:
+ 2133 00f8 790000DA 		ble	.L175
+ 2134 00fc 096042E2 		sub	r6, r2, #9
+ 2135 0100 7F8A9FED 		vldr.32	s16, .L184
+ 2136 0104 0760C6E3 		bic	r6, r6, #7
+ 2137 0108 284080E2 		add	r4, r0, #40
+ 2138 010c 086086E2 		add	r6, r6, #8
+ 2139 0110 0050A0E3 		mov	r5, #0
+ 2140              	.LVL287:
+ 2141              	.L168:
+ 413:../src/neural_networks/Translator/network_CNN_FE.cpp ****         {
+ 414:../src/neural_networks/Translator/network_CNN_FE.cpp ****         	dMax = dData[iRow];
+ 415:../src/neural_networks/Translator/network_CNN_FE.cpp ****         }
+ 416:../src/neural_networks/Translator/network_CNN_FE.cpp ****     }
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     for (iRow = 0; iRow < iShapes; iRow++)
+ 418:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****     	dData[iRow] = dData[iRow] - dMax;
+ 2142              		.loc 1 419 0 discriminator 2
+ 2143 0114 0A0A14ED 		vldr.32	s0, [r4, #-40]
+ 2144 0118 085085E2 		add	r5, r5, #8
+ 2145              	.LVL288:
+ 2146 011c 00F0D4F5 		pld	[r4]
+ 2147 0120 204084E2 		add	r4, r4, #32
+ 2148 0124 680A30EE 		vsub.f32	s0, s0, s17
+ 2149 0128 120A04ED 		vstr.32	s0, [r4, #-72]
+ 2150              	.LVL289:
+ 2151              	.LBB6:
+ 2152              	.LBB7:
+ 2153              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+   1:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // -*- C++ -*- C forwarding header.
+   2:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+   3:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // Copyright (C) 1997-2016 Free Software Foundation, Inc.
+   4:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** //
+   5:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // This file is part of the GNU ISO C++ Library.  This library is free
+   6:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // software; you can redistribute it and/or modify it under the
+   7:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // terms of the GNU General Public License as published by the
+   8:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // Free Software Foundation; either version 3, or (at your option)
+   9:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // any later version.
+  10:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  11:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // This library is distributed in the hope that it will be useful,
+  12:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // but WITHOUT ANY WARRANTY; without even the implied warranty of
+  13:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  14:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // GNU General Public License for more details.
+  15:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  16:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // Under Section 7 of GPL version 3, you are granted additional
+  17:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // permissions described in the GCC Runtime Library Exception, version
+  18:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // 3.1, as published by the Free Software Foundation.
+  19:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  20:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // You should have received a copy of the GNU General Public License and
+  21:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // a copy of the GCC Runtime Library Exception along with this program;
+  22:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+  23:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // <http://www.gnu.org/licenses/>.
+  24:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  25:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** /** @file include/cmath
+  26:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  This is a Standard C++ Library file.  You should @c \#include this file
+  27:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  in your programs, rather than any of the @a *.h implementation files.
+  28:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *
+  29:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  This is the C++ version of the Standard C Library header @c math.h,
+  30:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  and its contents are (mostly) the same as that header, but are all
+  31:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  contained in the namespace @c std (except for names which are defined
+  32:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  *  as macros in C).
+  33:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****  */
+  34:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  35:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** //
+  36:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // ISO C++ 14882: 26.5  C library
+  37:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** //
+  38:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  39:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #pragma GCC system_header
+  40:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  41:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #include <bits/c++config.h>
+  42:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #include <bits/cpp_type_traits.h>
+  43:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #include <ext/type_traits.h>
+  44:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #define _GLIBCXX_INCLUDE_NEXT_C_HEADERS
+  45:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #include_next <math.h>
+  46:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef _GLIBCXX_INCLUDE_NEXT_C_HEADERS
+  47:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  48:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef _GLIBCXX_CMATH
+  49:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #define _GLIBCXX_CMATH 1
+  50:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  51:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** // Get rid of those macros defined in <math.h> in lieu of real functions.
+  52:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef abs
+  53:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef div
+  54:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef acos
+  55:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef asin
+  56:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef atan
+  57:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef atan2
+  58:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef ceil
+  59:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef cos
+  60:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef cosh
+  61:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef exp
+  62:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef fabs
+  63:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef floor
+  64:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef fmod
+  65:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef frexp
+  66:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef ldexp
+  67:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef log
+  68:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef log10
+  69:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef modf
+  70:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef pow
+  71:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef sin
+  72:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef sinh
+  73:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef sqrt
+  74:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef tan
+  75:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #undef tanh
+  76:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  77:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** extern "C++"
+  78:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** {
+  79:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** namespace std _GLIBCXX_VISIBILITY(default)
+  80:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** {
+  81:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** _GLIBCXX_BEGIN_NAMESPACE_VERSION
+  82:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  83:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+  84:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR double
+  85:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   abs(double __x)
+  86:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_fabs(__x); }
+  87:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+  88:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  89:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+  90:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+  91:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   abs(float __x)
+  92:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_fabsf(__x); }
+  93:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  94:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+  95:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   abs(long double __x)
+  96:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_fabsl(__x); }
+  97:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+  98:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+  99:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 100:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 101:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value,
+ 102:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 103:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     abs(_Tp __x)
+ 104:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_fabs(__x); }
+ 105:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 106:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::acos;
+ 107:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 108:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 109:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 110:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   acos(float __x)
+ 111:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_acosf(__x); }
+ 112:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 113:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 114:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   acos(long double __x)
+ 115:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_acosl(__x); }
+ 116:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 117:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 118:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 119:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 120:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value, 
+ 121:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 122:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     acos(_Tp __x)
+ 123:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_acos(__x); }
+ 124:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 125:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::asin;
+ 126:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 127:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 128:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 129:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   asin(float __x)
+ 130:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_asinf(__x); }
+ 131:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 132:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 133:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   asin(long double __x)
+ 134:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_asinl(__x); }
+ 135:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 136:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 137:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 138:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 139:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value,
+ 140:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 141:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     asin(_Tp __x)
+ 142:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_asin(__x); }
+ 143:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 144:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::atan;
+ 145:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 146:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 147:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 148:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   atan(float __x)
+ 149:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_atanf(__x); }
+ 150:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 151:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 152:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   atan(long double __x)
+ 153:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_atanl(__x); }
+ 154:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 155:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 156:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 157:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 158:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value,
+ 159:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 160:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     atan(_Tp __x)
+ 161:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_atan(__x); }
+ 162:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 163:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::atan2;
+ 164:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 165:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 166:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 167:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   atan2(float __y, float __x)
+ 168:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_atan2f(__y, __x); }
+ 169:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 170:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 171:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   atan2(long double __y, long double __x)
+ 172:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_atan2l(__y, __x); }
+ 173:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 174:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 175:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp, typename _Up>
+ 176:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 177:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__promote_2<_Tp, _Up>::__type
+ 178:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     atan2(_Tp __y, _Up __x)
+ 179:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     {
+ 180:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****       typedef typename __gnu_cxx::__promote_2<_Tp, _Up>::__type __type;
+ 181:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****       return atan2(__type(__y), __type(__x));
+ 182:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     }
+ 183:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 184:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::ceil;
+ 185:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 186:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 187:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 188:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   ceil(float __x)
+ 189:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_ceilf(__x); }
+ 190:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 191:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 192:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   ceil(long double __x)
+ 193:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_ceill(__x); }
+ 194:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 195:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 196:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 197:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 198:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value, 
+ 199:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 200:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     ceil(_Tp __x)
+ 201:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_ceil(__x); }
+ 202:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 203:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::cos;
+ 204:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 205:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 206:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 207:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   cos(float __x)
+ 208:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_cosf(__x); }
+ 209:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 210:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 211:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   cos(long double __x)
+ 212:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_cosl(__x); }
+ 213:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 214:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 215:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 216:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 217:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value,
+ 218:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 219:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     cos(_Tp __x)
+ 220:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_cos(__x); }
+ 221:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 222:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::cosh;
+ 223:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 224:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 225:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 226:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   cosh(float __x)
+ 227:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_coshf(__x); }
+ 228:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 229:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR long double
+ 230:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   cosh(long double __x)
+ 231:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_coshl(__x); }
+ 232:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #endif
+ 233:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 234:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   template<typename _Tp>
+ 235:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     inline _GLIBCXX_CONSTEXPR
+ 236:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     typename __gnu_cxx::__enable_if<__is_integer<_Tp>::__value,
+ 237:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****                                     double>::__type
+ 238:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     cosh(_Tp __x)
+ 239:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****     { return __builtin_cosh(__x); }
+ 240:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 241:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   using ::exp;
+ 242:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** 
+ 243:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath **** #ifndef __CORRECT_ISO_CPP_MATH_H_PROTO
+ 244:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   inline _GLIBCXX_CONSTEXPR float
+ 245:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   exp(float __x)
+ 246:c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\c++\6.3.1\cmath ****   { return __builtin_expf(__x); }
+ 2154              		.loc 2 246 0 discriminator 2
+ 2155 012c FEFFFFEB 		bl	expf
+ 2156              	.LVL290:
+ 2157              	.LBE7:
+ 2158              	.LBE6:
+ 2159              		.loc 1 419 0 discriminator 2
+ 2160 0130 117A54ED 		vldr.32	s15, [r4, #-68]
+ 420:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2161              		.loc 1 420 0 discriminator 2
+ 2162 0134 088A30EE 		vadd.f32	s16, s0, s16
+ 2163              	.LVL291:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2164              		.loc 1 419 0 discriminator 2
+ 2165 0138 E80A37EE 		vsub.f32	s0, s15, s17
+ 2166 013c 110A04ED 		vstr.32	s0, [r4, #-68]
+ 2167              	.LVL292:
+ 2168              	.LBB16:
+ 2169              	.LBB8:
+ 2170              		.loc 2 246 0 discriminator 2
+ 2171 0140 FEFFFFEB 		bl	expf
+ 2172              	.LVL293:
+ 2173              	.LBE8:
+ 2174              	.LBE16:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2175              		.loc 1 419 0 discriminator 2
+ 2176 0144 107A54ED 		vldr.32	s15, [r4, #-64]
+ 2177              		.loc 1 420 0 discriminator 2
+ 2178 0148 008A38EE 		vadd.f32	s16, s16, s0
+ 2179              	.LVL294:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2180              		.loc 1 419 0 discriminator 2
+ 2181 014c E80A37EE 		vsub.f32	s0, s15, s17
+ 2182 0150 100A04ED 		vstr.32	s0, [r4, #-64]
+ 2183              	.LVL295:
+ 2184              	.LBB17:
+ 2185              	.LBB9:
+ 2186              		.loc 2 246 0 discriminator 2
+ 2187 0154 FEFFFFEB 		bl	expf
+ 2188              	.LVL296:
+ 2189              	.LBE9:
+ 2190              	.LBE17:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2191              		.loc 1 419 0 discriminator 2
+ 2192 0158 0F7A54ED 		vldr.32	s15, [r4, #-60]
+ 2193              		.loc 1 420 0 discriminator 2
+ 2194 015c 008A38EE 		vadd.f32	s16, s16, s0
+ 2195              	.LVL297:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2196              		.loc 1 419 0 discriminator 2
+ 2197 0160 E80A37EE 		vsub.f32	s0, s15, s17
+ 2198 0164 0F0A04ED 		vstr.32	s0, [r4, #-60]
+ 2199              	.LVL298:
+ 2200              	.LBB18:
+ 2201              	.LBB10:
+ 2202              		.loc 2 246 0 discriminator 2
+ 2203 0168 FEFFFFEB 		bl	expf
+ 2204              	.LVL299:
+ 2205              	.LBE10:
+ 2206              	.LBE18:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2207              		.loc 1 419 0 discriminator 2
+ 2208 016c 0E7A54ED 		vldr.32	s15, [r4, #-56]
+ 2209              		.loc 1 420 0 discriminator 2
+ 2210 0170 008A38EE 		vadd.f32	s16, s16, s0
+ 2211              	.LVL300:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2212              		.loc 1 419 0 discriminator 2
+ 2213 0174 E80A37EE 		vsub.f32	s0, s15, s17
+ 2214 0178 0E0A04ED 		vstr.32	s0, [r4, #-56]
+ 2215              	.LVL301:
+ 2216              	.LBB19:
+ 2217              	.LBB11:
+ 2218              		.loc 2 246 0 discriminator 2
+ 2219 017c FEFFFFEB 		bl	expf
+ 2220              	.LVL302:
+ 2221              	.LBE11:
+ 2222              	.LBE19:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2223              		.loc 1 419 0 discriminator 2
+ 2224 0180 0D7A54ED 		vldr.32	s15, [r4, #-52]
+ 2225              		.loc 1 420 0 discriminator 2
+ 2226 0184 008A38EE 		vadd.f32	s16, s16, s0
+ 2227              	.LVL303:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2228              		.loc 1 419 0 discriminator 2
+ 2229 0188 E80A37EE 		vsub.f32	s0, s15, s17
+ 2230 018c 0D0A04ED 		vstr.32	s0, [r4, #-52]
+ 2231              	.LVL304:
+ 2232              	.LBB20:
+ 2233              	.LBB12:
+ 2234              		.loc 2 246 0 discriminator 2
+ 2235 0190 FEFFFFEB 		bl	expf
+ 2236              	.LVL305:
+ 2237              	.LBE12:
+ 2238              	.LBE20:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2239              		.loc 1 419 0 discriminator 2
+ 2240 0194 0C7A54ED 		vldr.32	s15, [r4, #-48]
+ 2241              		.loc 1 420 0 discriminator 2
+ 2242 0198 008A38EE 		vadd.f32	s16, s16, s0
+ 2243              	.LVL306:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2244              		.loc 1 419 0 discriminator 2
+ 2245 019c E80A37EE 		vsub.f32	s0, s15, s17
+ 2246 01a0 0C0A04ED 		vstr.32	s0, [r4, #-48]
+ 2247              	.LVL307:
+ 2248              	.LBB21:
+ 2249              	.LBB13:
+ 2250              		.loc 2 246 0 discriminator 2
+ 2251 01a4 FEFFFFEB 		bl	expf
+ 2252              	.LVL308:
+ 2253              	.LBE13:
+ 2254              	.LBE21:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2255              		.loc 1 419 0 discriminator 2
+ 2256 01a8 0B7A54ED 		vldr.32	s15, [r4, #-44]
+ 2257              		.loc 1 420 0 discriminator 2
+ 2258 01ac 008A38EE 		vadd.f32	s16, s16, s0
+ 2259              	.LVL309:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2260              		.loc 1 419 0 discriminator 2
+ 2261 01b0 E80A37EE 		vsub.f32	s0, s15, s17
+ 2262 01b4 0B0A04ED 		vstr.32	s0, [r4, #-44]
+ 2263              	.LVL310:
+ 2264              	.LBB22:
+ 2265              	.LBB14:
+ 2266              		.loc 2 246 0 discriminator 2
+ 2267 01b8 FEFFFFEB 		bl	expf
+ 2268              	.LVL311:
+ 2269 01bc 060055E1 		cmp	r5, r6
+ 2270              	.LBE14:
+ 2271              	.LBE22:
+ 2272              		.loc 1 420 0 discriminator 2
+ 2273 01c0 008A38EE 		vadd.f32	s16, s16, s0
+ 2274              	.LVL312:
+ 2275 01c4 D2FFFF1A 		bne	.L168
+ 2276              	.LVL313:
+ 2277              	.L167:
+ 2278 01c8 054188E0 		add	r4, r8, r5, lsl #2
+ 2279              	.L169:
+ 2280              	.LVL314:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2281              		.loc 1 419 0
+ 2282 01cc 000A94ED 		vldr.32	s0, [r4]
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2283              		.loc 1 417 0
+ 2284 01d0 015085E2 		add	r5, r5, #1
+ 2285              	.LVL315:
+ 419:../src/neural_networks/Translator/network_CNN_FE.cpp ****         dSum = dSum + exp(dData[iRow]);
+ 2286              		.loc 1 419 0
+ 2287 01d4 680A30EE 		vsub.f32	s0, s0, s17
+ 2288 01d8 010AA4EC 		vstmia.32	r4!, {s0}
+ 2289              	.LVL316:
+ 2290              	.LBB23:
+ 2291              	.LBB15:
+ 2292              		.loc 2 246 0
+ 2293 01dc FEFFFFEB 		bl	expf
+ 2294              	.LVL317:
+ 2295              	.LBE15:
+ 2296              	.LBE23:
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2297              		.loc 1 417 0
+ 2298 01e0 050057E1 		cmp	r7, r5
+ 2299              		.loc 1 420 0
+ 2300 01e4 008A38EE 		vadd.f32	s16, s16, s0
+ 2301              	.LVL318:
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2302              		.loc 1 417 0
+ 2303 01e8 F7FFFFCA 		bgt	.L169
+ 2304 01ec 080057E3 		cmp	r7, #8
+ 2305 01f0 3E0000DA 		ble	.L176
+ 2306 01f4 09A047E2 		sub	r10, r7, #9
+ 2307 01f8 1C5088E2 		add	r5, r8, #28
+ 2308              	.LVL319:
+ 2309 01fc 07A0CAE3 		bic	r10, r10, #7
+ 2310 0200 1C4089E2 		add	r4, r9, #28
+ 2311 0204 08A08AE2 		add	r10, r10, #8
+ 2312 0208 0060A0E3 		mov	r6, #0
+ 2313              	.L171:
+ 2314              	.LVL320:
+ 2315              	.LBB24:
+ 2316              	.LBB25:
+ 2317              		.loc 2 246 0 discriminator 2
+ 2318 020c 070A15ED 		vldr.32	s0, [r5, #-28]
+ 2319 0210 086086E2 		add	r6, r6, #8
+ 2320              	.LVL321:
+ 2321 0214 00F0D5F5 		pld	[r5]
+ 2322              	.LVL322:
+ 2323 0218 FEFFFFEB 		bl	expf
+ 2324              	.LVL323:
+ 2325              	.LBE25:
+ 2326              	.LBE24:
+ 421:../src/neural_networks/Translator/network_CNN_FE.cpp ****     }
+ 422:../src/neural_networks/Translator/network_CNN_FE.cpp ****     for (iRow = 0; iRow < iShapes; iRow++)
+ 423:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 424:../src/neural_networks/Translator/network_CNN_FE.cpp ****     	dOut[iRow] = exp(dData[iRow])/dSum;    //output
+ 2327              		.loc 1 424 0 discriminator 2
+ 2328 021c 080A80EE 		vdiv.f32	s0, s0, s16
+ 2329 0220 00F0D4F5 		pld	[r4]
+ 2330 0224 070A04ED 		vstr.32	s0, [r4, #-28]
+ 2331              	.LVL324:
+ 2332              	.LBB36:
+ 2333              	.LBB26:
+ 2334              		.loc 2 246 0 discriminator 2
+ 2335 0228 060A15ED 		vldr.32	s0, [r5, #-24]
+ 2336 022c FEFFFFEB 		bl	expf
+ 2337              	.LVL325:
+ 2338              	.LBE26:
+ 2339              	.LBE36:
+ 2340              		.loc 1 424 0 discriminator 2
+ 2341 0230 080A80EE 		vdiv.f32	s0, s0, s16
+ 2342 0234 060A04ED 		vstr.32	s0, [r4, #-24]
+ 2343              	.LVL326:
+ 2344              	.LBB37:
+ 2345              	.LBB27:
+ 2346              		.loc 2 246 0 discriminator 2
+ 2347 0238 050A15ED 		vldr.32	s0, [r5, #-20]
+ 2348 023c FEFFFFEB 		bl	expf
+ 2349              	.LVL327:
+ 2350              	.LBE27:
+ 2351              	.LBE37:
+ 2352              		.loc 1 424 0 discriminator 2
+ 2353 0240 080A80EE 		vdiv.f32	s0, s0, s16
+ 2354 0244 050A04ED 		vstr.32	s0, [r4, #-20]
+ 2355              	.LVL328:
+ 2356              	.LBB38:
+ 2357              	.LBB28:
+ 2358              		.loc 2 246 0 discriminator 2
+ 2359 0248 040A15ED 		vldr.32	s0, [r5, #-16]
+ 2360 024c FEFFFFEB 		bl	expf
+ 2361              	.LVL329:
+ 2362              	.LBE28:
+ 2363              	.LBE38:
+ 2364              		.loc 1 424 0 discriminator 2
+ 2365 0250 080A80EE 		vdiv.f32	s0, s0, s16
+ 2366 0254 040A04ED 		vstr.32	s0, [r4, #-16]
+ 2367              	.LVL330:
+ 2368              	.LBB39:
+ 2369              	.LBB29:
+ 2370              		.loc 2 246 0 discriminator 2
+ 2371 0258 030A15ED 		vldr.32	s0, [r5, #-12]
+ 2372 025c FEFFFFEB 		bl	expf
+ 2373              	.LVL331:
+ 2374              	.LBE29:
+ 2375              	.LBE39:
+ 2376              		.loc 1 424 0 discriminator 2
+ 2377 0260 080A80EE 		vdiv.f32	s0, s0, s16
+ 2378 0264 030A04ED 		vstr.32	s0, [r4, #-12]
+ 2379              	.LVL332:
+ 2380              	.LBB40:
+ 2381              	.LBB30:
+ 2382              		.loc 2 246 0 discriminator 2
+ 2383 0268 020A15ED 		vldr.32	s0, [r5, #-8]
+ 2384 026c FEFFFFEB 		bl	expf
+ 2385              	.LVL333:
+ 2386              	.LBE30:
+ 2387              	.LBE40:
+ 2388              		.loc 1 424 0 discriminator 2
+ 2389 0270 080A80EE 		vdiv.f32	s0, s0, s16
+ 2390 0274 020A04ED 		vstr.32	s0, [r4, #-8]
+ 2391              	.LVL334:
+ 2392              	.LBB41:
+ 2393              	.LBB31:
+ 2394              		.loc 2 246 0 discriminator 2
+ 2395 0278 010A15ED 		vldr.32	s0, [r5, #-4]
+ 2396 027c FEFFFFEB 		bl	expf
+ 2397              	.LVL335:
+ 2398              	.LBE31:
+ 2399              	.LBE41:
+ 2400              		.loc 1 424 0 discriminator 2
+ 2401 0280 080A80EE 		vdiv.f32	s0, s0, s16
+ 2402              	.LBB42:
+ 2403              	.LBB32:
+ 2404              		.loc 2 246 0 discriminator 2
+ 2405 0284 0530A0E1 		mov	r3, r5
+ 2406 0288 205085E2 		add	r5, r5, #32
+ 2407              	.LBE32:
+ 2408              	.LBE42:
+ 2409              		.loc 1 424 0 discriminator 2
+ 2410 028c 010A04ED 		vstr.32	s0, [r4, #-4]
+ 2411              	.LBB43:
+ 2412              	.LBB33:
+ 2413              		.loc 2 246 0 discriminator 2
+ 2414 0290 000A93ED 		vldr.32	s0, [r3]
+ 2415 0294 FEFFFFEB 		bl	expf
+ 2416              	.LVL336:
+ 2417              	.LBE33:
+ 2418              	.LBE43:
+ 2419              		.loc 1 424 0 discriminator 2
+ 2420 0298 080A80EE 		vdiv.f32	s0, s0, s16
+ 2421 029c 0A0056E1 		cmp	r6, r10
+ 2422 02a0 103A10EE 		vmov	r3, s0
+ 2423 02a4 203084E4 		str	r3, [r4], #32	@ float
+ 2424 02a8 D7FFFF1A 		bne	.L171
+ 2425              	.LVL337:
+ 2426              	.L170:
+ 2427 02ac 0611A0E1 		lsl	r1, r6, #2
+ 2428 02b0 018088E0 		add	r8, r8, r1
+ 2429              	.LVL338:
+ 2430 02b4 019089E0 		add	r9, r9, r1
+ 2431              	.LVL339:
+ 2432              	.L173:
+ 2433              	.LBB44:
+ 2434              	.LBB34:
+ 2435              		.loc 2 246 0
+ 2436 02b8 010AB8EC 		vldmia.32	r8!, {s0}
+ 2437              	.LVL340:
+ 2438              	.LBE34:
+ 2439              	.LBE44:
+ 422:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2440              		.loc 1 422 0
+ 2441 02bc 016086E2 		add	r6, r6, #1
+ 2442              	.LVL341:
+ 2443              	.LBB45:
+ 2444              	.LBB35:
+ 2445              		.loc 2 246 0
+ 2446 02c0 FEFFFFEB 		bl	expf
+ 2447              	.LVL342:
+ 2448              	.LBE35:
+ 2449              	.LBE45:
+ 2450              		.loc 1 424 0
+ 2451 02c4 080A80EE 		vdiv.f32	s0, s0, s16
+ 422:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2452              		.loc 1 422 0
+ 2453 02c8 070056E1 		cmp	r6, r7
+ 2454              		.loc 1 424 0
+ 2455 02cc 010AA9EC 		vstmia.32	r9!, {s0}
+ 422:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2456              		.loc 1 422 0
+ 2457 02d0 F8FFFFBA 		blt	.L173
+ 2458              	.LVL343:
+ 2459              	.L161:
+ 425:../src/neural_networks/Translator/network_CNN_FE.cpp ****     }
+ 426:../src/neural_networks/Translator/network_CNN_FE.cpp **** }
+ 2460              		.loc 1 426 0
+ 2461 02d4 028BBDEC 		vldm	sp!, {d8}
+ 2462              		.cfi_remember_state
+ 2463              		.cfi_restore 80
+ 2464              		.cfi_restore 81
+ 2465              		.cfi_def_cfa_offset 32
+ 2466 02d8 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 2467              	.LVL344:
+ 2468              	.L174:
+ 2469              		.cfi_restore_state
+ 410:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2470              		.loc 1 410 0
+ 2471 02dc 01C0A0E3 		mov	ip, #1
+ 2472 02e0 78FFFFEA 		b	.L164
+ 2473              	.LVL345:
+ 2474              	.L175:
+ 2475 02e4 068A9FED 		vldr.32	s16, .L184
+ 2476 02e8 0050A0E3 		mov	r5, #0
+ 2477 02ec B5FFFFEA 		b	.L167
+ 2478              	.LVL346:
+ 2479              	.L176:
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2480              		.loc 1 417 0
+ 2481 02f0 0060A0E3 		mov	r6, #0
+ 2482 02f4 ECFFFFEA 		b	.L170
+ 2483              	.LVL347:
+ 2484              	.L183:
+ 417:../src/neural_networks/Translator/network_CNN_FE.cpp ****     {
+ 2485              		.loc 1 417 0 is_stmt 0 discriminator 3
+ 2486 02f8 000052E3 		cmp	r2, #0
+ 2487 02fc F4FFFFDA 		ble	.L161
+ 2488 0300 78FFFFEA 		b	.L163
+ 2489              	.L185:
+ 2490              		.align	2
+ 2491              	.L184:
+ 2492 0304 00000000 		.word	0
+ 2493              		.cfi_endproc
+ 2494              	.LFE235:
+ 2495              		.cantunwind
+ 2496              		.fnend
+ 2498              		.text
+ 2499              	.Letext0:
+ 2500              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2501              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2502              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 2503              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2504              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2505              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2506              		.file 9 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 2507              		.file 10 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2508              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2509              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 2510              		.file 13 "../src/neural_networks/Translator/Typedef.h"
+ 2511              		.file 14 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 network_CNN_FE.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:17     .text._Z7paddingPfS_Pi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:23     .text._Z7paddingPfS_Pi:00000000 _Z7paddingPfS_Pi
+ .ARM.exidx.text._Z7paddingPfS_Pi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:215    .text._Z15avgpool_paddingPfS_Pi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:221    .text._Z15avgpool_paddingPfS_Pi:00000000 _Z15avgpool_paddingPfS_Pi
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:505    .text._Z15avgpool_paddingPfS_Pi:000002a8 $d
+.ARM.exidx.text._Z15avgpool_paddingPfS_Pi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:515    .text._Z23convolution_without_padPfPKfS1_S_PiS2_:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:521    .text._Z23convolution_without_padPfPKfS1_S_PiS2_:00000000 _Z23convolution_without_padPfPKfS1_S_PiS2_
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1004   .text._Z23convolution_without_padPfPKfS1_S_PiS2_:00000510 $d
+.ARM.exidx.text._Z23convolution_without_padPfPKfS1_S_PiS2_:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1011   .text._Z4reluPfS_i:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1017   .text._Z4reluPfS_i:00000000 _Z4reluPfS_i
+     .ARM.exidx.text._Z4reluPfS_i:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1059   .text._Z27average_pooling_without_padPfS_Pi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1065   .text._Z27average_pooling_without_padPfS_Pi:00000000 _Z27average_pooling_without_padPfS_Pi
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1453   .text._Z27average_pooling_without_padPfS_Pi:000003d4 $d
+.ARM.exidx.text._Z27average_pooling_without_padPfS_Pi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1460   .text._Z23max_pooling_without_padPfS_Pi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1466   .text._Z23max_pooling_without_padPfS_Pi:00000000 _Z23max_pooling_without_padPfS_Pi
+.ARM.exidx.text._Z23max_pooling_without_padPfS_Pi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1744   .text._Z19pooling_without_padPfS_Pi:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1750   .text._Z19pooling_without_padPfS_Pi:00000000 _Z19pooling_without_padPfS_Pi
+.ARM.exidx.text._Z19pooling_without_padPfS_Pi:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1776   .text._Z12innerproductPfPKfS1_S_PiS2_:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:1782   .text._Z12innerproductPfPKfS1_S_PiS2_:00000000 _Z12innerproductPfPKfS1_S_PiS2_
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:2020   .text._Z12innerproductPfPKfS1_S_PiS2_:00000238 $d
+.ARM.exidx.text._Z12innerproductPfPKfS1_S_PiS2_:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:2027   .text._Z7softmaxPfS_i:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:2033   .text._Z7softmaxPfS_i:00000000 _Z7softmaxPfS_i
+C:\Users\a5050395\AppData\Local\Temp\ccc7Z4zN.s:2492   .text._Z7softmaxPfS_i:00000304 $d
+  .ARM.exidx.text._Z7softmaxPfS_i:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.94ad444a790c92d5bddf79c4826237c2
+                           .group:00000000 wm4.cconfig.h.31.21483d26c3710eb58c7a44c20d82c775
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.5cdadbb3efe495d1c9e38350b8c376c7
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.math.h.13.4f1ab8d1725735081bbdb9ebcf6dba66
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+
+UNDEFINED SYMBOLS
+memset
+memcpy
+expf

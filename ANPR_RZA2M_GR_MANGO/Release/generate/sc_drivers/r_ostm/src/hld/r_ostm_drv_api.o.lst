@@ -1,0 +1,253 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_ostm_drv_api.c"
+  13              		.section	.text.ostm_get_version,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	ostm_get_version:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22              		@ link register save eliminated.
+  23 0000 003000E3 		movw	r3, #:lower16:.LC0
+  24 0004 0100A0E3 		mov	r0, #1
+  25 0008 02C0A0E3 		mov	ip, #2
+  26 000c 0020A0E3 		mov	r2, #0
+  27 0010 003040E3 		movt	r3, #:upper16:.LC0
+  28 0014 B200C1E1 		strh	r0, [r1, #2]	@ movhi
+  29 0018 B0C0C1E1 		strh	ip, [r1]	@ movhi
+  30 001c 0100A0E1 		mov	r0, r1
+  31 0020 0C0081E9 		stmib	r1, {r2, r3}
+  32 0024 FEFFFFEA 		b	R_OSTM_GetVersion
+  34              		.section	.text.ostm_read,"ax",%progbits
+  35              		.align	2
+  36              		.syntax unified
+  37              		.arm
+  38              		.fpu neon
+  40              	ostm_read:
+  41              		@ args = 0, pretend = 0, frame = 0
+  42              		@ frame_needed = 0, uses_anonymous_args = 0
+  43              		@ link register save eliminated.
+  44 0000 030052E3 		cmp	r2, #3
+  45 0004 0500009A 		bls	.L3
+  46 0008 1C30D0E5 		ldrb	r3, [r0, #28]	@ zero_extendqisi2
+  47 000c 002000E3 		movw	r2, #:lower16:.LANCHOR0
+  48 0010 002040E3 		movt	r2, #:upper16:.LANCHOR0
+  49 0014 033183E0 		add	r3, r3, r3, lsl #2
+  50 0018 0301D2E7 		ldrb	r0, [r2, r3, lsl #2]	@ zero_extendqisi2
+  51 001c FEFFFFEA 		b	R_OSTM_GetCount
+  52              	.L3:
+  53 0020 0000E0E3 		mvn	r0, #0
+  54 0024 1EFF2FE1 		bx	lr
+  56              		.section	.text.ostm_close,"ax",%progbits
+  57              		.align	2
+  58              		.syntax unified
+  59              		.arm
+  60              		.fpu neon
+  62              	ostm_close:
+  63              		@ args = 0, pretend = 0, frame = 0
+  64              		@ frame_needed = 0, uses_anonymous_args = 0
+  65              		@ link register save eliminated.
+  66 0000 1C30D0E5 		ldrb	r3, [r0, #28]	@ zero_extendqisi2
+  67 0004 001000E3 		movw	r1, #:lower16:.LANCHOR0
+  68 0008 001040E3 		movt	r1, #:upper16:.LANCHOR0
+  69 000c 002000E3 		movw	r2, #:lower16:.LANCHOR1
+  70 0010 002040E3 		movt	r2, #:upper16:.LANCHOR1
+  71 0014 033183E0 		add	r3, r3, r3, lsl #2
+  72 0018 0331D1E7 		ldrb	r3, [r1, r3, lsl #2]	@ zero_extendqisi2
+  73 001c 031192E7 		ldr	r1, [r2, r3, lsl #2]
+  74 0020 000051E3 		cmp	r1, #0
+  75 0024 1EFF2F01 		bxeq	lr
+  76 0028 0010A0E3 		mov	r1, #0
+  77 002c 0300A0E1 		mov	r0, r3
+  78 0030 031182E7 		str	r1, [r2, r3, lsl #2]
+  79 0034 FEFFFFEA 		b	R_OSTM_Close
+  81              		.section	.text.ostm_control,"ax",%progbits
+  82              		.align	2
+  83              		.syntax unified
+  84              		.arm
+  85              		.fpu neon
+  87              	ostm_control:
+  88              		@ args = 0, pretend = 0, frame = 0
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90 0000 1C30D0E5 		ldrb	r3, [r0, #28]	@ zero_extendqisi2
+  91 0004 000000E3 		movw	r0, #:lower16:.LANCHOR0
+  92 0008 000040E3 		movt	r0, #:upper16:.LANCHOR0
+  93 000c 70402DE9 		push	{r4, r5, r6, lr}
+  94 0010 033183E0 		add	r3, r3, r3, lsl #2
+  95 0014 0351D0E7 		ldrb	r5, [r0, r3, lsl #2]	@ zero_extendqisi2
+  96 0018 030051E3 		cmp	r1, #3
+  97 001c 01F19F97 		ldrls	pc, [pc, r1, asl #2]
+  98 0020 1E0000EA 		b	.L16
+  99              	.L10:
+ 100 0024 94000000 		.word	.L9
+ 101 0028 88000000 		.word	.L11
+ 102 002c 4C000000 		.word	.L12
+ 103 0030 34000000 		.word	.L13
+ 104              	.L13:
+ 105 0034 000052E3 		cmp	r2, #0
+ 106 0038 1800000A 		beq	.L16
+ 107 003c 0500A0E1 		mov	r0, r5
+ 108 0040 0210A0E1 		mov	r1, r2
+ 109 0044 7040BDE8 		pop	{r4, r5, r6, lr}
+ 110 0048 FEFFFFEA 		b	R_OSTM_GetCount
+ 111              	.L12:
+ 112 004c 000052E3 		cmp	r2, #0
+ 113 0050 1200000A 		beq	.L16
+ 114 0054 0500A0E1 		mov	r0, r5
+ 115 0058 0240A0E1 		mov	r4, r2
+ 116 005c FEFFFFEB 		bl	R_OSTM_Stop
+ 117 0060 000050E3 		cmp	r0, #0
+ 118 0064 7080BD18 		popne	{r4, r5, r6, pc}
+ 119 0068 0500A0E1 		mov	r0, r5
+ 120 006c FEFFFFEB 		bl	R_OSTM_Close
+ 121 0070 000050E3 		cmp	r0, #0
+ 122 0074 7080BD18 		popne	{r4, r5, r6, pc}
+ 123 0078 0410A0E1 		mov	r1, r4
+ 124 007c 0500A0E1 		mov	r0, r5
+ 125 0080 7040BDE8 		pop	{r4, r5, r6, lr}
+ 126 0084 FEFFFFEA 		b	R_OSTM_Init
+ 127              	.L11:
+ 128 0088 0500A0E1 		mov	r0, r5
+ 129 008c 7040BDE8 		pop	{r4, r5, r6, lr}
+ 130 0090 FEFFFFEA 		b	R_OSTM_Stop
+ 131              	.L9:
+ 132 0094 0500A0E1 		mov	r0, r5
+ 133 0098 7040BDE8 		pop	{r4, r5, r6, lr}
+ 134 009c FEFFFFEA 		b	R_OSTM_Start
+ 135              	.L16:
+ 136 00a0 0000E0E3 		mvn	r0, #0
+ 137 00a4 7080BDE8 		pop	{r4, r5, r6, pc}
+ 139              		.section	.text.ostm_open,"ax",%progbits
+ 140              		.align	2
+ 141              		.syntax unified
+ 142              		.arm
+ 143              		.fpu neon
+ 145              	ostm_open:
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148 0000 1C30D0E5 		ldrb	r3, [r0, #28]	@ zero_extendqisi2
+ 149 0004 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 150 0008 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 151 000c 70402DE9 		push	{r4, r5, r6, lr}
+ 152 0010 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 153 0014 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 154 0018 033183E0 		add	r3, r3, r3, lsl #2
+ 155 001c 0331A0E1 		lsl	r3, r3, #2
+ 156 0020 0350D1E7 		ldrb	r5, [r1, r3]	@ zero_extendqisi2
+ 157 0024 052194E7 		ldr	r2, [r4, r5, lsl #2]
+ 158 0028 000052E3 		cmp	r2, #0
+ 159 002c 0700001A 		bne	.L20
+ 160 0030 043083E2 		add	r3, r3, #4
+ 161 0034 0500A0E1 		mov	r0, r5
+ 162 0038 031081E0 		add	r1, r1, r3
+ 163 003c FEFFFFEB 		bl	R_OSTM_Init
+ 164 0040 000050E3 		cmp	r0, #0
+ 165 0044 0130A003 		moveq	r3, #1
+ 166 0048 05318407 		streq	r3, [r4, r5, lsl #2]
+ 167 004c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 168              	.L20:
+ 169 0050 0000E0E3 		mvn	r0, #0
+ 170 0054 7080BDE8 		pop	{r4, r5, r6, pc}
+ 172              		.global	g_ostm_driver
+ 173              		.global	gs_r_drv_ostm_open
+ 174              		.section	.bss.gs_r_drv_ostm_open,"aw",%nobits
+ 175              		.align	3
+ 176              		.set	.LANCHOR1,. + 0
+ 179              	gs_r_drv_ostm_open:
+ 180 0000 00000000 		.space	12
+ 180      00000000 
+ 180      00000000 
+ 181              		.section	.rodata.OSTM_SC_TABLE,"a",%progbits
+ 182              		.align	2
+ 183              		.set	.LANCHOR0,. + 0
+ 186              	OSTM_SC_TABLE:
+ 187 0000 01000000 		.word	1
+ 188 0004 01       		.byte	1
+ 189 0005 01       		.byte	1
+ 190 0006 0000     		.space	2
+ 191 0008 00000000 		.word	0
+ 192 000c 00       		.byte	0
+ 193 000d 01       		.byte	1
+ 194 000e 00       		.byte	0
+ 195 000f 00       		.space	1
+ 196 0010 00000000 		.word	0
+ 197 0014 02000000 		.word	2
+ 198 0018 00       		.byte	0
+ 199 0019 00       		.byte	0
+ 200 001a 0000     		.space	2
+ 201 001c 01000000 		.word	1
+ 202 0020 00       		.byte	0
+ 203 0021 00       		.byte	0
+ 204 0022 1E       		.byte	30
+ 205 0023 00       		.space	1
+ 206 0024 00000000 		.word	FreeRTOS_Tick_Handler
+ 207              		.section	.rodata.g_ostm_driver,"a",%progbits
+ 208              		.align	2
+ 211              	g_ostm_driver:
+ 212 0000 00000000 		.word	.LC1
+ 213 0004 00000000 		.word	ostm_open
+ 214 0008 00000000 		.word	ostm_close
+ 215 000c 00000000 		.word	ostm_read
+ 216 0010 00000000 		.word	no_dev_write
+ 217 0014 00000000 		.word	ostm_control
+ 218 0018 00000000 		.word	ostm_get_version
+ 219              		.section	.rodata.ostm_get_version.str1.4,"aMS",%progbits,1
+ 220              		.align	2
+ 221              	.LC0:
+ 222 0000 484C4420 		.ascii	"HLD OSTM\000"
+ 222      4F53544D 
+ 222      00
+ 223              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 224              		.align	2
+ 225              	.LC1:
+ 226 0000 4F532054 		.ascii	"OS Timer Driver\000"
+ 226      696D6572 
+ 226      20447269 
+ 226      76657200 
+ 227              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_ostm_drv_api.c
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:14     .text.ostm_get_version:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:19     .text.ostm_get_version:00000000 ostm_get_version
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:221    .rodata.ostm_get_version.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:35     .text.ostm_read:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:40     .text.ostm_read:00000000 ostm_read
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:183    .rodata.OSTM_SC_TABLE:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:57     .text.ostm_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:62     .text.ostm_close:00000000 ostm_close
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:176    .bss.gs_r_drv_ostm_open:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:82     .text.ostm_control:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:87     .text.ostm_control:00000000 ostm_control
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:100    .text.ostm_control:00000024 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:105    .text.ostm_control:00000034 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:140    .text.ostm_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:145    .text.ostm_open:00000000 ostm_open
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:211    .rodata.g_ostm_driver:00000000 g_ostm_driver
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:179    .bss.gs_r_drv_ostm_open:00000000 gs_r_drv_ostm_open
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:175    .bss.gs_r_drv_ostm_open:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:182    .rodata.OSTM_SC_TABLE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:186    .rodata.OSTM_SC_TABLE:00000000 OSTM_SC_TABLE
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:208    .rodata.g_ostm_driver:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:220    .rodata.ostm_get_version.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9Ihdqu.s:224    .rodata.str1.4:00000000 $d
+
+UNDEFINED SYMBOLS
+R_OSTM_GetVersion
+R_OSTM_GetCount
+R_OSTM_Close
+R_OSTM_Stop
+R_OSTM_Init
+R_OSTM_Start
+FreeRTOS_Tick_Handler
+no_dev_write

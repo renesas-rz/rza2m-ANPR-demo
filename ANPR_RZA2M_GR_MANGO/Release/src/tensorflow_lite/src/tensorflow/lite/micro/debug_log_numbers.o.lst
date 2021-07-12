@@ -1,0 +1,320 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 4
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"debug_log_numbers.cpp"
+  13              		.section	.text._ZN12_GLOBAL__N_19StrCatStrEPciPKc,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	_ZN12_GLOBAL__N_19StrCatStrEPciPKc:
+  20              		.fnstart
+  21              	.LFB1:
+  22              		@ args = 0, pretend = 0, frame = 0
+  23              		@ frame_needed = 0, uses_anonymous_args = 0
+  24 0000 00C0A0E1 		mov	ip, r0
+  25 0004 04E02DE5 		str	lr, [sp, #-4]!
+  26              	.L2:
+  27 0008 0C30A0E1 		mov	r3, ip
+  28 000c 01C08CE2 		add	ip, ip, #1
+  29 0010 00E0D3E5 		ldrb	lr, [r3]	@ zero_extendqisi2
+  30 0014 00005EE3 		cmp	lr, #0
+  31 0018 FAFFFF1A 		bne	.L2
+  32 001c 011041E2 		sub	r1, r1, #1
+  33 0020 012042E2 		sub	r2, r2, #1
+  34 0024 010080E0 		add	r0, r0, r1
+  35              	.L4:
+  36 0028 0110F2E5 		ldrb	r1, [r2, #1]!	@ zero_extendqisi2
+  37 002c 000051E3 		cmp	r1, #0
+  38 0030 00005311 		cmpne	r3, r0
+  39 0034 0110C334 		strbcc	r1, [r3], #1
+  40 0038 FAFFFF3A 		bcc	.L4
+  41              	.L3:
+  42 003c 0020A0E3 		mov	r2, #0
+  43 0040 0300A0E1 		mov	r0, r3
+  44 0044 0020C3E5 		strb	r2, [r3]
+  45 0048 04F09DE4 		ldr	pc, [sp], #4
+  46              		.cantunwind
+  47              		.fnend
+  49              		.global	__aeabi_uidivmod
+  50              		.global	__aeabi_uidiv
+  51              		.section	.text._ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci,"ax",%progbits
+  52              		.align	2
+  53              		.syntax unified
+  54              		.arm
+  55              		.fpu neon
+  57              	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci:
+  58              		.fnstart
+  59              	.LFB2:
+  60              		@ args = 0, pretend = 0, frame = 0
+  61              		@ frame_needed = 0, uses_anonymous_args = 0
+  62 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  63 0004 0080A0E1 		mov	r8, r0
+  64 0008 0160A0E1 		mov	r6, r1
+  65 000c 0270A0E1 		mov	r7, r2
+  66 0010 0140A0E1 		mov	r4, r1
+  67              	.L10:
+  68 0014 0800A0E1 		mov	r0, r8
+  69 0018 0710A0E1 		mov	r1, r7
+  70 001c FEFFFFEB 		bl	__aeabi_uidivmod
+  71 0020 090051E3 		cmp	r1, #9
+  72 0024 0450A0E1 		mov	r5, r4
+  73 0028 301081D2 		addle	r1, r1, #48
+  74 002c 571081C2 		addgt	r1, r1, #87
+  75 0030 7110EFE6 		uxtb	r1, r1
+  76 0034 0800A0E1 		mov	r0, r8
+  77 0038 0110C5E4 		strb	r1, [r5], #1
+  78 003c 0710A0E1 		mov	r1, r7
+  79 0040 FEFFFFEB 		bl	__aeabi_uidiv
+  80 0044 008050E2 		subs	r8, r0, #0
+  81 0048 0700001A 		bne	.L13
+  82 004c 0080C5E5 		strb	r8, [r5]
+  83              	.L12:
+  84 0050 040056E1 		cmp	r6, r4
+  85 0054 0600002A 		bcs	.L7
+  86 0058 0030D6E5 		ldrb	r3, [r6]	@ zero_extendqisi2
+  87 005c 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+  88 0060 0120C6E4 		strb	r2, [r6], #1
+  89 0064 013044E4 		strb	r3, [r4], #-1
+  90 0068 F8FFFFEA 		b	.L12
+  91              	.L13:
+  92 006c 0540A0E1 		mov	r4, r5
+  93 0070 E7FFFFEA 		b	.L10
+  94              	.L7:
+  95 0074 0500A0E1 		mov	r0, r5
+  96 0078 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  97              		.cantunwind
+  98              		.fnend
+ 100              		.section	.text.DebugLogInt32,"ax",%progbits
+ 101              		.align	2
+ 102              		.global	DebugLogInt32
+ 103              		.syntax unified
+ 104              		.arm
+ 105              		.fpu neon
+ 107              	DebugLogInt32:
+ 108              		.fnstart
+ 109              	.LFB7:
+ 110              		@ args = 0, pretend = 0, frame = 48
+ 111              		@ frame_needed = 0, uses_anonymous_args = 0
+ 112 0000 000050E3 		cmp	r0, #0
+ 113 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 114              		.save {lr}
+ 115              		.pad #52
+ 116 0008 34D04DE2 		sub	sp, sp, #52
+ 117 000c 2D30A0B3 		movlt	r3, #45
+ 118 0010 000060B2 		rsblt	r0, r0, #0
+ 119 0014 01108DB2 		addlt	r1, sp, #1
+ 120 0018 0D10A0A1 		movge	r1, sp
+ 121 001c 0A20A0E3 		mov	r2, #10
+ 122 0020 0030CDB5 		strblt	r3, [sp]
+ 123 0024 FEFFFFEB 		bl	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+ 124 0028 0D00A0E1 		mov	r0, sp
+ 125 002c FEFFFFEB 		bl	DebugLog
+ 126 0030 34D08DE2 		add	sp, sp, #52
+ 127              		@ sp needed
+ 128 0034 04F09DE4 		ldr	pc, [sp], #4
+ 129              		.fnend
+ 131              		.section	.text.DebugLogUInt32,"ax",%progbits
+ 132              		.align	2
+ 133              		.global	DebugLogUInt32
+ 134              		.syntax unified
+ 135              		.arm
+ 136              		.fpu neon
+ 138              	DebugLogUInt32:
+ 139              		.fnstart
+ 140              	.LFB8:
+ 141              		@ args = 0, pretend = 0, frame = 48
+ 142              		@ frame_needed = 0, uses_anonymous_args = 0
+ 143 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 144              		.save {lr}
+ 145              		.pad #52
+ 146 0004 34D04DE2 		sub	sp, sp, #52
+ 147 0008 0A20A0E3 		mov	r2, #10
+ 148 000c 0D10A0E1 		mov	r1, sp
+ 149 0010 FEFFFFEB 		bl	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+ 150 0014 0D00A0E1 		mov	r0, sp
+ 151 0018 FEFFFFEB 		bl	DebugLog
+ 152 001c 34D08DE2 		add	sp, sp, #52
+ 153              		@ sp needed
+ 154 0020 04F09DE4 		ldr	pc, [sp], #4
+ 155              		.fnend
+ 157              		.section	.text.DebugLogHex,"ax",%progbits
+ 158              		.align	2
+ 159              		.global	DebugLogHex
+ 160              		.syntax unified
+ 161              		.arm
+ 162              		.fpu neon
+ 164              	DebugLogHex:
+ 165              		.fnstart
+ 166              	.LFB9:
+ 167              		@ args = 0, pretend = 0, frame = 48
+ 168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 169 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 170              		.save {lr}
+ 171              		.pad #52
+ 172 0004 34D04DE2 		sub	sp, sp, #52
+ 173 0008 1020A0E3 		mov	r2, #16
+ 174 000c 0D10A0E1 		mov	r1, sp
+ 175 0010 FEFFFFEB 		bl	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+ 176 0014 0D00A0E1 		mov	r0, sp
+ 177 0018 FEFFFFEB 		bl	DebugLog
+ 178 001c 34D08DE2 		add	sp, sp, #52
+ 179              		@ sp needed
+ 180 0020 04F09DE4 		ldr	pc, [sp], #4
+ 181              		.fnend
+ 183              		.section	.text.DebugLogFloat,"ax",%progbits
+ 184              		.align	2
+ 185              		.global	DebugLogFloat
+ 186              		.syntax unified
+ 187              		.arm
+ 188              		.fpu neon
+ 190              	DebugLogFloat:
+ 191              		.fnstart
+ 192              	.LFB10:
+ 193              		@ args = 0, pretend = 0, frame = 112
+ 194              		@ frame_needed = 0, uses_anonymous_args = 0
+ 195 0000 103A10EE 		vmov	r3, s0	@ int
+ 196 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 197              		.save {r4, r5, r6, r7, r8, lr}
+ 198 0008 000053E3 		cmp	r3, #0
+ 199 000c D37BE7E7 		ubfx	r7, r3, #23, #8
+ 200              		.pad #112
+ 201 0010 70D04DE2 		sub	sp, sp, #112
+ 202 0014 7F6047E2 		sub	r6, r7, #127
+ 203 0018 5380F6E7 		ubfx	r8, r3, #0, #23
+ 204 001c 2D30A0B3 		movlt	r3, #45
+ 205 0020 11408DB2 		addlt	r4, sp, #17
+ 206 0024 1030CDB5 		strblt	r3, [sp, #16]
+ 207 0028 10408DA2 		addge	r4, sp, #16
+ 208 002c 800056E3 		cmp	r6, #128
+ 209 0030 0050A0E3 		mov	r5, #0
+ 210 0034 0050C4E5 		strb	r5, [r4]
+ 211 0038 0A00001A 		bne	.L26
+ 212 003c 050058E1 		cmp	r8, r5
+ 213 0040 3F108DE2 		add	r1, sp, #63
+ 214 0044 D0209F05 		ldreq	r2, .L37
+ 215 0048 041041E0 		sub	r1, r1, r4
+ 216 004c CC209F15 		ldrne	r2, .L37+4
+ 217 0050 0400A0E1 		mov	r0, r4
+ 218              	.L35:
+ 219 0054 FEFFFFEB 		bl	_ZN12_GLOBAL__N_19StrCatStrEPciPKc
+ 220 0058 10008DE2 		add	r0, sp, #16
+ 221 005c FEFFFFEB 		bl	DebugLog
+ 222 0060 70D08DE2 		add	sp, sp, #112
+ 223              		@ sp needed
+ 224 0064 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 225              	.L26:
+ 226 0068 0D20A0E3 		mov	r2, #13
+ 227 006c B0109FE5 		ldr	r1, .L37+8
+ 228 0070 0D00A0E1 		mov	r0, sp
+ 229 0074 FEFFFFEB 		bl	memcpy
+ 230 0078 0800A0E1 		mov	r0, r8
+ 231 007c 0530A0E1 		mov	r3, r5
+ 232              	.L29:
+ 233 0080 D3209DE1 		ldrsb	r2, [sp, r3]
+ 234 0084 013083E2 		add	r3, r3, #1
+ 235 0088 0D0053E3 		cmp	r3, #13
+ 236 008c 380280E0 		add	r0, r0, r8, lsr r2
+ 237 0090 FAFFFF1A 		bne	.L29
+ 238 0094 3130A0E3 		mov	r3, #49
+ 239 0098 025084E2 		add	r5, r4, #2
+ 240 009c 0030C4E5 		strb	r3, [r4]
+ 241 00a0 2E30A0E3 		mov	r3, #46
+ 242 00a4 0130C4E5 		strb	r3, [r4, #1]
+ 243 00a8 0030A0E3 		mov	r3, #0
+ 244 00ac 0230C4E5 		strb	r3, [r4, #2]
+ 245 00b0 3F408DE2 		add	r4, sp, #63
+ 246 00b4 058044E0 		sub	r8, r4, r5
+ 247 00b8 0A20A0E3 		mov	r2, #10
+ 248 00bc 40108DE2 		add	r1, sp, #64
+ 249 00c0 FEFFFFEB 		bl	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+ 250 00c4 40208DE2 		add	r2, sp, #64
+ 251 00c8 0810A0E1 		mov	r1, r8
+ 252 00cc 0500A0E1 		mov	r0, r5
+ 253 00d0 FEFFFFEB 		bl	_ZN12_GLOBAL__N_19StrCatStrEPciPKc
+ 254 00d4 4C209FE5 		ldr	r2, .L37+12
+ 255 00d8 001044E0 		sub	r1, r4, r0
+ 256 00dc FEFFFFEB 		bl	_ZN12_GLOBAL__N_19StrCatStrEPciPKc
+ 257 00e0 000056E3 		cmp	r6, #0
+ 258 00e4 0050A0E1 		mov	r5, r0
+ 259 00e8 7F6067B2 		rsblt	r6, r7, #127
+ 260 00ec 004044E0 		sub	r4, r4, r0
+ 261 00f0 2D30A0B3 		movlt	r3, #45
+ 262 00f4 41108DB2 		addlt	r1, sp, #65
+ 263 00f8 40108DA2 		addge	r1, sp, #64
+ 264 00fc 0A20A0E3 		mov	r2, #10
+ 265 0100 0600A0E1 		mov	r0, r6
+ 266 0104 4030CDB5 		strblt	r3, [sp, #64]
+ 267 0108 FEFFFFEB 		bl	_ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+ 268 010c 40208DE2 		add	r2, sp, #64
+ 269 0110 0410A0E1 		mov	r1, r4
+ 270 0114 0500A0E1 		mov	r0, r5
+ 271 0118 CDFFFFEA 		b	.L35
+ 272              	.L38:
+ 273              		.align	2
+ 274              	.L37:
+ 275 011c 00000000 		.word	.LC1
+ 276 0120 04000000 		.word	.LC2
+ 277 0124 00000000 		.word	.LANCHOR0
+ 278 0128 08000000 		.word	.LC3
+ 279              		.fnend
+ 281              		.section	.rodata
+ 282              		.set	.LANCHOR0,. + 0
+ 283              	.LC0:
+ 284 0000 03       		.byte	3
+ 285 0001 04       		.byte	4
+ 286 0002 08       		.byte	8
+ 287 0003 0B       		.byte	11
+ 288 0004 0D       		.byte	13
+ 289 0005 0E       		.byte	14
+ 290 0006 11       		.byte	17
+ 291 0007 12       		.byte	18
+ 292 0008 13       		.byte	19
+ 293 0009 14       		.byte	20
+ 294 000a 15       		.byte	21
+ 295 000b 16       		.byte	22
+ 296 000c 17       		.byte	23
+ 297              		.section	.rodata.DebugLogFloat.str1.1,"aMS",%progbits,1
+ 298              	.LC1:
+ 299 0000 496E6600 		.ascii	"Inf\000"
+ 300              	.LC2:
+ 301 0004 4E614E00 		.ascii	"NaN\000"
+ 302              	.LC3:
+ 303 0008 2A325E00 		.ascii	"*2^\000"
+ 304              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 debug_log_numbers.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:14     .text._ZN12_GLOBAL__N_19StrCatStrEPciPKc:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:19     .text._ZN12_GLOBAL__N_19StrCatStrEPciPKc:00000000 _ZN12_GLOBAL__N_19StrCatStrEPciPKc
+.ARM.exidx.text._ZN12_GLOBAL__N_19StrCatStrEPciPKc:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:52     .text._ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:57     .text._ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci:00000000 _ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci
+.ARM.exidx.text._ZN12_GLOBAL__N_122FastUInt32ToBufferLeftEmPci:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:101    .text.DebugLogInt32:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:107    .text.DebugLogInt32:00000000 DebugLogInt32
+    .ARM.exidx.text.DebugLogInt32:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:132    .text.DebugLogUInt32:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:138    .text.DebugLogUInt32:00000000 DebugLogUInt32
+   .ARM.exidx.text.DebugLogUInt32:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:158    .text.DebugLogHex:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:164    .text.DebugLogHex:00000000 DebugLogHex
+      .ARM.exidx.text.DebugLogHex:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:184    .text.DebugLogFloat:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:190    .text.DebugLogFloat:00000000 DebugLogFloat
+C:\Users\a5050395\AppData\Local\Temp\ccISJ5gj.s:275    .text.DebugLogFloat:0000011c $d
+    .ARM.exidx.text.DebugLogFloat:00000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_uidivmod
+__aeabi_uidiv
+DebugLog
+__aeabi_unwind_cpp_pr0
+memcpy

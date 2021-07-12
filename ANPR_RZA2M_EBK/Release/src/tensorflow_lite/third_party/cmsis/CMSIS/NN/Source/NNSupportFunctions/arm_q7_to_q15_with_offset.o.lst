@@ -1,0 +1,108 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_q7_to_q15_with_offset.c"
+  13              		.section	.text.arm_q7_to_q15_with_offset,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_q7_to_q15_with_offset
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_q7_to_q15_with_offset:
+  21              		@ args = 0, pretend = 0, frame = 16
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  24 0004 22A1A0E1 		lsr	r10, r2, #2
+  25 0008 14D04DE2 		sub	sp, sp, #20
+  26 000c 00005AE3 		cmp	r10, #0
+  27 0010 0090A0E1 		mov	r9, r0
+  28 0014 0C008DE8 		stm	sp, {r2, r3}
+  29 0018 0180A0E1 		mov	r8, r1
+  30              		.syntax divided
+  31              	@ 76 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_wit
+  32 001c 136883E6 		pkhbt r6, r3, r3, lsl #16
+  33              	@ 0 "" 2
+  34              		.arm
+  35              		.syntax unified
+  36 0020 1C00000A 		beq	.L2
+  37 0024 0A50A0E1 		mov	r5, r10
+  38 0028 0140A0E1 		mov	r4, r1
+  39 002c 00B0A0E1 		mov	fp, r0
+  40              	.L3:
+  41 0030 0420A0E3 		mov	r2, #4
+  42 0034 0B10A0E1 		mov	r1, fp
+  43 0038 0C008DE2 		add	r0, sp, #12
+  44 003c 02B08BE0 		add	fp, fp, r2
+  45 0040 FEFFFFEB 		bl	memcpy
+  46 0044 0C309DE5 		ldr	r3, [sp, #12]
+  47 0048 0420A0E3 		mov	r2, #4
+  48 004c 0C108DE2 		add	r1, sp, #12
+  49 0050 0400A0E1 		mov	r0, r4
+  50              		.syntax divided
+  51              	@ 2002 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  52 0054 737086E6 		sxtab16 r7, r6, r3
+  53              	@ 0 "" 2
+  54              		.arm
+  55              		.syntax unified
+  56 0058 6334A0E1 		ror	r3, r3, #8
+  57              		.syntax divided
+  58              	@ 2002 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/third_p
+  59 005c 733086E6 		sxtab16 r3, r6, r3
+  60              	@ 0 "" 2
+  61              	@ 87 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_wit
+  62 0060 13C887E6 		pkhbt ip, r7, r3, lsl #16
+  63              	@ 0 "" 2
+  64              	@ 86 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_wit
+  65 0064 577883E6 		pkhtb r7, r3, r7, asr #16
+  66              	@ 0 "" 2
+  67              		.arm
+  68              		.syntax unified
+  69 0068 0CC08DE5 		str	ip, [sp, #12]
+  70 006c FEFFFFEB 		bl	memcpy
+  71 0070 0420A0E3 		mov	r2, #4
+  72 0074 0C108DE2 		add	r1, sp, #12
+  73 0078 020084E0 		add	r0, r4, r2
+  74 007c 0C708DE5 		str	r7, [sp, #12]
+  75 0080 FEFFFFEB 		bl	memcpy
+  76 0084 015055E2 		subs	r5, r5, #1
+  77 0088 084084E2 		add	r4, r4, #8
+  78 008c E7FFFF1A 		bne	.L3
+  79 0090 8A8188E0 		add	r8, r8, r10, lsl #3
+  80 0094 0A9189E0 		add	r9, r9, r10, lsl #2
+  81              	.L2:
+  82 0098 00309DE5 		ldr	r3, [sp]
+  83 009c 033013E2 		ands	r3, r3, #3
+  84 00a0 0C00000A 		beq	.L1
+  85 00a4 D020D9E1 		ldrsb	r2, [r9]
+  86 00a8 010053E3 		cmp	r3, #1
+  87 00ac B470DDE1 		ldrh	r7, [sp, #4]
+  88 00b0 022087E0 		add	r2, r7, r2
+  89 00b4 B020C8E1 		strh	r2, [r8]	@ movhi
+  90 00b8 0600000A 		beq	.L1
+  91 00bc D120D9E1 		ldrsb	r2, [r9, #1]
+  92 00c0 020053E3 		cmp	r3, #2
+  93 00c4 023087E0 		add	r3, r7, r2
+  94 00c8 B230C8E1 		strh	r3, [r8, #2]	@ movhi
+  95 00cc D230D911 		ldrsbne	r3, [r9, #2]
+  96 00d0 03708710 		addne	r7, r7, r3
+  97 00d4 B470C811 		strhne	r7, [r8, #4]	@ movhi
+  98              	.L1:
+  99 00d8 14D08DE2 		add	sp, sp, #20
+ 100              		@ sp needed
+ 101 00dc F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 103              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_q7_to_q15_with_offset.c
+C:\Users\a5050395\AppData\Local\Temp\ccEysiBb.s:14     .text.arm_q7_to_q15_with_offset:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccEysiBb.s:20     .text.arm_q7_to_q15_with_offset:00000000 arm_q7_to_q15_with_offset
+
+UNDEFINED SYMBOLS
+memcpy

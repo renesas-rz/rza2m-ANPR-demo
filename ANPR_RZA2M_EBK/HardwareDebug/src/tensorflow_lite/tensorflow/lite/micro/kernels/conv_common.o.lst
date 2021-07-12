@@ -1,0 +1,2116 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"conv_common.cc"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text._ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE,"ax",%progbits
+  17              		.align	2
+  18              		.global	_ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	_ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE:
+  24              		.fnstart
+  25              	.LFB4177:
+  26              		.file 1 "../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc"
+   1:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** /* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+   3:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+   7:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+   9:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** limitations under the License.
+  14:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** ==============================================================================*/
+  15:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  16:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/c/builtin_op_data.h"
+  17:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/c/common.h"
+  18:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/internal/common.h"
+  19:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/internal/quantization_util.h"
+  20:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/internal/reference/conv.h"
+  21:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/internal/reference/integer_ops/conv.h"
+  22:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
+  23:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/kernel_util.h"
+  24:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/kernels/padding.h"
+  25:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/micro/kernels/conv.h"
+  26:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** #include "tensorflow/lite/micro/kernels/kernel_util.h"
+  27:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  28:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** namespace tflite {
+  29:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  30:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** const int kConvInputTensor = 0;
+  31:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** const int kConvWeightsTensor = 1;
+  32:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** const int kConvBiasTensor = 2;
+  33:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** const int kConvOutputTensor = 0;
+  34:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  35:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // Conv is quantized along dimension 0:
+  36:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // https://www.tensorflow.org/lite/performance/quantization_spec
+  37:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** const int kConvQuantizedDimension = 0;
+  38:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  39:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // Returns a ConvParams struct with all the parameters needed for a
+  40:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // float computation.
+  41:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** ConvParams ConvParamsFloat(const TfLiteConvParams& params,
+  42:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                            const OpDataConv& data) {
+  27              		.loc 1 42 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              	.LVL0:
+  43:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   ConvParams op_params;
+  44:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   CalculateActivationRange(params.activation, &op_params.float_activation_min,
+  32              		.loc 1 44 0
+  33 0000 0C30D1E5 		ldrb	r3, [r1, #12]	@ zero_extendqisi2
+  34              	.LVL1:
+  42:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   ConvParams op_params;
+  35              		.loc 1 42 0
+  36 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  37              		.save {r4, r5, r6, r7, r8, lr}
+  38              		.cfi_def_cfa_offset 24
+  39              		.cfi_offset 4, -24
+  40              		.cfi_offset 5, -20
+  41              		.cfi_offset 6, -16
+  42              		.cfi_offset 7, -12
+  43              		.cfi_offset 8, -8
+  44              		.cfi_offset 14, -4
+  42:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   ConvParams op_params;
+  45              		.loc 1 42 0
+  46 0008 0150A0E1 		mov	r5, r1
+  47 000c 0040A0E1 		mov	r4, r0
+  48 0010 0260A0E1 		mov	r6, r2
+  49              	.LBB12:
+  50              	.LBB13:
+  51              		.file 2 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tenso
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #ifndef TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #define TENSORFLOW_LITE_KERNELS_KERNEL_UTIL_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #include <stdint.h>
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #include <limits>
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #include "tensorflow/lite/c/common.h"
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** namespace tflite {
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // A fair number of functions in this header have historically been inline.
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // It is ok to change functions to not be inline if the latency with
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // benchmark_model for MobileNet + MobileBERT is unaffected. If such a change is
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // made, move the newly non-inlined function declarations to the top of this
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // header file.
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetInput(context, node, kMyTensorIdx);
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetInput(const TfLiteContext* context,
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                              const TfLiteNode* node, int index);
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetInput` but returns boolean and uses output argument for tensor.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     GetInputSafe(context, node, kMyTensorIdx, &my_tensor));
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetInputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                           int index, const TfLiteTensor** tensor);
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetVariableInput(context, node, kMyTensorIdx);
+  57:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  58:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  59:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  60:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  61:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetVariableInput(TfLiteContext* context, const TfLiteNode* node,
+  62:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                int index);
+  63:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  64:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  65:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  66:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOutput(context, node, kMyTensorIdx);
+  67:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  68:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  69:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  70:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  71:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetOutput(TfLiteContext* context, const TfLiteNode* node,
+  72:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                         int index);
+  73:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  74:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetOutput` but returns boolean and uses output argument for tensor.
+  75:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  76:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+  77:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+  78:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     GetOutputSafe(context, node, kMyTensorIdx, &my_tensor));
+  79:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+  80:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  81:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+  82:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetOutputSafe(const TfLiteContext* context, const TfLiteNode* node,
+  83:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                            int index, TfLiteTensor** tensor);
+  84:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  85:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  86:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  87:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetOptionalInputTensor(context, node, kIdx);
+  88:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+  89:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  90:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+  91:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+  92:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+  93:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Deprecated. GetInput has the same functionality.
+  94:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetOptionalInputTensor(const TfLiteContext* context,
+  95:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                            const TfLiteNode* node, int index);
+  96:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+  97:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+  98:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+  99:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 100:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetTemporary(context, node, kMyTensorIdx);
+ 101:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 102:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 103:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 104:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 105:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteTensor* GetTemporary(TfLiteContext* context, const TfLiteNode* node,
+ 106:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                            int index);
+ 107:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 108:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetTemporary` but returns boolean and uses output argument for
+ 109:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 110:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 111:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 112:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 113:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     GetTemporarySafe(context, node, kMyTensorIdx,
+ 114:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 115:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 116:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 117:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 118:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetTemporarySafe(const TfLiteContext* context,
+ 119:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                               const TfLiteNode* node, int index,
+ 120:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                               TfLiteTensor** tensor);
+ 121:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 122:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Note: You must check if result is not null:
+ 123:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 124:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor = GetIntermediates(context, node, kMyTensorIdx);
+ 125:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE(context, my_tensor != nullptr);
+ 126:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 127:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // This is because the index might point to the optional tensor constant
+ 128:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // (kTfLiteOptionalTensor) in which case there is no tensor to return.
+ 129:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** const TfLiteTensor* GetIntermediates(TfLiteContext* context,
+ 130:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                      const TfLiteNode* node, int index);
+ 131:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 132:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Same as `GetIntermediates` but returns boolean and uses output argument for
+ 133:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // tensor.
+ 134:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 135:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TfLiteTensor* my_tensor;
+ 136:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   TF_LITE_ENSURE_OK(context,
+ 137:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     GetIntermediatesSafe(context, node, kMyTensorIdx,
+ 138:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //                     &my_tensor));
+ 139:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //   // can use my_tensor directly from here onwards, it is not nullptr
+ 140:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** //
+ 141:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Should be used in cases where the binary size is too large.
+ 142:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetIntermediatesSafe(const TfLiteContext* context,
+ 143:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                   const TfLiteNode* node, int index,
+ 144:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                   TfLiteTensor** tensor);
+ 145:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 146:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 147:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int NumDimensions(const TfLiteTensor* t) { return t->dims->size; }
+ 148:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int SizeOfDimension(const TfLiteTensor* t, int dim) {
+ 149:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return t->dims->data[dim];
+ 150:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 151:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 152:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int NumInputs(const TfLiteNode* node) { return node->inputs->size; }
+ 153:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int NumOutputs(const TfLiteNode* node) { return node->outputs->size; }
+ 154:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 155:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #ifndef TF_LITE_STATIC_MEMORY
+ 156:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int NumIntermediates(const TfLiteNode* node) {
+ 157:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return node->intermediates->size;
+ 158:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 159:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** #endif  // TF_LITE_STATIC_MEMORY
+ 160:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 161:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int64_t NumElements(const TfLiteIntArray* dims) {
+ 162:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   int64_t count = 1;
+ 163:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   for (int i = 0; i < dims->size; ++i) {
+ 164:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     count *= dims->data[i];
+ 165:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   }
+ 166:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return count;
+ 167:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 168:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 169:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline int64_t NumElements(const TfLiteTensor* t) {
+ 170:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return NumElements(t->dims);
+ 171:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 172:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 173:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Determines whether tensor is constant.
+ 174:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // TODO(b/138199592): Introduce new query which checks for constant OR
+ 175:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // persistent-read-only, which would be useful for most tensor kernels that
+ 176:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // are potentially dynamic based on the input tensor value availability at the
+ 177:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // time of prepare.
+ 178:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline bool IsConstantTensor(const TfLiteTensor* tensor) {
+ 179:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return tensor->allocation_type == kTfLiteMmapRo;
+ 180:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 181:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 182:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Determines whether tensor is dynamic. Note that a tensor can be non-const and
+ 183:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // not dynamic. This function specifically checks for a dynamic tensor.
+ 184:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline bool IsDynamicTensor(const TfLiteTensor* tensor) {
+ 185:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return tensor->allocation_type == kTfLiteDynamic;
+ 186:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 187:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 188:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Sets tensor to dynamic.
+ 189:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline void SetTensorToDynamic(TfLiteTensor* tensor) {
+ 190:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   if (tensor->allocation_type != kTfLiteDynamic) {
+ 191:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     tensor->allocation_type = kTfLiteDynamic;
+ 192:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     tensor->data.raw = nullptr;
+ 193:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   }
+ 194:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 195:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 196:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Sets tensor to persistent and read-only.
+ 197:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline void SetTensorToPersistentRo(TfLiteTensor* tensor) {
+ 198:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   if (tensor->allocation_type != kTfLitePersistentRo) {
+ 199:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     tensor->allocation_type = kTfLitePersistentRo;
+ 200:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     tensor->data.raw = nullptr;
+ 201:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   }
+ 202:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 203:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 204:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Determines whether it is a hybrid op - one that has float inputs and
+ 205:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // quantized weights.
+ 206:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** inline bool IsHybridOp(const TfLiteTensor* input, const TfLiteTensor* weight) {
+ 207:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   return ((weight->type == kTfLiteUInt8 || weight->type == kTfLiteInt8) &&
+ 208:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****           input->type == kTfLiteFloat32);
+ 209:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** }
+ 210:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 211:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Check dimensionality match and populate OpData for Conv and DepthwiseConv.
+ 212:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus PopulateConvolutionQuantizationParams(
+ 213:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     TfLiteContext* context, const TfLiteTensor* input,
+ 214:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     const TfLiteTensor* filter, const TfLiteTensor* bias, TfLiteTensor* output,
+ 215:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     const TfLiteFusedActivation& activation, int32_t* multiplier, int* shift,
+ 216:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     int32_t* output_activation_min, int32_t* output_activation_max,
+ 217:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     int32_t* per_channel_multiplier, int32_t* per_channel_shift);
+ 218:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 219:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus PopulateConvolutionQuantizationParams(
+ 220:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     TfLiteContext* context, const TfLiteTensor* input,
+ 221:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     const TfLiteTensor* filter, const TfLiteTensor* bias, TfLiteTensor* output,
+ 222:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     const TfLiteFusedActivation& activation, int32_t* multiplier, int* shift,
+ 223:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     int32_t* output_activation_min, int32_t* output_activation_max,
+ 224:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     int32_t* per_channel_multiplier, int32_t* per_channel_shift,
+ 225:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     int num_channels);
+ 226:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 227:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Calculates the multiplication factor for a quantized convolution (or
+ 228:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // quantized depthwise convolution) involving the given tensors. Returns an
+ 229:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // error if the scales of the tensors are not compatible.
+ 230:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetQuantizedConvolutionMultipler(TfLiteContext* context,
+ 231:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               const TfLiteTensor* input,
+ 232:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               const TfLiteTensor* filter,
+ 233:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               const TfLiteTensor* bias,
+ 234:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               TfLiteTensor* output,
+ 235:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               double* multiplier);
+ 236:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 237:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus GetQuantizedConvolutionMultipler(TfLiteContext* context,
+ 238:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               const TfLiteTensor* input,
+ 239:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               const TfLiteTensor* filter,
+ 240:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               TfLiteTensor* output,
+ 241:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                               double* multiplier);
+ 242:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 243:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Calculates the useful quantized range of an activation layer given its
+ 244:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // activation tensor.
+ 245:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** TfLiteStatus CalculateActivationRangeQuantized(TfLiteContext* context,
+ 246:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                                TfLiteFusedActivation activation,
+ 247:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                                TfLiteTensor* output,
+ 248:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                                int32_t* act_min,
+ 249:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                                                int32_t* act_max);
+ 250:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** 
+ 251:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // Calculates the useful range of an activation layer given its activation
+ 252:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** // tensor.a
+ 253:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** template <typename T>
+ 254:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h **** void CalculateActivationRange(TfLiteFusedActivation activation,
+ 255:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****                               T* activation_min, T* activation_max) {
+ 256:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   if (activation == kTfLiteActRelu) {
+  52              		.loc 2 256 0
+  53 0014 010053E3 		cmp	r3, #1
+  54 0018 1A00000A 		beq	.L8
+ 257:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_min = 0;
+ 258:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+ 259:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActRelu6) {
+  55              		.loc 2 259 0
+  56 001c 030053E3 		cmp	r3, #3
+  57 0020 1E00000A 		beq	.L9
+ 260:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_min = 0;
+ 261:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = 6;
+ 262:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActReluN1To1) {
+  58              		.loc 2 262 0
+  59 0024 020053E3 		cmp	r3, #2
+ 263:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_min = -1;
+  60              		.loc 2 263 0
+  61 0028 0020A003 		moveq	r2, #0
+  62              	.LVL2:
+ 264:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = 1;
+ 265:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else {
+ 266:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_min = std::numeric_limits<T>::lowest();
+ 267:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+  63              		.loc 2 267 0
+  64 002c FF3F0F13 		movwne	r3, #65535
+  65              	.LVL3:
+ 263:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_min = -1;
+  66              		.loc 2 263 0
+  67 0030 802F4B03 		movteq	r2, 49024
+ 264:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = 1;
+  68              		.loc 2 264 0
+  69 0034 FE35A003 		moveq	r3, #1065353216
+ 266:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+  70              		.loc 2 266 0
+  71 0038 0225E013 		mvnne	r2, #8388608
+  72              		.loc 2 267 0
+  73 003c 7F3F4713 		movtne	r3, 32639
+ 266:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+  74              		.loc 2 266 0
+  75 0040 302080E5 		str	r2, [r0, #48]	@ float
+  76              		.loc 2 267 0
+  77 0044 343080E5 		str	r3, [r0, #52]	@ float
+  78              	.L3:
+  79              	.LVL4:
+  80              	.LBE13:
+  81              	.LBE12:
+  45:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                            &op_params.float_activation_max);
+  46:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_type = tflite::micro::RuntimePaddingType(params.padding);
+  82              		.loc 1 46 0
+  83 0048 0000D5E5 		ldrb	r0, [r5]	@ zero_extendqisi2
+  84              	.LVL5:
+  85 004c FEFFFFEB 		bl	_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+  86              	.LVL6:
+  47:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.width = data.padding.width;
+  48:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.height = data.padding.height;
+  87              		.loc 1 48 0
+  88 0050 804096E8 		ldm	r6, {r7, lr}
+  49:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_width = params.stride_width;
+  89              		.loc 1 49 0
+  90 0054 04C095E5 		ldr	ip, [r5, #4]
+  50:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_height = params.stride_height;
+  91              		.loc 1 50 0
+  92 0058 081095E5 		ldr	r1, [r5, #8]
+  51:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_width_factor = params.dilation_width_factor;
+  93              		.loc 1 51 0
+  94 005c 102095E5 		ldr	r2, [r5, #16]
+  52:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_height_factor = params.dilation_height_factor;
+  95              		.loc 1 52 0
+  96 0060 143095E5 		ldr	r3, [r5, #20]
+  46:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.width = data.padding.width;
+  97              		.loc 1 46 0
+  98 0064 0000C4E5 		strb	r0, [r4]
+  53:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return op_params;
+  54:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** }
+  99              		.loc 1 54 0
+ 100 0068 0400A0E1 		mov	r0, r4
+  47:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.height = data.padding.height;
+ 101              		.loc 1 47 0
+ 102 006c B270C4E1 		strh	r7, [r4, #2]	@ movhi
+  48:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_width = params.stride_width;
+ 103              		.loc 1 48 0
+ 104 0070 B4E0C4E1 		strh	lr, [r4, #4]	@ movhi
+  49:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_height = params.stride_height;
+ 105              		.loc 1 49 0
+ 106 0074 BAC0C4E1 		strh	ip, [r4, #10]	@ movhi
+  50:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_width_factor = params.dilation_width_factor;
+ 107              		.loc 1 50 0
+ 108 0078 BC10C4E1 		strh	r1, [r4, #12]	@ movhi
+  51:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_height_factor = params.dilation_height_factor;
+ 109              		.loc 1 51 0
+ 110 007c BE20C4E1 		strh	r2, [r4, #14]	@ movhi
+  52:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return op_params;
+ 111              		.loc 1 52 0
+ 112 0080 B031C4E1 		strh	r3, [r4, #16]	@ movhi
+ 113              		.loc 1 54 0
+ 114 0084 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 115              	.LVL7:
+ 116              	.L8:
+ 117              	.LBB15:
+ 118              	.LBB14:
+ 258:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActRelu6) {
+ 119              		.loc 2 258 0
+ 120 0088 FF3F0FE3 		movw	r3, #65535
+ 121              	.LVL8:
+ 257:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+ 122              		.loc 2 257 0
+ 123 008c 0020A0E3 		mov	r2, #0
+ 124              	.LVL9:
+ 258:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActRelu6) {
+ 125              		.loc 2 258 0
+ 126 0090 7F3F47E3 		movt	r3, 32639
+ 257:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = std::numeric_limits<T>::max();
+ 127              		.loc 2 257 0
+ 128 0094 302080E5 		str	r2, [r0, #48]	@ float
+ 258:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActRelu6) {
+ 129              		.loc 2 258 0
+ 130 0098 343080E5 		str	r3, [r0, #52]	@ float
+ 131 009c E9FFFFEA 		b	.L3
+ 132              	.LVL10:
+ 133              	.L9:
+ 261:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActReluN1To1) {
+ 134              		.loc 2 261 0
+ 135 00a0 0030A0E3 		mov	r3, #0
+ 136              	.LVL11:
+ 260:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = 6;
+ 137              		.loc 2 260 0
+ 138 00a4 0020A0E3 		mov	r2, #0
+ 139              	.LVL12:
+ 261:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActReluN1To1) {
+ 140              		.loc 2 261 0
+ 141 00a8 C03044E3 		movt	r3, 16576
+ 260:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****     *activation_max = 6;
+ 142              		.loc 2 260 0
+ 143 00ac 302080E5 		str	r2, [r0, #48]	@ float
+ 261:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\kernel_util.h ****   } else if (activation == kTfLiteActReluN1To1) {
+ 144              		.loc 2 261 0
+ 145 00b0 343080E5 		str	r3, [r0, #52]	@ float
+ 146 00b4 E3FFFFEA 		b	.L3
+ 147              	.LBE14:
+ 148              	.LBE15:
+ 149              		.cfi_endproc
+ 150              	.LFE4177:
+ 151              		.fnend
+ 153              		.section	.text._ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE,"ax",%progbi
+ 154              		.align	2
+ 155              		.global	_ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE
+ 156              		.syntax unified
+ 157              		.arm
+ 158              		.fpu neon
+ 160              	_ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE:
+ 161              		.fnstart
+ 162              	.LFB4178:
+  55:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  56:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // Returns a ConvParams struct with all the parameters needed for a
+  57:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** // quantized computation.
+  58:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** ConvParams ConvParamsQuantized(const TfLiteConvParams& params,
+  59:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                const OpDataConv& data) {
+ 163              		.loc 1 59 0
+ 164              		.cfi_startproc
+ 165              		@ args = 0, pretend = 0, frame = 0
+ 166              		@ frame_needed = 0, uses_anonymous_args = 0
+ 167              	.LVL13:
+ 168 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 169              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+ 170              		.cfi_def_cfa_offset 32
+ 171              		.cfi_offset 4, -32
+ 172              		.cfi_offset 5, -28
+ 173              		.cfi_offset 6, -24
+ 174              		.cfi_offset 7, -20
+ 175              		.cfi_offset 8, -16
+ 176              		.cfi_offset 9, -12
+ 177              		.cfi_offset 10, -8
+ 178              		.cfi_offset 14, -4
+ 179              		.loc 1 59 0
+ 180 0004 0250A0E1 		mov	r5, r2
+ 181 0008 0040A0E1 		mov	r4, r0
+  60:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   ConvParams op_params;
+  61:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.input_offset = -data.input_zero_point;
+  62:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.weights_offset = -data.filter_zero_point;
+  63:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_offset = data.output_zero_point;
+  64:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_multiplier = data.output_multiplier;
+  65:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_shift = -data.output_shift;
+ 182              		.loc 1 65 0
+ 183 000c 203095E5 		ldr	r3, [r5, #32]
+  59:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   ConvParams op_params;
+ 184              		.loc 1 59 0
+ 185 0010 0160A0E1 		mov	r6, r1
+  61:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.weights_offset = -data.filter_zero_point;
+ 186              		.loc 1 61 0
+ 187 0014 100092E5 		ldr	r0, [r2, #16]
+ 188              	.LVL14:
+  62:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_offset = data.output_zero_point;
+ 189              		.loc 1 62 0
+ 190 0018 142092E5 		ldr	r2, [r2, #20]
+ 191              	.LVL15:
+ 192              		.loc 1 65 0
+ 193 001c 003063E2 		rsb	r3, r3, #0
+  63:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_multiplier = data.output_multiplier;
+ 194              		.loc 1 63 0
+ 195 0020 18C095E5 		ldr	ip, [r5, #24]
+  64:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_shift = -data.output_shift;
+ 196              		.loc 1 64 0
+ 197 0024 1C1095E5 		ldr	r1, [r5, #28]
+ 198              	.LVL16:
+  61:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.weights_offset = -data.filter_zero_point;
+ 199              		.loc 1 61 0
+ 200 0028 000060E2 		rsb	r0, r0, #0
+  62:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_offset = data.output_zero_point;
+ 201              		.loc 1 62 0
+ 202 002c 002062E2 		rsb	r2, r2, #0
+  61:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.weights_offset = -data.filter_zero_point;
+ 203              		.loc 1 61 0
+ 204 0030 140084E5 		str	r0, [r4, #20]
+  62:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_offset = data.output_zero_point;
+ 205              		.loc 1 62 0
+ 206 0034 182084E5 		str	r2, [r4, #24]
+  63:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_multiplier = data.output_multiplier;
+ 207              		.loc 1 63 0
+ 208 0038 1CC084E5 		str	ip, [r4, #28]
+  64:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.output_shift = -data.output_shift;
+ 209              		.loc 1 64 0
+ 210 003c 201084E5 		str	r1, [r4, #32]
+ 211              		.loc 1 65 0
+ 212 0040 243084E5 		str	r3, [r4, #36]
+  66:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_type = tflite::micro::RuntimePaddingType(params.padding);
+ 213              		.loc 1 66 0
+ 214 0044 0000D6E5 		ldrb	r0, [r6]	@ zero_extendqisi2
+ 215 0048 FEFFFFEB 		bl	_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+ 216              	.LVL17:
+  67:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.height = data.padding.height;
+  68:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.width = data.padding.width;
+ 217              		.loc 1 68 0
+ 218 004c 000395E8 		ldm	r5, {r8, r9}
+  69:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_height = params.stride_height;
+ 219              		.loc 1 69 0
+ 220 0050 087096E5 		ldr	r7, [r6, #8]
+  70:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_width = params.stride_width;
+ 221              		.loc 1 70 0
+ 222 0054 04E096E5 		ldr	lr, [r6, #4]
+  71:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_height_factor = params.dilation_height_factor;
+ 223              		.loc 1 71 0
+ 224 0058 14C096E5 		ldr	ip, [r6, #20]
+  72:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_width_factor = params.dilation_width_factor;
+ 225              		.loc 1 72 0
+ 226 005c 101096E5 		ldr	r1, [r6, #16]
+  73:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.quantized_activation_min = data.output_activation_min;
+ 227              		.loc 1 73 0
+ 228 0060 2C2095E5 		ldr	r2, [r5, #44]
+  74:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.quantized_activation_max = data.output_activation_max;
+ 229              		.loc 1 74 0
+ 230 0064 303095E5 		ldr	r3, [r5, #48]
+  66:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.height = data.padding.height;
+ 231              		.loc 1 66 0
+ 232 0068 0000C4E5 		strb	r0, [r4]
+  75:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return op_params;
+  76:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** }
+ 233              		.loc 1 76 0
+ 234 006c 0400A0E1 		mov	r0, r4
+  67:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.padding_values.width = data.padding.width;
+ 235              		.loc 1 67 0
+ 236 0070 B490C4E1 		strh	r9, [r4, #4]	@ movhi
+  68:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_height = params.stride_height;
+ 237              		.loc 1 68 0
+ 238 0074 B280C4E1 		strh	r8, [r4, #2]	@ movhi
+  69:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.stride_width = params.stride_width;
+ 239              		.loc 1 69 0
+ 240 0078 BC70C4E1 		strh	r7, [r4, #12]	@ movhi
+  70:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_height_factor = params.dilation_height_factor;
+ 241              		.loc 1 70 0
+ 242 007c BAE0C4E1 		strh	lr, [r4, #10]	@ movhi
+  71:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.dilation_width_factor = params.dilation_width_factor;
+ 243              		.loc 1 71 0
+ 244 0080 B0C1C4E1 		strh	ip, [r4, #16]	@ movhi
+  72:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.quantized_activation_min = data.output_activation_min;
+ 245              		.loc 1 72 0
+ 246 0084 BE10C4E1 		strh	r1, [r4, #14]	@ movhi
+  73:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   op_params.quantized_activation_max = data.output_activation_max;
+ 247              		.loc 1 73 0
+ 248 0088 282084E5 		str	r2, [r4, #40]
+  74:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return op_params;
+ 249              		.loc 1 74 0
+ 250 008c 2C3084E5 		str	r3, [r4, #44]
+ 251              		.loc 1 76 0
+ 252 0090 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 253              		.cfi_endproc
+ 254              	.LFE4178:
+ 255              		.fnend
+ 257              		.global	__aeabi_idiv
+ 258              		.section	.text._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsii
+ 259              		.align	2
+ 260              		.global	_ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10T
+ 261              		.syntax unified
+ 262              		.arm
+ 263              		.fpu neon
+ 265              	_ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteType
+ 266              		.fnstart
+ 267              	.LFB4179:
+  77:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  78:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** TfLiteStatus CalculateOpDataConv(TfLiteContext* context, TfLiteNode* node,
+  79:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                  const TfLiteConvParams& params, int width,
+  80:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                  int height, int filter_width,
+  81:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                  int filter_height, int out_width,
+  82:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                  int out_height, const TfLiteType data_type,
+  83:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                                  OpDataConv* data) {
+ 268              		.loc 1 83 0
+ 269              		.cfi_startproc
+ 270              		@ args = 28, pretend = 0, frame = 16
+ 271              		@ frame_needed = 0, uses_anonymous_args = 0
+ 272              	.LVL18:
+ 273 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 274              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 275              		.cfi_def_cfa_offset 36
+ 276              		.cfi_offset 4, -36
+ 277              		.cfi_offset 5, -32
+ 278              		.cfi_offset 6, -28
+ 279              		.cfi_offset 7, -24
+ 280              		.cfi_offset 8, -20
+ 281              		.cfi_offset 9, -16
+ 282              		.cfi_offset 10, -12
+ 283              		.cfi_offset 11, -8
+ 284              		.cfi_offset 14, -4
+ 285 0004 0290A0E1 		mov	r9, r2
+  84:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   bool has_bias = node->inputs->size == 3;
+ 286              		.loc 1 84 0
+ 287 0008 002091E5 		ldr	r2, [r1]
+ 288              	.LVL19:
+  83:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   bool has_bias = node->inputs->size == 3;
+ 289              		.loc 1 83 0
+ 290              		.pad #60
+ 291 000c 3CD04DE2 		sub	sp, sp, #60
+ 292              		.cfi_def_cfa_offset 96
+ 293              	.LVL20:
+  83:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   bool has_bias = node->inputs->size == 3;
+ 294              		.loc 1 83 0
+ 295 0010 0080A0E1 		mov	r8, r0
+ 296 0014 74A0DDE5 		ldrb	r10, [sp, #116]	@ zero_extendqisi2
+  85:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // Check number of inputs/outputs
+  86:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, has_bias || node->inputs->size == 2);
+ 297              		.loc 1 86 0
+ 298 0018 002092E5 		ldr	r2, [r2]
+  83:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   bool has_bias = node->inputs->size == 3;
+ 299              		.loc 1 83 0
+ 300 001c 78709DE5 		ldr	r7, [sp, #120]
+ 301              		.loc 1 86 0
+ 302 0020 022042E2 		sub	r2, r2, #2
+ 303 0024 010052E3 		cmp	r2, #1
+ 304 0028 7A00008A 		bhi	.L43
+  87:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE_EQ(context, node->outputs->size, 1);
+ 305              		.loc 1 87 0
+ 306 002c 042091E5 		ldr	r2, [r1, #4]
+ 307 0030 0140A0E1 		mov	r4, r1
+ 308 0034 00C092E5 		ldr	ip, [r2]
+ 309 0038 01005CE3 		cmp	ip, #1
+ 310 003c 1200000A 		beq	.L15
+ 311              		.loc 1 87 0 is_stmt 0 discriminator 1
+ 312 0040 00E000E3 		movw	lr, #:lower16:.LC4
+ 313 0044 003000E3 		movw	r3, #:lower16:.LC5
+ 314              	.LVL21:
+ 315 0048 00E040E3 		movt	lr, #:upper16:.LC4
+ 316 004c 003040E3 		movt	r3, #:upper16:.LC5
+ 317 0050 0140A0E3 		mov	r4, #1
+ 318 0054 002000E3 		movw	r2, #:lower16:.LC0
+ 319 0058 001000E3 		movw	r1, #:lower16:.LC3
+ 320              	.LVL22:
+ 321 005c 08C08DE5 		str	ip, [sp, #8]
+ 322              	.LVL23:
+ 323 0060 002040E3 		movt	r2, #:upper16:.LC0
+ 324 0064 145090E5 		ldr	r5, [r0, #20]
+ 325 0068 001040E3 		movt	r1, #:upper16:.LC3
+ 326 006c 00308DE5 		str	r3, [sp]
+ 327 0070 04E08DE5 		str	lr, [sp, #4]
+ 328 0074 5730A0E3 		mov	r3, #87
+ 329 0078 0C408DE5 		str	r4, [sp, #12]
+ 330 007c 35FF2FE1 		blx	r5
+ 331              	.LVL24:
+ 332 0080 0400A0E1 		mov	r0, r4
+ 333              	.LVL25:
+ 334              	.L14:
+  88:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  89:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // Matching GetWindowedOutputSize in TensorFlow.
+  90:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   auto padding = params.padding;
+  91:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->padding = ComputePaddingHeightWidth(
+  92:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       params.stride_height, params.stride_width, params.dilation_height_factor,
+  93:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       params.dilation_width_factor, height, width, filter_height, filter_width,
+  94:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       padding, &out_height, &out_width);
+  95:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+  96:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* input = GetInput(context, node, kConvInputTensor);
+  97:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+  98:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+  99:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, filter != nullptr);
+ 100:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* bias =
+ 101:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       GetOptionalInputTensor(context, node, kConvBiasTensor);
+ 102:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TfLiteTensor* output = GetOutput(context, node, kConvOutputTensor);
+ 103:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, output != nullptr);
+ 104:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 105:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // Note that quantized inference requires that all tensors have their
+ 106:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // parameters set. This is usually done during quantized training.
+ 107:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   if (data_type != kTfLiteFloat32) {
+ 108:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     int output_channels = filter->dims->data[kConvQuantizedDimension];
+ 109:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 110:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TF_LITE_ENSURE_STATUS(tflite::PopulateConvolutionQuantizationParams(
+ 111:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         context, input, filter, bias, output, params.activation,
+ 112:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         &data->output_multiplier, &data->output_shift,
+ 113:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         &data->output_activation_min, &data->output_activation_max,
+ 114:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         data->per_channel_output_multiplier, data->per_channel_output_shift,
+ 115:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         output_channels));
+ 116:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   }
+ 117:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 118:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->input_zero_point = input->params.zero_point;
+ 119:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->filter_zero_point = filter->params.zero_point;
+ 120:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->output_zero_point = output->params.zero_point;
+ 121:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 122:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return kTfLiteOk;
+ 123:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** }
+ 335              		.loc 1 123 0 is_stmt 1
+ 336 0084 3CD08DE2 		add	sp, sp, #60
+ 337              		.cfi_remember_state
+ 338              		.cfi_def_cfa_offset 36
+ 339              		@ sp needed
+ 340 0088 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 341              	.LVL26:
+ 342              	.L15:
+ 343              		.cfi_restore_state
+ 344              	.LBB29:
+ 345              	.LBB30:
+ 346              	.LBB31:
+ 347              	.LBB32:
+ 348              		.file 3 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tenso
+   1:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** /* Copyright 2017 The TensorFlow Authors. All Rights Reserved.
+   2:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+   3:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** you may not use this file except in compliance with the License.
+   5:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** You may obtain a copy of the License at
+   6:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+   7:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+   9:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** Unless required by applicable law or agreed to in writing, software
+  10:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** See the License for the specific language governing permissions and
+  13:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** limitations under the License.
+  14:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** ==============================================================================*/
+  15:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** #ifndef TENSORFLOW_LITE_KERNELS_PADDING_H_
+  16:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** #define TENSORFLOW_LITE_KERNELS_PADDING_H_
+  17:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  18:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** #include "tensorflow/lite/c/builtin_op_data.h"
+  19:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** #include "tensorflow/lite/kernels/internal/types.h"
+  20:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  21:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** namespace tflite {
+  22:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  23:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** inline int ComputePadding(int stride, int dilation_rate, int in_size,
+  24:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****                           int filter_size, int out_size) {
+  25:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   int effective_filter_size = (filter_size - 1) * dilation_rate + 1;
+  26:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   int padding = ((out_size - 1) * stride + effective_filter_size - in_size) / 2;
+  27:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   return padding > 0 ? padding : 0;
+  28:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** }
+  29:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  30:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** // It's not guaranteed that padding is symmetric. It's important to keep
+  31:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** // offset for algorithms need all paddings.
+  32:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** inline int ComputePaddingWithOffset(int stride, int dilation_rate, int in_size,
+  33:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****                                     int filter_size, int out_size,
+  34:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****                                     int* offset) {
+  35:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   int effective_filter_size = (filter_size - 1) * dilation_rate + 1;
+  36:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   int total_padding =
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****       ((out_size - 1) * stride + effective_filter_size - in_size);
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   total_padding = total_padding > 0 ? total_padding : 0;
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   *offset = total_padding % 2;
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   return total_padding / 2;
+  41:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** }
+  42:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  43:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** // Matching GetWindowedOutputSize in TensorFlow.
+  44:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** inline int ComputeOutSize(TfLitePadding padding, int image_size,
+  45:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****                           int filter_size, int stride, int dilation_rate = 1) {
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   int effective_filter_size = (filter_size - 1) * dilation_rate + 1;
+ 349              		.loc 3 46 0
+ 350 008c 10B099E5 		ldr	fp, [r9, #16]
+ 351 0090 64209DE5 		ldr	r2, [sp, #100]
+ 352              	.LBE32:
+ 353              	.LBE31:
+ 354              	.LBE30:
+ 355              	.LBE29:
+  92:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       params.dilation_width_factor, height, width, filter_height, filter_width,
+ 356              		.loc 1 92 0
+ 357 0094 046099E5 		ldr	r6, [r9, #4]
+  90:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->padding = ComputePaddingHeightWidth(
+ 358              		.loc 1 90 0
+ 359 0098 0010D9E5 		ldrb	r1, [r9]	@ zero_extendqisi2
+ 360              	.LVL27:
+ 361              	.LBB73:
+ 362              	.LBB67:
+ 363              	.LBB38:
+ 364              	.LBB33:
+ 365              		.loc 3 46 0
+ 366 009c 012042E2 		sub	r2, r2, #1
+ 367              	.LBE33:
+ 368              	.LBE38:
+ 369              	.LBE67:
+ 370              	.LBE73:
+  92:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       params.dilation_width_factor, height, width, filter_height, filter_width,
+ 371              		.loc 1 92 0
+ 372 00a0 085099E5 		ldr	r5, [r9, #8]
+ 373              	.LBB74:
+ 374              	.LBB68:
+ 375              	.LBB39:
+ 376              	.LBB34:
+ 377              		.loc 3 46 0
+ 378 00a4 9B0202E0 		mul	r2, fp, r2
+  47:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  48:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   // TODO(b/186448822): This uses 0 since the function has no other way to
+  49:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   // report error case
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   if (stride == 0) return 0;
+ 379              		.loc 3 50 0
+ 380 00a8 000056E3 		cmp	r6, #0
+ 381              	.LBE34:
+ 382              	.LBE39:
+ 383              	.LBE68:
+ 384              	.LBE74:
+  92:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       params.dilation_width_factor, height, width, filter_height, filter_width,
+ 385              		.loc 1 92 0
+ 386 00ac 14B099E5 		ldr	fp, [r9, #20]
+ 387              	.LVL28:
+ 388              	.LBB75:
+ 389              	.LBB69:
+ 390              	.LBB40:
+ 391              	.LBB35:
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 392              		.loc 3 46 0
+ 393 00b0 012082E2 		add	r2, r2, #1
+ 394 00b4 2C208DE5 		str	r2, [sp, #44]
+ 395              	.LVL29:
+ 396              		.loc 3 50 0
+ 397 00b8 6300001A 		bne	.L44
+ 398              	.L16:
+ 399              	.LVL30:
+ 400              	.LBE35:
+ 401              	.LBE40:
+ 402              	.LBB41:
+ 403              	.LBB42:
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 404              		.loc 3 46 0
+ 405 00bc 68209DE5 		ldr	r2, [sp, #104]
+ 406              		.loc 3 50 0
+ 407 00c0 000055E3 		cmp	r5, #0
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 408              		.loc 3 46 0
+ 409 00c4 012042E2 		sub	r2, r2, #1
+ 410 00c8 9B0202E0 		mul	r2, fp, r2
+ 411 00cc 012082E2 		add	r2, r2, #1
+ 412              	.LVL31:
+ 413              		.loc 3 50 0
+ 414 00d0 0300000A 		beq	.L39
+  51:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   switch (padding) {
+ 415              		.loc 3 52 0
+ 416 00d4 010051E3 		cmp	r1, #1
+ 417 00d8 9400000A 		beq	.L31
+ 418 00dc 020051E3 		cmp	r1, #2
+ 419 00e0 9000000A 		beq	.L45
+ 420              	.L39:
+ 421 00e4 00B0E0E3 		mvn	fp, #0
+ 422              	.LVL32:
+ 423 00e8 0B00A0E1 		mov	r0, fp
+ 424              	.LVL33:
+ 425              	.L21:
+ 426              	.LBE42:
+ 427              	.LBE41:
+ 428              	.LBB45:
+ 429              	.LBB46:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   total_padding = total_padding > 0 ? total_padding : 0;
+ 430              		.loc 3 37 0
+ 431 00ec 2C109DE5 		ldr	r1, [sp, #44]
+ 432              	.LBE46:
+ 433              	.LBE45:
+ 434              	.LBB51:
+ 435              	.LBB52:
+ 436 00f0 902525E0 		mla	r5, r0, r5, r2
+ 437              	.LVL34:
+ 438              	.LBE52:
+ 439              	.LBE51:
+ 440              	.LBE69:
+ 441              	.LBE75:
+  96:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+ 442              		.loc 1 96 0
+ 443 00f4 0020A0E3 		mov	r2, #0
+ 444              	.LVL35:
+ 445              	.LBB76:
+ 446              	.LBB70:
+ 447              	.LBB56:
+ 448              	.LBB47:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   total_padding = total_padding > 0 ? total_padding : 0;
+ 449              		.loc 3 37 0
+ 450 00f8 9B1626E0 		mla	r6, fp, r6, r1
+ 451              	.LVL36:
+ 452              	.LBE47:
+ 453              	.LBE56:
+ 454              	.LBB57:
+ 455              	.LBB53:
+ 456 00fc 60109DE5 		ldr	r1, [sp, #96]
+ 457 0100 015045E0 		sub	r5, r5, r1
+ 458              	.LVL37:
+ 459              	.LBE53:
+ 460              	.LBE57:
+ 461              	.LBE70:
+ 462              	.LBE76:
+  96:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+ 463              		.loc 1 96 0
+ 464 0104 0410A0E1 		mov	r1, r4
+ 465              	.LBB77:
+ 466              	.LBB71:
+ 467              	.LBB58:
+ 468              	.LBB48:
+  37:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   total_padding = total_padding > 0 ? total_padding : 0;
+ 469              		.loc 3 37 0
+ 470 0108 033046E0 		sub	r3, r6, r3
+ 471              	.LVL38:
+ 472              	.LBE48:
+ 473              	.LBE58:
+ 474              	.LBB59:
+ 475              	.LBB54:
+  38:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   *offset = total_padding % 2;
+ 476              		.loc 3 38 0
+ 477 010c C55FC5E1 		bic	r5, r5, r5, asr #31
+ 478              	.LVL39:
+ 479              	.LBE54:
+ 480              	.LBE59:
+ 481              	.LBB60:
+ 482              	.LBB49:
+ 483 0110 C33FC3E1 		bic	r3, r3, r3, asr #31
+ 484              	.LVL40:
+ 485              	.LBE49:
+ 486              	.LBE60:
+ 487              	.LBB61:
+ 488              	.LBB55:
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** }
+ 489              		.loc 3 40 0
+ 490 0114 C5C0A0E1 		asr	ip, r5, #1
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   return total_padding / 2;
+ 491              		.loc 3 39 0
+ 492 0118 015005E2 		and	r5, r5, #1
+ 493              	.LBE55:
+ 494              	.LBE61:
+ 495              	.LBB62:
+ 496              	.LBB50:
+  40:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** }
+ 497              		.loc 3 40 0
+ 498 011c C300A0E1 		asr	r0, r3, #1
+  39:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****   return total_padding / 2;
+ 499              		.loc 3 39 0
+ 500 0120 013003E2 		and	r3, r3, #1
+ 501              	.LBE50:
+ 502              	.LBE62:
+ 503              	.LBE71:
+ 504              	.LBE77:
+  94:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 505              		.loc 1 94 0
+ 506 0124 083087E5 		str	r3, [r7, #8]
+ 507 0128 000087E5 		str	r0, [r7]
+  96:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+ 508              		.loc 1 96 0
+ 509 012c 0800A0E1 		mov	r0, r8
+  94:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 510              		.loc 1 94 0
+ 511 0130 04C087E5 		str	ip, [r7, #4]
+ 512 0134 0C5087E5 		str	r5, [r7, #12]
+  96:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+ 513              		.loc 1 96 0
+ 514 0138 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 515              	.LVL41:
+  97:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+ 516              		.loc 1 97 0
+ 517 013c 006050E2 		subs	r6, r0, #0
+ 518 0140 7C00000A 		beq	.L46
+  98:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, filter != nullptr);
+ 519              		.loc 1 98 0
+ 520 0144 0120A0E3 		mov	r2, #1
+ 521 0148 0410A0E1 		mov	r1, r4
+ 522 014c 0800A0E1 		mov	r0, r8
+ 523              	.LVL42:
+ 524 0150 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 525              	.LVL43:
+  99:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* bias =
+ 526              		.loc 1 99 0
+ 527 0154 005050E2 		subs	r5, r0, #0
+ 528 0158 8300000A 		beq	.L47
+ 101:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TfLiteTensor* output = GetOutput(context, node, kConvOutputTensor);
+ 529              		.loc 1 101 0
+ 530 015c 0410A0E1 		mov	r1, r4
+ 531 0160 0220A0E3 		mov	r2, #2
+ 532 0164 0800A0E1 		mov	r0, r8
+ 533              	.LVL44:
+ 534 0168 FEFFFFEB 		bl	_ZN6tflite22GetOptionalInputTensorEPK13TfLiteContextPK10TfLiteNodei
+ 535              	.LVL45:
+ 102:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, output != nullptr);
+ 536              		.loc 1 102 0
+ 537 016c 0410A0E1 		mov	r1, r4
+ 101:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TfLiteTensor* output = GetOutput(context, node, kConvOutputTensor);
+ 538              		.loc 1 101 0
+ 539 0170 00B0A0E1 		mov	fp, r0
+ 540              	.LVL46:
+ 102:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, output != nullptr);
+ 541              		.loc 1 102 0
+ 542 0174 0020A0E3 		mov	r2, #0
+ 543 0178 0800A0E1 		mov	r0, r8
+ 544              	.LVL47:
+ 545 017c FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 546              	.LVL48:
+ 103:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 547              		.loc 1 103 0
+ 548 0180 004050E2 		subs	r4, r0, #0
+ 549              	.LVL49:
+ 550 0184 8500000A 		beq	.L48
+ 551              	.LBB78:
+ 107:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     int output_channels = filter->dims->data[kConvQuantizedDimension];
+ 552              		.loc 1 107 0
+ 553 0188 01005AE3 		cmp	r10, #1
+ 554 018c 1800000A 		beq	.L28
+ 555              	.LVL50:
+ 556              	.LBB79:
+ 108:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 557              		.loc 1 108 0
+ 558 0190 082095E5 		ldr	r2, [r5, #8]
+ 559              	.LBB80:
+ 110:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         context, input, filter, bias, output, params.activation,
+ 560              		.loc 1 110 0
+ 561 0194 30E087E2 		add	lr, r7, #48
+ 562 0198 281097E5 		ldr	r1, [r7, #40]
+ 563 019c 0C9089E2 		add	r9, r9, #12
+ 564              	.LVL51:
+ 565 01a0 24C097E5 		ldr	ip, [r7, #36]
+ 566 01a4 0B30A0E1 		mov	r3, fp
+ 567 01a8 042092E5 		ldr	r2, [r2, #4]
+ 568 01ac 0800A0E1 		mov	r0, r8
+ 569              	.LVL52:
+ 570 01b0 1C108DE5 		str	r1, [sp, #28]
+ 571              	.LVL53:
+ 572 01b4 201087E2 		add	r1, r7, #32
+ 573 01b8 18C08DE5 		str	ip, [sp, #24]
+ 574 01bc 1CC087E2 		add	ip, r7, #28
+ 575 01c0 20208DE5 		str	r2, [sp, #32]
+ 576 01c4 2C2087E2 		add	r2, r7, #44
+ 577              	.LVL54:
+ 578 01c8 10208DE5 		str	r2, [sp, #16]
+ 579 01cc 0520A0E1 		mov	r2, r5
+ 580 01d0 0C108DE5 		str	r1, [sp, #12]
+ 581 01d4 0610A0E1 		mov	r1, r6
+ 582 01d8 04908DE5 		str	r9, [sp, #4]
+ 583 01dc 00408DE5 		str	r4, [sp]
+ 584 01e0 14E08DE5 		str	lr, [sp, #20]
+ 585 01e4 08C08DE5 		str	ip, [sp, #8]
+ 586 01e8 FEFFFFEB 		bl	_ZN6tflite37PopulateConvolutionQuantizationParamsEP13TfLiteContextPK12TfLiteTensorS4_S4_PS2_RK2
+ 587              	.LVL55:
+ 588 01ec 000050E3 		cmp	r0, #0
+ 589              	.LVL56:
+ 590 01f0 A3FFFF1A 		bne	.L14
+ 591              	.LVL57:
+ 592              	.L28:
+ 593              	.LBE80:
+ 594              	.LBE79:
+ 595              	.LBE78:
+ 118:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->filter_zero_point = filter->params.zero_point;
+ 596              		.loc 1 118 0
+ 597 01f4 101096E5 		ldr	r1, [r6, #16]
+ 122:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** }
+ 598              		.loc 1 122 0
+ 599 01f8 0000A0E3 		mov	r0, #0
+ 119:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->output_zero_point = output->params.zero_point;
+ 600              		.loc 1 119 0
+ 601 01fc 102095E5 		ldr	r2, [r5, #16]
+ 120:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 602              		.loc 1 120 0
+ 603 0200 103094E5 		ldr	r3, [r4, #16]
+ 118:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->filter_zero_point = filter->params.zero_point;
+ 604              		.loc 1 118 0
+ 605 0204 101087E5 		str	r1, [r7, #16]
+ 119:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->output_zero_point = output->params.zero_point;
+ 606              		.loc 1 119 0
+ 607 0208 142087E5 		str	r2, [r7, #20]
+ 120:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 608              		.loc 1 120 0
+ 609 020c 183087E5 		str	r3, [r7, #24]
+ 610              		.loc 1 123 0
+ 611 0210 3CD08DE2 		add	sp, sp, #60
+ 612              		.cfi_remember_state
+ 613              		.cfi_def_cfa_offset 36
+ 614              		@ sp needed
+ 615 0214 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 616              	.LVL58:
+ 617              	.L43:
+ 618              		.cfi_restore_state
+  86:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE_EQ(context, node->outputs->size, 1);
+ 619              		.loc 1 86 0 discriminator 2
+ 620 0218 003000E3 		movw	r3, #:lower16:.LC2
+ 621              	.LVL59:
+ 622 021c 002000E3 		movw	r2, #:lower16:.LC0
+ 623 0220 003040E3 		movt	r3, #:upper16:.LC2
+ 624 0224 001000E3 		movw	r1, #:lower16:.LC1
+ 625              	.LVL60:
+ 626 0228 144090E5 		ldr	r4, [r0, #20]
+ 627 022c 002040E3 		movt	r2, #:upper16:.LC0
+ 628 0230 00308DE5 		str	r3, [sp]
+ 629              	.LVL61:
+ 630 0234 001040E3 		movt	r1, #:upper16:.LC1
+ 631 0238 5630A0E3 		mov	r3, #86
+ 632 023c 34FF2FE1 		blx	r4
+ 633              	.LVL62:
+ 634 0240 0100A0E3 		mov	r0, #1
+ 635              		.loc 1 123 0 discriminator 2
+ 636 0244 3CD08DE2 		add	sp, sp, #60
+ 637              		.cfi_remember_state
+ 638              		.cfi_def_cfa_offset 36
+ 639              		@ sp needed
+ 640 0248 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 641              	.LVL63:
+ 642              	.L44:
+ 643              		.cfi_restore_state
+ 644              	.LBB81:
+ 645              	.LBB72:
+ 646              	.LBB63:
+ 647              	.LBB36:
+ 648              		.loc 3 52 0
+ 649 024c 010051E3 		cmp	r1, #1
+ 650 0250 1A00000A 		beq	.L17
+ 651 0254 020051E3 		cmp	r1, #2
+ 652 0258 97FFFF1A 		bne	.L16
+  53:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     case kTfLitePaddingSame:
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****       return (image_size + stride - 1) / stride;
+  55:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     case kTfLitePaddingValid:
+  56:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****       return (image_size + stride - effective_filter_size) / stride;
+ 653              		.loc 3 56 0
+ 654 025c 030086E0 		add	r0, r6, r3
+ 655              	.LVL64:
+ 656 0260 30308DE5 		str	r3, [sp, #48]
+ 657 0264 2C309DE5 		ldr	r3, [sp, #44]
+ 658              	.LVL65:
+ 659 0268 0610A0E1 		mov	r1, r6
+ 660              	.LVL66:
+ 661 026c 030040E0 		sub	r0, r0, r3
+ 662 0270 FEFFFFEB 		bl	__aeabi_idiv
+ 663              	.LVL67:
+ 664              	.LBE36:
+ 665              	.LBE63:
+ 666              	.LBB64:
+ 667              	.LBB43:
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 668              		.loc 3 46 0
+ 669 0274 68309DE5 		ldr	r3, [sp, #104]
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 670              		.loc 3 50 0
+ 671 0278 000055E3 		cmp	r5, #0
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 672              		.loc 3 46 0
+ 673 027c 012043E2 		sub	r2, r3, #1
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 674              		.loc 3 50 0
+ 675 0280 30309DE5 		ldr	r3, [sp, #48]
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 676              		.loc 3 46 0
+ 677 0284 9B0202E0 		mul	r2, fp, r2
+ 678 0288 01B040E2 		sub	fp, r0, #1
+ 679              	.LVL68:
+ 680 028c 012082E2 		add	r2, r2, #1
+ 681              	.LVL69:
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 682              		.loc 3 50 0
+ 683 0290 2200000A 		beq	.L41
+ 684              	.LVL70:
+ 685              	.L23:
+ 686 0294 34308DE5 		str	r3, [sp, #52]
+ 687              		.loc 3 56 0
+ 688 0298 0510A0E1 		mov	r1, r5
+ 689 029c 60309DE5 		ldr	r3, [sp, #96]
+ 690              	.LVL71:
+ 691 02a0 30208DE5 		str	r2, [sp, #48]
+ 692 02a4 030085E0 		add	r0, r5, r3
+ 693 02a8 020040E0 		sub	r0, r0, r2
+ 694 02ac FEFFFFEB 		bl	__aeabi_idiv
+ 695              	.LVL72:
+ 696 02b0 30209DE5 		ldr	r2, [sp, #48]
+ 697 02b4 010040E2 		sub	r0, r0, #1
+ 698 02b8 34309DE5 		ldr	r3, [sp, #52]
+ 699 02bc 8AFFFFEA 		b	.L21
+ 700              	.LVL73:
+ 701              	.L17:
+ 702              	.LBE43:
+ 703              	.LBE64:
+ 704              	.LBB65:
+ 705              	.LBB37:
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     case kTfLitePaddingValid:
+ 706              		.loc 3 54 0
+ 707 02c0 030086E0 		add	r0, r6, r3
+ 708              	.LVL74:
+ 709 02c4 0610A0E1 		mov	r1, r6
+ 710              	.LVL75:
+ 711 02c8 010040E2 		sub	r0, r0, #1
+ 712 02cc 30308DE5 		str	r3, [sp, #48]
+ 713 02d0 FEFFFFEB 		bl	__aeabi_idiv
+ 714              	.LVL76:
+ 715              	.LBE37:
+ 716              	.LBE65:
+ 717              	.LBB66:
+ 718              	.LBB44:
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 719              		.loc 3 46 0
+ 720 02d4 68309DE5 		ldr	r3, [sp, #104]
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 721              		.loc 3 50 0
+ 722 02d8 000055E3 		cmp	r5, #0
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 723              		.loc 3 46 0
+ 724 02dc 012043E2 		sub	r2, r3, #1
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 725              		.loc 3 50 0
+ 726 02e0 30309DE5 		ldr	r3, [sp, #48]
+  46:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 727              		.loc 3 46 0
+ 728 02e4 9B0202E0 		mul	r2, fp, r2
+ 729 02e8 01B040E2 		sub	fp, r0, #1
+ 730              	.LVL77:
+ 731 02ec 012082E2 		add	r2, r2, #1
+ 732              	.LVL78:
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 733              		.loc 3 50 0
+ 734 02f0 0A00000A 		beq	.L41
+ 735              	.LVL79:
+ 736              	.L20:
+ 737 02f4 34308DE5 		str	r3, [sp, #52]
+  54:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     case kTfLitePaddingValid:
+ 738              		.loc 3 54 0
+ 739 02f8 0510A0E1 		mov	r1, r5
+ 740 02fc 60309DE5 		ldr	r3, [sp, #96]
+ 741              	.LVL80:
+ 742 0300 30208DE5 		str	r2, [sp, #48]
+ 743 0304 030085E0 		add	r0, r5, r3
+ 744 0308 010040E2 		sub	r0, r0, #1
+ 745 030c FEFFFFEB 		bl	__aeabi_idiv
+ 746              	.LVL81:
+ 747 0310 30209DE5 		ldr	r2, [sp, #48]
+ 748 0314 010040E2 		sub	r0, r0, #1
+ 749 0318 34309DE5 		ldr	r3, [sp, #52]
+ 750 031c 72FFFFEA 		b	.L21
+ 751              	.LVL82:
+ 752              	.L41:
+  50:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h **** 
+ 753              		.loc 3 50 0
+ 754 0320 0000E0E3 		mvn	r0, #0
+ 755              	.LVL83:
+ 756 0324 70FFFFEA 		b	.L21
+ 757              	.LVL84:
+ 758              	.L45:
+  52:C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tensorflow/lite/kernels\padding.h ****     case kTfLitePaddingSame:
+ 759              		.loc 3 52 0
+ 760 0328 00B0E0E3 		mvn	fp, #0
+ 761              	.LVL85:
+ 762 032c D8FFFFEA 		b	.L23
+ 763              	.LVL86:
+ 764              	.L31:
+ 765 0330 00B0E0E3 		mvn	fp, #0
+ 766              	.LVL87:
+ 767 0334 EEFFFFEA 		b	.L20
+ 768              	.LVL88:
+ 769              	.L46:
+ 770              	.LBE44:
+ 771              	.LBE66:
+ 772              	.LBE72:
+ 773              	.LBE81:
+  97:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+ 774              		.loc 1 97 0 discriminator 1
+ 775 0338 003000E3 		movw	r3, #:lower16:.LC6
+ 776 033c 002000E3 		movw	r2, #:lower16:.LC0
+ 777 0340 003040E3 		movt	r3, #:upper16:.LC6
+ 778 0344 001000E3 		movw	r1, #:lower16:.LC1
+ 779 0348 00308DE5 		str	r3, [sp]
+ 780 034c 0800A0E1 		mov	r0, r8
+ 781              	.LVL89:
+ 782 0350 002040E3 		movt	r2, #:upper16:.LC0
+ 783 0354 001040E3 		movt	r1, #:upper16:.LC1
+ 784 0358 144098E5 		ldr	r4, [r8, #20]
+ 785              	.LVL90:
+ 786 035c 6130A0E3 		mov	r3, #97
+ 787 0360 34FF2FE1 		blx	r4
+ 788              	.LVL91:
+ 789 0364 0100A0E3 		mov	r0, #1
+ 790 0368 45FFFFEA 		b	.L14
+ 791              	.LVL92:
+ 792              	.L47:
+  99:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* bias =
+ 793              		.loc 1 99 0 discriminator 1
+ 794 036c 003000E3 		movw	r3, #:lower16:.LC7
+ 795 0370 002000E3 		movw	r2, #:lower16:.LC0
+ 796 0374 003040E3 		movt	r3, #:upper16:.LC7
+ 797 0378 001000E3 		movw	r1, #:lower16:.LC1
+ 798 037c 00308DE5 		str	r3, [sp]
+ 799 0380 0800A0E1 		mov	r0, r8
+ 800              	.LVL93:
+ 801 0384 002040E3 		movt	r2, #:upper16:.LC0
+ 802 0388 001040E3 		movt	r1, #:upper16:.LC1
+ 803 038c 144098E5 		ldr	r4, [r8, #20]
+ 804              	.LVL94:
+ 805 0390 6330A0E3 		mov	r3, #99
+ 806 0394 34FF2FE1 		blx	r4
+ 807              	.LVL95:
+ 808 0398 0100A0E3 		mov	r0, #1
+ 809 039c 38FFFFEA 		b	.L14
+ 810              	.LVL96:
+ 811              	.L48:
+ 103:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 812              		.loc 1 103 0 discriminator 1
+ 813 03a0 003000E3 		movw	r3, #:lower16:.LC8
+ 814 03a4 002000E3 		movw	r2, #:lower16:.LC0
+ 815 03a8 003040E3 		movt	r3, #:upper16:.LC8
+ 816 03ac 001000E3 		movw	r1, #:lower16:.LC1
+ 817 03b0 00308DE5 		str	r3, [sp]
+ 818 03b4 0800A0E1 		mov	r0, r8
+ 819              	.LVL97:
+ 820 03b8 002040E3 		movt	r2, #:upper16:.LC0
+ 821 03bc 001040E3 		movt	r1, #:upper16:.LC1
+ 822 03c0 144098E5 		ldr	r4, [r8, #20]
+ 823              	.LVL98:
+ 824 03c4 6730A0E3 		mov	r3, #103
+ 825 03c8 34FF2FE1 		blx	r4
+ 826              	.LVL99:
+ 827 03cc 0100A0E3 		mov	r0, #1
+ 828 03d0 2BFFFFEA 		b	.L14
+ 829              		.cfi_endproc
+ 830              	.LFE4179:
+ 831              		.fnend
+ 833              		.section	.text._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 834              		.align	2
+ 835              		.global	_ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode
+ 836              		.syntax unified
+ 837              		.arm
+ 838              		.fpu neon
+ 840              	_ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode:
+ 841              		.fnstart
+ 842              	.LFB4180:
+ 124:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 125:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** TfLiteStatus ConvPrepare(TfLiteContext* context, TfLiteNode* node) {
+ 843              		.loc 1 125 0
+ 844              		.cfi_startproc
+ 845              		@ args = 0, pretend = 0, frame = 24
+ 846              		@ frame_needed = 0, uses_anonymous_args = 0
+ 847              	.LVL100:
+ 848 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 849              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 850              		.cfi_def_cfa_offset 36
+ 851              		.cfi_offset 4, -36
+ 852              		.cfi_offset 5, -32
+ 853              		.cfi_offset 6, -28
+ 854              		.cfi_offset 7, -24
+ 855              		.cfi_offset 8, -20
+ 856              		.cfi_offset 9, -16
+ 857              		.cfi_offset 10, -12
+ 858              		.cfi_offset 11, -8
+ 859              		.cfi_offset 14, -4
+ 860              		.pad #60
+ 861 0004 3CD04DE2 		sub	sp, sp, #60
+ 862              		.cfi_def_cfa_offset 96
+ 126:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TFLITE_DCHECK(node->user_data != nullptr);
+ 863              		.loc 1 126 0
+ 864 0008 106091E5 		ldr	r6, [r1, #16]
+ 865 000c 000056E3 		cmp	r6, #0
+ 866 0010 B500000A 		beq	.L51
+ 127:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TFLITE_DCHECK(node->builtin_data != nullptr);
+ 867              		.loc 1 127 0
+ 868 0014 148091E5 		ldr	r8, [r1, #20]
+ 869 0018 0150A0E1 		mov	r5, r1
+ 870 001c 000058E3 		cmp	r8, #0
+ 871 0020 B100000A 		beq	.L51
+ 872              	.LVL101:
+ 128:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 129:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   OpDataConv* data = static_cast<OpDataConv*>(node->user_data);
+ 130:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const auto& params =
+ 131:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       *(static_cast<const TfLiteConvParams*>(node->builtin_data));
+ 132:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 133:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TfLiteTensor* output = GetOutput(context, node, kConvOutputTensor);
+ 873              		.loc 1 133 0
+ 874 0024 0020A0E3 		mov	r2, #0
+ 875 0028 0040A0E1 		mov	r4, r0
+ 876 002c FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 877              	.LVL102:
+ 134:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, output != nullptr);
+ 878              		.loc 1 134 0
+ 879 0030 007050E2 		subs	r7, r0, #0
+ 880 0034 7700000A 		beq	.L75
+ 135:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* input = GetInput(context, node, kConvInputTensor);
+ 881              		.loc 1 135 0
+ 882 0038 0020A0E3 		mov	r2, #0
+ 883 003c 0510A0E1 		mov	r1, r5
+ 884 0040 0400A0E1 		mov	r0, r4
+ 885              	.LVL103:
+ 886 0044 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 887              	.LVL104:
+ 136:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, input != nullptr);
+ 888              		.loc 1 136 0
+ 889 0048 00A050E2 		subs	r10, r0, #0
+ 890 004c 7F00000A 		beq	.L76
+ 137:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+ 891              		.loc 1 137 0
+ 892 0050 0120A0E3 		mov	r2, #1
+ 893 0054 0510A0E1 		mov	r1, r5
+ 894 0058 0400A0E1 		mov	r0, r4
+ 895              	.LVL105:
+ 896 005c FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 897              	.LVL106:
+ 138:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE(context, filter != nullptr);
+ 898              		.loc 1 138 0
+ 899 0060 009050E2 		subs	r9, r0, #0
+ 900 0064 8600000A 		beq	.L77
+ 139:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 140:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int input_width = input->dims->data[2];
+ 141:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int input_height = input->dims->data[1];
+ 142:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int filter_width = filter->dims->data[2];
+ 901              		.loc 1 142 0
+ 902 0068 081099E5 		ldr	r1, [r9, #8]
+ 143:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int filter_height = filter->dims->data[1];
+ 144:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_width = output->dims->data[2];
+ 145:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_height = output->dims->data[1];
+ 146:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 147:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // Dynamically allocate per-channel quantization parameters.
+ 148:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int num_channels = filter->dims->data[kConvQuantizedDimension];
+ 149:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->per_channel_output_multiplier =
+ 150:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       static_cast<int32_t*>(context->AllocatePersistentBuffer(
+ 903              		.loc 1 150 0
+ 904 006c 0400A0E1 		mov	r0, r4
+ 905              	.LVL107:
+ 144:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_height = output->dims->data[1];
+ 906              		.loc 1 144 0
+ 907 0070 08E097E5 		ldr	lr, [r7, #8]
+ 140:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int input_height = input->dims->data[1];
+ 908              		.loc 1 140 0
+ 909 0074 08C09AE5 		ldr	ip, [r10, #8]
+ 142:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int filter_height = filter->dims->data[1];
+ 910              		.loc 1 142 0
+ 911 0078 0C3091E5 		ldr	r3, [r1, #12]
+ 912              		.loc 1 150 0
+ 913 007c 047091E5 		ldr	r7, [r1, #4]
+ 914              	.LVL108:
+ 140:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int input_height = input->dims->data[1];
+ 915              		.loc 1 140 0
+ 916 0080 0CB09CE5 		ldr	fp, [ip, #12]
+ 142:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int filter_height = filter->dims->data[1];
+ 917              		.loc 1 142 0
+ 918 0084 28308DE5 		str	r3, [sp, #40]
+ 919              	.LVL109:
+ 143:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_width = output->dims->data[2];
+ 920              		.loc 1 143 0
+ 921 0088 083091E5 		ldr	r3, [r1, #8]
+ 922              		.loc 1 150 0
+ 923 008c 0771A0E1 		lsl	r7, r7, #2
+ 143:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_width = output->dims->data[2];
+ 924              		.loc 1 143 0
+ 925 0090 2C308DE5 		str	r3, [sp, #44]
+ 926              		.loc 1 150 0
+ 927 0094 0710A0E1 		mov	r1, r7
+ 144:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int output_height = output->dims->data[1];
+ 928              		.loc 1 144 0
+ 929 0098 0C309EE5 		ldr	r3, [lr, #12]
+ 930 009c 30308DE5 		str	r3, [sp, #48]
+ 145:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 931              		.loc 1 145 0
+ 932 00a0 08309EE5 		ldr	r3, [lr, #8]
+ 933 00a4 34308DE5 		str	r3, [sp, #52]
+ 141:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const int filter_width = filter->dims->data[2];
+ 934              		.loc 1 141 0
+ 935 00a8 08309CE5 		ldr	r3, [ip, #8]
+ 936 00ac 24308DE5 		str	r3, [sp, #36]
+ 937              	.LVL110:
+ 938              		.loc 1 150 0
+ 939 00b0 383094E5 		ldr	r3, [r4, #56]
+ 940              	.LVL111:
+ 941 00b4 33FF2FE1 		blx	r3
+ 942              	.LVL112:
+ 151:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****           context, num_channels * sizeof(int32_t)));
+ 152:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   data->per_channel_output_shift =
+ 153:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       static_cast<int32_t*>(context->AllocatePersistentBuffer(
+ 943              		.loc 1 153 0
+ 944 00b8 0710A0E1 		mov	r1, r7
+ 149:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       static_cast<int32_t*>(context->AllocatePersistentBuffer(
+ 945              		.loc 1 149 0
+ 946 00bc 240086E5 		str	r0, [r6, #36]
+ 947              		.loc 1 153 0
+ 948 00c0 387094E5 		ldr	r7, [r4, #56]
+ 949 00c4 0400A0E1 		mov	r0, r4
+ 950 00c8 37FF2FE1 		blx	r7
+ 951              	.LVL113:
+ 952              	.LBB82:
+ 154:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****           context, num_channels * sizeof(int32_t)));
+ 155:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 156:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   // All per-channel quantized tensors need valid zero point and scale arrays.
+ 157:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   if (input->type == kTfLiteInt8) {
+ 953              		.loc 1 157 0
+ 954 00cc 0010DAE5 		ldrb	r1, [r10]	@ zero_extendqisi2
+ 955              	.LBE82:
+ 152:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       static_cast<int32_t*>(context->AllocatePersistentBuffer(
+ 956              		.loc 1 152 0
+ 957 00d0 280086E5 		str	r0, [r6, #40]
+ 958              	.LBB85:
+ 959              		.loc 1 157 0
+ 960 00d4 090051E3 		cmp	r1, #9
+ 961 00d8 1200000A 		beq	.L78
+ 962              	.L56:
+ 963              	.LBE85:
+ 964              	.LBB86:
+ 158:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TF_LITE_ENSURE_EQ(context, filter->quantization.type,
+ 159:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                       kTfLiteAffineQuantization);
+ 160:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 161:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     const auto* affine_quantization =
+ 162:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****         static_cast<TfLiteAffineQuantization*>(filter->quantization.params);
+ 163:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization != nullptr);
+ 164:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization->scale != nullptr);
+ 165:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization->zero_point != nullptr);
+ 166:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 167:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TF_LITE_ENSURE(context,
+ 168:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                    affine_quantization->scale->size == 1 ||
+ 169:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                        affine_quantization->scale->size ==
+ 170:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                            filter->dims->data[kConvQuantizedDimension]);
+ 171:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TF_LITE_ENSURE_EQ(context, affine_quantization->scale->size,
+ 172:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                       affine_quantization->zero_point->size);
+ 173:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   }
+ 174:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 175:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TF_LITE_ENSURE_STATUS(CalculateOpDataConv(
+ 965              		.loc 1 175 0
+ 966 00dc 2CC09DE5 		ldr	ip, [sp, #44]
+ 967 00e0 0B30A0E1 		mov	r3, fp
+ 968 00e4 30009DE5 		ldr	r0, [sp, #48]
+ 969 00e8 0820A0E1 		mov	r2, r8
+ 970 00ec 14108DE5 		str	r1, [sp, #20]
+ 971 00f0 08C08DE5 		str	ip, [sp, #8]
+ 972 00f4 28C09DE5 		ldr	ip, [sp, #40]
+ 973 00f8 34109DE5 		ldr	r1, [sp, #52]
+ 974 00fc 0C008DE5 		str	r0, [sp, #12]
+ 975 0100 0400A0E1 		mov	r0, r4
+ 976 0104 04C08DE5 		str	ip, [sp, #4]
+ 977 0108 24C09DE5 		ldr	ip, [sp, #36]
+ 978 010c 10108DE5 		str	r1, [sp, #16]
+ 979 0110 0510A0E1 		mov	r1, r5
+ 980 0114 18608DE5 		str	r6, [sp, #24]
+ 981 0118 00C08DE5 		str	ip, [sp]
+ 982 011c FEFFFFEB 		bl	_ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLite
+ 983              	.LVL114:
+ 984              	.L53:
+ 985              	.LBE86:
+ 176:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       context, node, params, input_width, input_height, filter_width,
+ 177:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****       filter_height, output_width, output_height, input->type, data));
+ 178:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 179:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   return kTfLiteOk;
+ 180:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** }
+ 986              		.loc 1 180 0
+ 987 0120 3CD08DE2 		add	sp, sp, #60
+ 988              		.cfi_remember_state
+ 989              		.cfi_def_cfa_offset 36
+ 990              		@ sp needed
+ 991 0124 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 992              	.LVL115:
+ 993              	.L78:
+ 994              		.cfi_restore_state
+ 995              	.LBB87:
+ 996              	.LBB83:
+ 158:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TF_LITE_ENSURE_EQ(context, filter->quantization.type,
+ 997              		.loc 1 158 0
+ 998 0128 3030D9E5 		ldrb	r3, [r9, #48]	@ zero_extendqisi2
+ 999 012c 010053E3 		cmp	r3, #1
+ 1000 0130 2400001A 		bne	.L79
+ 162:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization != nullptr);
+ 1001              		.loc 1 162 0
+ 1002 0134 343099E5 		ldr	r3, [r9, #52]
+ 1003              	.LVL116:
+ 163:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization->scale != nullptr);
+ 1004              		.loc 1 163 0
+ 1005 0138 000053E3 		cmp	r3, #0
+ 1006 013c 6A00000A 		beq	.L51
+ 164:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****     TFLITE_DCHECK(affine_quantization->zero_point != nullptr);
+ 1007              		.loc 1 164 0
+ 1008 0140 000093E5 		ldr	r0, [r3]
+ 1009 0144 000050E3 		cmp	r0, #0
+ 1010 0148 6700000A 		beq	.L51
+ 165:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 1011              		.loc 1 165 0
+ 1012 014c 04C093E5 		ldr	ip, [r3, #4]
+ 1013 0150 00005CE3 		cmp	ip, #0
+ 1014 0154 6400000A 		beq	.L51
+ 167:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                    affine_quantization->scale->size == 1 ||
+ 1015              		.loc 1 167 0
+ 1016 0158 003090E5 		ldr	r3, [r0]
+ 1017              	.LVL117:
+ 1018 015c 010053E3 		cmp	r3, #1
+ 1019 0160 0300000A 		beq	.L58
+ 167:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                    affine_quantization->scale->size == 1 ||
+ 1020              		.loc 1 167 0 is_stmt 0 discriminator 1
+ 1021 0164 082099E5 		ldr	r2, [r9, #8]
+ 1022 0168 042092E5 		ldr	r2, [r2, #4]
+ 1023 016c 020053E1 		cmp	r3, r2
+ 1024 0170 5000001A 		bne	.L80
+ 1025              	.L58:
+ 171:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                       affine_quantization->zero_point->size);
+ 1026              		.loc 1 171 0 is_stmt 1
+ 1027 0174 00009CE5 		ldr	r0, [ip]
+ 1028 0178 000053E1 		cmp	r3, r0
+ 1029 017c D6FFFF0A 		beq	.L56
+ 171:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                       affine_quantization->zero_point->size);
+ 1030              		.loc 1 171 0 is_stmt 0 discriminator 1
+ 1031 0180 00E000E3 		movw	lr, #:lower16:.LC12
+ 1032 0184 00C000E3 		movw	ip, #:lower16:.LC13
+ 1033 0188 00E040E3 		movt	lr, #:upper16:.LC12
+ 1034 018c 00C040E3 		movt	ip, #:upper16:.LC13
+ 1035 0190 002000E3 		movw	r2, #:lower16:.LC0
+ 1036 0194 001000E3 		movw	r1, #:lower16:.LC3
+ 1037 0198 0C008DE5 		str	r0, [sp, #12]
+ 1038              	.LVL118:
+ 1039 019c 002040E3 		movt	r2, #:upper16:.LC0
+ 1040 01a0 08308DE5 		str	r3, [sp, #8]
+ 1041 01a4 0400A0E1 		mov	r0, r4
+ 1042 01a8 04E08DE5 		str	lr, [sp, #4]
+ 1043 01ac 001040E3 		movt	r1, #:upper16:.LC3
+ 1044 01b0 00C08DE5 		str	ip, [sp]
+ 1045 01b4 AC30A0E3 		mov	r3, #172
+ 1046 01b8 144094E5 		ldr	r4, [r4, #20]
+ 1047              	.LVL119:
+ 1048 01bc 34FF2FE1 		blx	r4
+ 1049              	.LVL120:
+ 1050 01c0 0100A0E3 		mov	r0, #1
+ 1051 01c4 D5FFFFEA 		b	.L53
+ 1052              	.LVL121:
+ 1053              	.L79:
+ 158:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                       kTfLiteAffineQuantization);
+ 1054              		.loc 1 158 0 is_stmt 1 discriminator 1
+ 1055 01c8 00C000E3 		movw	ip, #:lower16:.LC9
+ 1056 01cc 000000E3 		movw	r0, #:lower16:.LC10
+ 1057 01d0 00C040E3 		movt	ip, #:upper16:.LC9
+ 1058 01d4 0150A0E3 		mov	r5, #1
+ 1059              	.LVL122:
+ 1060 01d8 000040E3 		movt	r0, #:upper16:.LC10
+ 1061 01dc 002000E3 		movw	r2, #:lower16:.LC0
+ 1062 01e0 001000E3 		movw	r1, #:lower16:.LC3
+ 1063 01e4 08308DE5 		str	r3, [sp, #8]
+ 1064 01e8 00008DE5 		str	r0, [sp]
+ 1065 01ec 002040E3 		movt	r2, #:upper16:.LC0
+ 1066 01f0 04C08DE5 		str	ip, [sp, #4]
+ 1067 01f4 0400A0E1 		mov	r0, r4
+ 1068 01f8 0C508DE5 		str	r5, [sp, #12]
+ 1069 01fc 001040E3 		movt	r1, #:upper16:.LC3
+ 1070 0200 144094E5 		ldr	r4, [r4, #20]
+ 1071              	.LVL123:
+ 1072 0204 9F30A0E3 		mov	r3, #159
+ 1073 0208 34FF2FE1 		blx	r4
+ 1074              	.LVL124:
+ 1075 020c 0500A0E1 		mov	r0, r5
+ 1076              	.LBE83:
+ 1077              	.LBE87:
+ 1078              		.loc 1 180 0 discriminator 1
+ 1079 0210 3CD08DE2 		add	sp, sp, #60
+ 1080              		.cfi_remember_state
+ 1081              		.cfi_def_cfa_offset 36
+ 1082              		@ sp needed
+ 1083 0214 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1084              	.LVL125:
+ 1085              	.L75:
+ 1086              		.cfi_restore_state
+ 134:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* input = GetInput(context, node, kConvInputTensor);
+ 1087              		.loc 1 134 0 discriminator 1
+ 1088 0218 003000E3 		movw	r3, #:lower16:.LC8
+ 1089 021c 002000E3 		movw	r2, #:lower16:.LC0
+ 1090 0220 003040E3 		movt	r3, #:upper16:.LC8
+ 1091 0224 001000E3 		movw	r1, #:lower16:.LC1
+ 1092 0228 00308DE5 		str	r3, [sp]
+ 1093 022c 0400A0E1 		mov	r0, r4
+ 1094              	.LVL126:
+ 1095 0230 002040E3 		movt	r2, #:upper16:.LC0
+ 1096 0234 001040E3 		movt	r1, #:upper16:.LC1
+ 1097 0238 145094E5 		ldr	r5, [r4, #20]
+ 1098              	.LVL127:
+ 1099 023c 8630A0E3 		mov	r3, #134
+ 1100 0240 35FF2FE1 		blx	r5
+ 1101              	.LVL128:
+ 1102 0244 0100A0E3 		mov	r0, #1
+ 1103              		.loc 1 180 0 discriminator 1
+ 1104 0248 3CD08DE2 		add	sp, sp, #60
+ 1105              		.cfi_remember_state
+ 1106              		.cfi_def_cfa_offset 36
+ 1107              		@ sp needed
+ 1108 024c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1109              	.LVL129:
+ 1110              	.L76:
+ 1111              		.cfi_restore_state
+ 136:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   const TfLiteTensor* filter = GetInput(context, node, kConvWeightsTensor);
+ 1112              		.loc 1 136 0 discriminator 1
+ 1113 0250 003000E3 		movw	r3, #:lower16:.LC6
+ 1114 0254 002000E3 		movw	r2, #:lower16:.LC0
+ 1115 0258 003040E3 		movt	r3, #:upper16:.LC6
+ 1116 025c 001000E3 		movw	r1, #:lower16:.LC1
+ 1117 0260 00308DE5 		str	r3, [sp]
+ 1118 0264 0400A0E1 		mov	r0, r4
+ 1119              	.LVL130:
+ 1120 0268 002040E3 		movt	r2, #:upper16:.LC0
+ 1121 026c 001040E3 		movt	r1, #:upper16:.LC1
+ 1122 0270 145094E5 		ldr	r5, [r4, #20]
+ 1123              	.LVL131:
+ 1124 0274 8830A0E3 		mov	r3, #136
+ 1125 0278 35FF2FE1 		blx	r5
+ 1126              	.LVL132:
+ 1127 027c 0100A0E3 		mov	r0, #1
+ 1128 0280 A6FFFFEA 		b	.L53
+ 1129              	.LVL133:
+ 1130              	.L77:
+ 138:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc **** 
+ 1131              		.loc 1 138 0 discriminator 1
+ 1132 0284 003000E3 		movw	r3, #:lower16:.LC7
+ 1133 0288 002000E3 		movw	r2, #:lower16:.LC0
+ 1134 028c 003040E3 		movt	r3, #:upper16:.LC7
+ 1135 0290 001000E3 		movw	r1, #:lower16:.LC1
+ 1136 0294 00308DE5 		str	r3, [sp]
+ 1137 0298 0400A0E1 		mov	r0, r4
+ 1138              	.LVL134:
+ 1139 029c 002040E3 		movt	r2, #:upper16:.LC0
+ 1140 02a0 001040E3 		movt	r1, #:upper16:.LC1
+ 1141 02a4 145094E5 		ldr	r5, [r4, #20]
+ 1142              	.LVL135:
+ 1143 02a8 8A30A0E3 		mov	r3, #138
+ 1144 02ac 35FF2FE1 		blx	r5
+ 1145              	.LVL136:
+ 1146 02b0 0100A0E3 		mov	r0, #1
+ 1147 02b4 99FFFFEA 		b	.L53
+ 1148              	.LVL137:
+ 1149              	.L80:
+ 1150              	.LBB88:
+ 1151              	.LBB84:
+ 167:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****                    affine_quantization->scale->size == 1 ||
+ 1152              		.loc 1 167 0 discriminator 2
+ 1153 02b8 003000E3 		movw	r3, #:lower16:.LC11
+ 1154 02bc 002000E3 		movw	r2, #:lower16:.LC0
+ 1155 02c0 003040E3 		movt	r3, #:upper16:.LC11
+ 1156 02c4 001000E3 		movw	r1, #:lower16:.LC1
+ 1157 02c8 00308DE5 		str	r3, [sp]
+ 1158              	.LVL138:
+ 1159 02cc 0400A0E1 		mov	r0, r4
+ 1160 02d0 002040E3 		movt	r2, #:upper16:.LC0
+ 1161 02d4 001040E3 		movt	r1, #:upper16:.LC1
+ 1162 02d8 145094E5 		ldr	r5, [r4, #20]
+ 1163              	.LVL139:
+ 1164 02dc AA30A0E3 		mov	r3, #170
+ 1165 02e0 35FF2FE1 		blx	r5
+ 1166              	.LVL140:
+ 1167 02e4 0100A0E3 		mov	r0, #1
+ 1168 02e8 8CFFFFEA 		b	.L53
+ 1169              	.LVL141:
+ 1170              	.L51:
+ 1171              	.LBE84:
+ 1172              	.LBE88:
+ 126:../src/tensorflow_lite/tensorflow/lite/micro/kernels/conv_common.cc ****   TFLITE_DCHECK(node->builtin_data != nullptr);
+ 1173              		.loc 1 126 0 discriminator 1
+ 1174 02ec FEFFFFEB 		bl	abort
+ 1175              	.LVL142:
+ 1176              		.cfi_endproc
+ 1177              	.LFE4180:
+ 1178              		.fnend
+ 1180              		.global	_ZN6tflite23kConvQuantizedDimensionE
+ 1181              		.global	_ZN6tflite17kConvOutputTensorE
+ 1182              		.global	_ZN6tflite15kConvBiasTensorE
+ 1183              		.global	_ZN6tflite18kConvWeightsTensorE
+ 1184              		.global	_ZN6tflite16kConvInputTensorE
+ 1185              		.section	.rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4,"aMS",%progbits,1
+ 1186              		.align	2
+ 1187              	.LC9:
+ 1188 0000 6B54664C 		.ascii	"kTfLiteAffineQuantization\000"
+ 1188      69746541 
+ 1188      6666696E 
+ 1188      65517561 
+ 1188      6E74697A 
+ 1189 001a 0000     		.space	2
+ 1190              	.LC10:
+ 1191 001c 66696C74 		.ascii	"filter->quantization.type\000"
+ 1191      65722D3E 
+ 1191      7175616E 
+ 1191      74697A61 
+ 1191      74696F6E 
+ 1192 0036 0000     		.space	2
+ 1193              	.LC11:
+ 1194 0038 61666669 		.ascii	"affine_quantization->scale->size == 1 || affine_qua"
+ 1194      6E655F71 
+ 1194      75616E74 
+ 1194      697A6174 
+ 1194      696F6E2D 
+ 1195 006b 6E74697A 		.ascii	"ntization->scale->size == filter->dims->data[kConvQ"
+ 1195      6174696F 
+ 1195      6E2D3E73 
+ 1195      63616C65 
+ 1195      2D3E7369 
+ 1196 009e 75616E74 		.ascii	"uantizedDimension]\000"
+ 1196      697A6564 
+ 1196      44696D65 
+ 1196      6E73696F 
+ 1196      6E5D00
+ 1197 00b1 000000   		.space	3
+ 1198              	.LC12:
+ 1199 00b4 61666669 		.ascii	"affine_quantization->zero_point->size\000"
+ 1199      6E655F71 
+ 1199      75616E74 
+ 1199      697A6174 
+ 1199      696F6E2D 
+ 1200 00da 0000     		.space	2
+ 1201              	.LC13:
+ 1202 00dc 61666669 		.ascii	"affine_quantization->scale->size\000"
+ 1202      6E655F71 
+ 1202      75616E74 
+ 1202      697A6174 
+ 1202      696F6E2D 
+ 1203              		.section	.rodata._ZN6tflite15kConvBiasTensorE,"a",%progbits
+ 1204              		.align	2
+ 1207              	_ZN6tflite15kConvBiasTensorE:
+ 1208 0000 02000000 		.word	2
+ 1209              		.section	.rodata._ZN6tflite16kConvInputTensorE,"a",%progbits
+ 1210              		.align	2
+ 1213              	_ZN6tflite16kConvInputTensorE:
+ 1214 0000 00000000 		.space	4
+ 1215              		.section	.rodata._ZN6tflite17kConvOutputTensorE,"a",%progbits
+ 1216              		.align	2
+ 1219              	_ZN6tflite17kConvOutputTensorE:
+ 1220 0000 00000000 		.space	4
+ 1221              		.section	.rodata._ZN6tflite18kConvWeightsTensorE,"a",%progbits
+ 1222              		.align	2
+ 1225              	_ZN6tflite18kConvWeightsTensorE:
+ 1226 0000 01000000 		.word	1
+ 1227              		.section	.rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParams
+ 1228              		.align	2
+ 1229              	.LC0:
+ 1230 0000 2E2E2F73 		.ascii	"../src/tensorflow_lite/tensorflow/lite/micro/kernel"
+ 1230      72632F74 
+ 1230      656E736F 
+ 1230      72666C6F 
+ 1230      775F6C69 
+ 1231 0033 732F636F 		.ascii	"s/conv_common.cc\000"
+ 1231      6E765F63 
+ 1231      6F6D6D6F 
+ 1231      6E2E6363 
+ 1231      00
+ 1232              	.LC1:
+ 1233 0044 25733A25 		.ascii	"%s:%d %s was not true.\000"
+ 1233      64202573 
+ 1233      20776173 
+ 1233      206E6F74 
+ 1233      20747275 
+ 1234 005b 00       		.space	1
+ 1235              	.LC2:
+ 1236 005c 6861735F 		.ascii	"has_bias || node->inputs->size == 2\000"
+ 1236      62696173 
+ 1236      207C7C20 
+ 1236      6E6F6465 
+ 1236      2D3E696E 
+ 1237              	.LC3:
+ 1238 0080 25733A25 		.ascii	"%s:%d %s != %s (%d != %d)\000"
+ 1238      64202573 
+ 1238      20213D20 
+ 1238      25732028 
+ 1238      25642021 
+ 1239 009a 0000     		.space	2
+ 1240              	.LC4:
+ 1241 009c 3100     		.ascii	"1\000"
+ 1242 009e 0000     		.space	2
+ 1243              	.LC5:
+ 1244 00a0 6E6F6465 		.ascii	"node->outputs->size\000"
+ 1244      2D3E6F75 
+ 1244      74707574 
+ 1244      732D3E73 
+ 1244      697A6500 
+ 1245              	.LC6:
+ 1246 00b4 696E7075 		.ascii	"input != nullptr\000"
+ 1246      7420213D 
+ 1246      206E756C 
+ 1246      6C707472 
+ 1246      00
+ 1247 00c5 000000   		.space	3
+ 1248              	.LC7:
+ 1249 00c8 66696C74 		.ascii	"filter != nullptr\000"
+ 1249      65722021 
+ 1249      3D206E75 
+ 1249      6C6C7074 
+ 1249      7200
+ 1250 00da 0000     		.space	2
+ 1251              	.LC8:
+ 1252 00dc 6F757470 		.ascii	"output != nullptr\000"
+ 1252      75742021 
+ 1252      3D206E75 
+ 1252      6C6C7074 
+ 1252      7200
+ 1253              		.section	.rodata._ZN6tflite23kConvQuantizedDimensionE,"a",%progbits
+ 1254              		.align	2
+ 1257              	_ZN6tflite23kConvQuantizedDimensionE:
+ 1258 0000 00000000 		.space	4
+ 1259              		.text
+ 1260              	.Letext0:
+ 1261              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1262              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1263              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 1264              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 1265              		.file 8 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tenso
+ 1266              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tenso
+ 1267              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 1268              		.file 11 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1269              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1270              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1271              		.file 14 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1272              		.file 15 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1273              		.file 16 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1274              		.file 17 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1275              		.file 18 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1276              		.file 19 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1277              		.file 20 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1278              		.file 21 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1279              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1280              		.file 23 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1281              		.file 24 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1282              		.file 25 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1283              		.file 26 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1284              		.file 27 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1285              		.file 28 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1286              		.file 29 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1287              		.file 30 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1288              		.file 31 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1289              		.file 32 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1290              		.file 33 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1291              		.file 34 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1292              		.file 35 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1293              		.file 36 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-ea
+ 1294              		.file 37 "<built-in>"
+ 1295              		.file 38 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1296              		.file 39 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1297              		.file 40 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1298              		.file 41 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1299              		.file 42 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1300              		.file 43 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1301              		.file 44 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1302              		.file 45 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/thir
+ 1303              		.file 46 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 1304              		.file 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 1305              		.file 48 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 1306              		.file 49 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+ 1307              		.file 50 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/src/tensorflow_lite/tens
+DEFINED SYMBOLS
+                            *ABS*:00000000 conv_common.cc
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:17     .text._ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:23     .text._ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 _ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE
+.ARM.exidx.text._ZN6tflite15ConvParamsFloatERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:154    .text._ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:160    .text._ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 _ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE
+.ARM.exidx.text._ZN6tflite19ConvParamsQuantizedERK16TfLiteConvParamsRKNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:259    .text._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:265    .text._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 _ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1240   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:0000009c .LC4
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1243   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:000000a0 .LC5
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1229   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1237   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:00000080 .LC3
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1235   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:0000005c .LC2
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1232   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:00000044 .LC1
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1245   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:000000b4 .LC6
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1248   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:000000c8 .LC7
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1251   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:000000dc .LC8
+.ARM.exidx.text._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:834    .text._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:840    .text._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1198   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000b4 .LC12
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1201   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:000000dc .LC13
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1187   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 .LC9
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1190   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:0000001c .LC10
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1193   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000038 .LC11
+.ARM.exidx.text._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1257   .rodata._ZN6tflite23kConvQuantizedDimensionE:00000000 _ZN6tflite23kConvQuantizedDimensionE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1219   .rodata._ZN6tflite17kConvOutputTensorE:00000000 _ZN6tflite17kConvOutputTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1207   .rodata._ZN6tflite15kConvBiasTensorE:00000000 _ZN6tflite15kConvBiasTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1225   .rodata._ZN6tflite18kConvWeightsTensorE:00000000 _ZN6tflite18kConvWeightsTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1213   .rodata._ZN6tflite16kConvInputTensorE:00000000 _ZN6tflite16kConvInputTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1186   .rodata._ZN6tflite11ConvPrepareEP13TfLiteContextP10TfLiteNode.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1204   .rodata._ZN6tflite15kConvBiasTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1210   .rodata._ZN6tflite16kConvInputTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1216   .rodata._ZN6tflite17kConvOutputTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1222   .rodata._ZN6tflite18kConvWeightsTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1228   .rodata._ZN6tflite19CalculateOpDataConvEP13TfLiteContextP10TfLiteNodeRK16TfLiteConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccLDg9Dm.s:1254   .rodata._ZN6tflite23kConvQuantizedDimensionE:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.stdint.h.4.659be5aa44c4ab4eb7c7cc2b24d8ceee
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.7b36b8b41abe4293fbb29540b719705c
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.stdbool.h.29.01580e438512fc255c0619569742ffd3
+                           .group:00000000 wm4.stddef.h.39.fa2e86d241f4df50b9327c72832885e1
+                           .group:00000000 wm4.c_api_types.h.20.9b09175981ed746180e205cc0b4b2bfd
+                           .group:00000000 wm4.common.h.77.124de099ec0ac4f95ebf1618a5f42cf6
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4.atomic_lockfree_defines.h.31.d5c6334fb1e95c9462b052951f1411df
+                           .group:00000000 wm4.exception_defines.h.31.ca6841b9be3287386aafc5c717935b2e
+                           .group:00000000 wm4.concept_check.h.31.f19605d278e56917c68a56d378be308c
+                           .group:00000000 wm4.type_traits.30.2c7323a483bcd7601e8b71d2546ae284
+                           .group:00000000 wm4.move.h.152.41d7b9e6779674d169b7813982cfa003
+                           .group:00000000 wm4.cpp_type_traits.h.33.9f2bfd8c4471a9a299f6da3ec24c745c
+                           .group:00000000 wm4.numeric_traits.h.30.aa01a98564b7e55086aad9e53c7e5c53
+                           .group:00000000 wm4.assertions.h.30.51d443923f0d242550e04246a7819b39
+                           .group:00000000 wm4.stl_iterator.h.1250.45f349a262f1b0d836d8edbc4b7b98ff
+                           .group:00000000 wm4.debug.h.30.5c1f223b12199e851d4d42805b788ccf
+                           .group:00000000 wm4.stl_algobase.h.491.aa250b69c90aafa2a0a62b8c58cd5f30
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.wchar.h.8.acdef4366e64def8c588421024712d23
+                           .group:00000000 wm4.stddef.h.161.9f48187563b2a85291a91832aa425498
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.wchar.h.41.2307b469886c2ca55d92707971ac50ce
+                           .group:00000000 wm4.cwchar.48.c4e882638bf84f6da89479dda6fe8e17
+                           .group:00000000 wm4.allocator.h.52.0ceafb36dc1b82dbfa6b05003082e3f5
+                           .group:00000000 wm4.stddef.h.161.38688f2eb958a8ed58fdb61ffe554c94
+                           .group:00000000 wm4.locale.h.16.524572cf3c2ed9856516685acdc598fe
+                           .group:00000000 wm4.clocale.45.c36d2d5b631a875aa5273176b54fdf0f
+                           .group:00000000 wm4.ctype.h.2.da310d2ad165ccf8b86542f76fdb938d
+                           .group:00000000 wm4.cctype.45.0da5714876b0be7f2d816b53d9670403
+                           .group:00000000 wm4.gthr.h.27.ceb1c66b926f052afcba57e8784df0d4
+                           .group:00000000 wm4.gthrdefault.h.27.edc94d4398c0534988962be77dc3c2e1
+                           .group:00000000 wm4.atomic_word.h.30.9e0ac69fd462d5e650933e05133b4afa
+                           .group:00000000 wm4.alloc_traits.h.31.c41c7c4789404962122a4e991dfa3abf
+                           .group:00000000 wm4.cstdlib.44.52c5efdfb0f3c176bd11e611a0b94959
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.stdlib.h.56.b4ddaf162082f284ba35b4444af99a9a
+                           .group:00000000 wm4.cstdlib.76.ae666499c8f9b0ace1b4b23fe143da2c
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.c3e9cb15e5af2807c4650345134c1a8a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+                           .group:00000000 wm4.errno.h.2.ba016d646105af6cad23be83630b6a3f
+                           .group:00000000 wm4.errno.h.9.1ecd7b1049497a0ab61da0f6cbd4b0c6
+                           .group:00000000 wm4.functional_hash.h.31.bccc014fee6fc3f930045d809df6f486
+                           .group:00000000 wm4.functional.549.0bc5b448cf999863d3841495cd6fe920
+                           .group:00000000 wm4.limits.38.55aefcf041805b6211ca3649dd2ab1b5
+                           .group:00000000 wm4.assert.h.11.a5d97ca77559a42890313c4941c01fd9
+                           .group:00000000 wm4.math.h.13.e7cbdea54f4da98ab8f7fad4d23502b2
+                           .group:00000000 wm4.cmath.46.d6e5b776115d39075860ed881d18f087
+                           .group:00000000 wm4.detect_platform.h.19.a1891273c0cad215067ddb8219400136
+                           .group:00000000 wm4.fixedpoint.h.567.8a6371d9452be19811601bace78b0abc
+                           .group:00000000 wm4.cmath.44.b3bcbb5fe53ec6617dec8aa8eb7b03cc
+                           .group:00000000 wm4.cppmath.h.27.51580d700716589df4b364298e2ef577
+                           .group:00000000 wm4.neon_check.h.16.79a4dcb572cbeac06c4924f1f20cb68d
+                           .group:00000000 wm4.string.h.8.c4b8571ce60dff2817f43fec8b86aecd
+                           .group:00000000 wm4.cstring.45.6ab09de7fb97b576e744347688ddc8d7
+                           .group:00000000 wm4.op_macros.h.42.7b718cb416a067e7bb07e7699647769b
+                           .group:00000000 wm4.compatibility.h.23.702d6356326ea59aded8ef5c6c4626d5
+
+UNDEFINED SYMBOLS
+_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+__aeabi_unwind_cpp_pr0
+__aeabi_idiv
+_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite22GetOptionalInputTensorEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+_ZN6tflite37PopulateConvolutionQuantizationParamsEP13TfLiteContextPK12TfLiteTensorS4_S4_PS2_RK21TfLiteFusedActivationPlPiS9_S9_S9_S9_i
+abort

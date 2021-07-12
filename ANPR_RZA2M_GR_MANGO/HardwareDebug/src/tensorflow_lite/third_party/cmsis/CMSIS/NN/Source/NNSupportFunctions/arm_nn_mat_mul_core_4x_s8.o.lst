@@ -1,0 +1,923 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_mat_mul_core_4x_s8.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_nn_mat_mul_core_4x_s8,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_nn_mat_mul_core_4x_s8
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_nn_mat_mul_core_4x_s8:
+  24              	.LFB122:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mu
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Copyright (C) 2010-2020 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Title:        arm_nn_mat_mul_core_4x_s8.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Description:  General matrix multiplication function for MVE extension
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * $Date:        09. October 2020
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * $Revision:    V.2.0.1
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Target Processor:  Cortex-M cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * -------------------------------------------------------------------- */
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** #include "arm_nnsupportfunctions.h"
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** /**
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * @ingroup groupSupport
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  */
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** /**
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * @addtogroup NNBasicMath
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * @{
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  */
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** /*
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * s8 matrix multiplication to process 4 rows and one column
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  * Refer header file for details.
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  *
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****  */
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** arm_status arm_nn_mat_mul_core_4x_s8(const int32_t row_elements,
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                                      const int32_t offset,
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                                      const int8_t *row_base,
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                                      const int8_t *col_base,
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                                      int32_t *const sum_col,
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                                      int32_t *const output)
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** {
+  26              		.loc 1 53 0
+  27              		.cfi_startproc
+  28              		@ args = 8, pretend = 0, frame = 32
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  32              		.cfi_def_cfa_offset 36
+  33              		.cfi_offset 4, -36
+  34              		.cfi_offset 5, -32
+  35              		.cfi_offset 6, -28
+  36              		.cfi_offset 7, -24
+  37              		.cfi_offset 8, -20
+  38              		.cfi_offset 9, -16
+  39              		.cfi_offset 10, -12
+  40              		.cfi_offset 11, -8
+  41              		.cfi_offset 14, -4
+  42 0004 01E0A0E1 		mov	lr, r1
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n0 = 0;
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n1 = 0;
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n2 = 0;
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n3 = 0;
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_0 = row_base;
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_1 = row_base + offset;
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_2 = row_base + (2 * offset);
+  43              		.loc 1 61 0
+  44 0008 8E60A0E1 		lsl	r6, lr, #1
+  45              	.LBB2:
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_3 = row_base + (3 * offset);
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t sum_tmp = 0;
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** #if defined(ARM_MATH_MVEI) && !defined(ARM_MATH_AUTOVECTORIZE)
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     __ASM volatile("   vldrb.8         q0, [%[col]], 16     \n"
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   wlstp.8         lr, %[cnt], 1f       \n"
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "2:                                      \n"
+  69:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vaddva.s8      %[sum], q0            \n"
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vldrb.8         q1, [%[row0]], 16    \n"
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vmladava.s8    %[out0], q0, q1       \n"
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vldrb.8         q2, [%[row1]], 16    \n"
+  73:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vmladava.s8     %[out1], q0, q2      \n"
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vldrb.8         q3, [%[row2]], 16    \n"
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vmladava.s8     %[out2], q0, q3      \n"
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vldrb.8         q4, [%[row3]], 16    \n"
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vmladava.s8     %[out3], q0, q4      \n"
+  78:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   vldrb.8         q0, [%[col]], 16     \n"
+  79:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "   letp            lr, 2b               \n"
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    "1:                                      \n"
+  81:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    : [col] "+r"(col_base),
+  82:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [sum] "+Te"(sum_tmp),
+  83:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [row0] "+r"(ip_row_0),
+  84:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [row1] "+r"(ip_row_1),
+  85:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [row2] "+r"(ip_row_2),
+  86:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [row3] "+r"(ip_row_3),
+  87:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [out0] "+Te"(acc_n0),
+  88:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [out1] "+Te"(acc_n1),
+  89:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [out2] "+Te"(acc_n2),
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                      [out3] "+Te"(acc_n3)
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    : [cnt] "r"(row_elements)
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****                    : "q0", "q1", "q2", "q3", "q4", "memory", "r14");
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** #else
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     for (int i = 0; i < row_elements; i++)
+  46              		.loc 1 94 0
+  47 000c 001050E2 		subs	r1, r0, #0
+  48              	.LVL1:
+  49              	.LBE2:
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n0 = 0;
+  50              		.loc 1 53 0
+  51 0010 0270A0E1 		mov	r7, r2
+  52              	.LVL2:
+  53 0014 108B2DED 		vpush.64	{d8, d9, d10, d11, d12, d13, d14, d15}
+  54              		.cfi_def_cfa_offset 100
+  55              		.cfi_offset 80, -100
+  56              		.cfi_offset 81, -96
+  57              		.cfi_offset 82, -92
+  58              		.cfi_offset 83, -88
+  59              		.cfi_offset 84, -84
+  60              		.cfi_offset 85, -80
+  61              		.cfi_offset 86, -76
+  62              		.cfi_offset 87, -72
+  63              		.cfi_offset 88, -68
+  64              		.cfi_offset 89, -64
+  65              		.cfi_offset 90, -60
+  66              		.cfi_offset 91, -56
+  67              		.cfi_offset 92, -52
+  68              		.cfi_offset 93, -48
+  69              		.cfi_offset 94, -44
+  70              		.cfi_offset 95, -40
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_3 = row_base + (3 * offset);
+  71              		.loc 1 62 0
+  72 0018 0E2086E0 		add	r2, r6, lr
+  73              	.LVL3:
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n0 = 0;
+  74              		.loc 1 53 0
+  75 001c 24D04DE2 		sub	sp, sp, #36
+  76              		.cfi_def_cfa_offset 136
+  77              	.LBB9:
+  78              		.loc 1 94 0
+  79 0020 0C108DE5 		str	r1, [sp, #12]
+  80              	.LBE9:
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     const int8_t *ip_row_3 = row_base + (3 * offset);
+  81              		.loc 1 62 0
+  82 0024 08208DE5 		str	r2, [sp, #8]
+  83              	.LVL4:
+  84              	.LBB10:
+  85              		.loc 1 94 0
+  86 0028 540100DA 		ble	.L12
+  87 002c 01C0A0E1 		mov	ip, r1
+  88 0030 030087E1 		orr	r0, r7, r3
+  89              	.LVL5:
+  90 0034 0E1087E0 		add	r1, r7, lr
+  91              	.LVL6:
+  92 0038 0F005CE3 		cmp	ip, #15
+  93 003c 0E5081E0 		add	r5, r1, lr
+  94 0040 001081E1 		orr	r1, r1, r0
+  95              	.LVL7:
+  96 0044 011085E1 		orr	r1, r5, r1
+  97 0048 0E5085E0 		add	r5, r5, lr
+  98 004c 011085E1 		orr	r1, r5, r1
+  99 0050 0C00A0E1 		mov	r0, ip
+ 100 0054 5110E3E7 		ubfx	r1, r1, #0, #4
+ 101 0058 0000A093 		movls	r0, #0
+ 102 005c 0100A083 		movhi	r0, #1
+ 103 0060 000051E3 		cmp	r1, #0
+ 104 0064 0000A013 		movne	r0, #0
+ 105 0068 002066E2 		rsb	r2, r6, #0
+ 106              	.LVL8:
+ 107 006c 000050E3 		cmp	r0, #0
+ 108 0070 2401000A 		beq	.L3
+ 109 0074 10C04CE2 		sub	ip, ip, #16
+ 110              	.LVL9:
+ 111 0078 022085E0 		add	r2, r5, r2
+ 112 007c 2CC2A0E1 		lsr	ip, ip, #4
+ 113 0080 0E1082E0 		add	r1, r2, lr
+ 114 0084 0EA081E0 		add	r10, r1, lr
+ 115 0088 504080F2 		vmov.i32	q2, #0  @ v4si
+ 116 008c 02004CE2 		sub	r0, ip, #2
+ 117 0090 01C08CE2 		add	ip, ip, #1
+ 118 0094 1CC08DE5 		str	ip, [sp, #28]
+ 119 0098 040070E3 		cmn	r0, #4
+ 120 009c 0CC2A0E1 		lsl	ip, ip, #4
+ 121 00a0 18C08DE5 		str	ip, [sp, #24]
+ 122 00a4 3B01008A 		bhi	.L13
+ 123 00a8 0100C0E3 		bic	r0, r0, #1
+ 124 00ac 548124F2 		vmov	q4, q2  @ v4si
+ 125 00b0 020080E2 		add	r0, r0, #2
+ 126 00b4 540124F2 		vmov	q0, q2  @ v4si
+ 127 00b8 542124F2 		vmov	q1, q2  @ v4si
+ 128 00bc 202082E2 		add	r2, r2, #32
+ 129 00c0 544164F2 		vmov	q10, q2  @ v4si
+ 130 00c4 201081E2 		add	r1, r1, #32
+ 131 00c8 04008DE5 		str	r0, [sp, #4]
+ 132 00cc 208083E2 		add	r8, r3, #32
+ 133 00d0 20008AE2 		add	r0, r10, #32
+ 134 00d4 205087E2 		add	r5, r7, #32
+ 135 00d8 00B0A0E3 		mov	fp, #0
+ 136              	.LVL10:
+ 137              	.L5:
+ 138              	.LBB3:
+  95:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         int32_t col = col_base[i];
+ 139              		.loc 1 96 0 discriminator 3
+ 140 00dc 082B58ED 		vldr	d18, [r8, #-32]
+ 141 00e0 063B58ED 		vldr	d19, [r8, #-24]
+ 142 00e4 02B08BE2 		add	fp, fp, #2
+ 143 00e8 04C09DE5 		ldr	ip, [sp, #4]
+ 144 00ec 20A088E2 		add	r10, r8, #32
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 145              		.loc 1 98 0 discriminator 3
+ 146 00f0 086B55ED 		vldr	d22, [r5, #-32]
+ 147 00f4 067B55ED 		vldr	d23, [r5, #-24]
+ 148 00f8 209085E2 		add	r9, r5, #32
+ 149 00fc A68CC2F2 		vmull.s8 q12, d18, d22
+ 150 0100 0840A0E1 		mov	r4, r8
+ 151 0104 A76CC3F2 		vmull.s8 q11, d19, d23
+ 152 0108 0C005BE1 		cmp	fp, ip
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 153              		.loc 1 96 0 discriminator 3
+ 154 010c 040B58ED 		vldr	d16, [r8, #-16]
+ 155 0110 021B58ED 		vldr	d17, [r8, #-8]
+ 156 0114 05C0A0E1 		mov	ip, r5
+ 157 0118 10208DE5 		str	r2, [sp, #16]
+ 158 011c 0A80A0E1 		mov	r8, r10
+ 159              		.loc 1 98 0 discriminator 3
+ 160 0120 04AB15ED 		vldr	d10, [r5, #-16]
+ 161 0124 02BB15ED 		vldr	d11, [r5, #-8]
+ 162 0128 202082E2 		add	r2, r2, #32
+ 163 012c 14108DE5 		str	r1, [sp, #20]
+ 164 0130 0950A0E1 		mov	r5, r9
+ 165 0134 386A90F2 		vmovl.s16 q3, d24
+ 166 0138 201081E2 		add	r1, r1, #32
+ 167 013c 398AD0F2 		vmovl.s16 q12, d25
+ 168 0140 422826F2 		vadd.i32	q1, q3, q1
+ 169 0144 36CAD0F2 		vmovl.s16 q14, d22
+ 170 0148 C22828F2 		vadd.i32	q1, q12, q1
+ 171 014c 8A8CC0F2 		vmull.s8 q12, d16, d10
+ 172 0150 376AD0F2 		vmovl.s16 q11, d23
+ 173 0154 8BAC81F2 		vmull.s8 q5, d17, d11
+ 174 0158 C2C86CF2 		vadd.i32	q14, q14, q1
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 175              		.loc 1 99 0 discriminator 3
+ 176 015c 10EB52ED 		vldr	d30, [r2, #-64]
+ 177 0160 0EFB52ED 		vldr	d31, [r2, #-56]
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 178              		.loc 1 98 0 discriminator 3
+ 179 0164 ECC866F2 		vadd.i32	q14, q11, q14
+ 180 0168 38CA90F2 		vmovl.s16 q6, d24
+ 181 016c AE6C82F2 		vmull.s8 q3, d18, d30
+ 182 0170 6CC86CF2 		vadd.i32	q14, q6, q14
+ 183 0174 398AD0F2 		vmovl.s16 q12, d25
+ 184 0178 1A2A90F2 		vmovl.s16 q1, d10
+ 185 017c EC8868F2 		vadd.i32	q12, q12, q14
+ 186 0180 AFECC3F2 		vmull.s8 q15, d19, d31
+ 187 0184 1BAA90F2 		vmovl.s16 q5, d11
+ 188 0188 682822F2 		vadd.i32	q1, q1, q12
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 189              		.loc 1 100 0 discriminator 3
+ 190 018c 10AB51ED 		vldr	d26, [r1, #-64]
+ 191 0190 0EBB51ED 		vldr	d27, [r1, #-56]
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 192              		.loc 1 98 0 discriminator 3
+ 193 0194 42282AF2 		vadd.i32	q1, q5, q1
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 194              		.loc 1 99 0 discriminator 3
+ 195 0198 16AA90F2 		vmovl.s16 q5, d6
+ 196 019c 176A90F2 		vmovl.s16 q3, d7
+ 197 01a0 40082AF2 		vadd.i32	q0, q5, q0
+ 198 01a4 AACCC2F2 		vmull.s8 q14, d18, d26
+ 199 01a8 3EAA90F2 		vmovl.s16 q5, d30
+ 200 01ac 406826F2 		vadd.i32	q3, q3, q0
+ 201 01b0 0CEB12ED 		vldr	d14, [r2, #-48]
+ 202 01b4 0AFB12ED 		vldr	d15, [r2, #-40]
+ 203 01b8 46682AF2 		vadd.i32	q3, q5, q3
+ 204 01bc 8EAC80F2 		vmull.s8 q5, d16, d14
+ 205 01c0 ABACC3F2 		vmull.s8 q13, d19, d27
+ 206 01c4 3FEAD0F2 		vmovl.s16 q15, d31
+ 207 01c8 8F0C81F2 		vmull.s8 q0, d17, d15
+ 208 01cc C6E86EF2 		vadd.i32	q15, q15, q3
+ 209              		.loc 1 100 0 discriminator 3
+ 210 01d0 3C6A90F2 		vmovl.s16 q3, d28
+ 211 01d4 3DCAD0F2 		vmovl.s16 q14, d29
+ 212 01d8 486826F2 		vadd.i32	q3, q3, q4
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 213              		.loc 1 99 0 discriminator 3
+ 214 01dc 1ACA90F2 		vmovl.s16 q6, d10
+ 215              		.loc 1 100 0 discriminator 3
+ 216 01e0 C6C86CF2 		vadd.i32	q14, q14, q3
+ 217 01e4 3A6A90F2 		vmovl.s16 q3, d26
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 218              		.loc 1 99 0 discriminator 3
+ 219 01e8 6EE86CF2 		vadd.i32	q15, q6, q15
+ 220              		.loc 1 100 0 discriminator 3
+ 221 01ec 0CCB11ED 		vldr	d12, [r1, #-48]
+ 222 01f0 0ADB11ED 		vldr	d13, [r1, #-40]
+ 223 01f4 6CC866F2 		vadd.i32	q14, q3, q14
+ 224 01f8 8C6C80F2 		vmull.s8 q3, d16, d12
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 225              		.loc 1 101 0 discriminator 3
+ 226 01fc 086B50ED 		vldr	d22, [r0, #-32]
+ 227 0200 067B50ED 		vldr	d23, [r0, #-24]
+ 228 0204 A68CC2F2 		vmull.s8 q12, d18, d22
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 229              		.loc 1 99 0 discriminator 3
+ 230 0208 1BAA90F2 		vmovl.s16 q5, d11
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 231              		.loc 1 100 0 discriminator 3
+ 232 020c 3BAAD0F2 		vmovl.s16 q13, d27
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 233              		.loc 1 99 0 discriminator 3
+ 234 0210 6EA82AF2 		vadd.i32	q5, q5, q15
+ 235 0214 10EAD0F2 		vmovl.s16 q15, d0
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 236              		.loc 1 100 0 discriminator 3
+ 237 0218 ECC86AF2 		vadd.i32	q14, q13, q14
+ 238 021c 16AAD0F2 		vmovl.s16 q13, d6
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 239              		.loc 1 99 0 discriminator 3
+ 240 0220 CAA82EF2 		vadd.i32	q5, q15, q5
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 241              		.loc 1 96 0 discriminator 3
+ 242 0224 32EAC8F2 		vmovl.s8 q15, d18
+ 243 0228 A76CC3F2 		vmull.s8 q11, d19, d23
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 244              		.loc 1 100 0 discriminator 3
+ 245 022c ECA86AF2 		vadd.i32	q13, q13, q14
+ 246              		.loc 1 101 0 discriminator 3
+ 247 0230 38CAD0F2 		vmovl.s16 q14, d24
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 248              		.loc 1 99 0 discriminator 3
+ 249 0234 110A90F2 		vmovl.s16 q0, d1
+ 250              		.loc 1 101 0 discriminator 3
+ 251 0238 C4482CF2 		vadd.i32	q2, q14, q2
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 252              		.loc 1 96 0 discriminator 3
+ 253 023c 3ECAD0F2 		vmovl.s16 q14, d30
+ 254              		.loc 1 101 0 discriminator 3
+ 255 0240 398AD0F2 		vmovl.s16 q12, d25
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 256              		.loc 1 96 0 discriminator 3
+ 257 0244 3FEAD0F2 		vmovl.s16 q15, d31
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 258              		.loc 1 97 0 discriminator 3
+ 259 0248 E4486CF2 		vadd.i32	q10, q14, q10
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 260              		.loc 1 100 0 discriminator 3
+ 261 024c 176A90F2 		vmovl.s16 q3, d7
+ 262              		.loc 1 101 0 discriminator 3
+ 263 0250 C48868F2 		vadd.i32	q12, q12, q2
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 264              		.loc 1 97 0 discriminator 3
+ 265 0254 E4486EF2 		vadd.i32	q10, q15, q10
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 266              		.loc 1 99 0 discriminator 3
+ 267 0258 4A0820F2 		vadd.i32	q0, q0, q5
+ 268              		.loc 1 101 0 discriminator 3
+ 269 025c 36EAD0F2 		vmovl.s16 q15, d22
+ 270 0260 04AB10ED 		vldr	d10, [r0, #-16]
+ 271 0264 02BB10ED 		vldr	d11, [r0, #-8]
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 272              		.loc 1 96 0 discriminator 3
+ 273 0268 332AC8F2 		vmovl.s8 q9, d19
+ 274              	.LVL11:
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 275              		.loc 1 100 0 discriminator 3
+ 276 026c 6A6826F2 		vadd.i32	q3, q3, q13
+ 277 0270 8AACC0F2 		vmull.s8 q13, d16, d10
+ 278              		.loc 1 101 0 discriminator 3
+ 279 0274 376AD0F2 		vmovl.s16 q11, d23
+ 280 0278 E8886EF2 		vadd.i32	q12, q15, q12
+ 281 027c 8DCC81F2 		vmull.s8 q6, d17, d13
+ 282 0280 E8C866F2 		vadd.i32	q14, q11, q12
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 283              		.loc 1 96 0 discriminator 3
+ 284 0284 328AD0F2 		vmovl.s16 q12, d18
+ 285 0288 8BAC81F2 		vmull.s8 q5, d17, d11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 286              		.loc 1 97 0 discriminator 3
+ 287 028c E44868F2 		vadd.i32	q10, q12, q10
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 288              		.loc 1 96 0 discriminator 3
+ 289 0290 308AC8F2 		vmovl.s8 q12, d16
+ 290              		.loc 1 101 0 discriminator 3
+ 291 0294 3A6AD0F2 		vmovl.s16 q11, d26
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 292              		.loc 1 96 0 discriminator 3
+ 293 0298 332AD0F2 		vmovl.s16 q9, d19
+ 294              		.loc 1 101 0 discriminator 3
+ 295 029c EC6866F2 		vadd.i32	q11, q11, q14
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 296              		.loc 1 97 0 discriminator 3
+ 297 02a0 E42862F2 		vadd.i32	q9, q9, q10
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 298              		.loc 1 96 0 discriminator 3
+ 299 02a4 38CAD0F2 		vmovl.s16 q14, d24
+ 300 02a8 310AC8F2 		vmovl.s8 q8, d17
+ 301              		.loc 1 101 0 discriminator 3
+ 302 02ac 3BAAD0F2 		vmovl.s16 q13, d27
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 303              		.loc 1 96 0 discriminator 3
+ 304 02b0 398AD0F2 		vmovl.s16 q12, d25
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 305              		.loc 1 97 0 discriminator 3
+ 306 02b4 E2286CF2 		vadd.i32	q9, q14, q9
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 307              		.loc 1 100 0 discriminator 3
+ 308 02b8 1C8A90F2 		vmovl.s16 q4, d12
+ 309              		.loc 1 101 0 discriminator 3
+ 310 02bc 1A4A90F2 		vmovl.s16 q2, d10
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 311              		.loc 1 96 0 discriminator 3
+ 312 02c0 304AD0F2 		vmovl.s16 q10, d16
+ 313              		.loc 1 101 0 discriminator 3
+ 314 02c4 E6686AF2 		vadd.i32	q11, q13, q11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 315              		.loc 1 97 0 discriminator 3
+ 316 02c8 E22868F2 		vadd.i32	q9, q12, q9
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 317              		.loc 1 100 0 discriminator 3
+ 318 02cc 466828F2 		vadd.i32	q3, q4, q3
+ 319              		.loc 1 101 0 discriminator 3
+ 320 02d0 666864F2 		vadd.i32	q11, q2, q11
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 321              		.loc 1 100 0 discriminator 3
+ 322 02d4 1D8A90F2 		vmovl.s16 q4, d13
+ 323              		.loc 1 101 0 discriminator 3
+ 324 02d8 1B4A90F2 		vmovl.s16 q2, d11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 325              		.loc 1 97 0 discriminator 3
+ 326 02dc E24864F2 		vadd.i32	q10, q10, q9
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 327              		.loc 1 96 0 discriminator 3
+ 328 02e0 310AD0F2 		vmovl.s16 q8, d17
+ 329 02e4 00F0DAF5 		pld	[r10]
+ 330 02e8 00A0A0E1 		mov	r10, r0
+ 331 02ec 00F0D9F5 		pld	[r9]
+ 332 02f0 200080E2 		add	r0, r0, #32
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 333              		.loc 1 100 0 discriminator 3
+ 334 02f4 468828F2 		vadd.i32	q4, q4, q3
+ 335              		.loc 1 101 0 discriminator 3
+ 336 02f8 664824F2 		vadd.i32	q2, q2, q11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 337              		.loc 1 97 0 discriminator 3
+ 338 02fc E44860F2 		vadd.i32	q10, q8, q10
+ 339 0300 75FFFF1A 		bne	.L5
+ 340              		.loc 1 101 0
+ 341 0304 14109DE5 		ldr	r1, [sp, #20]
+ 342 0308 10209DE5 		ldr	r2, [sp, #16]
+ 343 030c 04009DE5 		ldr	r0, [sp, #4]
+ 344              	.L4:
+ 345 0310 1C509DE5 		ldr	r5, [sp, #28]
+ 346              	.L8:
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 347              		.loc 1 96 0
+ 348 0314 DF0A64F4 		vld1.64	{d16-d17}, [r4:64]
+ 349 0318 010080E2 		add	r0, r0, #1
+ 350 031c 000055E1 		cmp	r5, r0
+ 351 0320 104084E2 		add	r4, r4, #16
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 352              		.loc 1 98 0
+ 353 0324 DFAA6CF4 		vld1.64	{d26-d27}, [ip:64]
+ 354 0328 102082E2 		add	r2, r2, #16
+ 355 032c AA2CC0F2 		vmull.s8 q9, d16, d26
+ 356 0330 10C08CE2 		add	ip, ip, #16
+ 357 0334 ABACC1F2 		vmull.s8 q13, d17, d27
+ 358 0338 101081E2 		add	r1, r1, #16
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 359              		.loc 1 99 0
+ 360 033c 04EB52ED 		vldr	d30, [r2, #-16]
+ 361 0340 02FB52ED 		vldr	d31, [r2, #-8]
+ 362 0344 10A08AE2 		add	r10, r10, #16
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 363              		.loc 1 100 0
+ 364 0348 04CB51ED 		vldr	d28, [r1, #-16]
+ 365 034c 02DB51ED 		vldr	d29, [r1, #-8]
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 366              		.loc 1 98 0
+ 367 0350 326AD0F2 		vmovl.s16 q11, d18
+ 368 0354 332AD0F2 		vmovl.s16 q9, d19
+ 369 0358 C22826F2 		vadd.i32	q1, q11, q1
+ 370 035c 3A6AD0F2 		vmovl.s16 q11, d26
+ 371 0360 C22862F2 		vadd.i32	q9, q9, q1
+ 372 0364 3B2A90F2 		vmovl.s16 q1, d27
+ 373 0368 E22866F2 		vadd.i32	q9, q11, q9
+ 374 036c A06CCEF2 		vmull.s8 q11, d30, d16
+ 375 0370 A1ECCFF2 		vmull.s8 q15, d31, d17
+ 376 0374 622822F2 		vadd.i32	q1, q1, q9
+ 377 0378 A02CCCF2 		vmull.s8 q9, d28, d16
+ 378 037c A1CCCDF2 		vmull.s8 q14, d29, d17
+ 379              		.loc 1 101 0
+ 380 0380 048B5AED 		vldr	d24, [r10, #-16]
+ 381 0384 029B5AED 		vldr	d25, [r10, #-8]
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 382              		.loc 1 99 0
+ 383 0388 36AAD0F2 		vmovl.s16 q13, d22
+ 384 038c 376AD0F2 		vmovl.s16 q11, d23
+ 385 0390 C0082AF2 		vadd.i32	q0, q13, q0
+ 386 0394 3EAAD0F2 		vmovl.s16 q13, d30
+ 387 0398 C06866F2 		vadd.i32	q11, q11, q0
+ 388 039c 3F0A90F2 		vmovl.s16 q0, d31
+ 389 03a0 E6A86AF2 		vadd.i32	q13, q13, q11
+ 390 03a4 A86CC0F2 		vmull.s8 q11, d16, d24
+ 391 03a8 6A0820F2 		vadd.i32	q0, q0, q13
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 392              		.loc 1 100 0
+ 393 03ac 32AAD0F2 		vmovl.s16 q13, d18
+ 394 03b0 332AD0F2 		vmovl.s16 q9, d19
+ 395 03b4 C8882AF2 		vadd.i32	q4, q13, q4
+ 396 03b8 3CAAD0F2 		vmovl.s16 q13, d28
+ 397 03bc C82862F2 		vadd.i32	q9, q9, q4
+ 398 03c0 A98CC1F2 		vmull.s8 q12, d17, d25
+ 399 03c4 E2A86AF2 		vadd.i32	q13, q13, q9
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 400              		.loc 1 96 0
+ 401 03c8 302AC8F2 		vmovl.s8 q9, d16
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 402              		.loc 1 100 0
+ 403 03cc 3D8A90F2 		vmovl.s16 q4, d29
+ 404              		.loc 1 101 0
+ 405 03d0 36CAD0F2 		vmovl.s16 q14, d22
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 406              		.loc 1 100 0
+ 407 03d4 6A8828F2 		vadd.i32	q4, q4, q13
+ 408              		.loc 1 101 0
+ 409 03d8 37AAD0F2 		vmovl.s16 q13, d23
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 410              		.loc 1 96 0
+ 411 03dc 326AD0F2 		vmovl.s16 q11, d18
+ 412 03e0 310AC8F2 		vmovl.s8 q8, d17
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 413              		.loc 1 97 0
+ 414 03e4 E44866F2 		vadd.i32	q10, q11, q10
+ 415              		.loc 1 101 0
+ 416 03e8 C4482CF2 		vadd.i32	q2, q14, q2
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 417              		.loc 1 96 0
+ 418 03ec 332AD0F2 		vmovl.s16 q9, d19
+ 419              		.loc 1 101 0
+ 420 03f0 C4686AF2 		vadd.i32	q11, q13, q2
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 421              		.loc 1 97 0
+ 422 03f4 E42862F2 		vadd.i32	q9, q9, q10
+ 423              		.loc 1 101 0
+ 424 03f8 384A90F2 		vmovl.s16 q2, d24
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 425              		.loc 1 96 0
+ 426 03fc 304AD0F2 		vmovl.s16 q10, d16
+ 427              		.loc 1 101 0
+ 428 0400 666864F2 		vadd.i32	q11, q2, q11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 429              		.loc 1 97 0
+ 430 0404 E22864F2 		vadd.i32	q9, q10, q9
+ 431              		.loc 1 101 0
+ 432 0408 394A90F2 		vmovl.s16 q2, d25
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 433              		.loc 1 96 0
+ 434 040c 314AD0F2 		vmovl.s16 q10, d17
+ 435              		.loc 1 101 0
+ 436 0410 664824F2 		vadd.i32	q2, q2, q11
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 437              		.loc 1 97 0
+ 438 0414 E24864F2 		vadd.i32	q10, q10, q9
+ 439 0418 BDFFFF8A 		bhi	.L8
+ 440 041c 054824F2 		vadd.i32	d4, d4, d5
+ 441 0420 098828F2 		vadd.i32	d8, d8, d9
+ 442 0424 010820F2 		vadd.i32	d0, d0, d1
+ 443 0428 032822F2 		vadd.i32	d2, d2, d3
+ 444 042c A54864F2 		vadd.i32	d20, d20, d21
+ 445 0430 0C209DE5 		ldr	r2, [sp, #12]
+ 446 0434 18409DE5 		ldr	r4, [sp, #24]
+ 447 0438 144B24F2 		vpadd.i32	d4, d4, d4
+ 448 043c 188B28F2 		vpadd.i32	d8, d8, d8
+ 449 0440 100B20F2 		vpadd.i32	d0, d0, d0
+ 450 0444 040052E1 		cmp	r2, r4
+ 451 0448 122B22F2 		vpadd.i32	d2, d2, d2
+ 452 044c B44B64F2 		vpadd.i32	d20, d20, d20
+ 453 0450 102B14EE 		vmov.32	r2, d4[0]
+ 454 0454 101B18EE 		vmov.32	r1, d8[0]
+ 455 0458 10CB10EE 		vmov.32	ip, d0[0]
+ 456 045c 100B12EE 		vmov.32	r0, d2[0]
+ 457 0460 908B14EE 		vmov.32	r8, d20[0]
+ 458 0464 1C00000A 		beq	.L2
+ 459 0468 045086E0 		add	r5, r6, r4
+ 460 046c 08609DE5 		ldr	r6, [sp, #8]
+ 461              	.LVL12:
+ 462 0470 04E08EE0 		add	lr, lr, r4
+ 463              	.LVL13:
+ 464 0474 055087E0 		add	r5, r7, r5
+ 465 0478 0E9087E0 		add	r9, r7, lr
+ 466 047c 043083E0 		add	r3, r3, r4
+ 467              	.LVL14:
+ 468 0480 046086E0 		add	r6, r6, r4
+ 469 0484 08028DE9 		stmib	sp, {r3, r9}
+ 470              	.LVL15:
+ 471 0488 066087E0 		add	r6, r7, r6
+ 472 048c 0590A0E1 		mov	r9, r5
+ 473 0490 047087E0 		add	r7, r7, r4
+ 474              	.LVL16:
+ 475              	.L6:
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 476              		.loc 1 96 0
+ 477 0494 04309DE5 		ldr	r3, [sp, #4]
+ 478              	.LBE3:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 479              		.loc 1 94 0
+ 480 0498 014084E2 		add	r4, r4, #1
+ 481              	.LVL17:
+ 482 049c 0CA09DE5 		ldr	r10, [sp, #12]
+ 483              	.LBB4:
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 484              		.loc 1 98 0
+ 485 04a0 D1B0D7E0 		ldrsb	fp, [r7], #1
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 486              		.loc 1 96 0
+ 487 04a4 D1E0D3E0 		ldrsb	lr, [r3], #1
+ 488              	.LBE4:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 489              		.loc 1 94 0
+ 490 04a8 04005AE1 		cmp	r10, r4
+ 491              	.LBB5:
+ 492              		.loc 1 101 0
+ 493 04ac D150D6E0 		ldrsb	r5, [r6], #1
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 494              		.loc 1 96 0
+ 495 04b0 04308DE5 		str	r3, [sp, #4]
+ 496              	.LVL18:
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 497              		.loc 1 97 0
+ 498 04b4 0E8088E0 		add	r8, r8, lr
+ 499              	.LVL19:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 500              		.loc 1 99 0
+ 501 04b8 08309DE5 		ldr	r3, [sp, #8]
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 502              		.loc 1 98 0
+ 503 04bc 8E0B00E1 		smlabb	r0, lr, fp, r0
+ 504              	.LVL20:
+ 505              		.loc 1 101 0
+ 506 04c0 8E2502E1 		smlabb	r2, lr, r5, r2
+ 507              	.LVL21:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 508              		.loc 1 99 0
+ 509 04c4 D1A0D3E0 		ldrsb	r10, [r3], #1
+ 510 04c8 08308DE5 		str	r3, [sp, #8]
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 511              		.loc 1 100 0
+ 512 04cc D130D9E0 		ldrsb	r3, [r9], #1
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 513              		.loc 1 99 0
+ 514 04d0 8ECA0CE1 		smlabb	ip, lr, r10, ip
+ 515              	.LVL22:
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 516              		.loc 1 100 0
+ 517 04d4 8E1301E1 		smlabb	r1, lr, r3, r1
+ 518              	.LVL23:
+ 519              	.LBE5:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 520              		.loc 1 94 0
+ 521 04d8 EDFFFFCA 		bgt	.L6
+ 522              	.LVL24:
+ 523              	.L2:
+ 524              	.LBE10:
+ 102:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     }
+ 103:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** #endif
+ 104:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[0] = acc_n0;
+ 525              		.loc 1 104 0
+ 526 04dc 8C309DE5 		ldr	r3, [sp, #140]
+ 527 04e0 000083E5 		str	r0, [r3]
+ 105:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[1] = acc_n1;
+ 106:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[2] = acc_n2;
+ 107:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[3] = acc_n3;
+ 108:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 109:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     *sum_col = sum_tmp;
+ 110:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 111:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     return ARM_MATH_SUCCESS;
+ 112:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** }
+ 528              		.loc 1 112 0
+ 529 04e4 0000A0E3 		mov	r0, #0
+ 105:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[1] = acc_n1;
+ 530              		.loc 1 105 0
+ 531 04e8 04C083E5 		str	ip, [r3, #4]
+ 106:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     output[3] = acc_n3;
+ 532              		.loc 1 106 0
+ 533 04ec 081083E5 		str	r1, [r3, #8]
+ 107:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 534              		.loc 1 107 0
+ 535 04f0 0C2083E5 		str	r2, [r3, #12]
+ 109:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 536              		.loc 1 109 0
+ 537 04f4 88309DE5 		ldr	r3, [sp, #136]
+ 538 04f8 008083E5 		str	r8, [r3]
+ 539              		.loc 1 112 0
+ 540 04fc 24D08DE2 		add	sp, sp, #36
+ 541              		.cfi_remember_state
+ 542              		.cfi_def_cfa_offset 100
+ 543              		@ sp needed
+ 544 0500 108BBDEC 		vldm	sp!, {d8-d15}
+ 545              		.cfi_restore 94
+ 546              		.cfi_restore 95
+ 547              		.cfi_restore 92
+ 548              		.cfi_restore 93
+ 549              		.cfi_restore 90
+ 550              		.cfi_restore 91
+ 551              		.cfi_restore 88
+ 552              		.cfi_restore 89
+ 553              		.cfi_restore 86
+ 554              		.cfi_restore 87
+ 555              		.cfi_restore 84
+ 556              		.cfi_restore 85
+ 557              		.cfi_restore 82
+ 558              		.cfi_restore 83
+ 559              		.cfi_restore 80
+ 560              		.cfi_restore 81
+ 561              		.cfi_def_cfa_offset 36
+ 562 0504 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 563              	.LVL25:
+ 564              	.L3:
+ 565              		.cfi_restore_state
+ 566 0508 025085E0 		add	r5, r5, r2
+ 567 050c 0C209DE5 		ldr	r2, [sp, #12]
+ 568 0510 0EB085E0 		add	fp, r5, lr
+ 569              	.LBB11:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 570              		.loc 1 94 0
+ 571 0514 04508DE5 		str	r5, [sp, #4]
+ 572 0518 0EE08BE0 		add	lr, fp, lr
+ 573              	.LVL26:
+ 574 051c 0080A0E1 		mov	r8, r0
+ 575 0520 022083E0 		add	r2, r3, r2
+ 576 0524 017047E2 		sub	r7, r7, #1
+ 577              	.LVL27:
+ 578 0528 08208DE5 		str	r2, [sp, #8]
+ 579              	.LVL28:
+ 580 052c 0010A0E1 		mov	r1, r0
+ 581 0530 0020A0E1 		mov	r2, r0
+ 582 0534 00C0A0E1 		mov	ip, r0
+ 583              	.LVL29:
+ 584 0538 0B60A0E1 		mov	r6, fp
+ 585              	.LVL30:
+ 586 053c 0E50A0E1 		mov	r5, lr
+ 587              	.LVL31:
+ 588              	.L10:
+ 589              	.LBB6:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 590              		.loc 1 99 0
+ 591 0540 04E09DE5 		ldr	lr, [sp, #4]
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         sum_tmp += col;
+ 592              		.loc 1 96 0
+ 593 0544 D140D3E0 		ldrsb	r4, [r3], #1
+ 594              	.LVL32:
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 595              		.loc 1 98 0
+ 596 0548 D1B0F7E1 		ldrsb	fp, [r7, #1]!
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 597              		.loc 1 99 0
+ 598 054c D1A0DEE0 		ldrsb	r10, [lr], #1
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 599              		.loc 1 100 0
+ 600 0550 D190D6E0 		ldrsb	r9, [r6], #1
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n0 += ip_row_0[i] * col;
+ 601              		.loc 1 97 0
+ 602 0554 048088E0 		add	r8, r8, r4
+ 603              	.LVL33:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 604              		.loc 1 99 0
+ 605 0558 04E08DE5 		str	lr, [sp, #4]
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n1 += ip_row_1[i] * col;
+ 606              		.loc 1 98 0
+ 607 055c 8B0400E1 		smlabb	r0, fp, r4, r0
+ 608              	.LVL34:
+ 609              	.LBE6:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 610              		.loc 1 94 0
+ 611 0560 08E09DE5 		ldr	lr, [sp, #8]
+ 612              	.LBB7:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n2 += ip_row_2[i] * col;
+ 613              		.loc 1 99 0
+ 614 0564 8AC40CE1 		smlabb	ip, r10, r4, ip
+ 615              	.LVL35:
+ 616              	.LBE7:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 617              		.loc 1 94 0
+ 618 0568 0E0053E1 		cmp	r3, lr
+ 619              	.LBB8:
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     }
+ 620              		.loc 1 101 0
+ 621 056c D1E0D5E0 		ldrsb	lr, [r5], #1
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****         acc_n3 += ip_row_3[i] * col;
+ 622              		.loc 1 100 0
+ 623 0570 891401E1 		smlabb	r1, r9, r4, r1
+ 624              	.LVL36:
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     }
+ 625              		.loc 1 101 0
+ 626 0574 8E2402E1 		smlabb	r2, lr, r4, r2
+ 627              	.LVL37:
+ 628              	.LBE8:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 629              		.loc 1 94 0
+ 630 0578 F0FFFF1A 		bne	.L10
+ 631 057c D6FFFFEA 		b	.L2
+ 632              	.LVL38:
+ 633              	.L12:
+ 634              	.LBE11:
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 635              		.loc 1 63 0
+ 636 0580 0080A0E3 		mov	r8, #0
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c **** 
+ 637              		.loc 1 57 0
+ 638 0584 0820A0E1 		mov	r2, r8
+ 639              	.LVL39:
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n3 = 0;
+ 640              		.loc 1 56 0
+ 641 0588 0810A0E1 		mov	r1, r8
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n2 = 0;
+ 642              		.loc 1 55 0
+ 643 058c 08C0A0E1 		mov	ip, r8
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     int32_t acc_n1 = 0;
+ 644              		.loc 1 54 0
+ 645 0590 0800A0E1 		mov	r0, r8
+ 646              	.LVL40:
+ 647 0594 D0FFFFEA 		b	.L2
+ 648              	.L13:
+ 649              	.LBB12:
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c ****     {
+ 650              		.loc 1 94 0
+ 651 0598 0000A0E3 		mov	r0, #0
+ 652 059c 07C0A0E1 		mov	ip, r7
+ 653 05a0 0340A0E1 		mov	r4, r3
+ 654 05a4 04008DE5 		str	r0, [sp, #4]
+ 655 05a8 548124F2 		vmov	q4, q2  @ v4si
+ 656 05ac 540124F2 		vmov	q0, q2  @ v4si
+ 657 05b0 542124F2 		vmov	q1, q2  @ v4si
+ 658 05b4 544164F2 		vmov	q10, q2  @ v4si
+ 659 05b8 54FFFFEA 		b	.L4
+ 660              	.LBE12:
+ 661              		.cfi_endproc
+ 662              	.LFE122:
+ 664              		.text
+ 665              	.Letext0:
+ 666              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 667              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 668              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 669              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 670              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 671              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 672              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 673              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 674              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_mat_mul_core_4x_s8.c
+C:\Users\a5050395\AppData\Local\Temp\ccLKHjQo.s:17     .text.arm_nn_mat_mul_core_4x_s8:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccLKHjQo.s:23     .text.arm_nn_mat_mul_core_4x_s8:00000000 arm_nn_mat_mul_core_4x_s8
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+                           .group:00000000 wm4.arm_math_memory.h.27.15b48442bebd15b7684ae775c0e94421
+                           .group:00000000 wm4.none.h.38.52c167e5c66424d7c1fe8048a5bf9ef2
+                           .group:00000000 wm4.utils.h.27.57524573fe37b04009eecf3582a4c591
+                           .group:00000000 wm4.fast_math_functions.h.44.f0d080ca1ba957380c25e401a97da7cc
+                           .group:00000000 wm4.arm_common_tables.h.115.99deac85cf8f0a38da86d5f757adaa60
+                           .group:00000000 wm4.arm_nnsupportfunctions.h.40.02e2e72066f745a38156ef292fa21e7b
+
+NO UNDEFINED SYMBOLS

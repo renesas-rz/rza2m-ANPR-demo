@@ -1,0 +1,204 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_spea_check_parameter.c"
+  13              		.section	.text.SPEA_SetWindowCheckPrm,"ax",%progbits
+  14              		.align	2
+  15              		.global	SPEA_SetWindowCheckPrm
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	SPEA_SetWindowCheckPrm:
+  21              		@ args = 8, pretend = 0, frame = 8
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 02C040E2 		sub	ip, r0, #2
+  24 0004 7CC0EFE6 		uxtb	ip, ip
+  25 0008 01005CE3 		cmp	ip, #1
+  26 000c 0100009A 		bls	.L32
+  27              	.L2:
+  28 0010 0100A0E3 		mov	r0, #1
+  29 0014 1EFF2FE1 		bx	lr
+  30              	.L32:
+  31 0018 0F0051E3 		cmp	r1, #15
+  32 001c 01005293 		cmpls	r2, #1
+  33 0020 0100009A 		bls	.L33
+  34 0024 0300A0E3 		mov	r0, #3
+  35 0028 1EFF2FE1 		bx	lr
+  36              	.L33:
+  37 002c 10402DE9 		push	{r4, lr}
+  38 0030 08D04DE2 		sub	sp, sp, #8
+  39 0034 0340A0E1 		mov	r4, r3
+  40 0038 10309DE5 		ldr	r3, [sp, #16]
+  41 003c 000053E3 		cmp	r3, #0
+  42 0040 1400000A 		beq	.L4
+  43 0044 020050E2 		subs	r0, r0, #2
+  44 0048 0D10A0E1 		mov	r1, sp
+  45 004c 0100A013 		movne	r0, #1
+  46 0050 FEFFFFEB 		bl	SPEA_get_offset
+  47 0054 10309DE5 		ldr	r3, [sp, #16]
+  48 0058 00209DE5 		ldr	r2, [sp]
+  49 005c 003093E5 		ldr	r3, [r3]
+  50 0060 023083E0 		add	r3, r3, r2
+  51 0064 010013E3 		tst	r3, #1
+  52 0068 0200000A 		beq	.L34
+  53              	.L7:
+  54 006c 0300A0E3 		mov	r0, #3
+  55              	.L22:
+  56 0070 08D08DE2 		add	sp, sp, #8
+  57              		@ sp needed
+  58 0074 1080BDE8 		pop	{r4, pc}
+  59              	.L34:
+  60 0078 020B53E3 		cmp	r3, #2048
+  61 007c FAFFFF2A 		bcs	.L7
+  62 0080 10309DE5 		ldr	r3, [sp, #16]
+  63 0084 04209DE5 		ldr	r2, [sp, #4]
+  64 0088 043093E5 		ldr	r3, [r3, #4]
+  65 008c 023083E0 		add	r3, r3, r2
+  66 0090 020A53E3 		cmp	r3, #8192
+  67 0094 F4FFFF2A 		bcs	.L7
+  68              	.L4:
+  69 0098 000054E3 		cmp	r4, #0
+  70 009c 0700000A 		beq	.L6
+  71 00a0 003094E5 		ldr	r3, [r4]
+  72 00a4 010013E3 		tst	r3, #1
+  73 00a8 EFFFFF1A 		bne	.L7
+  74 00ac 020B53E3 		cmp	r3, #2048
+  75 00b0 EDFFFF2A 		bcs	.L7
+  76 00b4 043094E5 		ldr	r3, [r4, #4]
+  77 00b8 020A53E3 		cmp	r3, #8192
+  78 00bc EAFFFF2A 		bcs	.L7
+  79              	.L6:
+  80 00c0 14309DE5 		ldr	r3, [sp, #20]
+  81 00c4 000053E3 		cmp	r3, #0
+  82 00c8 0300000A 		beq	.L9
+  83 00cc 0300A0E1 		mov	r0, r3
+  84 00d0 FEFFFFEB 		bl	R_SPEA_CPUVAddrToSysPAddr
+  85 00d4 070010E3 		tst	r0, #7
+  86 00d8 E3FFFF1A 		bne	.L7
+  87              	.L9:
+  88 00dc 0000A0E3 		mov	r0, #0
+  89 00e0 E2FFFFEA 		b	.L22
+  91              		.section	.text.SPEA_WindowOffsetCheckPrm,"ax",%progbits
+  92              		.align	2
+  93              		.global	SPEA_WindowOffsetCheckPrm
+  94              		.syntax unified
+  95              		.arm
+  96              		.fpu neon
+  98              	SPEA_WindowOffsetCheckPrm:
+  99              		@ args = 0, pretend = 0, frame = 0
+ 100              		@ frame_needed = 0, uses_anonymous_args = 0
+ 101              		@ link register save eliminated.
+ 102 0000 020040E2 		sub	r0, r0, #2
+ 103 0004 7000EFE6 		uxtb	r0, r0
+ 104 0008 010050E3 		cmp	r0, #1
+ 105 000c 0100009A 		bls	.L36
+ 106 0010 0100A0E3 		mov	r0, #1
+ 107 0014 1EFF2FE1 		bx	lr
+ 108              	.L36:
+ 109              	.L37:
+ 110 0018 020B51E3 		cmp	r1, #2048
+ 111 001c 020A5233 		cmpcc	r2, #8192
+ 112 0020 011001E2 		and	r1, r1, #1
+ 113 0024 0120A023 		movcs	r2, #1
+ 114 0028 0020A033 		movcc	r2, #0
+ 115 002c 013092E1 		orrs	r3, r2, r1
+ 116 0030 0000A003 		moveq	r0, #0
+ 117 0034 0300A013 		movne	r0, #3
+ 118 0038 1EFF2FE1 		bx	lr
+ 120              		.section	.text.SPEA_CreateSurfaceIDCheckPrm,"ax",%progbits
+ 121              		.align	2
+ 122              		.global	SPEA_CreateSurfaceIDCheckPrm
+ 123              		.syntax unified
+ 124              		.arm
+ 125              		.fpu neon
+ 127              	SPEA_CreateSurfaceIDCheckPrm:
+ 128              		@ args = 0, pretend = 0, frame = 0
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              		@ link register save eliminated.
+ 131 0000 020040E2 		sub	r0, r0, #2
+ 132 0004 7000EFE6 		uxtb	r0, r0
+ 133 0008 010050E3 		cmp	r0, #1
+ 134 000c 0000A093 		movls	r0, #0
+ 135 0010 0100A083 		movhi	r0, #1
+ 136 0014 1EFF2FE1 		bx	lr
+ 138              		.section	.text.RLE_CreateSurfaceIDCheckPrm,"ax",%progbits
+ 139              		.align	2
+ 140              		.global	RLE_CreateSurfaceIDCheckPrm
+ 141              		.syntax unified
+ 142              		.arm
+ 143              		.fpu neon
+ 145              	RLE_CreateSurfaceIDCheckPrm:
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148              		@ link register save eliminated.
+ 149 0000 010050E2 		subs	r0, r0, #1
+ 150 0004 0100A013 		movne	r0, #1
+ 151 0008 1EFF2FE1 		bx	lr
+ 153              		.section	.text.RLE_SetWindowCheckPrm,"ax",%progbits
+ 154              		.align	2
+ 155              		.global	RLE_SetWindowCheckPrm
+ 156              		.syntax unified
+ 157              		.arm
+ 158              		.fpu neon
+ 160              	RLE_SetWindowCheckPrm:
+ 161              		@ args = 0, pretend = 0, frame = 0
+ 162              		@ frame_needed = 0, uses_anonymous_args = 0
+ 163 0000 010050E3 		cmp	r0, #1
+ 164 0004 0100000A 		beq	.L63
+ 165              	.L43:
+ 166 0008 0100A0E3 		mov	r0, #1
+ 167 000c 1EFF2FE1 		bx	lr
+ 168              	.L63:
+ 169 0010 000051E3 		cmp	r1, #0
+ 170 0014 0700000A 		beq	.L49
+ 171 0018 003091E5 		ldr	r3, [r1]
+ 172 001c 070053E3 		cmp	r3, #7
+ 173 0020 0100009A 		bls	.L64
+ 174              	.L57:
+ 175 0024 0300A0E3 		mov	r0, #3
+ 176 0028 1EFF2FE1 		bx	lr
+ 177              	.L64:
+ 178 002c 043091E5 		ldr	r3, [r1, #4]
+ 179 0030 070053E3 		cmp	r3, #7
+ 180 0034 FAFFFF8A 		bhi	.L57
+ 181              	.L49:
+ 182 0038 000052E3 		cmp	r2, #0
+ 183 003c 0800000A 		beq	.L65
+ 184 0040 10402DE9 		push	{r4, lr}
+ 185 0044 0200A0E1 		mov	r0, r2
+ 186 0048 FEFFFFEB 		bl	R_SPEA_CPUVAddrToSysPAddr
+ 187 004c 070010E3 		tst	r0, #7
+ 188 0050 0100000A 		beq	.L47
+ 189 0054 0300A0E3 		mov	r0, #3
+ 190 0058 1080BDE8 		pop	{r4, pc}
+ 191              	.L47:
+ 192 005c 0000A0E3 		mov	r0, #0
+ 193 0060 1080BDE8 		pop	{r4, pc}
+ 194              	.L65:
+ 195 0064 0000A0E3 		mov	r0, #0
+ 196 0068 1EFF2FE1 		bx	lr
+ 198              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_spea_check_parameter.c
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:14     .text.SPEA_SetWindowCheckPrm:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:20     .text.SPEA_SetWindowCheckPrm:00000000 SPEA_SetWindowCheckPrm
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:92     .text.SPEA_WindowOffsetCheckPrm:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:98     .text.SPEA_WindowOffsetCheckPrm:00000000 SPEA_WindowOffsetCheckPrm
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:121    .text.SPEA_CreateSurfaceIDCheckPrm:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:127    .text.SPEA_CreateSurfaceIDCheckPrm:00000000 SPEA_CreateSurfaceIDCheckPrm
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:139    .text.RLE_CreateSurfaceIDCheckPrm:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:145    .text.RLE_CreateSurfaceIDCheckPrm:00000000 RLE_CreateSurfaceIDCheckPrm
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:154    .text.RLE_SetWindowCheckPrm:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccFJIPED.s:160    .text.RLE_SetWindowCheckPrm:00000000 RLE_SetWindowCheckPrm
+
+UNDEFINED SYMBOLS
+SPEA_get_offset
+R_SPEA_CPUVAddrToSysPAddr

@@ -1,0 +1,96 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_convolve_1x1_s8_fast.c"
+  13              		.section	.text.arm_convolve_1x1_s8_fast,"ax",%progbits
+  14              		.align	2
+  15              		.global	arm_convolve_1x1_s8_fast
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	arm_convolve_1x1_s8_fast:
+  21              		@ args = 28, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  24 0004 28D04DE2 		sub	sp, sp, #40
+  25 0008 0C5093E5 		ldr	r5, [r3, #12]
+  26 000c 030015E3 		tst	r5, #3
+  27 0010 2900001A 		bne	.L7
+  28 0014 10C091E5 		ldr	ip, [r1, #16]
+  29 0018 00005CE3 		cmp	ip, #0
+  30 001c 2600001A 		bne	.L7
+  31 0020 144091E5 		ldr	r4, [r1, #20]
+  32 0024 000054E3 		cmp	r4, #0
+  33 0028 2300001A 		bne	.L7
+  34 002c 08C091E5 		ldr	ip, [r1, #8]
+  35 0030 01005CE3 		cmp	ip, #1
+  36 0034 2000001A 		bne	.L7
+  37 0038 0C0091E5 		ldr	r0, [r1, #12]
+  38 003c 010050E3 		cmp	r0, #1
+  39 0040 1D00001A 		bne	.L7
+  40 0044 03C0A0E1 		mov	ip, r3
+  41 0048 086093E5 		ldr	r6, [r3, #8]
+  42 004c 00509CE8 		ldm	ip, {ip, lr}
+  43 0050 0200A0E1 		mov	r0, r2
+  44 0054 10508DE5 		str	r5, [sp, #16]
+  45 0058 205091E5 		ldr	r5, [r1, #32]
+  46 005c 58309DE5 		ldr	r3, [sp, #88]
+  47 0060 9E060EE0 		mul	lr, lr, r6
+  48 0064 246091E5 		ldr	r6, [r1, #36]
+  49 0068 50209DE5 		ldr	r2, [sp, #80]
+  50 006c 20608DE5 		str	r6, [sp, #32]
+  51 0070 800191E8 		ldm	r1, {r7, r8}
+  52 0074 9C0E0CE0 		mul	ip, ip, lr
+  53 0078 54109DE5 		ldr	r1, [sp, #84]
+  54 007c 0C6091E5 		ldr	r6, [r1, #12]
+  55 0080 1C508DE5 		str	r5, [sp, #28]
+  56 0084 045090E5 		ldr	r5, [r0, #4]
+  57 0088 00E090E5 		ldr	lr, [r0]
+  58 008c 48109DE5 		ldr	r1, [sp, #72]
+  59 0090 08C08DE5 		str	ip, [sp, #8]
+  60 0094 18808DE5 		str	r8, [sp, #24]
+  61 0098 14708DE5 		str	r7, [sp, #20]
+  62 009c 40009DE5 		ldr	r0, [sp, #64]
+  63 00a0 0C608DE5 		str	r6, [sp, #12]
+  64 00a4 04508DE5 		str	r5, [sp, #4]
+  65 00a8 00E08DE5 		str	lr, [sp]
+  66 00ac FEFFFFEB 		bl	arm_nn_mat_mult_nt_t_s8
+  67 00b0 0400A0E1 		mov	r0, r4
+  68 00b4 28D08DE2 		add	sp, sp, #40
+  69              		@ sp needed
+  70 00b8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  71              	.L7:
+  72 00bc 0200E0E3 		mvn	r0, #2
+  73 00c0 28D08DE2 		add	sp, sp, #40
+  74              		@ sp needed
+  75 00c4 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  77              		.section	.text.arm_convolve_1x1_s8_fast_get_buffer_size,"ax",%progbits
+  78              		.align	2
+  79              		.global	arm_convolve_1x1_s8_fast_get_buffer_size
+  80              		.syntax unified
+  81              		.arm
+  82              		.fpu neon
+  84              	arm_convolve_1x1_s8_fast_get_buffer_size:
+  85              		@ args = 0, pretend = 0, frame = 0
+  86              		@ frame_needed = 0, uses_anonymous_args = 0
+  87              		@ link register save eliminated.
+  88 0000 0000A0E3 		mov	r0, #0
+  89 0004 1EFF2FE1 		bx	lr
+  91              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_convolve_1x1_s8_fast.c
+C:\Users\a5050395\AppData\Local\Temp\ccTYERsk.s:14     .text.arm_convolve_1x1_s8_fast:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTYERsk.s:20     .text.arm_convolve_1x1_s8_fast:00000000 arm_convolve_1x1_s8_fast
+C:\Users\a5050395\AppData\Local\Temp\ccTYERsk.s:78     .text.arm_convolve_1x1_s8_fast_get_buffer_size:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccTYERsk.s:84     .text.arm_convolve_1x1_s8_fast_get_buffer_size:00000000 arm_convolve_1x1_s8_fast_get_buffer_size
+
+UNDEFINED SYMBOLS
+arm_nn_mat_mult_nt_t_s8

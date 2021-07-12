@@ -1,0 +1,531 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"depthwise_conv_common.cc"
+  13              		.section	.text._ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConv
+  14              		.align	2
+  15              		.global	_ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	_ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:
+  21              		.fnstart
+  22              	.LFB4182:
+  23              		@ args = 0, pretend = 0, frame = 0
+  24              		@ frame_needed = 0, uses_anonymous_args = 0
+  25 0000 1030D1E5 		ldrb	r3, [r1, #16]	@ zero_extendqisi2
+  26 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  27              		.save {r4, r5, r6, r7, r8, lr}
+  28 0008 0150A0E1 		mov	r5, r1
+  29 000c 0040A0E1 		mov	r4, r0
+  30 0010 0260A0E1 		mov	r6, r2
+  31 0014 010053E3 		cmp	r3, #1
+  32 0018 1D00000A 		beq	.L8
+  33 001c 030053E3 		cmp	r3, #3
+  34 0020 2100000A 		beq	.L9
+  35 0024 020053E3 		cmp	r3, #2
+  36 0028 0020A003 		moveq	r2, #0
+  37 002c FF3F0F13 		movwne	r3, #65535
+  38 0030 802F4B03 		movteq	r2, 49024
+  39 0034 FE35A003 		moveq	r3, #1065353216
+  40 0038 0225E013 		mvnne	r2, #8388608
+  41 003c 7F3F4713 		movtne	r3, 32639
+  42 0040 302080E5 		str	r2, [r0, #48]	@ float
+  43 0044 343080E5 		str	r3, [r0, #52]	@ float
+  44              	.L3:
+  45 0048 0000D5E5 		ldrb	r0, [r5]	@ zero_extendqisi2
+  46 004c FEFFFFEB 		bl	_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+  47 0050 007096E5 		ldr	r7, [r6]
+  48 0054 04E095E5 		ldr	lr, [r5, #4]
+  49 0058 046096E5 		ldr	r6, [r6, #4]
+  50 005c 08C095E5 		ldr	ip, [r5, #8]
+  51 0060 141095E5 		ldr	r1, [r5, #20]
+  52 0064 182095E5 		ldr	r2, [r5, #24]
+  53 0068 0C3095E5 		ldr	r3, [r5, #12]
+  54 006c 0000C4E5 		strb	r0, [r4]
+  55 0070 0400A0E1 		mov	r0, r4
+  56 0074 B270C4E1 		strh	r7, [r4, #2]	@ movhi
+  57 0078 B460C4E1 		strh	r6, [r4, #4]	@ movhi
+  58 007c BAE0C4E1 		strh	lr, [r4, #10]	@ movhi
+  59 0080 BCC0C4E1 		strh	ip, [r4, #12]	@ movhi
+  60 0084 BE10C4E1 		strh	r1, [r4, #14]	@ movhi
+  61 0088 B021C4E1 		strh	r2, [r4, #16]	@ movhi
+  62 008c B231C4E1 		strh	r3, [r4, #18]	@ movhi
+  63 0090 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  64              	.L8:
+  65 0094 FF3F0FE3 		movw	r3, #65535
+  66 0098 0020A0E3 		mov	r2, #0
+  67 009c 7F3F47E3 		movt	r3, 32639
+  68 00a0 302080E5 		str	r2, [r0, #48]	@ float
+  69 00a4 343080E5 		str	r3, [r0, #52]	@ float
+  70 00a8 E6FFFFEA 		b	.L3
+  71              	.L9:
+  72 00ac 0030A0E3 		mov	r3, #0
+  73 00b0 0020A0E3 		mov	r2, #0
+  74 00b4 C03044E3 		movt	r3, 16576
+  75 00b8 302080E5 		str	r2, [r0, #48]	@ float
+  76 00bc 343080E5 		str	r3, [r0, #52]	@ float
+  77 00c0 E0FFFFEA 		b	.L3
+  78              		.fnend
+  80              		.section	.text._ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpData
+  81              		.align	2
+  82              		.global	_ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE
+  83              		.syntax unified
+  84              		.arm
+  85              		.fpu neon
+  87              	_ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:
+  88              		.fnstart
+  89              	.LFB4183:
+  90              		@ args = 0, pretend = 0, frame = 0
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+  93              		.save {r4, r5, r6, r7, r8, r9, r10, lr}
+  94 0004 0250A0E1 		mov	r5, r2
+  95 0008 0040A0E1 		mov	r4, r0
+  96 000c 203095E5 		ldr	r3, [r5, #32]
+  97 0010 0160A0E1 		mov	r6, r1
+  98 0014 100092E5 		ldr	r0, [r2, #16]
+  99 0018 142092E5 		ldr	r2, [r2, #20]
+ 100 001c 003063E2 		rsb	r3, r3, #0
+ 101 0020 18C095E5 		ldr	ip, [r5, #24]
+ 102 0024 1C1095E5 		ldr	r1, [r5, #28]
+ 103 0028 000060E2 		rsb	r0, r0, #0
+ 104 002c 002062E2 		rsb	r2, r2, #0
+ 105 0030 140084E5 		str	r0, [r4, #20]
+ 106 0034 182084E5 		str	r2, [r4, #24]
+ 107 0038 1CC084E5 		str	ip, [r4, #28]
+ 108 003c 201084E5 		str	r1, [r4, #32]
+ 109 0040 243084E5 		str	r3, [r4, #36]
+ 110 0044 0000D6E5 		ldrb	r0, [r6]	@ zero_extendqisi2
+ 111 0048 FEFFFFEB 		bl	_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+ 112 004c 043095E5 		ldr	r3, [r5, #4]
+ 113 0050 800196E9 		ldmib	r6, {r7, r8}
+ 114 0054 009095E5 		ldr	r9, [r5]
+ 115 0058 18E096E5 		ldr	lr, [r6, #24]
+ 116 005c 14C096E5 		ldr	ip, [r6, #20]
+ 117 0060 0C1096E5 		ldr	r1, [r6, #12]
+ 118 0064 B430C4E1 		strh	r3, [r4, #4]	@ movhi
+ 119 0068 2C2095E5 		ldr	r2, [r5, #44]
+ 120 006c 303095E5 		ldr	r3, [r5, #48]
+ 121 0070 0000C4E5 		strb	r0, [r4]
+ 122 0074 0400A0E1 		mov	r0, r4
+ 123 0078 B290C4E1 		strh	r9, [r4, #2]	@ movhi
+ 124 007c BC80C4E1 		strh	r8, [r4, #12]	@ movhi
+ 125 0080 BA70C4E1 		strh	r7, [r4, #10]	@ movhi
+ 126 0084 B0E1C4E1 		strh	lr, [r4, #16]	@ movhi
+ 127 0088 BEC0C4E1 		strh	ip, [r4, #14]	@ movhi
+ 128 008c B211C4E1 		strh	r1, [r4, #18]	@ movhi
+ 129 0090 282084E5 		str	r2, [r4, #40]
+ 130 0094 2C3084E5 		str	r3, [r4, #44]
+ 131 0098 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 132              		.fnend
+ 134              		.global	__aeabi_idiv
+ 135              		.section	.text._ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDep
+ 136              		.align	2
+ 137              		.global	_ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseC
+ 138              		.syntax unified
+ 139              		.arm
+ 140              		.fpu neon
+ 142              	_ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvParams
+ 143              		.fnstart
+ 144              	.LFB4184:
+ 145              		@ args = 28, pretend = 0, frame = 8
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147 0000 00C091E5 		ldr	ip, [r1]
+ 148 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 149              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 150              		.pad #52
+ 151 0008 34D04DE2 		sub	sp, sp, #52
+ 152 000c 6C80DDE5 		ldrb	r8, [sp, #108]	@ zero_extendqisi2
+ 153 0010 00C09CE5 		ldr	ip, [ip]
+ 154 0014 02C04CE2 		sub	ip, ip, #2
+ 155 0018 01005CE3 		cmp	ip, #1
+ 156 001c 0200009A 		bls	.L13
+ 157              	.L15:
+ 158 0020 0100A0E3 		mov	r0, #1
+ 159              	.L14:
+ 160 0024 34D08DE2 		add	sp, sp, #52
+ 161              		@ sp needed
+ 162 0028 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 163              	.L13:
+ 164 002c 04C091E5 		ldr	ip, [r1, #4]
+ 165 0030 00C09CE5 		ldr	ip, [ip]
+ 166 0034 01005CE3 		cmp	ip, #1
+ 167 0038 F8FFFF1A 		bne	.L15
+ 168 003c 0390A0E1 		mov	r9, r3
+ 169 0040 14B092E5 		ldr	fp, [r2, #20]
+ 170 0044 5C309DE5 		ldr	r3, [sp, #92]
+ 171 0048 0140A0E1 		mov	r4, r1
+ 172 004c 04A092E5 		ldr	r10, [r2, #4]
+ 173 0050 0250A0E1 		mov	r5, r2
+ 174 0054 0060A0E1 		mov	r6, r0
+ 175 0058 0010D2E5 		ldrb	r1, [r2]	@ zero_extendqisi2
+ 176 005c 013043E2 		sub	r3, r3, #1
+ 177 0060 087092E5 		ldr	r7, [r2, #8]
+ 178 0064 9B030BE0 		mul	fp, fp, r3
+ 179 0068 00005AE3 		cmp	r10, #0
+ 180 006c 183092E5 		ldr	r3, [r2, #24]
+ 181 0070 01B08BE2 		add	fp, fp, #1
+ 182 0074 1200000A 		beq	.L16
+ 183 0078 010051E3 		cmp	r1, #1
+ 184 007c 8200000A 		beq	.L17
+ 185 0080 020051E3 		cmp	r1, #2
+ 186 0084 0E00001A 		bne	.L16
+ 187 0088 09008AE0 		add	r0, r10, r9
+ 188 008c 0A10A0E1 		mov	r1, r10
+ 189 0090 0B0040E0 		sub	r0, r0, fp
+ 190 0094 28308DE5 		str	r3, [sp, #40]
+ 191 0098 FEFFFFEB 		bl	__aeabi_idiv
+ 192 009c 60309DE5 		ldr	r3, [sp, #96]
+ 193 00a0 000057E3 		cmp	r7, #0
+ 194 00a4 012043E2 		sub	r2, r3, #1
+ 195 00a8 28309DE5 		ldr	r3, [sp, #40]
+ 196 00ac 930202E0 		mul	r2, r3, r2
+ 197 00b0 013040E2 		sub	r3, r0, #1
+ 198 00b4 012082E2 		add	r2, r2, #1
+ 199 00b8 0C00001A 		bne	.L23
+ 200              	.L47:
+ 201 00bc 0000E0E3 		mvn	r0, #0
+ 202 00c0 170000EA 		b	.L21
+ 203              	.L16:
+ 204 00c4 60209DE5 		ldr	r2, [sp, #96]
+ 205 00c8 000057E3 		cmp	r7, #0
+ 206 00cc 012042E2 		sub	r2, r2, #1
+ 207 00d0 930202E0 		mul	r2, r3, r2
+ 208 00d4 012082E2 		add	r2, r2, #1
+ 209 00d8 0F00000A 		beq	.L45
+ 210 00dc 010051E3 		cmp	r1, #1
+ 211 00e0 8100000A 		beq	.L28
+ 212 00e4 020051E3 		cmp	r1, #2
+ 213 00e8 0B00001A 		bne	.L45
+ 214 00ec 0030E0E3 		mvn	r3, #0
+ 215              	.L23:
+ 216 00f0 2C308DE5 		str	r3, [sp, #44]
+ 217 00f4 0710A0E1 		mov	r1, r7
+ 218 00f8 58309DE5 		ldr	r3, [sp, #88]
+ 219 00fc 28208DE5 		str	r2, [sp, #40]
+ 220 0100 030087E0 		add	r0, r7, r3
+ 221 0104 020040E0 		sub	r0, r0, r2
+ 222 0108 FEFFFFEB 		bl	__aeabi_idiv
+ 223 010c 28209DE5 		ldr	r2, [sp, #40]
+ 224 0110 010040E2 		sub	r0, r0, #1
+ 225 0114 2C309DE5 		ldr	r3, [sp, #44]
+ 226 0118 010000EA 		b	.L21
+ 227              	.L45:
+ 228 011c 0030E0E3 		mvn	r3, #0
+ 229 0120 0300A0E1 		mov	r0, r3
+ 230              	.L21:
+ 231 0124 902727E0 		mla	r7, r0, r7, r2
+ 232 0128 70009DE5 		ldr	r0, [sp, #112]
+ 233 012c 002000E3 		movw	r2, #:lower16:_ZN6tflite16kConvInputTensorE
+ 234 0130 93BA2AE0 		mla	r10, r3, r10, fp
+ 235 0134 58309DE5 		ldr	r3, [sp, #88]
+ 236 0138 002040E3 		movt	r2, #:upper16:_ZN6tflite16kConvInputTensorE
+ 237 013c 037047E0 		sub	r7, r7, r3
+ 238 0140 002092E5 		ldr	r2, [r2]
+ 239 0144 C77FC7E1 		bic	r7, r7, r7, asr #31
+ 240 0148 09904AE0 		sub	r9, r10, r9
+ 241 014c C99FC9E1 		bic	r9, r9, r9, asr #31
+ 242 0150 C730A0E1 		asr	r3, r7, #1
+ 243 0154 017007E2 		and	r7, r7, #1
+ 244 0158 C910A0E1 		asr	r1, r9, #1
+ 245 015c 019009E2 		and	r9, r9, #1
+ 246 0160 043080E5 		str	r3, [r0, #4]
+ 247 0164 70309DE5 		ldr	r3, [sp, #112]
+ 248 0168 089080E5 		str	r9, [r0, #8]
+ 249 016c 001080E5 		str	r1, [r0]
+ 250 0170 0410A0E1 		mov	r1, r4
+ 251 0174 0600A0E1 		mov	r0, r6
+ 252 0178 0C7083E5 		str	r7, [r3, #12]
+ 253 017c FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 254 0180 009050E2 		subs	r9, r0, #0
+ 255 0184 A5FFFF0A 		beq	.L15
+ 256 0188 003000E3 		movw	r3, #:lower16:_ZN6tflite18kConvWeightsTensorE
+ 257 018c 0410A0E1 		mov	r1, r4
+ 258 0190 003040E3 		movt	r3, #:upper16:_ZN6tflite18kConvWeightsTensorE
+ 259 0194 0600A0E1 		mov	r0, r6
+ 260 0198 002093E5 		ldr	r2, [r3]
+ 261 019c FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 262 01a0 007050E2 		subs	r7, r0, #0
+ 263 01a4 9DFFFF0A 		beq	.L15
+ 264 01a8 003000E3 		movw	r3, #:lower16:_ZN6tflite15kConvBiasTensorE
+ 265 01ac 0410A0E1 		mov	r1, r4
+ 266 01b0 003040E3 		movt	r3, #:upper16:_ZN6tflite15kConvBiasTensorE
+ 267 01b4 0600A0E1 		mov	r0, r6
+ 268 01b8 002093E5 		ldr	r2, [r3]
+ 269 01bc FEFFFFEB 		bl	_ZN6tflite22GetOptionalInputTensorEPK13TfLiteContextPK10TfLiteNodei
+ 270 01c0 003000E3 		movw	r3, #:lower16:_ZN6tflite17kConvOutputTensorE
+ 271 01c4 0410A0E1 		mov	r1, r4
+ 272 01c8 003040E3 		movt	r3, #:upper16:_ZN6tflite17kConvOutputTensorE
+ 273 01cc 00A0A0E1 		mov	r10, r0
+ 274 01d0 002093E5 		ldr	r2, [r3]
+ 275 01d4 0600A0E1 		mov	r0, r6
+ 276 01d8 FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 277 01dc 004050E2 		subs	r4, r0, #0
+ 278 01e0 8EFFFF0A 		beq	.L15
+ 279 01e4 010058E3 		cmp	r8, #1
+ 280 01e8 1E00000A 		beq	.L25
+ 281 01ec 082097E5 		ldr	r2, [r7, #8]
+ 282 01f0 105085E2 		add	r5, r5, #16
+ 283 01f4 70309DE5 		ldr	r3, [sp, #112]
+ 284 01f8 0600A0E1 		mov	r0, r6
+ 285 01fc 70C09DE5 		ldr	ip, [sp, #112]
+ 286 0200 102092E5 		ldr	r2, [r2, #16]
+ 287 0204 281093E5 		ldr	r1, [r3, #40]
+ 288 0208 0A30A0E1 		mov	r3, r10
+ 289 020c 24C09CE5 		ldr	ip, [ip, #36]
+ 290 0210 70E09DE5 		ldr	lr, [sp, #112]
+ 291 0214 20208DE5 		str	r2, [sp, #32]
+ 292 0218 1C108DE5 		str	r1, [sp, #28]
+ 293 021c 70209DE5 		ldr	r2, [sp, #112]
+ 294 0220 30E08EE2 		add	lr, lr, #48
+ 295 0224 70109DE5 		ldr	r1, [sp, #112]
+ 296 0228 18C08DE5 		str	ip, [sp, #24]
+ 297 022c 70C09DE5 		ldr	ip, [sp, #112]
+ 298 0230 2C2082E2 		add	r2, r2, #44
+ 299 0234 201081E2 		add	r1, r1, #32
+ 300 0238 10208DE5 		str	r2, [sp, #16]
+ 301 023c 0C108DE5 		str	r1, [sp, #12]
+ 302 0240 0720A0E1 		mov	r2, r7
+ 303 0244 1CC08CE2 		add	ip, ip, #28
+ 304 0248 04508DE5 		str	r5, [sp, #4]
+ 305 024c 00408DE5 		str	r4, [sp]
+ 306 0250 0910A0E1 		mov	r1, r9
+ 307 0254 14E08DE5 		str	lr, [sp, #20]
+ 308 0258 08C08DE5 		str	ip, [sp, #8]
+ 309 025c FEFFFFEB 		bl	_ZN6tflite37PopulateConvolutionQuantizationParamsEP13TfLiteContextPK12TfLiteTensorS4_S4_PS2_RK2
+ 310 0260 000050E3 		cmp	r0, #0
+ 311 0264 6EFFFF1A 		bne	.L14
+ 312              	.L25:
+ 313 0268 101099E5 		ldr	r1, [r9, #16]
+ 314 026c 0000A0E3 		mov	r0, #0
+ 315 0270 102097E5 		ldr	r2, [r7, #16]
+ 316 0274 103094E5 		ldr	r3, [r4, #16]
+ 317 0278 70C09DE5 		ldr	ip, [sp, #112]
+ 318 027c 10108CE5 		str	r1, [ip, #16]
+ 319 0280 14208CE5 		str	r2, [ip, #20]
+ 320 0284 18308CE5 		str	r3, [ip, #24]
+ 321 0288 65FFFFEA 		b	.L14
+ 322              	.L17:
+ 323 028c 09008AE0 		add	r0, r10, r9
+ 324 0290 0A10A0E1 		mov	r1, r10
+ 325 0294 010040E2 		sub	r0, r0, #1
+ 326 0298 28308DE5 		str	r3, [sp, #40]
+ 327 029c FEFFFFEB 		bl	__aeabi_idiv
+ 328 02a0 60309DE5 		ldr	r3, [sp, #96]
+ 329 02a4 000057E3 		cmp	r7, #0
+ 330 02a8 012043E2 		sub	r2, r3, #1
+ 331 02ac 28309DE5 		ldr	r3, [sp, #40]
+ 332 02b0 930202E0 		mul	r2, r3, r2
+ 333 02b4 013040E2 		sub	r3, r0, #1
+ 334 02b8 012082E2 		add	r2, r2, #1
+ 335 02bc 7EFFFF0A 		beq	.L47
+ 336              	.L20:
+ 337 02c0 2C308DE5 		str	r3, [sp, #44]
+ 338 02c4 0710A0E1 		mov	r1, r7
+ 339 02c8 58309DE5 		ldr	r3, [sp, #88]
+ 340 02cc 28208DE5 		str	r2, [sp, #40]
+ 341 02d0 030087E0 		add	r0, r7, r3
+ 342 02d4 010040E2 		sub	r0, r0, #1
+ 343 02d8 FEFFFFEB 		bl	__aeabi_idiv
+ 344 02dc 28209DE5 		ldr	r2, [sp, #40]
+ 345 02e0 010040E2 		sub	r0, r0, #1
+ 346 02e4 2C309DE5 		ldr	r3, [sp, #44]
+ 347 02e8 8DFFFFEA 		b	.L21
+ 348              	.L28:
+ 349 02ec 0030E0E3 		mvn	r3, #0
+ 350 02f0 F2FFFFEA 		b	.L20
+ 351              		.fnend
+ 353              		.section	.text._ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode,"ax",%progbits
+ 354              		.align	2
+ 355              		.global	_ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode
+ 356              		.syntax unified
+ 357              		.arm
+ 358              		.fpu neon
+ 360              	_ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode:
+ 361              		.fnstart
+ 362              	.LFB4185:
+ 363              		@ args = 0, pretend = 0, frame = 24
+ 364              		@ frame_needed = 0, uses_anonymous_args = 0
+ 365 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 366              		.save {r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 367              		.pad #60
+ 368 0004 3CD04DE2 		sub	sp, sp, #60
+ 369 0008 106091E5 		ldr	r6, [r1, #16]
+ 370 000c 000056E3 		cmp	r6, #0
+ 371 0010 5D00000A 		beq	.L51
+ 372 0014 148091E5 		ldr	r8, [r1, #20]
+ 373 0018 0140A0E1 		mov	r4, r1
+ 374 001c 000058E3 		cmp	r8, #0
+ 375 0020 5900000A 		beq	.L51
+ 376 0024 0020A0E3 		mov	r2, #0
+ 377 0028 0050A0E1 		mov	r5, r0
+ 378 002c FEFFFFEB 		bl	_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+ 379 0030 007050E2 		subs	r7, r0, #0
+ 380 0034 2B00000A 		beq	.L54
+ 381 0038 0020A0E3 		mov	r2, #0
+ 382 003c 0410A0E1 		mov	r1, r4
+ 383 0040 0500A0E1 		mov	r0, r5
+ 384 0044 FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 385 0048 00A050E2 		subs	r10, r0, #0
+ 386 004c 2500000A 		beq	.L54
+ 387 0050 0120A0E3 		mov	r2, #1
+ 388 0054 0410A0E1 		mov	r1, r4
+ 389 0058 0500A0E1 		mov	r0, r5
+ 390 005c FEFFFFEB 		bl	_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+ 391 0060 009050E2 		subs	r9, r0, #0
+ 392 0064 1F00000A 		beq	.L54
+ 393 0068 081099E5 		ldr	r1, [r9, #8]
+ 394 006c 0500A0E1 		mov	r0, r5
+ 395 0070 08E097E5 		ldr	lr, [r7, #8]
+ 396 0074 08C09AE5 		ldr	ip, [r10, #8]
+ 397 0078 0C3091E5 		ldr	r3, [r1, #12]
+ 398 007c 107091E5 		ldr	r7, [r1, #16]
+ 399 0080 0CB09CE5 		ldr	fp, [ip, #12]
+ 400 0084 28308DE5 		str	r3, [sp, #40]
+ 401 0088 083091E5 		ldr	r3, [r1, #8]
+ 402 008c 0771A0E1 		lsl	r7, r7, #2
+ 403 0090 2C308DE5 		str	r3, [sp, #44]
+ 404 0094 0710A0E1 		mov	r1, r7
+ 405 0098 0C309EE5 		ldr	r3, [lr, #12]
+ 406 009c 30308DE5 		str	r3, [sp, #48]
+ 407 00a0 08309EE5 		ldr	r3, [lr, #8]
+ 408 00a4 34308DE5 		str	r3, [sp, #52]
+ 409 00a8 08309CE5 		ldr	r3, [ip, #8]
+ 410 00ac 24308DE5 		str	r3, [sp, #36]
+ 411 00b0 383095E5 		ldr	r3, [r5, #56]
+ 412 00b4 33FF2FE1 		blx	r3
+ 413 00b8 0710A0E1 		mov	r1, r7
+ 414 00bc 240086E5 		str	r0, [r6, #36]
+ 415 00c0 387095E5 		ldr	r7, [r5, #56]
+ 416 00c4 0500A0E1 		mov	r0, r5
+ 417 00c8 37FF2FE1 		blx	r7
+ 418 00cc 0010DAE5 		ldrb	r1, [r10]	@ zero_extendqisi2
+ 419 00d0 280086E5 		str	r0, [r6, #40]
+ 420 00d4 090051E3 		cmp	r1, #9
+ 421 00d8 1800001A 		bne	.L55
+ 422 00dc 3030D9E5 		ldrb	r3, [r9, #48]	@ zero_extendqisi2
+ 423 00e0 010053E3 		cmp	r3, #1
+ 424 00e4 0200000A 		beq	.L79
+ 425              	.L54:
+ 426 00e8 0100A0E3 		mov	r0, #1
+ 427 00ec 3CD08DE2 		add	sp, sp, #60
+ 428              		@ sp needed
+ 429 00f0 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 430              	.L79:
+ 431 00f4 343099E5 		ldr	r3, [r9, #52]
+ 432 00f8 000053E3 		cmp	r3, #0
+ 433 00fc 2200000A 		beq	.L51
+ 434 0100 000093E5 		ldr	r0, [r3]
+ 435 0104 000050E3 		cmp	r0, #0
+ 436 0108 1F00000A 		beq	.L51
+ 437 010c 04C093E5 		ldr	ip, [r3, #4]
+ 438 0110 00005CE3 		cmp	ip, #0
+ 439 0114 1C00000A 		beq	.L51
+ 440 0118 003090E5 		ldr	r3, [r0]
+ 441 011c 010053E3 		cmp	r3, #1
+ 442 0120 0300000A 		beq	.L56
+ 443 0124 082099E5 		ldr	r2, [r9, #8]
+ 444 0128 102092E5 		ldr	r2, [r2, #16]
+ 445 012c 020053E1 		cmp	r3, r2
+ 446 0130 ECFFFF1A 		bne	.L54
+ 447              	.L56:
+ 448 0134 00209CE5 		ldr	r2, [ip]
+ 449 0138 020053E1 		cmp	r3, r2
+ 450 013c E9FFFF1A 		bne	.L54
+ 451              	.L55:
+ 452 0140 2CC09DE5 		ldr	ip, [sp, #44]
+ 453 0144 0B30A0E1 		mov	r3, fp
+ 454 0148 30009DE5 		ldr	r0, [sp, #48]
+ 455 014c 0820A0E1 		mov	r2, r8
+ 456 0150 14108DE5 		str	r1, [sp, #20]
+ 457 0154 08C08DE5 		str	ip, [sp, #8]
+ 458 0158 28C09DE5 		ldr	ip, [sp, #40]
+ 459 015c 34109DE5 		ldr	r1, [sp, #52]
+ 460 0160 0C008DE5 		str	r0, [sp, #12]
+ 461 0164 0500A0E1 		mov	r0, r5
+ 462 0168 04C08DE5 		str	ip, [sp, #4]
+ 463 016c 24C09DE5 		ldr	ip, [sp, #36]
+ 464 0170 10108DE5 		str	r1, [sp, #16]
+ 465 0174 0410A0E1 		mov	r1, r4
+ 466 0178 18608DE5 		str	r6, [sp, #24]
+ 467 017c 00C08DE5 		str	ip, [sp]
+ 468 0180 FEFFFFEB 		bl	_ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvPa
+ 469 0184 3CD08DE2 		add	sp, sp, #60
+ 470              		@ sp needed
+ 471 0188 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 472              	.L51:
+ 473 018c FEFFFFEB 		bl	abort
+ 474              		.fnend
+ 476              		.global	_ZN6tflite32kDepthwiseConvQuantizedDimensionE
+ 477              		.global	_ZN6tflite26kDepthwiseConvOutputTensorE
+ 478              		.global	_ZN6tflite24kDepthwiseConvBiasTensorE
+ 479              		.global	_ZN6tflite27kDepthwiseConvWeightsTensorE
+ 480              		.global	_ZN6tflite25kDepthwiseConvInputTensorE
+ 481              		.section	.rodata._ZN6tflite24kDepthwiseConvBiasTensorE,"a",%progbits
+ 482              		.align	2
+ 485              	_ZN6tflite24kDepthwiseConvBiasTensorE:
+ 486 0000 02000000 		.word	2
+ 487              		.section	.rodata._ZN6tflite25kDepthwiseConvInputTensorE,"a",%progbits
+ 488              		.align	2
+ 491              	_ZN6tflite25kDepthwiseConvInputTensorE:
+ 492 0000 00000000 		.space	4
+ 493              		.section	.rodata._ZN6tflite26kDepthwiseConvOutputTensorE,"a",%progbits
+ 494              		.align	2
+ 497              	_ZN6tflite26kDepthwiseConvOutputTensorE:
+ 498 0000 00000000 		.space	4
+ 499              		.section	.rodata._ZN6tflite27kDepthwiseConvWeightsTensorE,"a",%progbits
+ 500              		.align	2
+ 503              	_ZN6tflite27kDepthwiseConvWeightsTensorE:
+ 504 0000 01000000 		.word	1
+ 505              		.section	.rodata._ZN6tflite32kDepthwiseConvQuantizedDimensionE,"a",%progbits
+ 506              		.align	2
+ 509              	_ZN6tflite32kDepthwiseConvQuantizedDimensionE:
+ 510 0000 03000000 		.word	3
+ 511              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 depthwise_conv_common.cc
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:14     .text._ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:20     .text._ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 _ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE
+.ARM.exidx.text._ZN6tflite24DepthwiseConvParamsFloatERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:81     .text._ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:87     .text._ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 _ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE
+.ARM.exidx.text._ZN6tflite28DepthwiseConvParamsQuantizedERK25TfLiteDepthwiseConvParamsRKNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:136    .text._ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:142    .text._ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 _ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE
+.ARM.exidx.text._ZN6tflite28CalculateOpDataDepthwiseConvEP13TfLiteContextP10TfLiteNodeRK25TfLiteDepthwiseConvParamsiiiiii10TfLiteTypePNS_10OpDataConvE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:354    .text._ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:360    .text._ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 _ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode
+.ARM.exidx.text._ZN6tflite20DepthwiseConvPrepareEP13TfLiteContextP10TfLiteNode:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:509    .rodata._ZN6tflite32kDepthwiseConvQuantizedDimensionE:00000000 _ZN6tflite32kDepthwiseConvQuantizedDimensionE
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:497    .rodata._ZN6tflite26kDepthwiseConvOutputTensorE:00000000 _ZN6tflite26kDepthwiseConvOutputTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:485    .rodata._ZN6tflite24kDepthwiseConvBiasTensorE:00000000 _ZN6tflite24kDepthwiseConvBiasTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:503    .rodata._ZN6tflite27kDepthwiseConvWeightsTensorE:00000000 _ZN6tflite27kDepthwiseConvWeightsTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:491    .rodata._ZN6tflite25kDepthwiseConvInputTensorE:00000000 _ZN6tflite25kDepthwiseConvInputTensorE
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:482    .rodata._ZN6tflite24kDepthwiseConvBiasTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:488    .rodata._ZN6tflite25kDepthwiseConvInputTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:494    .rodata._ZN6tflite26kDepthwiseConvOutputTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:500    .rodata._ZN6tflite27kDepthwiseConvWeightsTensorE:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccCfX6of.s:506    .rodata._ZN6tflite32kDepthwiseConvQuantizedDimensionE:00000000 $d
+
+UNDEFINED SYMBOLS
+_ZN6tflite5micro18RuntimePaddingTypeE13TfLitePadding
+__aeabi_unwind_cpp_pr0
+__aeabi_idiv
+_ZN6tflite16kConvInputTensorE
+_ZN6tflite8GetInputEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite18kConvWeightsTensorE
+_ZN6tflite15kConvBiasTensorE
+_ZN6tflite22GetOptionalInputTensorEPK13TfLiteContextPK10TfLiteNodei
+_ZN6tflite17kConvOutputTensorE
+_ZN6tflite9GetOutputEP13TfLiteContextPK10TfLiteNodei
+_ZN6tflite37PopulateConvolutionQuantizationParamsEP13TfLiteContextPK12TfLiteTensorS4_S4_PS2_RK21TfLiteFusedActivationPlPiS9_S9_S9_S9_i
+abort

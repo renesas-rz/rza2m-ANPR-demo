@@ -1,0 +1,135 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_rvapi_ceu.c"
+  13              		.section	.text.R_RVAPI_InitializeCEU,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_RVAPI_InitializeCEU
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_RVAPI_InitializeCEU:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23              		@ link register save eliminated.
+  24 0000 000000E3 		movw	r0, #:lower16:R_CEU_OnInitialize
+  25 0004 0010A0E3 		mov	r1, #0
+  26 0008 000040E3 		movt	r0, #:upper16:R_CEU_OnInitialize
+  27 000c FEFFFFEA 		b	R_CEU_Initialize
+  29              		.section	.text.R_RVAPI_TerminateCEU,"ax",%progbits
+  30              		.align	2
+  31              		.global	R_RVAPI_TerminateCEU
+  32              		.syntax unified
+  33              		.arm
+  34              		.fpu neon
+  36              	R_RVAPI_TerminateCEU:
+  37              		@ args = 0, pretend = 0, frame = 0
+  38              		@ frame_needed = 0, uses_anonymous_args = 0
+  39 0000 10402DE9 		push	{r4, lr}
+  40 0004 FEFFFFEB 		bl	R_CEU_InterruptDisable
+  41 0008 000000E3 		movw	r0, #:lower16:R_CEU_OnFinalize
+  42 000c 0010A0E3 		mov	r1, #0
+  43 0010 000040E3 		movt	r0, #:upper16:R_CEU_OnFinalize
+  44 0014 1040BDE8 		pop	{r4, lr}
+  45 0018 FEFFFFEA 		b	R_CEU_Terminate
+  47              		.section	.text.R_RVAPI_PortSettingCEU,"ax",%progbits
+  48              		.align	2
+  49              		.global	R_RVAPI_PortSettingCEU
+  50              		.syntax unified
+  51              		.arm
+  52              		.fpu neon
+  54              	R_RVAPI_PortSettingCEU:
+  55              		@ args = 0, pretend = 0, frame = 0
+  56              		@ frame_needed = 0, uses_anonymous_args = 0
+  57              		@ link register save eliminated.
+  58 0000 003050E2 		subs	r3, r0, #0
+  59 0004 1EFF2F01 		bxeq	lr
+  60 0008 0000A0E3 		mov	r0, #0
+  61 000c 13FF2FE1 		bx	r3	@ indirect register sibling call
+  63              		.section	.text.R_RVAPI_OpenCEU,"ax",%progbits
+  64              		.align	2
+  65              		.global	R_RVAPI_OpenCEU
+  66              		.syntax unified
+  67              		.arm
+  68              		.fpu neon
+  70              	R_RVAPI_OpenCEU:
+  71              		@ args = 0, pretend = 0, frame = 0
+  72              		@ frame_needed = 0, uses_anonymous_args = 0
+  73              		@ link register save eliminated.
+  74 0000 FEFFFFEA 		b	R_CEU_Open
+  76              		.section	.text.R_RVAPI_InterruptEnableCEU,"ax",%progbits
+  77              		.align	2
+  78              		.global	R_RVAPI_InterruptEnableCEU
+  79              		.syntax unified
+  80              		.arm
+  81              		.fpu neon
+  83              	R_RVAPI_InterruptEnableCEU:
+  84              		@ args = 0, pretend = 0, frame = 0
+  85              		@ frame_needed = 0, uses_anonymous_args = 0
+  86 0000 000051E3 		cmp	r1, #0
+  87 0004 0300000A 		beq	.L10
+  88 0008 10402DE9 		push	{r4, lr}
+  89 000c FEFFFFEB 		bl	R_CEU_InterruptEnable
+  90 0010 0000A0E3 		mov	r0, #0
+  91 0014 1080BDE8 		pop	{r4, pc}
+  92              	.L10:
+  93 0018 0100A0E3 		mov	r0, #1
+  94 001c 1EFF2FE1 		bx	lr
+  96              		.section	.text.R_RVAPI_CaptureStartCEU,"ax",%progbits
+  97              		.align	2
+  98              		.global	R_RVAPI_CaptureStartCEU
+  99              		.syntax unified
+ 100              		.arm
+ 101              		.fpu neon
+ 103              	R_RVAPI_CaptureStartCEU:
+ 104              		@ args = 0, pretend = 0, frame = 0
+ 105              		@ frame_needed = 0, uses_anonymous_args = 0
+ 106              		@ link register save eliminated.
+ 107 0000 FEFFFFEA 		b	R_CEU_Execute
+ 109              		.section	.text.R_RVAPI_CaptureStopCEU,"ax",%progbits
+ 110              		.align	2
+ 111              		.global	R_RVAPI_CaptureStopCEU
+ 112              		.syntax unified
+ 113              		.arm
+ 114              		.fpu neon
+ 116              	R_RVAPI_CaptureStopCEU:
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              		@ link register save eliminated.
+ 120 0000 FEFFFFEA 		b	R_CEU_Stop
+ 122              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_rvapi_ceu.c
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:14     .text.R_RVAPI_InitializeCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:20     .text.R_RVAPI_InitializeCEU:00000000 R_RVAPI_InitializeCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:30     .text.R_RVAPI_TerminateCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:36     .text.R_RVAPI_TerminateCEU:00000000 R_RVAPI_TerminateCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:48     .text.R_RVAPI_PortSettingCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:54     .text.R_RVAPI_PortSettingCEU:00000000 R_RVAPI_PortSettingCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:64     .text.R_RVAPI_OpenCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:70     .text.R_RVAPI_OpenCEU:00000000 R_RVAPI_OpenCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:77     .text.R_RVAPI_InterruptEnableCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:83     .text.R_RVAPI_InterruptEnableCEU:00000000 R_RVAPI_InterruptEnableCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:97     .text.R_RVAPI_CaptureStartCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:103    .text.R_RVAPI_CaptureStartCEU:00000000 R_RVAPI_CaptureStartCEU
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:110    .text.R_RVAPI_CaptureStopCEU:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccZ2pvMP.s:116    .text.R_RVAPI_CaptureStopCEU:00000000 R_RVAPI_CaptureStopCEU
+
+UNDEFINED SYMBOLS
+R_CEU_OnInitialize
+R_CEU_Initialize
+R_CEU_InterruptDisable
+R_CEU_OnFinalize
+R_CEU_Terminate
+R_CEU_Open
+R_CEU_InterruptEnable
+R_CEU_Execute
+R_CEU_Stop

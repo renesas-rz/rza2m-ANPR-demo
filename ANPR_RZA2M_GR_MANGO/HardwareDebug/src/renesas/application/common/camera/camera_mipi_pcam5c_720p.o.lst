@@ -1,0 +1,1071 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 1
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"camera_mipi_pcam5c_720p.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.pcam5c_port_setting,"ax",%progbits
+  17              		.align	2
+  18              		.syntax unified
+  19              		.arm
+  20              		.fpu neon
+  22              	pcam5c_port_setting:
+  23              	.LFB1:
+  24              		.file 1 "../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c"
+   1:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************************************
+   2:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * DISCLAIMER
+   3:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * This software is supplied by Renesas Electronics Corporation and is only intended for use with R
+   4:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * other uses are authorized. This software is owned by Renesas Electronics Corporation and is prot
+   5:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * applicable laws, including copyright laws.
+   6:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING
+   7:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+   8:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAI
+   9:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS ELECTRONICS CORPORATION NOR ANY OF ITS A
+  10:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * SHALL BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR ANY R
+  11:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DA
+  12:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * Renesas reserves the right, without notice, to make changes to this software and to discontinue 
+  13:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * this software. By using this software, you agree to the additional terms and conditions found by
+  14:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * following link:
+  15:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * http://www.renesas.com/disclaimer
+  16:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  *
+  17:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * Copyright (C) 2019 Renesas Electronics Corporation. All rights reserved.
+  18:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  **************************************************************************************************
+  19:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+  20:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @file         camera_mipi_720p_pcam5c.c
+  21:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @version      0.01
+  22:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @brief        MIPI Camera Register Setting
+  23:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  24:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  25:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  26:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Includes   <System Includes> , "Project Includes"
+  27:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  28:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "mipi_camera.h"
+  29:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #if (CAM_MIPI == CAM_PCAM5C_720P)
+  30:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    <stdio.h>
+  31:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    <iodefine.h>
+  32:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_mipi_api.h"
+  33:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_mmu_drv_api.h"
+  34:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_riic_drv_api.h"
+  35:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "camera_mipi_pcam5c_720p_regdata.h"
+  36:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_devlink_wrapper.h"
+  37:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_riic_drv_sc_cfg.h"
+  38:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #include    "r_gpio_drv_api.h"
+  39:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  40:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  41:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Macro definitions
+  42:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  43:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #define MIPI_CAMERA_SUBADD    0x78
+  44:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  45:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  46:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Typedef definitions
+  47:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  48:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  49:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  50:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Imported global variables and functions (from other files)
+  51:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  52:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  53:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  54:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Exported global variables (to be accessed by other files)
+  55:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  56:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  57:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+  58:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** Private global variables and functions
+  59:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  60:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void RIIC_MipiWrite( uint8_t ic_adr, uint8_t reg_adr_upper, uint8_t reg_adr_lower, uint8_t reg_data
+  61:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** static int_t RIIC_MipiRead( uint8_t ic_adr, uint8_t reg_adr_upper, uint8_t reg_adr_lower, uint8_t *
+  62:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void gain_setting(uint32_t gain_output);
+  63:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  64:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** int_t hi2c2 = ( -1);
+  65:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  66:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  67:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+  68:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       pcam5c_port_setting(reset and power down)
+  69:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   None
+  70:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+  71:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+  72:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** static void pcam5c_port_setting(void)
+  73:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+  25              		.loc 1 73 0
+  26              		.cfi_startproc
+  27              		@ args = 0, pretend = 0, frame = 16
+  28              		@ frame_needed = 0, uses_anonymous_args = 0
+  29 0000 10402DE9 		push	{r4, lr}
+  30              		.cfi_def_cfa_offset 8
+  31              		.cfi_offset 4, -8
+  32              		.cfi_offset 14, -4
+  33 0004 10D04DE2 		sub	sp, sp, #16
+  34              		.cfi_def_cfa_offset 24
+  74:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  75:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t err;
+  76:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t gpio_handle;
+  77:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  78:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gpio_handle = direct_open("gpio", 0);
+  35              		.loc 1 78 0
+  36 0008 0010A0E3 		mov	r1, #0
+  37 000c 000000E3 		movw	r0, #:lower16:.LC7
+  38 0010 000040E3 		movt	r0, #:upper16:.LC7
+  39 0014 FEFFFFEB 		bl	direct_open
+  40              	.LVL0:
+  79:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     if ( gpio_handle < 0 )
+  41              		.loc 1 79 0
+  42 0018 004050E2 		subs	r4, r0, #0
+  43 001c 000000AA 		bge	.L2
+  44              	.L3:
+  45 0020 FEFFFFEA 		b	.L3
+  46              	.L2:
+  47              	.LBB2:
+  80:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+  81:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         /* stop execute */
+  82:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         while(1);
+  83:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+  84:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  85:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+  86:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         st_r_drv_gpio_sc_config_t pin_pcam5c;
+  87:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  88:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         /* === PD_2 : Pcam5C Reset Pin === */
+  89:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         /* ---- Port initialize ---- */
+  90:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         pin_pcam5c.pin                    = GPIO_PORT_D_PIN_2;
+  48              		.loc 1 90 0
+  49 0024 023D00E3 		movw	r3, #3330
+  50 0028 B830CDE1 		strh	r3, [sp, #8]	@ movhi
+  91:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         pin_pcam5c.configuration.function = GPIO_FUNC_OUT_HIGH;
+  51              		.loc 1 91 0
+  52 002c 0330A0E3 		mov	r3, #3
+  53 0030 0A30CDE5 		strb	r3, [sp, #10]
+  92:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         pin_pcam5c.configuration.current  = GPIO_CURRENT_RESERVED;
+  54              		.loc 1 92 0
+  55 0034 0530A0E3 		mov	r3, #5
+  56 0038 0C30CDE5 		strb	r3, [sp, #12]
+  93:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         pin_pcam5c.configuration.tint     = GPIO_TINT_DISABLE;
+  57              		.loc 1 93 0
+  58 003c 0130A0E3 		mov	r3, #1
+  59 0040 0B30CDE5 		strb	r3, [sp, #11]
+  94:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+  95:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         err = direct_control(gpio_handle, CTL_GPIO_SET_CONFIGURATION, &pin_pcam5c);
+  60              		.loc 1 95 0
+  61 0044 08208DE2 		add	r2, sp, #8
+  62 0048 0010A0E3 		mov	r1, #0
+  63 004c 0400A0E1 		mov	r0, r4
+  64              	.LVL1:
+  65 0050 FEFFFFEB 		bl	direct_control
+  66              	.LVL2:
+  96:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         if ( err < 0 )
+  67              		.loc 1 96 0
+  68 0054 000050E3 		cmp	r0, #0
+  69 0058 000000AA 		bge	.L4
+  70              	.L5:
+  71 005c FEFFFFEA 		b	.L5
+  72              	.L4:
+  73              	.LBE2:
+  74              	.LBB3:
+  97:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         {
+  98:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             /* stop execute */
+  99:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             while(1);
+ 100:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         }
+ 101:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 102:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 103:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+ 104:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         volatile uint32_t count;
+ 105:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         st_r_drv_gpio_pin_rw_t pcam5c_pwup_high = { GPIO_PORT_D_PIN_2, GPIO_LEVEL_HIGH, GPIO_SUCCES
+  75              		.loc 1 105 0
+  76 0060 003000E3 		movw	r3, #:lower16:.LANCHOR0
+  77 0064 003040E3 		movt	r3, #:upper16:.LANCHOR0
+  78 0068 002093E5 		ldr	r2, [r3]
+  79 006c 04208DE5 		str	r2, [sp, #4]
+ 106:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         st_r_drv_gpio_pin_rw_t pcam5c_pwup_low  = { GPIO_PORT_D_PIN_2, GPIO_LEVEL_LOW, GPIO_SUCCESS
+  80              		.loc 1 106 0
+  81 0070 043093E5 		ldr	r3, [r3, #4]
+  82 0074 10208DE2 		add	r2, sp, #16
+  83 0078 083022E5 		str	r3, [r2, #-8]!
+ 107:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 108:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         /* Power Up Sequence
+ 109:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****          *            _______   ______________
+ 110:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****          * Power pwup        |__|
+ 111:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****          */
+ 112:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 113:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         direct_control(gpio_handle, CTL_GPIO_PIN_WRITE, &pcam5c_pwup_low);
+  84              		.loc 1 113 0
+  85 007c 0810A0E3 		mov	r1, #8
+  86 0080 0400A0E1 		mov	r0, r4
+  87              	.LVL3:
+  88 0084 FEFFFFEB 		bl	direct_control
+  89              	.LVL4:
+ 114:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         R_OS_TaskSleep(200);
+  90              		.loc 1 114 0
+  91 0088 C800A0E3 		mov	r0, #200
+  92 008c FEFFFFEB 		bl	R_OS_TaskSleep
+  93              	.LVL5:
+ 115:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 116:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         direct_control(gpio_handle, CTL_GPIO_PIN_WRITE, &pcam5c_pwup_high);
+  94              		.loc 1 116 0
+  95 0090 04208DE2 		add	r2, sp, #4
+  96 0094 0810A0E3 		mov	r1, #8
+  97 0098 0400A0E1 		mov	r0, r4
+  98 009c FEFFFFEB 		bl	direct_control
+  99              	.LVL6:
+ 117:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 118:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         R_OS_TaskSleep(100);
+ 100              		.loc 1 118 0
+ 101 00a0 6400A0E3 		mov	r0, #100
+ 102 00a4 FEFFFFEB 		bl	R_OS_TaskSleep
+ 103              	.LVL7:
+ 104              	.LBE3:
+ 119:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 120:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     direct_close(gpio_handle);
+ 105              		.loc 1 120 0
+ 106 00a8 0400A0E1 		mov	r0, r4
+ 107 00ac FEFFFFEB 		bl	direct_close
+ 108              	.LVL8:
+ 121:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 109              		.loc 1 121 0
+ 110 00b0 10D08DE2 		add	sp, sp, #16
+ 111              		.cfi_def_cfa_offset 8
+ 112              		@ sp needed
+ 113 00b4 1080BDE8 		pop	{r4, pc}
+ 114              		.cfi_endproc
+ 115              	.LFE1:
+ 117              		.section	.text.RIIC_MipiWrite,"ax",%progbits
+ 118              		.align	2
+ 119              		.global	RIIC_MipiWrite
+ 120              		.syntax unified
+ 121              		.arm
+ 122              		.fpu neon
+ 124              	RIIC_MipiWrite:
+ 125              	.LFB5:
+ 122:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 123:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 124:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       Init_Camera
+ 125:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   None
+ 126:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 127:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 128:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void Init_Camera(void)
+ 129:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 130:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t    ret;
+ 131:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint32_t count;
+ 132:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t  read_data;
+ 133:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 134:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t system_input_clock = {0x31, 0x03, 0x11};
+ 135:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t software_reset     = {0x30, 0x08, 0x82};
+ 136:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t power_down         = {0x30, 0x08, 0x42};
+ 137:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t choose_system_input_clock = {0x31, 0x03, 0x03};
+ 138:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 139:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* Pcam5C Power Up Sequence */
+ 140:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     pcam5c_port_setting();
+ 141:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 142:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* open RIIC */
+ 143:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     ret = open(DEVICE_INDENTIFIER "riic1", O_RDWR);
+ 144:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 145:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     if (ret >= 0)
+ 146:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+ 147:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         hi2c2 = ret;
+ 148:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 149:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 150:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     R_OS_TaskSleep(100);
+ 151:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 152:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* system input clock */
+ 153:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 154:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             system_input_clock.reg_add_upper,
+ 155:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             system_input_clock.reg_add_lower,
+ 156:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             system_input_clock.value);
+ 157:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 158:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     R_OS_TaskSleep(100);
+ 159:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 160:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* software_reset */
+ 161:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 162:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             software_reset.reg_add_upper,
+ 163:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             software_reset.reg_add_lower,
+ 164:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             software_reset.value);
+ 165:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 166:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     R_OS_TaskSleep(20);
+ 167:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 168:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* power_down */
+ 169:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 170:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down.reg_add_upper,
+ 171:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down.reg_add_lower,
+ 172:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down.value);
+ 173:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 174:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* choose_system_input_clock */
+ 175:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 176:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             choose_system_input_clock.reg_add_upper,
+ 177:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             choose_system_input_clock.reg_add_lower,
+ 178:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             choose_system_input_clock.value);
+ 179:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 180:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* MIPI Camera Init */
+ 181:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     count = 0;
+ 182:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     while(1)
+ 183:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+ 184:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         if(g_mipi_reg_init_table[count].reg_add_upper == 0xFF &&
+ 185:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].reg_add_lower == 0xFF &&
+ 186:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].value == 0xFF )
+ 187:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         {
+ 188:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             break;
+ 189:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         }
+ 190:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 191:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].reg_add_upper,
+ 192:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].reg_add_lower,
+ 193:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].value);
+ 194:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         count ++;
+ 195:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 196:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 197:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #if 0
+ 198:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     count = 0;
+ 199:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* MIPI Camera Init */
+ 200:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     while(1)
+ 201:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+ 202:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         if(g_mipi_reg_init_table[count].reg_add_upper == 0xFF && g_mipi_reg_init_table[count].reg_a
+ 203:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         {
+ 204:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             break;
+ 205:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         }
+ 206:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         RIIC_MipiRead(MIPI_CAMERA_SUBADD,
+ 207:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].reg_add_upper,
+ 208:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].reg_add_lower,
+ 209:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        &read_data,
+ 210:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        1);
+ 211:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         printf("0x%02x%02x = 0x%02x.\r\n", g_mipi_reg_init_table[count].reg_add_upper, g_mipi_reg_i
+ 212:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         count ++;
+ 213:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 214:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** #endif
+ 215:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 216:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 217:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 218:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       Start_Camera
+ 219:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   None
+ 220:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 221:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 222:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void Start_Camera( void )
+ 223:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 224:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t power_down_on = {0x30,0x08,0x02};
+ 225:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 226:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* Gain setting */
+ 227:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gain_setting(0x18);
+ 228:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 229:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* power down on */
+ 230:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 231:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down_on.reg_add_upper,
+ 232:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down_on.reg_add_lower,
+ 233:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down_on.value);
+ 234:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 235:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }   /* End of function Start_MIPI() */
+ 236:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 237:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 238:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       gain_setting
+ 239:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   gain_output: 0~1023
+ 240:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 241:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 242:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void gain_setting(uint32_t gain_output)
+ 243:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 244:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t gain_upper;
+ 245:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t gain_lower;
+ 246:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 247:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gain_upper = ((gain_output >> 8) & 0x03);
+ 248:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gain_lower = (gain_output & 0xFF);
+ 249:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 250:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* AEC gain setting upper */
+ 251:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 252:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x35,
+ 253:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x0A,
+ 254:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                gain_upper);
+ 255:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 256:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     /* AEC gain setting lower */
+ 257:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD,
+ 258:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x35,
+ 259:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x0B,
+ 260:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                gain_lower);
+ 261:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 262:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 263:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /******************************************************************************
+ 264:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * Function Name: RIIC_MipiWrite
+ 265:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * Description  :
+ 266:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  ic_adr         : device address.
+ 267:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  reg_adr_upper  : upper register address to write .
+ 268:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  reg_adr_lower  : lower register address to write .
+ 269:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  reg_data       : write data .
+ 270:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @retval  : none
+ 271:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 272:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void RIIC_MipiWrite( uint8_t ic_adr, uint8_t reg_adr_upper, uint8_t reg_adr_lower, uint8_t reg_data
+ 273:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 126              		.loc 1 273 0
+ 127              		.cfi_startproc
+ 128              		@ args = 0, pretend = 0, frame = 24
+ 129              		@ frame_needed = 0, uses_anonymous_args = 0
+ 130              	.LVL9:
+ 131 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 132              		.cfi_def_cfa_offset 4
+ 133              		.cfi_offset 14, -4
+ 134 0004 1CD04DE2 		sub	sp, sp, #28
+ 135              		.cfi_def_cfa_offset 32
+ 136 0008 0730CDE5 		strb	r3, [sp, #7]
+ 274:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t ret;
+ 275:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_r_drv_riic_transfer_t i2c_write;
+ 276:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 277:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_write.device_address = ic_adr;
+ 137              		.loc 1 277 0
+ 138 000c B800CDE1 		strh	r0, [sp, #8]	@ movhi
+ 278:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_write.sub_address_type = RIIC_SUB_ADDR_WIDTH_16_BITS;
+ 139              		.loc 1 278 0
+ 140 0010 0230A0E3 		mov	r3, #2
+ 141              	.LVL10:
+ 142 0014 0A30CDE5 		strb	r3, [sp, #10]
+ 279:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_write.sub_address = (reg_adr_upper << 8) | reg_adr_lower;
+ 143              		.loc 1 279 0
+ 144 0018 012482E1 		orr	r2, r2, r1, lsl #8
+ 145              	.LVL11:
+ 146 001c 0C208DE5 		str	r2, [sp, #12]
+ 280:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_write.number_of_bytes = 1;
+ 147              		.loc 1 280 0
+ 148 0020 0130A0E3 		mov	r3, #1
+ 149 0024 10308DE5 		str	r3, [sp, #16]
+ 281:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_write.p_data_buffer = &reg_data;
+ 150              		.loc 1 281 0
+ 151 0028 07308DE2 		add	r3, sp, #7
+ 152              	.LVL12:
+ 153 002c 14308DE5 		str	r3, [sp, #20]
+ 282:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 283:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     ret = control(hi2c2, CTL_RIIC_WRITE, &i2c_write);
+ 154              		.loc 1 283 0
+ 155 0030 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 156              	.LVL13:
+ 157 0034 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 158 0038 08208DE2 		add	r2, sp, #8
+ 159 003c 0410A0E3 		mov	r1, #4
+ 160              	.LVL14:
+ 161 0040 000093E5 		ldr	r0, [r3]
+ 162              	.LVL15:
+ 163 0044 FEFFFFEB 		bl	control
+ 164              	.LVL16:
+ 284:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 285:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }   /* End of function RIIC_MipiWrite() */
+ 165              		.loc 1 285 0
+ 166 0048 1CD08DE2 		add	sp, sp, #28
+ 167              		.cfi_def_cfa_offset 4
+ 168              		@ sp needed
+ 169 004c 04F09DE4 		ldr	pc, [sp], #4
+ 170              		.cfi_endproc
+ 171              	.LFE5:
+ 173              		.section	.text.Init_Camera,"ax",%progbits
+ 174              		.align	2
+ 175              		.global	Init_Camera
+ 176              		.syntax unified
+ 177              		.arm
+ 178              		.fpu neon
+ 180              	Init_Camera:
+ 181              	.LFB2:
+ 129:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t    ret;
+ 182              		.loc 1 129 0
+ 183              		.cfi_startproc
+ 184              		@ args = 0, pretend = 0, frame = 0
+ 185              		@ frame_needed = 0, uses_anonymous_args = 0
+ 186 0000 10402DE9 		push	{r4, lr}
+ 187              		.cfi_def_cfa_offset 8
+ 188              		.cfi_offset 4, -8
+ 189              		.cfi_offset 14, -4
+ 140:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 190              		.loc 1 140 0
+ 191 0004 FEFFFFEB 		bl	pcam5c_port_setting
+ 192              	.LVL17:
+ 143:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 193              		.loc 1 143 0
+ 194 0008 0210A0E3 		mov	r1, #2
+ 195 000c 000000E3 		movw	r0, #:lower16:.LC8
+ 196 0010 000040E3 		movt	r0, #:upper16:.LC8
+ 197 0014 FEFFFFEB 		bl	open
+ 198              	.LVL18:
+ 145:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     {
+ 199              		.loc 1 145 0
+ 200 0018 000050E3 		cmp	r0, #0
+ 147:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 201              		.loc 1 147 0
+ 202 001c 003000A3 		movwge	r3, #:lower16:.LANCHOR1
+ 203 0020 003040A3 		movtge	r3, #:upper16:.LANCHOR1
+ 204 0024 000083A5 		strge	r0, [r3]
+ 205              	.L10:
+ 150:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 206              		.loc 1 150 0
+ 207 0028 6400A0E3 		mov	r0, #100
+ 208              	.LVL19:
+ 209 002c FEFFFFEB 		bl	R_OS_TaskSleep
+ 210              	.LVL20:
+ 153:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             system_input_clock.reg_add_upper,
+ 211              		.loc 1 153 0
+ 212 0030 1130A0E3 		mov	r3, #17
+ 213 0034 0320A0E3 		mov	r2, #3
+ 214 0038 3110A0E3 		mov	r1, #49
+ 215 003c 7800A0E3 		mov	r0, #120
+ 216 0040 FEFFFFEB 		bl	RIIC_MipiWrite
+ 217              	.LVL21:
+ 158:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 218              		.loc 1 158 0
+ 219 0044 6400A0E3 		mov	r0, #100
+ 220 0048 FEFFFFEB 		bl	R_OS_TaskSleep
+ 221              	.LVL22:
+ 161:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             software_reset.reg_add_upper,
+ 222              		.loc 1 161 0
+ 223 004c 8230A0E3 		mov	r3, #130
+ 224 0050 0820A0E3 		mov	r2, #8
+ 225 0054 3010A0E3 		mov	r1, #48
+ 226 0058 7800A0E3 		mov	r0, #120
+ 227 005c FEFFFFEB 		bl	RIIC_MipiWrite
+ 228              	.LVL23:
+ 166:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 229              		.loc 1 166 0
+ 230 0060 1400A0E3 		mov	r0, #20
+ 231 0064 FEFFFFEB 		bl	R_OS_TaskSleep
+ 232              	.LVL24:
+ 169:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down.reg_add_upper,
+ 233              		.loc 1 169 0
+ 234 0068 4230A0E3 		mov	r3, #66
+ 235 006c 0820A0E3 		mov	r2, #8
+ 236 0070 3010A0E3 		mov	r1, #48
+ 237 0074 7800A0E3 		mov	r0, #120
+ 238 0078 FEFFFFEB 		bl	RIIC_MipiWrite
+ 239              	.LVL25:
+ 175:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             choose_system_input_clock.reg_add_upper,
+ 240              		.loc 1 175 0
+ 241 007c 0330A0E3 		mov	r3, #3
+ 242 0080 0320A0E1 		mov	r2, r3
+ 243 0084 3110A0E3 		mov	r1, #49
+ 244 0088 7800A0E3 		mov	r0, #120
+ 245 008c FEFFFFEB 		bl	RIIC_MipiWrite
+ 246              	.LVL26:
+ 181:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     while(1)
+ 247              		.loc 1 181 0
+ 248 0090 0040A0E3 		mov	r4, #0
+ 249 0094 080000EA 		b	.L13
+ 250              	.LVL27:
+ 251              	.L11:
+ 190:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                        g_mipi_reg_init_table[count].reg_add_upper,
+ 252              		.loc 1 190 0
+ 253 0098 003000E3 		movw	r3, #:lower16:g_mipi_reg_init_table
+ 254 009c 003040E3 		movt	r3, #:upper16:g_mipi_reg_init_table
+ 255 00a0 842084E0 		add	r2, r4, r4, lsl #1
+ 256 00a4 022083E0 		add	r2, r3, r2
+ 257 00a8 0230D2E5 		ldrb	r3, [r2, #2]	@ zero_extendqisi2
+ 258 00ac 0120D2E5 		ldrb	r2, [r2, #1]	@ zero_extendqisi2
+ 259 00b0 7800A0E3 		mov	r0, #120
+ 260 00b4 FEFFFFEB 		bl	RIIC_MipiWrite
+ 261              	.LVL28:
+ 194:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     }
+ 262              		.loc 1 194 0
+ 263 00b8 014084E2 		add	r4, r4, #1
+ 264              	.LVL29:
+ 265              	.L13:
+ 184:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].reg_add_lower == 0xFF &&
+ 266              		.loc 1 184 0
+ 267 00bc 003000E3 		movw	r3, #:lower16:g_mipi_reg_init_table
+ 268 00c0 003040E3 		movt	r3, #:upper16:g_mipi_reg_init_table
+ 269 00c4 842084E0 		add	r2, r4, r4, lsl #1
+ 270 00c8 0210D3E7 		ldrb	r1, [r3, r2]	@ zero_extendqisi2
+ 271 00cc FF0051E3 		cmp	r1, #255
+ 272 00d0 F0FFFF1A 		bne	.L11
+ 185:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].value == 0xFF )
+ 273              		.loc 1 185 0 discriminator 1
+ 274 00d4 003000E3 		movw	r3, #:lower16:g_mipi_reg_init_table
+ 275 00d8 003040E3 		movt	r3, #:upper16:g_mipi_reg_init_table
+ 276 00dc 023083E0 		add	r3, r3, r2
+ 277 00e0 0130D3E5 		ldrb	r3, [r3, #1]	@ zero_extendqisi2
+ 184:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].reg_add_lower == 0xFF &&
+ 278              		.loc 1 184 0 discriminator 1
+ 279 00e4 FF0053E3 		cmp	r3, #255
+ 280 00e8 EAFFFF1A 		bne	.L11
+ 186:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****         {
+ 281              		.loc 1 186 0
+ 282 00ec 003000E3 		movw	r3, #:lower16:g_mipi_reg_init_table
+ 283 00f0 003040E3 		movt	r3, #:upper16:g_mipi_reg_init_table
+ 284 00f4 023083E0 		add	r3, r3, r2
+ 285 00f8 0230D3E5 		ldrb	r3, [r3, #2]	@ zero_extendqisi2
+ 185:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****            g_mipi_reg_init_table[count].value == 0xFF )
+ 286              		.loc 1 185 0
+ 287 00fc FF0053E3 		cmp	r3, #255
+ 288 0100 E4FFFF1A 		bne	.L11
+ 289 0104 1080BDE8 		pop	{r4, pc}
+ 290              		.cfi_endproc
+ 291              	.LFE2:
+ 293              		.section	.text.gain_setting,"ax",%progbits
+ 294              		.align	2
+ 295              		.global	gain_setting
+ 296              		.syntax unified
+ 297              		.arm
+ 298              		.fpu neon
+ 300              	gain_setting:
+ 301              	.LFB4:
+ 243:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t gain_upper;
+ 302              		.loc 1 243 0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 0
+ 305              		@ frame_needed = 0, uses_anonymous_args = 0
+ 306              	.LVL30:
+ 307 0000 10402DE9 		push	{r4, lr}
+ 308              		.cfi_def_cfa_offset 8
+ 309              		.cfi_offset 4, -8
+ 310              		.cfi_offset 14, -4
+ 311              	.LVL31:
+ 248:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 312              		.loc 1 248 0
+ 313 0004 7040EFE6 		uxtb	r4, r0
+ 314              	.LVL32:
+ 251:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x35,
+ 315              		.loc 1 251 0
+ 316 0008 5034E1E7 		ubfx	r3, r0, #8, #2
+ 317 000c 0A20A0E3 		mov	r2, #10
+ 318 0010 3510A0E3 		mov	r1, #53
+ 319 0014 7800A0E3 		mov	r0, #120
+ 320              	.LVL33:
+ 321 0018 FEFFFFEB 		bl	RIIC_MipiWrite
+ 322              	.LVL34:
+ 257:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****                0x35,
+ 323              		.loc 1 257 0
+ 324 001c 0430A0E1 		mov	r3, r4
+ 325 0020 0B20A0E3 		mov	r2, #11
+ 326 0024 3510A0E3 		mov	r1, #53
+ 327 0028 7800A0E3 		mov	r0, #120
+ 328 002c FEFFFFEB 		bl	RIIC_MipiWrite
+ 329              	.LVL35:
+ 330 0030 1080BDE8 		pop	{r4, pc}
+ 331              		.cfi_endproc
+ 332              	.LFE4:
+ 334              		.section	.text.Start_Camera,"ax",%progbits
+ 335              		.align	2
+ 336              		.global	Start_Camera
+ 337              		.syntax unified
+ 338              		.arm
+ 339              		.fpu neon
+ 341              	Start_Camera:
+ 342              	.LFB3:
+ 223:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_mipi_reg_t power_down_on = {0x30,0x08,0x02};
+ 343              		.loc 1 223 0
+ 344              		.cfi_startproc
+ 345              		@ args = 0, pretend = 0, frame = 0
+ 346              		@ frame_needed = 0, uses_anonymous_args = 0
+ 347 0000 10402DE9 		push	{r4, lr}
+ 348              		.cfi_def_cfa_offset 8
+ 349              		.cfi_offset 4, -8
+ 350              		.cfi_offset 14, -4
+ 227:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 351              		.loc 1 227 0
+ 352 0004 1800A0E3 		mov	r0, #24
+ 353 0008 FEFFFFEB 		bl	gain_setting
+ 354              	.LVL36:
+ 230:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****             power_down_on.reg_add_upper,
+ 355              		.loc 1 230 0
+ 356 000c 0230A0E3 		mov	r3, #2
+ 357 0010 0820A0E3 		mov	r2, #8
+ 358 0014 3010A0E3 		mov	r1, #48
+ 359 0018 7800A0E3 		mov	r0, #120
+ 360 001c FEFFFFEB 		bl	RIIC_MipiWrite
+ 361              	.LVL37:
+ 362 0020 1080BDE8 		pop	{r4, pc}
+ 363              		.cfi_endproc
+ 364              	.LFE3:
+ 366              		.section	.text.R_BCD_gain_setting,"ax",%progbits
+ 367              		.align	2
+ 368              		.global	R_BCD_gain_setting
+ 369              		.syntax unified
+ 370              		.arm
+ 371              		.fpu neon
+ 373              	R_BCD_gain_setting:
+ 374              	.LFB7:
+ 286:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 287:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 288:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 289:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * Function Name: RIIC_MipiRead
+ 290:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * Description  :
+ 291:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** *
+ 292:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  ic_adr          : device address.
+ 293:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  reg_adr_upper   : upper register address to write .
+ 294:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  reg_adr_lower   : lower register address to write .
+ 295:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[out] uint8_t *puData : pointer to receive buffer
+ 296:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @param[in]  uint32_t unSize : size of data
+ 297:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** * @retval     0 : Operation successfull.
+ 298:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** *             -1 : Error occured.
+ 299:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 300:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** static int_t RIIC_MipiRead( uint8_t ic_adr, uint8_t reg_adr_upper, uint8_t reg_adr_lower, uint8_t *
+ 301:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 302:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     int_t nRet;
+ 303:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     st_r_drv_riic_transfer_t i2c_read;
+ 304:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 305:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_read.device_address = ic_adr;
+ 306:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_read.sub_address_type = RIIC_SUB_ADDR_WIDTH_16_BITS;
+ 307:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_read.sub_address = (reg_adr_upper << 8) | reg_adr_lower;
+ 308:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_read.number_of_bytes = unSize;
+ 309:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     i2c_read.p_data_buffer = puData;
+ 310:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 311:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     nRet = control(hi2c2, CTL_RIIC_READ, &i2c_read);
+ 312:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 313:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     return (uint8_t)nRet;
+ 314:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 315:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 316:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 317:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 318:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       gain_setting
+ 319:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   R_BCD_gain_output: 0~64 camera limit
+ 320:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 321:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 322:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void R_BCD_gain_setting(uint32_t gain_output)
+ 323:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 375              		.loc 1 323 0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379              	.LVL38:
+ 380 0000 10402DE9 		push	{r4, lr}
+ 381              		.cfi_def_cfa_offset 8
+ 382              		.cfi_offset 4, -8
+ 383              		.cfi_offset 14, -4
+ 384              	.LVL39:
+ 324:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t gain_upper;
+ 325:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     uint8_t gain_lower;
+ 326:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 327:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gain_upper = ((gain_output >> 8) & 0x03);
+ 328:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     gain_lower = (gain_output & 0xFF);
+ 385              		.loc 1 328 0
+ 386 0004 7040EFE6 		uxtb	r4, r0
+ 387              	.LVL40:
+ 329:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 330:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     //RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x32, 0x12, 0x00);        // group hold start
+ 331:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x35, 0x0A, gain_upper);  // agc upper
+ 388              		.loc 1 331 0
+ 389 0008 5034E1E7 		ubfx	r3, r0, #8, #2
+ 390 000c 0A20A0E3 		mov	r2, #10
+ 391 0010 3510A0E3 		mov	r1, #53
+ 392 0014 7800A0E3 		mov	r0, #120
+ 393              	.LVL41:
+ 394 0018 FEFFFFEB 		bl	RIIC_MipiWrite
+ 395              	.LVL42:
+ 332:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x35, 0x0B, gain_lower);  // agc lower
+ 396              		.loc 1 332 0
+ 397 001c 0430A0E1 		mov	r3, r4
+ 398 0020 0B20A0E3 		mov	r2, #11
+ 399 0024 3510A0E3 		mov	r1, #53
+ 400 0028 7800A0E3 		mov	r0, #120
+ 401 002c FEFFFFEB 		bl	RIIC_MipiWrite
+ 402              	.LVL43:
+ 403 0030 1080BDE8 		pop	{r4, pc}
+ 404              		.cfi_endproc
+ 405              	.LFE7:
+ 407              		.section	.text.R_BCD_gain_table_setting,"ax",%progbits
+ 408              		.align	2
+ 409              		.global	R_BCD_gain_table_setting
+ 410              		.syntax unified
+ 411              		.arm
+ 412              		.fpu neon
+ 414              	R_BCD_gain_table_setting:
+ 415              	.LFB8:
+ 333:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     //RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x32, 0x12, 0x10);        // group hold end
+ 334:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 335:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 336:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 337:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       R_BCD_gain_table_setting
+ 338:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   gain_output: 0~16 camera limit
+ 339:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 340:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 341:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void R_BCD_gain_table_setting(uint32_t gain_index)
+ 342:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 416              		.loc 1 342 0
+ 417              		.cfi_startproc
+ 418              		@ args = 0, pretend = 0, frame = 0
+ 419              		@ frame_needed = 0, uses_anonymous_args = 0
+ 420              	.LVL44:
+ 421 0000 10402DE9 		push	{r4, lr}
+ 422              		.cfi_def_cfa_offset 8
+ 423              		.cfi_offset 4, -8
+ 424              		.cfi_offset 14, -4
+ 343:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     if ( gain_index >16u ) { gain_index =16u ;}
+ 425              		.loc 1 343 0
+ 426 0004 100050E3 		cmp	r0, #16
+ 427 0008 1000A083 		movhi	r0, #16
+ 428              	.LVL45:
+ 429              	.L22:
+ 344:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     R_BCD_gain_setting( gain_table[gain_index]) ;
+ 430              		.loc 1 344 0
+ 431 000c 003000E3 		movw	r3, #:lower16:gain_table
+ 432 0010 003040E3 		movt	r3, #:upper16:gain_table
+ 433 0014 8000A0E1 		lsl	r0, r0, #1
+ 434              	.LVL46:
+ 435 0018 B00093E1 		ldrh	r0, [r3, r0]
+ 436 001c FEFFFFEB 		bl	R_BCD_gain_setting
+ 437              	.LVL47:
+ 438 0020 1080BDE8 		pop	{r4, pc}
+ 439              		.cfi_endproc
+ 440              	.LFE8:
+ 442              		.section	.text.R_BCD_shutter_setting,"ax",%progbits
+ 443              		.align	2
+ 444              		.global	R_BCD_shutter_setting
+ 445              		.syntax unified
+ 446              		.arm
+ 447              		.fpu neon
+ 449              	R_BCD_shutter_setting:
+ 450              	.LFB9:
+ 345:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 346:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 347:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** /**************************************************************************//**
+ 348:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @brief       R_BCD_shutter_setting
+ 349:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @param[in]   shutter_output: 0~5000
+ 350:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****  * @retval      None
+ 351:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** ******************************************************************************/
+ 352:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** void R_BCD_shutter_setting(uint32_t shutter_output)
+ 353:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** {
+ 451              		.loc 1 353 0
+ 452              		.cfi_startproc
+ 453              		@ args = 0, pretend = 0, frame = 0
+ 454              		@ frame_needed = 0, uses_anonymous_args = 0
+ 455              	.LVL48:
+ 456 0000 10402DE9 		push	{r4, lr}
+ 457              		.cfi_def_cfa_offset 8
+ 458              		.cfi_offset 4, -8
+ 459              		.cfi_offset 14, -4
+ 460 0004 0040A0E1 		mov	r4, r0
+ 354:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     //RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x32, 0x12, 0x00); // group hold start
+ 355:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x35, 0x00, (uint8_t)(shutter_output >> 12) & 0x0F);  // AEC
+ 461              		.loc 1 355 0
+ 462 0008 5036E3E7 		ubfx	r3, r0, #12, #4
+ 463 000c 0020A0E3 		mov	r2, #0
+ 464 0010 3510A0E3 		mov	r1, #53
+ 465 0014 7800A0E3 		mov	r0, #120
+ 466              	.LVL49:
+ 467 0018 FEFFFFEB 		bl	RIIC_MipiWrite
+ 468              	.LVL50:
+ 356:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x35, 0x01, (uint8_t)(shutter_output >> 4)  & 0xff);  // AEC
+ 469              		.loc 1 356 0
+ 470 001c 5432E7E7 		ubfx	r3, r4, #4, #8
+ 471 0020 0120A0E3 		mov	r2, #1
+ 472 0024 3510A0E3 		mov	r1, #53
+ 473 0028 7800A0E3 		mov	r0, #120
+ 474 002c FEFFFFEB 		bl	RIIC_MipiWrite
+ 475              	.LVL51:
+ 357:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x35, 0x02, (uint8_t)(shutter_output << 4)  & 0xF0);  // AEC
+ 476              		.loc 1 357 0
+ 477 0030 7430EFE6 		uxtb	r3, r4
+ 478 0034 0332A0E1 		lsl	r3, r3, #4
+ 479 0038 F03003E2 		and	r3, r3, #240
+ 480 003c 0220A0E3 		mov	r2, #2
+ 481 0040 3510A0E3 		mov	r1, #53
+ 482 0044 7800A0E3 		mov	r0, #120
+ 483 0048 FEFFFFEB 		bl	RIIC_MipiWrite
+ 484              	.LVL52:
+ 485 004c 1080BDE8 		pop	{r4, pc}
+ 486              		.cfi_endproc
+ 487              	.LFE9:
+ 489              		.section	.text.getBayerMode,"ax",%progbits
+ 490              		.align	2
+ 491              		.global	getBayerMode
+ 492              		.syntax unified
+ 493              		.arm
+ 494              		.fpu neon
+ 496              	getBayerMode:
+ 497              	.LFB10:
+ 358:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c ****     //RIIC_MipiWrite(MIPI_CAMERA_SUBADD, 0x32, 0x12, 0x10); // group hold end
+ 359:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 360:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 
+ 361:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** uint8_t getBayerMode() {
+ 498              		.loc 1 361 0
+ 499              		.cfi_startproc
+ 500              		@ args = 0, pretend = 0, frame = 0
+ 501              		@ frame_needed = 0, uses_anonymous_args = 0
+ 502              		@ link register save eliminated.
+ 362:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 	return 3u ; // BGGR
+ 363:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** 	;
+ 364:../src/renesas/application/common/camera/camera_mipi_pcam5c_720p.c **** }
+ 503              		.loc 1 364 0
+ 504 0000 0300A0E3 		mov	r0, #3
+ 505 0004 1EFF2FE1 		bx	lr
+ 506              		.cfi_endproc
+ 507              	.LFE10:
+ 509              		.global	hi2c2
+ 510              		.section	.rodata
+ 511              		.align	2
+ 512              		.set	.LANCHOR0,. + 0
+ 513              	.LC4:
+ 514 0000 020D     		.short	3330
+ 515 0002 02       		.byte	2
+ 516 0003 00       		.byte	0
+ 517              	.LC5:
+ 518 0004 020D     		.short	3330
+ 519 0006 01       		.byte	1
+ 520 0007 00       		.byte	0
+ 521              		.section	.data.hi2c2,"aw",%progbits
+ 522              		.align	2
+ 523              		.set	.LANCHOR1,. + 0
+ 526              	hi2c2:
+ 527 0000 FFFFFFFF 		.word	-1
+ 528              		.section	.rodata.Init_Camera.str1.4,"aMS",%progbits,1
+ 529              		.align	2
+ 530              	.LC8:
+ 531 0000 5C5C2E5C 		.ascii	"\\\\.\\riic1\000"
+ 531      72696963 
+ 531      3100
+ 532              		.section	.rodata.pcam5c_port_setting.str1.4,"aMS",%progbits,1
+ 533              		.align	2
+ 534              	.LC7:
+ 535 0000 6770696F 		.ascii	"gpio\000"
+ 535      00
+ 536              		.text
+ 537              	.Letext0:
+ 538              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 539              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 540              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 541              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 542              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 543              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 544              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 545              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc/
+ 546              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 547              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/drivers/r_
+ 548              		.file 12 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 549              		.file 13 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+ 550              		.file 14 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/sc_drivers
+ 551              		.file 15 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/sc_drivers
+ 552              		.file 16 "../src/renesas/application/common/camera/camera_mipi_pcam5c_720p_regdata.h"
+ 553              		.file 17 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/drivers/r_
+ 554              		.file 18 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/drivers/r_
+ 555              		.file 19 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/drivers/r_
+ 556              		.file 20 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/sc_drivers
+ 557              		.file 21 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/generate/system/inc
+ 558              		.file 22 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\includ
+DEFINED SYMBOLS
+                            *ABS*:00000000 camera_mipi_pcam5c_720p.c
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:17     .text.pcam5c_port_setting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:22     .text.pcam5c_port_setting:00000000 pcam5c_port_setting
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:534    .rodata.pcam5c_port_setting.str1.4:00000000 .LC7
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:512    .rodata:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:118    .text.RIIC_MipiWrite:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:124    .text.RIIC_MipiWrite:00000000 RIIC_MipiWrite
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:523    .data.hi2c2:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:174    .text.Init_Camera:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:180    .text.Init_Camera:00000000 Init_Camera
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:530    .rodata.Init_Camera.str1.4:00000000 .LC8
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:294    .text.gain_setting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:300    .text.gain_setting:00000000 gain_setting
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:335    .text.Start_Camera:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:341    .text.Start_Camera:00000000 Start_Camera
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:367    .text.R_BCD_gain_setting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:373    .text.R_BCD_gain_setting:00000000 R_BCD_gain_setting
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:408    .text.R_BCD_gain_table_setting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:414    .text.R_BCD_gain_table_setting:00000000 R_BCD_gain_table_setting
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:443    .text.R_BCD_shutter_setting:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:449    .text.R_BCD_shutter_setting:00000000 R_BCD_shutter_setting
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:490    .text.getBayerMode:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:496    .text.getBayerMode:00000000 getBayerMode
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:526    .data.hi2c2:00000000 hi2c2
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:511    .rodata:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:522    .data.hi2c2:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:529    .rodata.Init_Camera.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccb4mAbN.s:533    .rodata.pcam5c_port_setting.str1.4:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4.mipi_camera.h.25.be6225dfafda6e2e1c67275eaeb708d4
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.e658329a094974ebad41b40c60502de7
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.r_typedefs.h.38.e90d9de5300d9ae020e5db8c5af88b3e
+                           .group:00000000 wm4.adc_iodefine.h.29.14c6f50dce37432a7d004e4b1ce33da7
+                           .group:00000000 wm4.bsc_iodefine.h.29.9281d1f3639266933964d6d0c2d42c4f
+                           .group:00000000 wm4.ceu_iodefine.h.29.2a669d0b46fdde030a50db9e3c307fbf
+                           .group:00000000 wm4.cpg_iodefine.h.29.d6fdc9cb4798723afd88b251d64c2ce2
+                           .group:00000000 wm4.csi2link_iodefine.h.29.221c4531636a409f24d307b16341ada8
+                           .group:00000000 wm4.dmac_iodefine.h.29.578fccc2cc1da886ec95a029bf874f01
+                           .group:00000000 wm4.drpk_iodefine.h.29.580eb8588a2b2d43d2726fbe791e513f
+                           .group:00000000 wm4.drw_iodefine.h.29.df30f4a4a34a79f6a86c4df91353dffe
+                           .group:00000000 wm4.edmac_iodefine.h.29.33e8759349004a722f42f5429c1353f6
+                           .group:00000000 wm4.eptpc_iodefine.h.29.74d8f9fab0f5549b56097fb9e937dde8
+                           .group:00000000 wm4.etherc_iodefine.h.29.14602750383a574f1c21f994ad33a366
+                           .group:00000000 wm4.gpio_iodefine.h.29.3d0b021c56839cee4ae5149903684e4b
+                           .group:00000000 wm4.gpt_iodefine.h.29.557ead75d7b0585b898d3898b64c7f87
+                           .group:00000000 wm4.hyper_iodefine.h.29.000caadbb74d881e97db55b39b432154
+                           .group:00000000 wm4.imr_iodefine.h.29.77c022f017e711c4d51cc0145db1dad3
+                           .group:00000000 wm4.intc_iodefine.h.29.b68f5799a35a7495d63b4cd458e1ba57
+                           .group:00000000 wm4.irda_iodefine.h.29.37e67bd2005173d68a74d1cc937d8444
+                           .group:00000000 wm4.jcu_iodefine.h.29.3aca452908962e7a7ccf26164751feda
+                           .group:00000000 wm4.lvds_iodefine.h.29.c11cbe1900e5209c8dcc76c2336c16bc
+                           .group:00000000 wm4.mtu_iodefine.h.29.5498fb974bb53caf05aa143c2deec781
+                           .group:00000000 wm4.nandc_iodefine.h.29.e0b343306750f017ee86e169ad98efe9
+                           .group:00000000 wm4.octa_iodefine.h.29.4cb0d62e4b9633e173858000dc1c626c
+                           .group:00000000 wm4.ostm_iodefine.h.29.6914f7e330a1cf0008b34219adcdfed4
+                           .group:00000000 wm4.pl_iodefine.h.29.abbb6d725aed990aa8343242bfe31416
+                           .group:00000000 wm4.pmg_iodefine.h.29.8bcfbc4771a6f9b7dd4d6f504427219e
+                           .group:00000000 wm4.poeg_iodefine.h.29.0d8e258d10986260cbc70cfb8c0ef273
+                           .group:00000000 wm4.poe_iodefine.h.29.fe74e55e7b6b4afbe3596c74ba035e98
+                           .group:00000000 wm4.prr_iodefine.h.29.c1f15576f7a27b9c83aa3b40f5b2f988
+                           .group:00000000 wm4.ptpedmac_iodefine.h.29.cd24a93374ce35cebc41e26889d619ef
+                           .group:00000000 wm4.rcanfd_iodefine.h.29.532dd48b82fcb61d63538aba4b6f1289
+                           .group:00000000 wm4.rcan_iodefine.h.29.a47a89db1b35c12b54af48fa1956acba
+                           .group:00000000 wm4.riic_iodefine.h.29.f96943d49800d297612c4af3bba5c943
+                           .group:00000000 wm4.rspi_iodefine.h.29.7efa041fe34a7d27db66a7b337879dfe
+                           .group:00000000 wm4.rtc_iodefine.h.29.6dc76be5ca3df69cecb5a81d06cc46b5
+                           .group:00000000 wm4.scifa_iodefine.h.29.b04ccd664d71baaf31c75761c45b9c4d
+                           .group:00000000 wm4.scim_iodefine.h.29.87d0760abf94446b00d826c797bf0ff2
+                           .group:00000000 wm4.sdmmc_iodefine.h.29.e67e9815445e8057a3262d1566bea0db
+                           .group:00000000 wm4.spdif_iodefine.h.29.59f5d70150fa200a4d8ee50be1ee34c8
+                           .group:00000000 wm4.spibsc_iodefine.h.29.f4930f8b8da1140200204513a363c76f
+                           .group:00000000 wm4.sprite_iodefine.h.29.55796d1fa083a2457fea4ece974a192e
+                           .group:00000000 wm4.ssif_iodefine.h.29.054ec6d95f487f631f16aee39c85c47a
+                           .group:00000000 wm4.usb_iodefine.h.29.6dc44ea388ba227e8fdcfb33c315887b
+                           .group:00000000 wm4.vdc_iodefine.h.29.db282ded1f052d8567fbbd3b61ce8f7a
+                           .group:00000000 wm4.vin_iodefine.h.29.9b392e5601347d53e64be3272934e170
+                           .group:00000000 wm4.wdt_iodefine.h.29.ed07bb44b797072f8c28b41c64fdca30
+                           .group:00000000 wm4.r_mipi_user.h.32.80935d64668479eae19d7b52f81717b2
+                           .group:00000000 wm4.camera_imx219_b.h.30.f35101578fa240459661c92c3d9f38be
+                           .group:00000000 wm4.stdio.h.27.3fc80220048df77954e38daec3bb9670
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._endian.h.31.65a10590763c3dde1ac4a7f66d7d4891
+                           .group:00000000 wm4.endian.h.9.49f3a4695c1b61e8a0808de3c4a106cb
+                           .group:00000000 wm4._timeval.h.30.0e8bfd94e85db17dda3286ee81496fe6
+                           .group:00000000 wm4.timespec.h.41.d855182eb0e690443ab8651bcedca6e1
+                           .group:00000000 wm4.select.h.30.bbece7fa40993a78092dcc5805132560
+                           .group:00000000 wm4.types.h.69.ed3eae3cf73030a737515151ebcab7a1
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.8188691c2279eac7a223caa50f6694b9
+                           .group:00000000 wm4.driver.h.34.180df73e0731406f5e50150641059ede
+                           .group:00000000 wm4.r_mmu_lld_rza2m.h.39.be55e997d8665d00d9f529dbd893c422
+                           .group:00000000 wm4.stdlib.h.13.4ed386f5c1a80d71e72172885d946ef2
+                           .group:00000000 wm4.alloca.h.8.dfc0c703c47ec3e69746825b17d9e66d
+                           .group:00000000 wm4.stdlib.h.56.d4493cd3736e51e9d56335045f26df45
+                           .group:00000000 wm4.reent.h.91.b3ea049ebc5486622b61409b78486f84
+                           .group:00000000 wm4._default_fcntl.h.6.b13d56891b95175b639f824a0fd1ed77
+                           .group:00000000 wm4.time.h.8.db4619001f026d0b4874c029fef0e91f
+                           .group:00000000 wm4.time.h.2.4581ce0ffb6627cfc02162c94bf846c9
+                           .group:00000000 wm4.time.h.25.0e6a0fdbc9955f5707ed54246ed2e089
+                           .group:00000000 wm4.time.h.162.d096f2f5887c52e271c4dc33d795dc64
+                           .group:00000000 wm4.stat.h.71.d65ac61ff88c651e198008cfb38bda9c
+                           .group:00000000 wm4.fcntl.h.9.9336f33d7f5028f694c75e6e224e0cf7
+                           .group:00000000 wm4.r_devlink_wrapper.h.72.ad1de4c851513efa3aed0532ebca7ca2
+                           .group:00000000 wm4.r_rza2m_riic_lld_cfg.h.34.420dadece52c9d581310a82d03ef7a9c
+                           .group:00000000 wm4.r_rza2m_riic_lld_api.h.36.fbae5305df069aab4ee8737f6b4cc155
+                           .group:00000000 wm4.r_riic_drv_api.h.81.8cfa166374387345d2e15a569d3903b9
+                           .group:00000000 wm4.r_gpio_lld_rza2m.h.35.fd76d0816769697a06dd6f4a61c03021
+                           .group:00000000 wm4.r_gpio_drv_api.h.82.9514441e942567d0eb0b23efaff62239
+                           .group:00000000 wm4.r_riic_drv_sc_cfg.h.61.5b602d36b67415ece823db1792791a3e
+
+UNDEFINED SYMBOLS
+direct_open
+direct_control
+R_OS_TaskSleep
+direct_close
+control
+open
+g_mipi_reg_init_table
+gain_table

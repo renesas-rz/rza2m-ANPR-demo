@@ -1,0 +1,433 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_ostm_lld_rza2m.c"
+  13              		.global	__aeabi_d2ulz
+  14              		.section	.text.R_OSTM_Init,"ax",%progbits
+  15              		.align	2
+  16              		.global	R_OSTM_Init
+  17              		.syntax unified
+  18              		.arm
+  19              		.fpu neon
+  21              	R_OSTM_Init:
+  22              		@ args = 0, pretend = 0, frame = 16
+  23              		@ frame_needed = 0, uses_anonymous_args = 0
+  24 0000 01C0D1E5 		ldrb	ip, [r1, #1]	@ zero_extendqisi2
+  25 0004 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  26 0008 028B2DED 		vpush.64	{d8}
+  27 000c 10D04DE2 		sub	sp, sp, #16
+  28 0010 01005CE3 		cmp	ip, #1
+  29 0014 0030E083 		mvnhi	r3, #0
+  30 0018 0C00009A 		bls	.L32
+  31              	.L2:
+  32 001c 0020D1E5 		ldrb	r2, [r1]	@ zero_extendqisi2
+  33 0020 0840D1E5 		ldrb	r4, [r1, #8]	@ zero_extendqisi2
+  34 0024 09E0D1E5 		ldrb	lr, [r1, #9]	@ zero_extendqisi2
+  35 0028 020052E3 		cmp	r2, #2
+  36 002c 0030E023 		mvncs	r3, #0
+  37 0030 020054E3 		cmp	r4, #2
+  38 0034 0030E023 		mvncs	r3, #0
+  39 0038 01005EE3 		cmp	lr, #1
+  40 003c 0700009A 		bls	.L33
+  41              	.L11:
+  42 0040 0000E0E3 		mvn	r0, #0
+  43 0044 10D08DE2 		add	sp, sp, #16
+  44              		@ sp needed
+  45 0048 028BBDEC 		vldm	sp!, {d8}
+  46 004c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+  47              	.L32:
+  48 0050 020050E3 		cmp	r0, #2
+  49 0054 0030A093 		movls	r3, #0
+  50 0058 0030E083 		mvnhi	r3, #0
+  51 005c EEFFFFEA 		b	.L2
+  52              	.L33:
+  53 0060 046091E5 		ldr	r6, [r1, #4]
+  54 0064 000056E3 		cmp	r6, #0
+  55 0068 00005203 		cmpeq	r2, #0
+  56 006c F3FFFF0A 		beq	.L11
+  57 0070 000053E3 		cmp	r3, #0
+  58 0074 F1FFFF1A 		bne	.L11
+  59 0078 00005CE3 		cmp	ip, #0
+  60 007c 0050A0E1 		mov	r5, r0
+  61 0080 0140A0E1 		mov	r4, r1
+  62 0084 1C00001A 		bne	.L8
+  63 0088 000000E3 		movw	r0, #:lower16:.LC0
+  64 008c 0210A0E3 		mov	r1, #2
+  65 0090 000040E3 		movt	r0, #:upper16:.LC0
+  66 0094 FEFFFFEB 		bl	open
+  67 0098 007050E2 		subs	r7, r0, #0
+  68 009c E7FFFFBA 		blt	.L11
+  69 00a0 0430A0E3 		mov	r3, #4
+  70 00a4 10208DE2 		add	r2, sp, #16
+  71 00a8 103062E5 		strb	r3, [r2, #-16]!
+  72 00ac 0610A0E3 		mov	r1, #6
+  73 00b0 FEFFFFEB 		bl	control
+  74 00b4 0080A0E1 		mov	r8, r0
+  75 00b8 0700A0E1 		mov	r0, r7
+  76 00bc 028B9DED 		vldr.64	d8, [sp, #8]
+  77 00c0 FEFFFFEB 		bl	direct_close
+  78 00c4 000058E3 		cmp	r8, #0
+  79 00c8 DCFFFF1A 		bne	.L11
+  80 00cc 906A07EE 		vmov	s15, r6	@ int
+  81 00d0 670BF8EE 		vcvt.f64.u32	d16, s15
+  82 00d4 880B60EE 		vmul.f64	d16, d16, d8
+  83 00d8 300B51EC 		vmov	r0, r1, d16
+  84 00dc FEFFFFEB 		bl	__aeabi_d2ulz
+  85 00e0 016050E2 		subs	r6, r0, #1
+  86 00e4 0030A0E3 		mov	r3, #0
+  87 00e8 0070C1E2 		sbc	r7, r1, #0
+  88 00ec 0020E0E3 		mvn	r2, #0
+  89 00f0 030057E1 		cmp	r7, r3
+  90 00f4 02005601 		cmpeq	r6, r2
+  91 00f8 D0FFFF8A 		bhi	.L11
+  92              	.L8:
+  93 00fc 003000E3 		movw	r3, #:lower16:.LANCHOR2
+  94 0100 003040E3 		movt	r3, #:upper16:.LANCHOR2
+  95 0104 0500D3E7 		ldrb	r0, [r3, r5]	@ zero_extendqisi2
+  96 0108 FEFFFFEB 		bl	R_STB_StartModule
+  97 010c 001050E2 		subs	r1, r0, #0
+  98 0110 CAFFFF1A 		bne	.L11
+  99 0114 0020D4E5 		ldrb	r2, [r4]	@ zero_extendqisi2
+ 100 0118 010052E3 		cmp	r2, #1
+ 101 011c 2E00000A 		beq	.L34
+ 102 0120 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 103 0124 0230A0E3 		mov	r3, #2
+ 104 0128 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 105 012c 057192E7 		ldr	r7, [r2, r5, lsl #2]
+ 106 0130 0120A0E3 		mov	r2, #1
+ 107 0134 208087E2 		add	r8, r7, #32
+ 108 0138 0800A0E1 		mov	r0, r8
+ 109 013c FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 110              	.L12:
+ 111 0140 0830D4E5 		ldrb	r3, [r4, #8]	@ zero_extendqisi2
+ 112 0144 010053E3 		cmp	r3, #1
+ 113 0148 0020A013 		movne	r2, #0
+ 114 014c 0310A001 		moveq	r1, r3
+ 115 0150 0210A011 		movne	r1, r2
+ 116 0154 0800A001 		moveq	r0, r8
+ 117 0158 0020A003 		moveq	r2, #0
+ 118 015c 0800A011 		movne	r0, r8
+ 119 0160 0130A013 		movne	r3, #1
+ 120 0164 FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 121 0168 0700A0E1 		mov	r0, r7
+ 122 016c 0030E0E3 		mvn	r3, #0
+ 123 0170 0610A0E1 		mov	r1, r6
+ 124 0174 0020A0E3 		mov	r2, #0
+ 125 0178 FEFFFFEB 		bl	RZA_IO_RegWrite_32
+ 126 017c 0930D4E5 		ldrb	r3, [r4, #9]	@ zero_extendqisi2
+ 127 0180 8500A0E1 		lsl	r0, r5, #1
+ 128 0184 000053E3 		cmp	r3, #0
+ 129 0188 003000E3 		movw	r3, #:lower16:.LANCHOR1
+ 130 018c 003040E3 		movt	r3, #:upper16:.LANCHOR1
+ 131 0190 1A00001A 		bne	.L15
+ 132 0194 B05093E1 		ldrh	r5, [r3, r0]
+ 133 0198 0A10D4E5 		ldrb	r1, [r4, #10]	@ zero_extendqisi2
+ 134 019c 0500A0E1 		mov	r0, r5
+ 135 01a0 FEFFFFEB 		bl	R_INTC_SetPriority
+ 136 01a4 0C1094E5 		ldr	r1, [r4, #12]
+ 137 01a8 100F6FE1 		clz	r0, r0
+ 138 01ac A002A0E1 		lsr	r0, r0, #5
+ 139 01b0 000051E3 		cmp	r1, #0
+ 140 01b4 0000A003 		moveq	r0, #0
+ 141 01b8 000050E3 		cmp	r0, #0
+ 142 01bc 9FFFFF0A 		beq	.L11
+ 143 01c0 0500A0E1 		mov	r0, r5
+ 144 01c4 FEFFFFEB 		bl	R_INTC_RegistIntFunc
+ 145 01c8 000050E3 		cmp	r0, #0
+ 146 01cc 9BFFFF1A 		bne	.L11
+ 147 01d0 0500A0E1 		mov	r0, r5
+ 148 01d4 FEFFFFEB 		bl	R_INTC_Enable
+ 149 01d8 0A0000EA 		b	.L16
+ 150              	.L34:
+ 151 01dc 001000E3 		movw	r1, #:lower16:.LANCHOR0
+ 152 01e0 0230A0E3 		mov	r3, #2
+ 153 01e4 001040E3 		movt	r1, #:upper16:.LANCHOR0
+ 154 01e8 057191E7 		ldr	r7, [r1, r5, lsl #2]
+ 155 01ec 0210A0E1 		mov	r1, r2
+ 156 01f0 208087E2 		add	r8, r7, #32
+ 157 01f4 0800A0E1 		mov	r0, r8
+ 158 01f8 FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 159 01fc CFFFFFEA 		b	.L12
+ 160              	.L15:
+ 161 0200 B00093E1 		ldrh	r0, [r3, r0]
+ 162 0204 FEFFFFEB 		bl	R_INTC_Disable
+ 163              	.L16:
+ 164 0208 000090E2 		adds	r0, r0, #0
+ 165 020c 0100A013 		movne	r0, #1
+ 166 0210 000060E2 		rsb	r0, r0, #0
+ 167 0214 10D08DE2 		add	sp, sp, #16
+ 168              		@ sp needed
+ 169 0218 028BBDEC 		vldm	sp!, {d8}
+ 170 021c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 172              		.section	.text.R_OSTM_Close,"ax",%progbits
+ 173              		.align	2
+ 174              		.global	R_OSTM_Close
+ 175              		.syntax unified
+ 176              		.arm
+ 177              		.fpu neon
+ 179              	R_OSTM_Close:
+ 180              		@ args = 0, pretend = 0, frame = 0
+ 181              		@ frame_needed = 0, uses_anonymous_args = 0
+ 182 0000 020050E3 		cmp	r0, #2
+ 183 0004 0100009A 		bls	.L50
+ 184 0008 0000E0E3 		mvn	r0, #0
+ 185 000c 1EFF2FE1 		bx	lr
+ 186              	.L50:
+ 187 0010 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 188 0014 70402DE9 		push	{r4, r5, r6, lr}
+ 189 0018 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 190 001c 0130A0E3 		mov	r3, #1
+ 191 0020 0310A0E1 		mov	r1, r3
+ 192 0024 0050A0E1 		mov	r5, r0
+ 193 0028 004192E7 		ldr	r4, [r2, r0, lsl #2]
+ 194 002c 0020A0E3 		mov	r2, #0
+ 195 0030 186084E2 		add	r6, r4, #24
+ 196 0034 104084E2 		add	r4, r4, #16
+ 197 0038 0600A0E1 		mov	r0, r6
+ 198 003c FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 199 0040 0600A0E1 		mov	r0, r6
+ 200 0044 0020E0E3 		mvn	r2, #0
+ 201 0048 0010A0E3 		mov	r1, #0
+ 202 004c FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 203              	.L38:
+ 204 0050 0120A0E3 		mov	r2, #1
+ 205 0054 0010A0E3 		mov	r1, #0
+ 206 0058 0400A0E1 		mov	r0, r4
+ 207 005c FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 208 0060 010050E3 		cmp	r0, #1
+ 209 0064 F9FFFF0A 		beq	.L38
+ 210 0068 8530A0E1 		lsl	r3, r5, #1
+ 211 006c 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 212 0070 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 213 0074 B30092E1 		ldrh	r0, [r2, r3]
+ 214 0078 FEFFFFEB 		bl	R_INTC_Disable
+ 215 007c 000050E3 		cmp	r0, #0
+ 216 0080 0100000A 		beq	.L51
+ 217 0084 0000E0E3 		mvn	r0, #0
+ 218 0088 7080BDE8 		pop	{r4, r5, r6, pc}
+ 219              	.L51:
+ 220 008c 003000E3 		movw	r3, #:lower16:.LANCHOR2
+ 221 0090 003040E3 		movt	r3, #:upper16:.LANCHOR2
+ 222 0094 0500D3E7 		ldrb	r0, [r3, r5]	@ zero_extendqisi2
+ 223 0098 FEFFFFEB 		bl	R_STB_StopModule
+ 224 009c 000090E2 		adds	r0, r0, #0
+ 225 00a0 0100A013 		movne	r0, #1
+ 226 00a4 000060E2 		rsb	r0, r0, #0
+ 227 00a8 7080BDE8 		pop	{r4, r5, r6, pc}
+ 229              		.section	.text.R_OSTM_GetVersion,"ax",%progbits
+ 230              		.align	2
+ 231              		.global	R_OSTM_GetVersion
+ 232              		.syntax unified
+ 233              		.arm
+ 234              		.fpu neon
+ 236              	R_OSTM_GetVersion:
+ 237              		@ args = 0, pretend = 0, frame = 0
+ 238              		@ frame_needed = 0, uses_anonymous_args = 0
+ 239 0000 002000E3 		movw	r2, #:lower16:.LC1
+ 240 0004 04E02DE5 		str	lr, [sp, #-4]!
+ 241 0008 0030A0E1 		mov	r3, r0
+ 242 000c 0010A0E3 		mov	r1, #0
+ 243 0010 002040E3 		movt	r2, #:upper16:.LC1
+ 244 0014 01E0A0E3 		mov	lr, #1
+ 245 0018 03C0A0E3 		mov	ip, #3
+ 246 001c 142080E5 		str	r2, [r0, #20]
+ 247 0020 0100A0E1 		mov	r0, r1
+ 248 0024 BEE0C3E1 		strh	lr, [r3, #14]	@ movhi
+ 249 0028 BCC0C3E1 		strh	ip, [r3, #12]	@ movhi
+ 250 002c 101083E5 		str	r1, [r3, #16]
+ 251 0030 04F09DE4 		ldr	pc, [sp], #4
+ 253              		.section	.text.R_OSTM_GetCount,"ax",%progbits
+ 254              		.align	2
+ 255              		.global	R_OSTM_GetCount
+ 256              		.syntax unified
+ 257              		.arm
+ 258              		.fpu neon
+ 260              	R_OSTM_GetCount:
+ 261              		@ args = 0, pretend = 0, frame = 0
+ 262              		@ frame_needed = 0, uses_anonymous_args = 0
+ 263 0000 020050E3 		cmp	r0, #2
+ 264 0004 0C00008A 		bhi	.L56
+ 265 0008 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 266 000c 10402DE9 		push	{r4, lr}
+ 267 0010 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 268 0014 0140A0E1 		mov	r4, r1
+ 269 0018 0020E0E3 		mvn	r2, #0
+ 270 001c 0010A0E3 		mov	r1, #0
+ 271 0020 000193E7 		ldr	r0, [r3, r0, lsl #2]
+ 272 0024 040080E2 		add	r0, r0, #4
+ 273 0028 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 274 002c 0430A0E3 		mov	r3, #4
+ 275 0030 000084E5 		str	r0, [r4]
+ 276 0034 0300A0E1 		mov	r0, r3
+ 277 0038 1080BDE8 		pop	{r4, pc}
+ 278              	.L56:
+ 279 003c 0030E0E3 		mvn	r3, #0
+ 280 0040 0300A0E1 		mov	r0, r3
+ 281 0044 1EFF2FE1 		bx	lr
+ 283              		.section	.text.R_OSTM_Start,"ax",%progbits
+ 284              		.align	2
+ 285              		.global	R_OSTM_Start
+ 286              		.syntax unified
+ 287              		.arm
+ 288              		.fpu neon
+ 290              	R_OSTM_Start:
+ 291              		@ args = 0, pretend = 0, frame = 0
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 294 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 295 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 296 000c 0110A0E3 		mov	r1, #1
+ 297 0010 0220A0E3 		mov	r2, #2
+ 298 0014 004193E7 		ldr	r4, [r3, r0, lsl #2]
+ 299 0018 200084E2 		add	r0, r4, #32
+ 300 001c FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 301 0020 001050E2 		subs	r1, r0, #0
+ 302 0024 0400001A 		bne	.L65
+ 303 0028 0020E0E3 		mvn	r2, #0
+ 304 002c 0400A0E1 		mov	r0, r4
+ 305 0030 FEFFFFEB 		bl	RZA_IO_RegRead_32
+ 306 0034 000050E3 		cmp	r0, #0
+ 307 0038 1200000A 		beq	.L71
+ 308              	.L65:
+ 309 003c 145084E2 		add	r5, r4, #20
+ 310 0040 0130A0E3 		mov	r3, #1
+ 311 0044 0500A0E1 		mov	r0, r5
+ 312 0048 0310A0E1 		mov	r1, r3
+ 313 004c 0020A0E3 		mov	r2, #0
+ 314 0050 104084E2 		add	r4, r4, #16
+ 315 0054 FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 316 0058 0500A0E1 		mov	r0, r5
+ 317 005c 0020E0E3 		mvn	r2, #0
+ 318 0060 0010A0E3 		mov	r1, #0
+ 319 0064 FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 320              	.L63:
+ 321 0068 0120A0E3 		mov	r2, #1
+ 322 006c 0010A0E3 		mov	r1, #0
+ 323 0070 0400A0E1 		mov	r0, r4
+ 324 0074 FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 325 0078 000050E3 		cmp	r0, #0
+ 326 007c F9FFFF0A 		beq	.L63
+ 327 0080 0000A0E3 		mov	r0, #0
+ 328 0084 7080BDE8 		pop	{r4, r5, r6, pc}
+ 329              	.L71:
+ 330 0088 0000E0E3 		mvn	r0, #0
+ 331 008c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 333              		.section	.text.R_OSTM_Stop,"ax",%progbits
+ 334              		.align	2
+ 335              		.global	R_OSTM_Stop
+ 336              		.syntax unified
+ 337              		.arm
+ 338              		.fpu neon
+ 340              	R_OSTM_Stop:
+ 341              		@ args = 0, pretend = 0, frame = 0
+ 342              		@ frame_needed = 0, uses_anonymous_args = 0
+ 343 0000 002000E3 		movw	r2, #:lower16:.LANCHOR0
+ 344 0004 70402DE9 		push	{r4, r5, r6, lr}
+ 345 0008 002040E3 		movt	r2, #:upper16:.LANCHOR0
+ 346 000c 0130A0E3 		mov	r3, #1
+ 347 0010 0310A0E1 		mov	r1, r3
+ 348 0014 004192E7 		ldr	r4, [r2, r0, lsl #2]
+ 349 0018 0020A0E3 		mov	r2, #0
+ 350 001c 185084E2 		add	r5, r4, #24
+ 351 0020 104084E2 		add	r4, r4, #16
+ 352 0024 0500A0E1 		mov	r0, r5
+ 353 0028 FEFFFFEB 		bl	RZA_IO_RegWrite_8
+ 354 002c 0500A0E1 		mov	r0, r5
+ 355 0030 0020E0E3 		mvn	r2, #0
+ 356 0034 0010A0E3 		mov	r1, #0
+ 357 0038 FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 358              	.L73:
+ 359 003c 0120A0E3 		mov	r2, #1
+ 360 0040 0010A0E3 		mov	r1, #0
+ 361 0044 0400A0E1 		mov	r0, r4
+ 362 0048 FEFFFFEB 		bl	RZA_IO_RegRead_8
+ 363 004c 010050E3 		cmp	r0, #1
+ 364 0050 F9FFFF0A 		beq	.L73
+ 365 0054 0000A0E3 		mov	r0, #0
+ 366 0058 7080BDE8 		pop	{r4, r5, r6, pc}
+ 368              		.section	.rodata.R_OSTM_GetVersion.str1.4,"aMS",%progbits,1
+ 369              		.align	2
+ 370              	.LC1:
+ 371 0000 4C4C4420 		.ascii	"LLD EBK_RZA2M OSTM\000"
+ 371      45424B5F 
+ 371      525A4132 
+ 371      4D204F53 
+ 371      544D00
+ 372              		.section	.rodata.R_OSTM_Init.str1.4,"aMS",%progbits,1
+ 373              		.align	2
+ 374              	.LC0:
+ 375 0000 5C5C2E5C 		.ascii	"\\\\.\\cpg\000"
+ 375      63706700 
+ 376              		.section	.rodata.gs_intid,"a",%progbits
+ 377              		.align	3
+ 378              		.set	.LANCHOR1,. + 0
+ 381              	gs_intid:
+ 382 0000 5800     		.short	88
+ 383 0002 5900     		.short	89
+ 384 0004 5A00     		.short	90
+ 385              		.section	.rodata.gs_ostm_module,"a",%progbits
+ 386              		.align	3
+ 387              		.set	.LANCHOR2,. + 0
+ 390              	gs_ostm_module:
+ 391 0000 02       		.byte	2
+ 392 0001 03       		.byte	3
+ 393 0002 04       		.byte	4
+ 394              		.section	.rodata.gsp_ostm_reg,"a",%progbits
+ 395              		.align	3
+ 396              		.set	.LANCHOR0,. + 0
+ 399              	gsp_ostm_reg:
+ 400 0000 00B003E8 		.word	-402411520
+ 401 0004 00C003E8 		.word	-402407424
+ 402 0008 00D003E8 		.word	-402403328
+ 403              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_ostm_lld_rza2m.c
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:15     .text.R_OSTM_Init:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:21     .text.R_OSTM_Init:00000000 R_OSTM_Init
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:374    .rodata.R_OSTM_Init.str1.4:00000000 .LC0
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:387    .rodata.gs_ostm_module:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:396    .rodata.gsp_ostm_reg:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:378    .rodata.gs_intid:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:173    .text.R_OSTM_Close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:179    .text.R_OSTM_Close:00000000 R_OSTM_Close
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:230    .text.R_OSTM_GetVersion:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:236    .text.R_OSTM_GetVersion:00000000 R_OSTM_GetVersion
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:370    .rodata.R_OSTM_GetVersion.str1.4:00000000 .LC1
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:254    .text.R_OSTM_GetCount:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:260    .text.R_OSTM_GetCount:00000000 R_OSTM_GetCount
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:284    .text.R_OSTM_Start:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:290    .text.R_OSTM_Start:00000000 R_OSTM_Start
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:334    .text.R_OSTM_Stop:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:340    .text.R_OSTM_Stop:00000000 R_OSTM_Stop
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:369    .rodata.R_OSTM_GetVersion.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:373    .rodata.R_OSTM_Init.str1.4:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:377    .rodata.gs_intid:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:381    .rodata.gs_intid:00000000 gs_intid
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:386    .rodata.gs_ostm_module:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:390    .rodata.gs_ostm_module:00000000 gs_ostm_module
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:395    .rodata.gsp_ostm_reg:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc9No7JY.s:399    .rodata.gsp_ostm_reg:00000000 gsp_ostm_reg
+
+UNDEFINED SYMBOLS
+__aeabi_d2ulz
+open
+control
+direct_close
+R_STB_StartModule
+RZA_IO_RegWrite_8
+RZA_IO_RegWrite_32
+R_INTC_SetPriority
+R_INTC_RegistIntFunc
+R_INTC_Enable
+R_INTC_Disable
+RZA_IO_RegRead_8
+R_STB_StopModule
+RZA_IO_RegRead_32

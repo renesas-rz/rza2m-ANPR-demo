@@ -1,0 +1,163 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"vdc_userdef.c"
+  13              		.section	.text.R_VDC_CPUVAddrToSysPAddr,"ax",%progbits
+  14              		.align	2
+  15              		.global	R_VDC_CPUVAddrToSysPAddr
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	R_VDC_CPUVAddrToSysPAddr:
+  21              		@ args = 0, pretend = 0, frame = 8
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 10402DE9 		push	{r4, lr}
+  24 0004 08D04DE2 		sub	sp, sp, #8
+  25 0008 0040A0E3 		mov	r4, #0
+  26 000c 08108DE2 		add	r1, sp, #8
+  27 0010 044021E5 		str	r4, [r1, #-4]!
+  28 0014 FEFFFFEB 		bl	R_MMU_VAtoPA
+  29 0018 040050E1 		cmp	r0, r4
+  30 001c 04009D05 		ldreq	r0, [sp, #4]
+  31 0020 0400A011 		movne	r0, r4
+  32 0024 08D08DE2 		add	sp, sp, #8
+  33              		@ sp needed
+  34 0028 1080BDE8 		pop	{r4, pc}
+  36              		.section	.text.R_VDC_OnInitialize,"ax",%progbits
+  37              		.align	2
+  38              		.global	R_VDC_OnInitialize
+  39              		.syntax unified
+  40              		.arm
+  41              		.fpu neon
+  43              	R_VDC_OnInitialize:
+  44              		@ args = 0, pretend = 0, frame = 8
+  45              		@ frame_needed = 0, uses_anonymous_args = 0
+  46 0000 FF0010E3 		tst	r0, #255
+  47 0004 70402DE9 		push	{r4, r5, r6, lr}
+  48 0008 08D04DE2 		sub	sp, sp, #8
+  49 000c 0E00001A 		bne	.L10
+  50 0010 FF30A0E3 		mov	r3, #255
+  51 0014 FE3C4FE3 		movt	r3, 64766
+  52 0018 3513D3E5 		ldrb	r1, [r3, #821]	@ zero_extendqisi2
+  53 001c 0320A0E1 		mov	r2, r3
+  54 0020 FD1001E2 		and	r1, r1, #253
+  55 0024 3513C3E5 		strb	r1, [r3, #821]
+  56 0028 3513D3E5 		ldrb	r1, [r3, #821]	@ zero_extendqisi2
+  57 002c 7110EFE6 		uxtb	r1, r1
+  58 0030 0710CDE5 		strb	r1, [sp, #7]
+  59 0034 CB1053E5 		ldrb	r1, [r3, #-203]	@ zero_extendqisi2
+  60 0038 DF1001E2 		and	r1, r1, #223
+  61 003c CB1043E5 		strb	r1, [r3, #-203]
+  62              	.L9:
+  63 0040 BB3052E5 		ldrb	r3, [r2, #-187]	@ zero_extendqisi2
+  64 0044 200013E3 		tst	r3, #32
+  65 0048 FCFFFF1A 		bne	.L9
+  66              	.L10:
+  67 004c 006000E3 		movw	r6, #:lower16:.LANCHOR0
+  68 0050 0040A0E3 		mov	r4, #0
+  69 0054 006040E3 		movt	r6, #:upper16:.LANCHOR0
+  70 0058 4950A0E3 		mov	r5, #73
+  71 005c 000000EA 		b	.L8
+  72              	.L18:
+  73 0060 B250F6E1 		ldrh	r5, [r6, #2]!
+  74              	.L8:
+  75 0064 7410EFE6 		uxtb	r1, r4
+  76 0068 0000A0E3 		mov	r0, #0
+  77 006c 014084E2 		add	r4, r4, #1
+  78 0070 FEFFFFEB 		bl	R_VDC_GetISR
+  79 0074 0010A0E1 		mov	r1, r0
+  80 0078 0500A0E1 		mov	r0, r5
+  81 007c FEFFFFEB 		bl	R_INTC_RegistIntFunc
+  82 0080 000050E3 		cmp	r0, #0
+  83 0084 0510A0E3 		mov	r1, #5
+  84 0088 0500A0E1 		mov	r0, r5
+  85 008c 0800001A 		bne	.L6
+  86 0090 FEFFFFEB 		bl	R_INTC_SetPriority
+  87 0094 000050E3 		cmp	r0, #0
+  88 0098 0500A0E1 		mov	r0, r5
+  89 009c 0400001A 		bne	.L6
+  90 00a0 FEFFFFEB 		bl	R_INTC_Enable
+  91 00a4 000050E3 		cmp	r0, #0
+  92 00a8 0100001A 		bne	.L6
+  93 00ac 0A0054E3 		cmp	r4, #10
+  94 00b0 EAFFFF1A 		bne	.L18
+  95              	.L6:
+  96 00b4 08D08DE2 		add	sp, sp, #8
+  97              		@ sp needed
+  98 00b8 7080BDE8 		pop	{r4, r5, r6, pc}
+ 100              		.section	.text.R_VDC_OnFinalize,"ax",%progbits
+ 101              		.align	2
+ 102              		.global	R_VDC_OnFinalize
+ 103              		.syntax unified
+ 104              		.arm
+ 105              		.fpu neon
+ 107              	R_VDC_OnFinalize:
+ 108              		@ args = 0, pretend = 0, frame = 8
+ 109              		@ frame_needed = 0, uses_anonymous_args = 0
+ 110              		@ link register save eliminated.
+ 111 0000 FF0010E3 		tst	r0, #255
+ 112 0004 08D04DE2 		sub	sp, sp, #8
+ 113 0008 0B00001A 		bne	.L20
+ 114 000c FF30A0E3 		mov	r3, #255
+ 115 0010 FE3C4FE3 		movt	r3, 64766
+ 116 0014 CB1053E5 		ldrb	r1, [r3, #-203]	@ zero_extendqisi2
+ 117 0018 0320A0E1 		mov	r2, r3
+ 118 001c 201081E3 		orr	r1, r1, #32
+ 119 0020 CB1043E5 		strb	r1, [r3, #-203]
+ 120              	.L21:
+ 121 0024 BB3052E5 		ldrb	r3, [r2, #-187]	@ zero_extendqisi2
+ 122 0028 200013E3 		tst	r3, #32
+ 123 002c FCFFFF0A 		beq	.L21
+ 124 0030 3533D2E5 		ldrb	r3, [r2, #821]	@ zero_extendqisi2
+ 125 0034 023083E3 		orr	r3, r3, #2
+ 126 0038 3533C2E5 		strb	r3, [r2, #821]
+ 127              	.L20:
+ 128 003c FF30A0E3 		mov	r3, #255
+ 129 0040 FE3C4FE3 		movt	r3, 64766
+ 130 0044 3533D3E5 		ldrb	r3, [r3, #821]	@ zero_extendqisi2
+ 131 0048 7330EFE6 		uxtb	r3, r3
+ 132 004c 0730CDE5 		strb	r3, [sp, #7]
+ 133 0050 08D08DE2 		add	sp, sp, #8
+ 134              		@ sp needed
+ 135 0054 1EFF2FE1 		bx	lr
+ 137              		.section	.rodata.interrupt_id_table,"a",%progbits
+ 138              		.align	3
+ 139              		.set	.LANCHOR0,. + 0
+ 142              	interrupt_id_table:
+ 143 0000 4900     		.short	73
+ 144 0002 4A00     		.short	74
+ 145 0004 4B00     		.short	75
+ 146 0006 4C00     		.short	76
+ 147 0008 4D00     		.short	77
+ 148 000a 4E00     		.short	78
+ 149 000c 4F00     		.short	79
+ 150 000e 5000     		.short	80
+ 151 0010 5100     		.short	81
+ 152 0012 5200     		.short	82
+ 153              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 vdc_userdef.c
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:14     .text.R_VDC_CPUVAddrToSysPAddr:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:20     .text.R_VDC_CPUVAddrToSysPAddr:00000000 R_VDC_CPUVAddrToSysPAddr
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:37     .text.R_VDC_OnInitialize:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:43     .text.R_VDC_OnInitialize:00000000 R_VDC_OnInitialize
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:139    .rodata.interrupt_id_table:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:101    .text.R_VDC_OnFinalize:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:107    .text.R_VDC_OnFinalize:00000000 R_VDC_OnFinalize
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:138    .rodata.interrupt_id_table:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc6Gh52V.s:142    .rodata.interrupt_id_table:00000000 interrupt_id_table
+
+UNDEFINED SYMBOLS
+R_MMU_VAtoPA
+R_VDC_GetISR
+R_INTC_RegistIntFunc
+R_INTC_SetPriority
+R_INTC_Enable

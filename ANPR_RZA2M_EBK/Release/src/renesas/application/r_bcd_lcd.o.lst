@@ -1,0 +1,1524 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_bcd_lcd.c"
+  13              		.section	.text.IntCallbackFunc,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	IntCallbackFunc:
+  20              		@ args = 0, pretend = 0, frame = 0
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 030050E3 		cmp	r0, #3
+  23 0004 0900000A 		beq	.L20
+  24 0008 010050E3 		cmp	r0, #1
+  25 000c 1EFF2F11 		bxne	lr
+  26 0010 003000E3 		movw	r3, #:lower16:.LANCHOR6
+  27 0014 003040E3 		movt	r3, #:upper16:.LANCHOR6
+  28 0018 002093E5 		ldr	r2, [r3]
+  29 001c 000052E3 		cmp	r2, #0
+  30 0020 002093C5 		ldrgt	r2, [r3]
+  31 0024 012042C2 		subgt	r2, r2, #1
+  32 0028 002083C5 		strgt	r2, [r3]
+  33 002c 1EFF2FE1 		bx	lr
+  34              	.L20:
+  35 0030 70402DE9 		push	{r4, r5, r6, lr}
+  36 0034 005000E3 		movw	r5, #:lower16:.LANCHOR0
+  37 0038 005040E3 		movt	r5, #:upper16:.LANCHOR0
+  38 003c 003095E5 		ldr	r3, [r5]
+  39 0040 000053E3 		cmp	r3, #0
+  40 0044 0A00000A 		beq	.L3
+  41 0048 004000E3 		movw	r4, #:lower16:.LANCHOR1
+  42 004c 004040E3 		movt	r4, #:upper16:.LANCHOR1
+  43 0050 000094E5 		ldr	r0, [r4]
+  44 0054 000050E3 		cmp	r0, #0
+  45 0058 2200001A 		bne	.L4
+  46 005c 002000E3 		movw	r2, #:lower16:.LANCHOR2
+  47 0060 0110A0E3 		mov	r1, #1
+  48 0064 002040E3 		movt	r2, #:upper16:.LANCHOR2
+  49 0068 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+  50 006c 0130A0E3 		mov	r3, #1
+  51 0070 003084E5 		str	r3, [r4]
+  52              	.L3:
+  53 0074 004000E3 		movw	r4, #:lower16:.LANCHOR3
+  54 0078 004040E3 		movt	r4, #:upper16:.LANCHOR3
+  55 007c 003094E5 		ldr	r3, [r4]
+  56 0080 000053E3 		cmp	r3, #0
+  57 0084 0C00000A 		beq	.L5
+  58 0088 006000E3 		movw	r6, #:lower16:.LANCHOR4
+  59 008c 006040E3 		movt	r6, #:upper16:.LANCHOR4
+  60 0090 000096E5 		ldr	r0, [r6]
+  61 0094 000050E3 		cmp	r0, #0
+  62 0098 0B00000A 		beq	.L21
+  63 009c 60209FE5 		ldr	r2, .L22
+  64 00a0 0210A0E3 		mov	r1, #2
+  65 00a4 0000A0E3 		mov	r0, #0
+  66 00a8 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+  67 00ac 0030A0E3 		mov	r3, #0
+  68 00b0 003086E5 		str	r3, [r6]
+  69              	.L7:
+  70 00b4 0200A0E3 		mov	r0, #2
+  71 00b8 FEFFFFEB 		bl	DrawSwapBuffer
+  72              	.L5:
+  73 00bc 0030A0E3 		mov	r3, #0
+  74 00c0 003085E5 		str	r3, [r5]
+  75 00c4 003084E5 		str	r3, [r4]
+  76 00c8 7080BDE8 		pop	{r4, r5, r6, pc}
+  77              	.L21:
+  78 00cc 002000E3 		movw	r2, #:lower16:.LANCHOR5
+  79 00d0 0210A0E3 		mov	r1, #2
+  80 00d4 002040E3 		movt	r2, #:upper16:.LANCHOR5
+  81 00d8 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+  82 00dc 0130A0E3 		mov	r3, #1
+  83 00e0 003086E5 		str	r3, [r6]
+  84 00e4 F2FFFFEA 		b	.L7
+  85              	.L4:
+  86 00e8 18209FE5 		ldr	r2, .L22+4
+  87 00ec 0110A0E3 		mov	r1, #1
+  88 00f0 0000A0E3 		mov	r0, #0
+  89 00f4 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+  90 00f8 0030A0E3 		mov	r3, #0
+  91 00fc 003084E5 		str	r3, [r4]
+  92 0100 DBFFFFEA 		b	.L3
+  93              	.L23:
+  94              		.align	2
+  95              	.L22:
+  96 0104 000C0300 		.word	.LANCHOR5+199680
+  97 0108 00C01200 		.word	.LANCHOR2+1228800
+  99              		.section	.text.R_BCD_LcdGetVramAddress,"ax",%progbits
+ 100              		.align	2
+ 101              		.global	R_BCD_LcdGetVramAddress
+ 102              		.syntax unified
+ 103              		.arm
+ 104              		.fpu neon
+ 106              	R_BCD_LcdGetVramAddress:
+ 107              		@ args = 0, pretend = 0, frame = 0
+ 108              		@ frame_needed = 0, uses_anonymous_args = 0
+ 109              		@ link register save eliminated.
+ 110 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 111 0004 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 112 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 113 000c 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 114 0010 003093E5 		ldr	r3, [r3]
+ 115 0014 000092E5 		ldr	r0, [r2]
+ 116 0018 4B29A0E3 		mov	r2, #1228800
+ 117 001c 000053E3 		cmp	r3, #0
+ 118 0020 003000E3 		movw	r3, #:lower16:.LANCHOR2
+ 119 0024 003040E3 		movt	r3, #:upper16:.LANCHOR2
+ 120 0028 01006012 		rsbne	r0, r0, #1
+ 121 002c 923020E0 		mla	r0, r2, r0, r3
+ 122 0030 1EFF2FE1 		bx	lr
+ 124              		.section	.text.R_BCD_LcdGetvisableVramAddress,"ax",%progbits
+ 125              		.align	2
+ 126              		.global	R_BCD_LcdGetvisableVramAddress
+ 127              		.syntax unified
+ 128              		.arm
+ 129              		.fpu neon
+ 131              	R_BCD_LcdGetvisableVramAddress:
+ 132              		@ args = 0, pretend = 0, frame = 0
+ 133              		@ frame_needed = 0, uses_anonymous_args = 0
+ 134              		@ link register save eliminated.
+ 135 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 136 0004 002000E3 		movw	r2, #:lower16:.LANCHOR1
+ 137 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 138 000c 002040E3 		movt	r2, #:upper16:.LANCHOR1
+ 139 0010 003093E5 		ldr	r3, [r3]
+ 140 0014 000092E5 		ldr	r0, [r2]
+ 141 0018 4B29A0E3 		mov	r2, #1228800
+ 142 001c 000053E3 		cmp	r3, #0
+ 143 0020 003000E3 		movw	r3, #:lower16:.LANCHOR2
+ 144 0024 003040E3 		movt	r3, #:upper16:.LANCHOR2
+ 145 0028 01006002 		rsbeq	r0, r0, #1
+ 146 002c 923020E0 		mla	r0, r2, r0, r3
+ 147 0030 1EFF2FE1 		bx	lr
+ 149              		.section	.text.R_BCD_LcdGetOLVramAddress,"ax",%progbits
+ 150              		.align	2
+ 151              		.global	R_BCD_LcdGetOLVramAddress
+ 152              		.syntax unified
+ 153              		.arm
+ 154              		.fpu neon
+ 156              	R_BCD_LcdGetOLVramAddress:
+ 157              		@ args = 0, pretend = 0, frame = 0
+ 158              		@ frame_needed = 0, uses_anonymous_args = 0
+ 159              		@ link register save eliminated.
+ 160 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 161 0004 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 162 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 163 000c 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 164 0010 003093E5 		ldr	r3, [r3]
+ 165 0014 000092E5 		ldr	r0, [r2]
+ 166 0018 C32BA0E3 		mov	r2, #199680
+ 167 001c 000053E3 		cmp	r3, #0
+ 168 0020 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 169 0024 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 170 0028 01006012 		rsbne	r0, r0, #1
+ 171 002c 923020E0 		mla	r0, r2, r0, r3
+ 172 0030 1EFF2FE1 		bx	lr
+ 174              		.section	.text.R_BCD_LcdInit,"ax",%progbits
+ 175              		.align	2
+ 176              		.global	R_BCD_LcdInit
+ 177              		.syntax unified
+ 178              		.arm
+ 179              		.fpu neon
+ 181              	R_BCD_LcdInit:
+ 182              		@ args = 0, pretend = 0, frame = 1080
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 185 0004 11DD4DE2 		sub	sp, sp, #1088
+ 186 0008 0CD04DE2 		sub	sp, sp, #12
+ 187 000c 0020A0E3 		mov	r2, #0
+ 188 0010 0230A0E3 		mov	r3, #2
+ 189 0014 48408DE2 		add	r4, sp, #72
+ 190 0018 27E0A0E3 		mov	lr, #39
+ 191 001c 07C0A0E3 		mov	ip, #7
+ 192 0020 0200A0E1 		mov	r0, r2
+ 193 0024 28108DE2 		add	r1, sp, #40
+ 194 0028 0350A0E3 		mov	r5, #3
+ 195 002c 4830CDE5 		strb	r3, [sp, #72]
+ 196 0030 4930CDE5 		strb	r3, [sp, #73]
+ 197 0034 4C30CDE5 		strb	r3, [sp, #76]
+ 198 0038 5230CDE5 		strb	r3, [sp, #82]
+ 199 003c 2920CDE5 		strb	r2, [sp, #41]
+ 200 0040 4D20CDE5 		strb	r2, [sp, #77]
+ 201 0044 2850CDE5 		strb	r5, [sp, #40]
+ 202 0048 2C408DE5 		str	r4, [sp, #44]
+ 203 004c B6E0C4E1 		strh	lr, [r4, #6]	@ movhi
+ 204 0050 B8C0C4E1 		strh	ip, [r4, #8]	@ movhi
+ 205 0054 FEFFFFEB 		bl	R_RVAPI_InitializeVDC
+ 206 0058 003050E2 		subs	r3, r0, #0
+ 207 005c 1900000A 		beq	.L41
+ 208              	.L34:
+ 209 0060 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 210 0064 322EA0E3 		mov	r2, #800
+ 211 0068 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 212 006c 28108DE2 		add	r1, sp, #40
+ 213 0070 C3EB83E2 		add	lr, r3, #199680
+ 214 0074 1ACEA0E3 		mov	ip, #416
+ 215 0078 1E4EA0E3 		mov	r4, #480
+ 216 007c 0200A0E3 		mov	r0, #2
+ 217 0080 28308DE5 		str	r3, [sp, #40]
+ 218 0084 3C208DE5 		str	r2, [sp, #60]
+ 219 0088 2CE08DE5 		str	lr, [sp, #44]
+ 220 008c 34C08DE5 		str	ip, [sp, #52]
+ 221 0090 40408DE5 		str	r4, [sp, #64]
+ 222 0094 FEFFFFEB 		bl	DrawInit
+ 223 0098 0F30A0E3 		mov	r3, #15
+ 224 009c 0020A0E3 		mov	r2, #0
+ 225 00a0 04308DE5 		str	r3, [sp, #4]
+ 226 00a4 0210A0E1 		mov	r1, r2
+ 227 00a8 00408DE5 		str	r4, [sp]
+ 228 00ac 0A3DA0E3 		mov	r3, #640
+ 229 00b0 0200A0E3 		mov	r0, #2
+ 230 00b4 FEFFFFEB 		bl	DrawRectFill
+ 231              	.L38:
+ 232 00b8 0000A0E3 		mov	r0, #0
+ 233 00bc 11DD8DE2 		add	sp, sp, #1088
+ 234 00c0 0CD08DE2 		add	sp, sp, #12
+ 235              		@ sp needed
+ 236 00c4 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 237              	.L41:
+ 238 00c8 1820A0E3 		mov	r2, #24
+ 239 00cc B030C4E1 		strh	r3, [r4]	@ movhi
+ 240 00d0 32CEA0E3 		mov	ip, #800
+ 241 00d4 B830C4E1 		strh	r3, [r4, #8]	@ movhi
+ 242 00d8 5C30CDE5 		strb	r3, [sp, #92]
+ 243 00dc 0160A0E3 		mov	r6, #1
+ 244 00e0 5F30CDE5 		strb	r3, [sp, #95]
+ 245 00e4 0610A0E1 		mov	r1, r6
+ 246 00e8 6130CDE5 		strb	r3, [sp, #97]
+ 247 00ec BC31C4E1 		strh	r3, [r4, #28]	@ movhi
+ 248 00f0 6930CDE5 		strb	r3, [sp, #105]
+ 249 00f4 8830A0E3 		mov	r3, #136
+ 250 00f8 B420C4E1 		strh	r2, [r4, #4]	@ movhi
+ 251 00fc 152EA0E3 		mov	r2, #336
+ 252 0100 B6C0C4E1 		strh	ip, [r4, #6]	@ movhi
+ 253 0104 05CCA0E3 		mov	ip, #1280
+ 254 0108 BA30C4E1 		strh	r3, [r4, #10]	@ movhi
+ 255 010c 3B3300E3 		movw	r3, #827
+ 256 0110 BC20C4E1 		strh	r2, [r4, #12]	@ movhi
+ 257 0114 8F2600E3 		movw	r2, #1679
+ 258 0118 BEC0C4E1 		strh	ip, [r4, #14]	@ movhi
+ 259 011c 04C0A0E3 		mov	ip, #4
+ 260 0120 B031C4E1 		strh	r3, [r4, #16]	@ movhi
+ 261 0124 693EA0E3 		mov	r3, #1680
+ 262 0128 B221C4E1 		strh	r2, [r4, #18]	@ movhi
+ 263 012c 0420A0E1 		mov	r2, r4
+ 264 0130 B250C4E1 		strh	r5, [r4, #2]	@ movhi
+ 265 0134 5D50CDE5 		strb	r5, [sp, #93]
+ 266 0138 6060CDE5 		strb	r6, [sp, #96]
+ 267 013c 6660CDE5 		strb	r6, [sp, #102]
+ 268 0140 5EC0CDE5 		strb	ip, [sp, #94]
+ 269 0144 BA31C4E1 		strh	r3, [r4, #26]	@ movhi
+ 270 0148 FEFFFFEB 		bl	R_RVAPI_DispControlVDC
+ 271 014c 000050E3 		cmp	r0, #0
+ 272 0150 C2FFFF1A 		bne	.L34
+ 273 0154 003000E3 		movw	r3, #:lower16:IntCallbackFunc
+ 274 0158 7E2FA0E3 		mov	r2, #504
+ 275 015c 0510A0E1 		mov	r1, r5
+ 276 0160 003040E3 		movt	r3, #:upper16:IntCallbackFunc
+ 277 0164 FEFFFFEB 		bl	R_RVAPI_InterruptEnableVDC
+ 278 0168 002050E2 		subs	r2, r0, #0
+ 279 016c BBFFFF1A 		bne	.L34
+ 280 0170 003000E3 		movw	r3, #:lower16:IntCallbackFunc
+ 281 0174 0610A0E1 		mov	r1, r6
+ 282 0178 003040E3 		movt	r3, #:upper16:IntCallbackFunc
+ 283 017c FEFFFFEB 		bl	R_RVAPI_InterruptEnableVDC
+ 284 0180 000050E3 		cmp	r0, #0
+ 285 0184 B5FFFF1A 		bne	.L34
+ 286 0188 5480C0F2 		vmov.i32	q12, #4  @ v4si
+ 287 018c 0430A0E1 		mov	r3, r4
+ 288 0190 9C2BDFED 		vldr	d18, .L44
+ 289 0194 9D3BDFED 		vldr	d19, .L44+8
+ 290              	.L35:
+ 291 0198 F20162F2 		vmov	q8, q9  @ v4si
+ 292 019c 112D8DE2 		add	r2, sp, #1088
+ 293 01a0 7265F0F2 		vshl.i32	q11, q9, #16
+ 294 01a4 103083E2 		add	r3, r3, #16
+ 295 01a8 5F07C7F3 		vorr.i32	q8, #4278190080
+ 296 01ac 082082E2 		add	r2, r2, #8
+ 297 01b0 7245E8F2 		vshl.i32	q10, q9, #8
+ 298 01b4 F60160F2 		vorr	q8, q8, q11
+ 299 01b8 E82862F2 		vadd.i32	q9, q9, q12
+ 300 01bc F40160F2 		vorr	q8, q8, q10
+ 301 01c0 040B43ED 		vstr	d16, [r3, #-16]
+ 302 01c4 021B43ED 		vstr	d17, [r3, #-8]
+ 303 01c8 020053E1 		cmp	r3, r2
+ 304 01cc F1FFFF1A 		bne	.L35
+ 305 01d0 0010A0E3 		mov	r1, #0
+ 306 01d4 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 307 01d8 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 308 01dc F030A0E3 		mov	r3, #240
+ 309 01e0 0100A0E1 		mov	r0, r1
+ 310 01e4 0160A0E3 		mov	r6, #1
+ 311 01e8 0ACCA0E3 		mov	ip, #2560
+ 312 01ec 4410CDE5 		strb	r1, [sp, #68]
+ 313 01f0 0A9DA0E3 		mov	r9, #640
+ 314 01f4 A0B0A0E3 		mov	fp, #160
+ 315 01f8 1E7EA0E3 		mov	r7, #480
+ 316 01fc 07A0A0E3 		mov	r10, #7
+ 317 0200 0250A0E3 		mov	r5, #2
+ 318 0204 28108DE2 		add	r1, sp, #40
+ 319 0208 34208DE5 		str	r2, [sp, #52]
+ 320 020c 40408DE5 		str	r4, [sp, #64]
+ 321 0210 2860CDE5 		strb	r6, [sp, #40]
+ 322 0214 3C60CDE5 		strb	r6, [sp, #60]
+ 323 0218 38C08DE5 		str	ip, [sp, #56]
+ 324 021c BE32CDE1 		strh	r3, [sp, #46]	@ movhi
+ 325 0220 10308DE5 		str	r3, [sp, #16]
+ 326 0224 B093CDE1 		strh	r9, [sp, #48]	@ movhi
+ 327 0228 BAB2CDE1 		strh	fp, [sp, #42]	@ movhi
+ 328 022c BC72CDE1 		strh	r7, [sp, #44]	@ movhi
+ 329 0230 45A0CDE5 		strb	r10, [sp, #69]
+ 330 0234 4650CDE5 		strb	r5, [sp, #70]
+ 331 0238 FEFFFFEB 		bl	R_RVAPI_GraphCreateSurfaceVDC
+ 332 023c 002050E2 		subs	r2, r0, #0
+ 333 0240 86FFFF1A 		bne	.L34
+ 334 0244 10309DE5 		ldr	r3, [sp, #16]
+ 335 0248 008000E3 		movw	r8, #:lower16:.LANCHOR5
+ 336 024c 716BDFED 		vldr	d22, .L44+16
+ 337 0250 727BDFED 		vldr	d23, .L44+24
+ 338 0254 008040E3 		movt	r8, #:upper16:.LANCHOR5
+ 339 0258 06C0A0E3 		mov	ip, #6
+ 340 025c BAB2CDE1 		strh	fp, [sp, #42]	@ movhi
+ 341 0260 704BDFED 		vldr	d20, .L44+32
+ 342 0264 715BDFED 		vldr	d21, .L44+40
+ 343 0268 28108DE2 		add	r1, sp, #40
+ 344 026c BE32CDE1 		strh	r3, [sp, #46]	@ movhi
+ 345 0270 03B0A0E3 		mov	fp, #3
+ 346 0274 6F2BDFED 		vldr	d18, .L44+48
+ 347 0278 703BDFED 		vldr	d19, .L44+56
+ 348 027c 323EA0E3 		mov	r3, #800
+ 349 0280 4420CDE5 		strb	r2, [sp, #68]
+ 350 0284 6F0BDFED 		vldr	d16, .L44+64
+ 351 0288 701BDFED 		vldr	d17, .L44+72
+ 352 028c 14208DE5 		str	r2, [sp, #20]
+ 353 0290 1A2EA0E3 		mov	r2, #416
+ 354 0294 DF6A44F4 		vst1.64	{d22-d23}, [r4:64]
+ 355 0298 38208DE5 		str	r2, [sp, #56]
+ 356 029c 044BC4ED 		vstr	d20, [r4, #16]
+ 357 02a0 065BC4ED 		vstr	d21, [r4, #24]
+ 358 02a4 40408DE5 		str	r4, [sp, #64]
+ 359 02a8 082BC4ED 		vstr	d18, [r4, #32]
+ 360 02ac 0A3BC4ED 		vstr	d19, [r4, #40]
+ 361 02b0 B033CDE1 		strh	r3, [sp, #48]	@ movhi
+ 362 02b4 0C0BC4ED 		vstr	d16, [r4, #48]
+ 363 02b8 0E1BC4ED 		vstr	d17, [r4, #56]
+ 364 02bc 10308DE5 		str	r3, [sp, #16]
+ 365 02c0 3CC0CDE5 		strb	ip, [sp, #60]
+ 366 02c4 2850CDE5 		strb	r5, [sp, #40]
+ 367 02c8 BC72CDE1 		strh	r7, [sp, #44]	@ movhi
+ 368 02cc 45A0CDE5 		strb	r10, [sp, #69]
+ 369 02d0 34808DE5 		str	r8, [sp, #52]
+ 370 02d4 46B0CDE5 		strb	fp, [sp, #70]
+ 371 02d8 FEFFFFEB 		bl	R_RVAPI_GraphCreateSurfaceVDC
+ 372 02dc 1A3EA0E3 		mov	r3, #416
+ 373 02e0 C3CB88E2 		add	ip, r8, #199680
+ 374 02e4 34308DE5 		str	r3, [sp, #52]
+ 375 02e8 0040A0E1 		mov	r4, r0
+ 376 02ec 10309DE5 		ldr	r3, [sp, #16]
+ 377 02f0 0500A0E1 		mov	r0, r5
+ 378 02f4 28108DE2 		add	r1, sp, #40
+ 379 02f8 2CC08DE5 		str	ip, [sp, #44]
+ 380 02fc 28808DE5 		str	r8, [sp, #40]
+ 381 0300 3C308DE5 		str	r3, [sp, #60]
+ 382 0304 40708DE5 		str	r7, [sp, #64]
+ 383 0308 FEFFFFEB 		bl	DrawInit
+ 384 030c 14209DE5 		ldr	r2, [sp, #20]
+ 385 0310 0F10A0E3 		mov	r1, #15
+ 386 0314 04108DE5 		str	r1, [sp, #4]
+ 387 0318 0930A0E1 		mov	r3, r9
+ 388 031c 00708DE5 		str	r7, [sp]
+ 389 0320 0500A0E1 		mov	r0, r5
+ 390 0324 0210A0E1 		mov	r1, r2
+ 391 0328 FEFFFFEB 		bl	DrawRectFill
+ 392 032c 000054E3 		cmp	r4, #0
+ 393 0330 60FFFF1A 		bne	.L38
+ 394 0334 20308DE2 		add	r3, sp, #32
+ 395 0338 02ECA0E3 		mov	lr, #512
+ 396 033c 7FC0E0E3 		mvn	ip, #127
+ 397 0340 00308DE5 		str	r3, [sp]
+ 398 0344 28208DE2 		add	r2, sp, #40
+ 399 0348 1C308DE2 		add	r3, sp, #28
+ 400 034c 0410A0E1 		mov	r1, r4
+ 401 0350 0400A0E1 		mov	r0, r4
+ 402 0354 2040CDE5 		strb	r4, [sp, #32]
+ 403 0358 21B0CDE5 		strb	fp, [sp, #33]
+ 404 035c 2240CDE5 		strb	r4, [sp, #34]
+ 405 0360 2350CDE5 		strb	r5, [sp, #35]
+ 406 0364 2460CDE5 		strb	r6, [sp, #36]
+ 407 0368 B8E2CDE1 		strh	lr, [sp, #40]	@ movhi
+ 408 036c BAE2CDE1 		strh	lr, [sp, #42]	@ movhi
+ 409 0370 BCE2CDE1 		strh	lr, [sp, #44]	@ movhi
+ 410 0374 1CC0CDE5 		strb	ip, [sp, #28]
+ 411 0378 1DC0CDE5 		strb	ip, [sp, #29]
+ 412 037c 1EC0CDE5 		strb	ip, [sp, #30]
+ 413 0380 FEFFFFEB 		bl	R_RVAPI_DispCalibrationVDC
+ 414 0384 000050E3 		cmp	r0, #0
+ 415 0388 0700000A 		beq	.L42
+ 416 038c 001000E3 		movw	r1, #:lower16:VDC_LcdPortSetting
+ 417 0390 0000A0E3 		mov	r0, #0
+ 418 0394 001040E3 		movt	r1, #:upper16:VDC_LcdPortSetting
+ 419 0398 FEFFFFEB 		bl	R_RVAPI_DispPortSettingVDC
+ 420              	.L43:
+ 421 039c 0000A0E3 		mov	r0, #0
+ 422 03a0 11DD8DE2 		add	sp, sp, #1088
+ 423 03a4 0CD08DE2 		add	sp, sp, #12
+ 424              		@ sp needed
+ 425 03a8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 426              	.L42:
+ 427 03ac 005000E3 		movw	r5, #:lower16:.LANCHOR9
+ 428 03b0 004000E3 		movw	r4, #:lower16:.LANCHOR10
+ 429 03b4 00E000E3 		movw	lr, #:lower16:.LANCHOR11
+ 430 03b8 00C000E3 		movw	ip, #:lower16:.LANCHOR12
+ 431 03bc 00E040E3 		movt	lr, #:upper16:.LANCHOR11
+ 432 03c0 00C040E3 		movt	ip, #:upper16:.LANCHOR12
+ 433 03c4 005040E3 		movt	r5, #:upper16:.LANCHOR9
+ 434 03c8 004040E3 		movt	r4, #:upper16:.LANCHOR10
+ 435 03cc 003000E3 		movw	r3, #:lower16:.LANCHOR7
+ 436 03d0 002000E3 		movw	r2, #:lower16:.LANCHOR8
+ 437 03d4 0610A0E1 		mov	r1, r6
+ 438 03d8 0C508DE5 		str	r5, [sp, #12]
+ 439 03dc 08408DE5 		str	r4, [sp, #8]
+ 440 03e0 003040E3 		movt	r3, #:upper16:.LANCHOR7
+ 441 03e4 04E08DE5 		str	lr, [sp, #4]
+ 442 03e8 002040E3 		movt	r2, #:upper16:.LANCHOR8
+ 443 03ec 00C08DE5 		str	ip, [sp]
+ 444 03f0 FEFFFFEB 		bl	R_RVAPI_DispGammaVDC
+ 445 03f4 001000E3 		movw	r1, #:lower16:VDC_LcdPortSetting
+ 446 03f8 0000A0E3 		mov	r0, #0
+ 447 03fc 001040E3 		movt	r1, #:upper16:VDC_LcdPortSetting
+ 448 0400 FEFFFFEB 		bl	R_RVAPI_DispPortSettingVDC
+ 449 0404 E4FFFFEA 		b	.L43
+ 450              	.L45:
+ 451              		.align	3
+ 452              	.L44:
+ 453 0408 00000000 		.word	0
+ 454 040c 01000000 		.word	1
+ 455 0410 02000000 		.word	2
+ 456 0414 03000000 		.word	3
+ 457 0418 000000FF 		.word	-16777216
+ 458 041c FF0000FF 		.word	-16776961
+ 459 0420 00FF00FF 		.word	-16711936
+ 460 0424 0000FFFF 		.word	-65536
+ 461 0428 FFFFFFFF 		.word	-1
+ 462 042c FFFF00FF 		.word	-16711681
+ 463 0430 00FFFFFF 		.word	-256
+ 464 0434 FF00FFFF 		.word	-65281
+ 465 0438 800000FF 		.word	-16777088
+ 466 043c 006400FF 		.word	-16751616
+ 467 0440 FFBF00FF 		.word	-16728065
+ 468 0444 800080FF 		.word	-8388480
+ 469 0448 808080FF 		.word	-8355712
+ 470 044c 2A2AA5FF 		.word	-5952982
+ 471 0450 80D7FFFF 		.word	-10368
+ 472 0454 FFFFFF00 		.word	16777215
+ 474              		.section	.text.r_display_init,"ax",%progbits
+ 475              		.align	2
+ 476              		.global	r_display_init
+ 477              		.syntax unified
+ 478              		.arm
+ 479              		.fpu neon
+ 481              	r_display_init:
+ 482              		@ args = 0, pretend = 0, frame = 48
+ 483              		@ frame_needed = 0, uses_anonymous_args = 0
+ 484 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 485 0004 30D04DE2 		sub	sp, sp, #48
+ 486 0008 0230A0E3 		mov	r3, #2
+ 487 000c 00E0A0E3 		mov	lr, #0
+ 488 0010 27C0A0E3 		mov	ip, #39
+ 489 0014 0720A0E3 		mov	r2, #7
+ 490 0018 0340A0E3 		mov	r4, #3
+ 491 001c 0C608DE2 		add	r6, sp, #12
+ 492 0020 04108DE2 		add	r1, sp, #4
+ 493 0024 0C30CDE5 		strb	r3, [sp, #12]
+ 494 0028 0D30CDE5 		strb	r3, [sp, #13]
+ 495 002c 0050A0E1 		mov	r5, r0
+ 496 0030 1030CDE5 		strb	r3, [sp, #16]
+ 497 0034 1630CDE5 		strb	r3, [sp, #22]
+ 498 0038 1100CDE5 		strb	r0, [sp, #17]
+ 499 003c 0440CDE5 		strb	r4, [sp, #4]
+ 500 0040 05E0CDE5 		strb	lr, [sp, #5]
+ 501 0044 B2C1CDE1 		strh	ip, [sp, #18]	@ movhi
+ 502 0048 B421CDE1 		strh	r2, [sp, #20]	@ movhi
+ 503 004c 08608DE5 		str	r6, [sp, #8]
+ 504 0050 FEFFFFEB 		bl	R_RVAPI_InitializeVDC
+ 505 0054 003050E2 		subs	r3, r0, #0
+ 506 0058 2200001A 		bne	.L47
+ 507 005c 01C0A0E3 		mov	ip, #1
+ 508 0060 18E0A0E3 		mov	lr, #24
+ 509 0064 0620A0E1 		mov	r2, r6
+ 510 0068 0500A0E1 		mov	r0, r5
+ 511 006c 0C10A0E1 		mov	r1, ip
+ 512 0070 BC30CDE1 		strh	r3, [sp, #12]	@ movhi
+ 513 0074 BE40CDE1 		strh	r4, [sp, #14]	@ movhi
+ 514 0078 328EA0E3 		mov	r8, #800
+ 515 007c B431CDE1 		strh	r3, [sp, #20]	@ movhi
+ 516 0080 8870A0E3 		mov	r7, #136
+ 517 0084 2030CDE5 		strb	r3, [sp, #32]
+ 518 0088 156EA0E3 		mov	r6, #336
+ 519 008c 2140CDE5 		strb	r4, [sp, #33]
+ 520 0090 055CA0E3 		mov	r5, #1280
+ 521 0094 2330CDE5 		strb	r3, [sp, #35]
+ 522 0098 3B4300E3 		movw	r4, #827
+ 523 009c 2530CDE5 		strb	r3, [sp, #37]
+ 524 00a0 B832CDE1 		strh	r3, [sp, #40]	@ movhi
+ 525 00a4 2D30CDE5 		strb	r3, [sp, #45]
+ 526 00a8 693EA0E3 		mov	r3, #1680
+ 527 00ac 24C0CDE5 		strb	ip, [sp, #36]
+ 528 00b0 2AC0CDE5 		strb	ip, [sp, #42]
+ 529 00b4 04C0A0E3 		mov	ip, #4
+ 530 00b8 B0E1CDE1 		strh	lr, [sp, #16]	@ movhi
+ 531 00bc 8FE600E3 		movw	lr, #1679
+ 532 00c0 B632CDE1 		strh	r3, [sp, #38]	@ movhi
+ 533 00c4 B281CDE1 		strh	r8, [sp, #18]	@ movhi
+ 534 00c8 B671CDE1 		strh	r7, [sp, #22]	@ movhi
+ 535 00cc B861CDE1 		strh	r6, [sp, #24]	@ movhi
+ 536 00d0 BA51CDE1 		strh	r5, [sp, #26]	@ movhi
+ 537 00d4 BC41CDE1 		strh	r4, [sp, #28]	@ movhi
+ 538 00d8 BEE1CDE1 		strh	lr, [sp, #30]	@ movhi
+ 539 00dc 22C0CDE5 		strb	ip, [sp, #34]
+ 540 00e0 FEFFFFEB 		bl	R_RVAPI_DispControlVDC
+ 541 00e4 0030A0E1 		mov	r3, r0
+ 542              	.L47:
+ 543 00e8 0300A0E1 		mov	r0, r3
+ 544 00ec 30D08DE2 		add	sp, sp, #48
+ 545              		@ sp needed
+ 546 00f0 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 548              		.section	.text.r_image_quality_adjustment,"ax",%progbits
+ 549              		.align	2
+ 550              		.global	r_image_quality_adjustment
+ 551              		.syntax unified
+ 552              		.arm
+ 553              		.fpu neon
+ 555              	r_image_quality_adjustment:
+ 556              		@ args = 0, pretend = 0, frame = 24
+ 557              		@ frame_needed = 0, uses_anonymous_args = 0
+ 558 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+ 559 0004 2CD04DE2 		sub	sp, sp, #44
+ 560 0008 0030A0E3 		mov	r3, #0
+ 561 000c 18208DE2 		add	r2, sp, #24
+ 562 0010 02ECA0E3 		mov	lr, #512
+ 563 0014 7FC0E0E3 		mvn	ip, #127
+ 564 0018 0310A0E1 		mov	r1, r3
+ 565 001c 00208DE5 		str	r2, [sp]
+ 566 0020 1830CDE5 		strb	r3, [sp, #24]
+ 567 0024 0360A0E3 		mov	r6, #3
+ 568 0028 1A30CDE5 		strb	r3, [sp, #26]
+ 569 002c 0250A0E3 		mov	r5, #2
+ 570 0030 0140A0E3 		mov	r4, #1
+ 571 0034 14308DE2 		add	r3, sp, #20
+ 572 0038 20208DE2 		add	r2, sp, #32
+ 573 003c B0E2CDE1 		strh	lr, [sp, #32]	@ movhi
+ 574 0040 B2E2CDE1 		strh	lr, [sp, #34]	@ movhi
+ 575 0044 0070A0E1 		mov	r7, r0
+ 576 0048 B4E2CDE1 		strh	lr, [sp, #36]	@ movhi
+ 577 004c 14C0CDE5 		strb	ip, [sp, #20]
+ 578 0050 15C0CDE5 		strb	ip, [sp, #21]
+ 579 0054 16C0CDE5 		strb	ip, [sp, #22]
+ 580 0058 1960CDE5 		strb	r6, [sp, #25]
+ 581 005c 1B50CDE5 		strb	r5, [sp, #27]
+ 582 0060 1C40CDE5 		strb	r4, [sp, #28]
+ 583 0064 FEFFFFEB 		bl	R_RVAPI_DispCalibrationVDC
+ 584 0068 000050E3 		cmp	r0, #0
+ 585 006c 1100001A 		bne	.L50
+ 586 0070 006000E3 		movw	r6, #:lower16:.LANCHOR9
+ 587 0074 005000E3 		movw	r5, #:lower16:.LANCHOR10
+ 588 0078 00E000E3 		movw	lr, #:lower16:.LANCHOR11
+ 589 007c 00C000E3 		movw	ip, #:lower16:.LANCHOR12
+ 590 0080 006040E3 		movt	r6, #:upper16:.LANCHOR9
+ 591 0084 005040E3 		movt	r5, #:upper16:.LANCHOR10
+ 592 0088 00E040E3 		movt	lr, #:upper16:.LANCHOR11
+ 593 008c 00C040E3 		movt	ip, #:upper16:.LANCHOR12
+ 594 0090 003000E3 		movw	r3, #:lower16:.LANCHOR7
+ 595 0094 002000E3 		movw	r2, #:lower16:.LANCHOR8
+ 596 0098 0410A0E1 		mov	r1, r4
+ 597 009c 0700A0E1 		mov	r0, r7
+ 598 00a0 0C608DE5 		str	r6, [sp, #12]
+ 599 00a4 003040E3 		movt	r3, #:upper16:.LANCHOR7
+ 600 00a8 08508DE5 		str	r5, [sp, #8]
+ 601 00ac 002040E3 		movt	r2, #:upper16:.LANCHOR8
+ 602 00b0 00508DE8 		stm	sp, {ip, lr}
+ 603 00b4 FEFFFFEB 		bl	R_RVAPI_DispGammaVDC
+ 604              	.L50:
+ 605 00b8 2CD08DE2 		add	sp, sp, #44
+ 606              		@ sp needed
+ 607 00bc F080BDE8 		pop	{r4, r5, r6, r7, pc}
+ 609              		.section	.text.r_video_quality_adjustment,"ax",%progbits
+ 610              		.align	2
+ 611              		.global	r_video_quality_adjustment
+ 612              		.syntax unified
+ 613              		.arm
+ 614              		.fpu neon
+ 616              	r_video_quality_adjustment:
+ 617              		@ args = 0, pretend = 0, frame = 48
+ 618              		@ frame_needed = 0, uses_anonymous_args = 0
+ 619 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 620 0004 40D04DE2 		sub	sp, sp, #64
+ 621 0008 0030A0E3 		mov	r3, #0
+ 622 000c 012CA0E3 		mov	r2, #256
+ 623 0010 80C0A0E3 		mov	ip, #128
+ 624 0014 03E0A0E3 		mov	lr, #3
+ 625 0018 20108DE2 		add	r1, sp, #32
+ 626 001c B822CDE1 		strh	r2, [sp, #40]	@ movhi
+ 627 0020 B023CDE1 		strh	r2, [sp, #48]	@ movhi
+ 628 0024 0040A0E1 		mov	r4, r0
+ 629 0028 B823CDE1 		strh	r2, [sp, #56]	@ movhi
+ 630 002c 2030CDE5 		strb	r3, [sp, #32]
+ 631 0030 BA32CDE1 		strh	r3, [sp, #42]	@ movhi
+ 632 0034 BC32CDE1 		strh	r3, [sp, #44]	@ movhi
+ 633 0038 BE32CDE1 		strh	r3, [sp, #46]	@ movhi
+ 634 003c B233CDE1 		strh	r3, [sp, #50]	@ movhi
+ 635 0040 B433CDE1 		strh	r3, [sp, #52]	@ movhi
+ 636 0044 B633CDE1 		strh	r3, [sp, #54]	@ movhi
+ 637 0048 21E0CDE5 		strb	lr, [sp, #33]
+ 638 004c B2C2CDE1 		strh	ip, [sp, #34]	@ movhi
+ 639 0050 B4C2CDE1 		strh	ip, [sp, #36]	@ movhi
+ 640 0054 B6C2CDE1 		strh	ip, [sp, #38]	@ movhi
+ 641 0058 FEFFFFEB 		bl	R_RVAPI_VideoCalibrationVDC
+ 642 005c 002050E2 		subs	r2, r0, #0
+ 643 0060 1D00001A 		bne	.L53
+ 644 0064 5000C0F2 		vmov.i32	q8, #0  @ v16qi
+ 645 0068 18C08DE2 		add	ip, sp, #24
+ 646 006c 10108DE2 		add	r1, sp, #16
+ 647 0070 00208DE5 		str	r2, [sp]
+ 648 0074 0400A0E1 		mov	r0, r4
+ 649 0078 08C08DE5 		str	ip, [sp, #8]
+ 650 007c 04108DE5 		str	r1, [sp, #4]
+ 651 0080 0AC0A0E3 		mov	ip, #10
+ 652 0084 32EEA0E3 		mov	lr, #800
+ 653 0088 0210A0E1 		mov	r1, r2
+ 654 008c 20308DE2 		add	r3, sp, #32
+ 655 0090 156EA0E3 		mov	r6, #336
+ 656 0094 055CA0E3 		mov	r5, #1280
+ 657 0098 1840A0E3 		mov	r4, #24
+ 658 009c 1020CDE5 		strb	r2, [sp, #16]
+ 659 00a0 1320CDE5 		strb	r2, [sp, #19]
+ 660 00a4 1420CDE5 		strb	r2, [sp, #20]
+ 661 00a8 1120CDE5 		strb	r2, [sp, #17]
+ 662 00ac 1620CDE5 		strb	r2, [sp, #22]
+ 663 00b0 1720CDE5 		strb	r2, [sp, #23]
+ 664 00b4 080BCDED 		vstr	d16, [sp, #32]
+ 665 00b8 0A1BCDED 		vstr	d17, [sp, #40]
+ 666 00bc 12C0CDE5 		strb	ip, [sp, #18]
+ 667 00c0 15C0CDE5 		strb	ip, [sp, #21]
+ 668 00c4 BC61CDE1 		strh	r6, [sp, #28]	@ movhi
+ 669 00c8 BE51CDE1 		strh	r5, [sp, #30]	@ movhi
+ 670 00cc B841CDE1 		strh	r4, [sp, #24]	@ movhi
+ 671 00d0 BAE1CDE1 		strh	lr, [sp, #26]	@ movhi
+ 672 00d4 FEFFFFEB 		bl	R_RVAPI_VideoSharpnessLtiVDC
+ 673 00d8 0020A0E1 		mov	r2, r0
+ 674              	.L53:
+ 675 00dc 0200A0E1 		mov	r0, r2
+ 676 00e0 40D08DE2 		add	sp, sp, #64
+ 677              		@ sp needed
+ 678 00e4 7080BDE8 		pop	{r4, r5, r6, pc}
+ 680              		.section	.text.R_BCD_LcdSwapVideoBuffer,"ax",%progbits
+ 681              		.align	2
+ 682              		.global	R_BCD_LcdSwapVideoBuffer
+ 683              		.syntax unified
+ 684              		.arm
+ 685              		.fpu neon
+ 687              	R_BCD_LcdSwapVideoBuffer:
+ 688              		@ args = 0, pretend = 0, frame = 0
+ 689              		@ frame_needed = 0, uses_anonymous_args = 0
+ 690              		@ link register save eliminated.
+ 691 0000 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 692 0004 0120A0E3 		mov	r2, #1
+ 693 0008 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 694 000c 002083E5 		str	r2, [r3]
+ 695 0010 1EFF2FE1 		bx	lr
+ 697              		.section	.text.R_BCD_LcdSwapGraphicsBuffer,"ax",%progbits
+ 698              		.align	2
+ 699              		.global	R_BCD_LcdSwapGraphicsBuffer
+ 700              		.syntax unified
+ 701              		.arm
+ 702              		.fpu neon
+ 704              	R_BCD_LcdSwapGraphicsBuffer:
+ 705              		@ args = 0, pretend = 0, frame = 0
+ 706              		@ frame_needed = 0, uses_anonymous_args = 0
+ 707              		@ link register save eliminated.
+ 708 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 709 0004 0120A0E3 		mov	r2, #1
+ 710 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 711 000c 002083E5 		str	r2, [r3]
+ 712 0010 1EFF2FE1 		bx	lr
+ 714              		.section	.text.R_BCD_LcdVSync,"ax",%progbits
+ 715              		.align	2
+ 716              		.global	R_BCD_LcdVSync
+ 717              		.syntax unified
+ 718              		.arm
+ 719              		.fpu neon
+ 721              	R_BCD_LcdVSync:
+ 722              		@ args = 0, pretend = 0, frame = 0
+ 723              		@ frame_needed = 0, uses_anonymous_args = 0
+ 724 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 725 0004 005000E3 		movw	r5, #:lower16:.LANCHOR0
+ 726 0008 005040E3 		movt	r5, #:upper16:.LANCHOR0
+ 727 000c 003095E5 		ldr	r3, [r5]
+ 728 0010 000053E3 		cmp	r3, #0
+ 729 0014 0A00000A 		beq	.L58
+ 730 0018 004000E3 		movw	r4, #:lower16:.LANCHOR1
+ 731 001c 004040E3 		movt	r4, #:upper16:.LANCHOR1
+ 732 0020 000094E5 		ldr	r0, [r4]
+ 733 0024 000050E3 		cmp	r0, #0
+ 734 0028 2200001A 		bne	.L59
+ 735 002c 002000E3 		movw	r2, #:lower16:.LANCHOR2
+ 736 0030 0110A0E3 		mov	r1, #1
+ 737 0034 002040E3 		movt	r2, #:upper16:.LANCHOR2
+ 738 0038 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+ 739 003c 0130A0E3 		mov	r3, #1
+ 740 0040 003084E5 		str	r3, [r4]
+ 741              	.L58:
+ 742 0044 004000E3 		movw	r4, #:lower16:.LANCHOR3
+ 743 0048 004040E3 		movt	r4, #:upper16:.LANCHOR3
+ 744 004c 003094E5 		ldr	r3, [r4]
+ 745 0050 000053E3 		cmp	r3, #0
+ 746 0054 0C00000A 		beq	.L60
+ 747 0058 006000E3 		movw	r6, #:lower16:.LANCHOR4
+ 748 005c 006040E3 		movt	r6, #:upper16:.LANCHOR4
+ 749 0060 000096E5 		ldr	r0, [r6]
+ 750 0064 000050E3 		cmp	r0, #0
+ 751 0068 0B00000A 		beq	.L70
+ 752 006c 60209FE5 		ldr	r2, .L71
+ 753 0070 0210A0E3 		mov	r1, #2
+ 754 0074 0000A0E3 		mov	r0, #0
+ 755 0078 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+ 756 007c 0030A0E3 		mov	r3, #0
+ 757 0080 003086E5 		str	r3, [r6]
+ 758              	.L62:
+ 759 0084 0200A0E3 		mov	r0, #2
+ 760 0088 FEFFFFEB 		bl	DrawSwapBuffer
+ 761              	.L60:
+ 762 008c 0030A0E3 		mov	r3, #0
+ 763 0090 003085E5 		str	r3, [r5]
+ 764 0094 003084E5 		str	r3, [r4]
+ 765 0098 7080BDE8 		pop	{r4, r5, r6, pc}
+ 766              	.L70:
+ 767 009c 002000E3 		movw	r2, #:lower16:.LANCHOR5
+ 768 00a0 0210A0E3 		mov	r1, #2
+ 769 00a4 002040E3 		movt	r2, #:upper16:.LANCHOR5
+ 770 00a8 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+ 771 00ac 0130A0E3 		mov	r3, #1
+ 772 00b0 003086E5 		str	r3, [r6]
+ 773 00b4 F2FFFFEA 		b	.L62
+ 774              	.L59:
+ 775 00b8 18209FE5 		ldr	r2, .L71+4
+ 776 00bc 0110A0E3 		mov	r1, #1
+ 777 00c0 0000A0E3 		mov	r0, #0
+ 778 00c4 FEFFFFEB 		bl	R_RVAPI_GraphChangeSurfaceVDC
+ 779 00c8 0030A0E3 		mov	r3, #0
+ 780 00cc 003084E5 		str	r3, [r4]
+ 781 00d0 DBFFFFEA 		b	.L58
+ 782              	.L72:
+ 783              		.align	2
+ 784              	.L71:
+ 785 00d4 000C0300 		.word	.LANCHOR5+199680
+ 786 00d8 00C01200 		.word	.LANCHOR2+1228800
+ 788              		.section	.text.R_BCD_LcdWriteLine,"ax",%progbits
+ 789              		.align	2
+ 790              		.global	R_BCD_LcdWriteLine
+ 791              		.syntax unified
+ 792              		.arm
+ 793              		.fpu neon
+ 795              	R_BCD_LcdWriteLine:
+ 796              		@ args = 4, pretend = 0, frame = 0
+ 797              		@ frame_needed = 0, uses_anonymous_args = 0
+ 798 0000 04E02DE5 		str	lr, [sp, #-4]!
+ 799 0004 0CD04DE2 		sub	sp, sp, #12
+ 800 0008 10C0DDE5 		ldrb	ip, [sp, #16]	@ zero_extendqisi2
+ 801 000c 00308DE5 		str	r3, [sp]
+ 802 0010 0230A0E1 		mov	r3, r2
+ 803 0014 04C08DE5 		str	ip, [sp, #4]
+ 804 0018 0120A0E1 		mov	r2, r1
+ 805 001c 0010A0E1 		mov	r1, r0
+ 806 0020 0200A0E3 		mov	r0, #2
+ 807 0024 FEFFFFEB 		bl	DrawLine
+ 808 0028 0CD08DE2 		add	sp, sp, #12
+ 809              		@ sp needed
+ 810 002c 04F09DE4 		ldr	pc, [sp], #4
+ 812              		.section	.text.R_BCD_LcdWriteChar,"ax",%progbits
+ 813              		.align	2
+ 814              		.global	R_BCD_LcdWriteChar
+ 815              		.syntax unified
+ 816              		.arm
+ 817              		.fpu neon
+ 819              	R_BCD_LcdWriteChar:
+ 820              		@ args = 0, pretend = 0, frame = 0
+ 821              		@ frame_needed = 0, uses_anonymous_args = 0
+ 822 0000 F84F2DE9 		push	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 823 0004 200040E2 		sub	r0, r0, #32
+ 824 0008 F8619FE5 		ldr	r6, .L139
+ 825 000c 800080E0 		add	r0, r0, r0, lsl #1
+ 826 0010 0180A0E1 		mov	r8, r1
+ 827 0014 0370A0E1 		mov	r7, r3
+ 828 0018 189082E2 		add	r9, r2, #24
+ 829 001c 0250A0E1 		mov	r5, r2
+ 830 0020 01B081E2 		add	fp, r1, #1
+ 831 0024 006286E0 		add	r6, r6, r0, lsl #4
+ 832 0028 02A081E2 		add	r10, r1, #2
+ 833 002c 1A0000EA 		b	.L88
+ 834              	.L76:
+ 835 0030 400014E3 		tst	r4, #64
+ 836 0034 2200001A 		bne	.L127
+ 837              	.L77:
+ 838 0038 200014E3 		tst	r4, #32
+ 839 003c 2700001A 		bne	.L128
+ 840              	.L78:
+ 841 0040 100014E3 		tst	r4, #16
+ 842 0044 2C00001A 		bne	.L129
+ 843              	.L79:
+ 844 0048 080014E3 		tst	r4, #8
+ 845 004c 3100001A 		bne	.L130
+ 846              	.L80:
+ 847 0050 040014E3 		tst	r4, #4
+ 848 0054 3600001A 		bne	.L131
+ 849              	.L81:
+ 850 0058 020014E3 		tst	r4, #2
+ 851 005c 3B00001A 		bne	.L132
+ 852              	.L82:
+ 853 0060 010014E3 		tst	r4, #1
+ 854 0064 4000001A 		bne	.L133
+ 855              	.L83:
+ 856 0068 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+ 857 006c A433B0E1 		lsrs	r3, r4, #7
+ 858 0070 4500001A 		bne	.L134
+ 859              	.L84:
+ 860 0074 400014E3 		tst	r4, #64
+ 861 0078 4A00001A 		bne	.L135
+ 862              	.L85:
+ 863 007c 200014E3 		tst	r4, #32
+ 864 0080 4F00001A 		bne	.L136
+ 865              	.L86:
+ 866 0084 100014E3 		tst	r4, #16
+ 867 0088 5400001A 		bne	.L137
+ 868              	.L87:
+ 869 008c 015085E2 		add	r5, r5, #1
+ 870 0090 026086E2 		add	r6, r6, #2
+ 871 0094 090055E1 		cmp	r5, r9
+ 872 0098 5900000A 		beq	.L138
+ 873              	.L88:
+ 874 009c 014056E5 		ldrb	r4, [r6, #-1]	@ zero_extendqisi2
+ 875 00a0 A433B0E1 		lsrs	r3, r4, #7
+ 876 00a4 E1FFFF0A 		beq	.L76
+ 877 00a8 0730A0E1 		mov	r3, r7
+ 878 00ac 0520A0E1 		mov	r2, r5
+ 879 00b0 0810A0E1 		mov	r1, r8
+ 880 00b4 0200A0E3 		mov	r0, #2
+ 881 00b8 FEFFFFEB 		bl	DrawPoint
+ 882 00bc 400014E3 		tst	r4, #64
+ 883 00c0 DCFFFF0A 		beq	.L77
+ 884              	.L127:
+ 885 00c4 0730A0E1 		mov	r3, r7
+ 886 00c8 0520A0E1 		mov	r2, r5
+ 887 00cc 0B10A0E1 		mov	r1, fp
+ 888 00d0 0200A0E3 		mov	r0, #2
+ 889 00d4 FEFFFFEB 		bl	DrawPoint
+ 890 00d8 200014E3 		tst	r4, #32
+ 891 00dc D7FFFF0A 		beq	.L78
+ 892              	.L128:
+ 893 00e0 0730A0E1 		mov	r3, r7
+ 894 00e4 0520A0E1 		mov	r2, r5
+ 895 00e8 0A10A0E1 		mov	r1, r10
+ 896 00ec 0200A0E3 		mov	r0, #2
+ 897 00f0 FEFFFFEB 		bl	DrawPoint
+ 898 00f4 100014E3 		tst	r4, #16
+ 899 00f8 D2FFFF0A 		beq	.L79
+ 900              	.L129:
+ 901 00fc 0730A0E1 		mov	r3, r7
+ 902 0100 0520A0E1 		mov	r2, r5
+ 903 0104 031088E2 		add	r1, r8, #3
+ 904 0108 0200A0E3 		mov	r0, #2
+ 905 010c FEFFFFEB 		bl	DrawPoint
+ 906 0110 080014E3 		tst	r4, #8
+ 907 0114 CDFFFF0A 		beq	.L80
+ 908              	.L130:
+ 909 0118 0730A0E1 		mov	r3, r7
+ 910 011c 0520A0E1 		mov	r2, r5
+ 911 0120 041088E2 		add	r1, r8, #4
+ 912 0124 0200A0E3 		mov	r0, #2
+ 913 0128 FEFFFFEB 		bl	DrawPoint
+ 914 012c 040014E3 		tst	r4, #4
+ 915 0130 C8FFFF0A 		beq	.L81
+ 916              	.L131:
+ 917 0134 0730A0E1 		mov	r3, r7
+ 918 0138 0520A0E1 		mov	r2, r5
+ 919 013c 051088E2 		add	r1, r8, #5
+ 920 0140 0200A0E3 		mov	r0, #2
+ 921 0144 FEFFFFEB 		bl	DrawPoint
+ 922 0148 020014E3 		tst	r4, #2
+ 923 014c C3FFFF0A 		beq	.L82
+ 924              	.L132:
+ 925 0150 0730A0E1 		mov	r3, r7
+ 926 0154 0520A0E1 		mov	r2, r5
+ 927 0158 061088E2 		add	r1, r8, #6
+ 928 015c 0200A0E3 		mov	r0, #2
+ 929 0160 FEFFFFEB 		bl	DrawPoint
+ 930 0164 010014E3 		tst	r4, #1
+ 931 0168 BEFFFF0A 		beq	.L83
+ 932              	.L133:
+ 933 016c 0730A0E1 		mov	r3, r7
+ 934 0170 0520A0E1 		mov	r2, r5
+ 935 0174 071088E2 		add	r1, r8, #7
+ 936 0178 0200A0E3 		mov	r0, #2
+ 937 017c FEFFFFEB 		bl	DrawPoint
+ 938 0180 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+ 939 0184 A433B0E1 		lsrs	r3, r4, #7
+ 940 0188 B9FFFF0A 		beq	.L84
+ 941              	.L134:
+ 942 018c 0730A0E1 		mov	r3, r7
+ 943 0190 0520A0E1 		mov	r2, r5
+ 944 0194 081088E2 		add	r1, r8, #8
+ 945 0198 0200A0E3 		mov	r0, #2
+ 946 019c FEFFFFEB 		bl	DrawPoint
+ 947 01a0 400014E3 		tst	r4, #64
+ 948 01a4 B4FFFF0A 		beq	.L85
+ 949              	.L135:
+ 950 01a8 0730A0E1 		mov	r3, r7
+ 951 01ac 0520A0E1 		mov	r2, r5
+ 952 01b0 091088E2 		add	r1, r8, #9
+ 953 01b4 0200A0E3 		mov	r0, #2
+ 954 01b8 FEFFFFEB 		bl	DrawPoint
+ 955 01bc 200014E3 		tst	r4, #32
+ 956 01c0 AFFFFF0A 		beq	.L86
+ 957              	.L136:
+ 958 01c4 0730A0E1 		mov	r3, r7
+ 959 01c8 0520A0E1 		mov	r2, r5
+ 960 01cc 0A1088E2 		add	r1, r8, #10
+ 961 01d0 0200A0E3 		mov	r0, #2
+ 962 01d4 FEFFFFEB 		bl	DrawPoint
+ 963 01d8 100014E3 		tst	r4, #16
+ 964 01dc AAFFFF0A 		beq	.L87
+ 965              	.L137:
+ 966 01e0 0520A0E1 		mov	r2, r5
+ 967 01e4 0730A0E1 		mov	r3, r7
+ 968 01e8 0B1088E2 		add	r1, r8, #11
+ 969 01ec 0200A0E3 		mov	r0, #2
+ 970 01f0 015085E2 		add	r5, r5, #1
+ 971 01f4 026086E2 		add	r6, r6, #2
+ 972 01f8 FEFFFFEB 		bl	DrawPoint
+ 973 01fc 090055E1 		cmp	r5, r9
+ 974 0200 A5FFFF1A 		bne	.L88
+ 975              	.L138:
+ 976 0204 F88FBDE8 		pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 977              	.L140:
+ 978              		.align	2
+ 979              	.L139:
+ 980 0208 01000000 		.word	g_font_array+1
+ 982              		.section	.text.R_BCD_LcdWriteString,"ax",%progbits
+ 983              		.align	2
+ 984              		.global	R_BCD_LcdWriteString
+ 985              		.syntax unified
+ 986              		.arm
+ 987              		.fpu neon
+ 989              	R_BCD_LcdWriteString:
+ 990              		@ args = 0, pretend = 0, frame = 16
+ 991              		@ frame_needed = 0, uses_anonymous_args = 0
+ 992 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 993 0004 14D04DE2 		sub	sp, sp, #20
+ 994 0008 0180A0E1 		mov	r8, r1
+ 995 000c 0250A0E1 		mov	r5, r2
+ 996 0010 0370A0E1 		mov	r7, r3
+ 997 0014 0040A0E1 		mov	r4, r0
+ 998 0018 08208DE5 		str	r2, [sp, #8]
+ 999 001c 00008DE5 		str	r0, [sp]
+ 1000 0020 FEFFFFEB 		bl	strlen
+ 1001 0024 000050E3 		cmp	r0, #0
+ 1002 0028 8C0000DA 		ble	.L141
+ 1003 002c 003000E3 		movw	r3, #:lower16:g_font_array
+ 1004 0030 0B8088E2 		add	r8, r8, #11
+ 1005 0034 189085E2 		add	r9, r5, #24
+ 1006 0038 002084E0 		add	r2, r4, r0
+ 1007 003c 003040E3 		movt	r3, #:upper16:g_font_array
+ 1008 0040 04208DE5 		str	r2, [sp, #4]
+ 1009 0044 0C308DE5 		str	r3, [sp, #12]
+ 1010              	.L156:
+ 1011 0048 00209DE5 		ldr	r2, [sp]
+ 1012 004c 0BB048E2 		sub	fp, r8, #11
+ 1013 0050 08509DE5 		ldr	r5, [sp, #8]
+ 1014 0054 0AA048E2 		sub	r10, r8, #10
+ 1015 0058 0130D2E4 		ldrb	r3, [r2], #1	@ zero_extendqisi2
+ 1016 005c 00208DE5 		str	r2, [sp]
+ 1017 0060 203043E2 		sub	r3, r3, #32
+ 1018 0064 0C209DE5 		ldr	r2, [sp, #12]
+ 1019 0068 833083E0 		add	r3, r3, r3, lsl #1
+ 1020 006c 036282E0 		add	r6, r2, r3, lsl #4
+ 1021 0070 016086E2 		add	r6, r6, #1
+ 1022 0074 1A0000EA 		b	.L155
+ 1023              	.L143:
+ 1024 0078 400014E3 		tst	r4, #64
+ 1025 007c 2200001A 		bne	.L197
+ 1026              	.L144:
+ 1027 0080 200014E3 		tst	r4, #32
+ 1028 0084 2700001A 		bne	.L198
+ 1029              	.L145:
+ 1030 0088 100014E3 		tst	r4, #16
+ 1031 008c 2C00001A 		bne	.L199
+ 1032              	.L146:
+ 1033 0090 080014E3 		tst	r4, #8
+ 1034 0094 3100001A 		bne	.L200
+ 1035              	.L147:
+ 1036 0098 040014E3 		tst	r4, #4
+ 1037 009c 3600001A 		bne	.L201
+ 1038              	.L148:
+ 1039 00a0 020014E3 		tst	r4, #2
+ 1040 00a4 3B00001A 		bne	.L202
+ 1041              	.L149:
+ 1042 00a8 010014E3 		tst	r4, #1
+ 1043 00ac 4000001A 		bne	.L203
+ 1044              	.L150:
+ 1045 00b0 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+ 1046 00b4 A433B0E1 		lsrs	r3, r4, #7
+ 1047 00b8 4500001A 		bne	.L204
+ 1048              	.L151:
+ 1049 00bc 400014E3 		tst	r4, #64
+ 1050 00c0 4A00001A 		bne	.L205
+ 1051              	.L152:
+ 1052 00c4 200014E3 		tst	r4, #32
+ 1053 00c8 4F00001A 		bne	.L206
+ 1054              	.L153:
+ 1055 00cc 100014E3 		tst	r4, #16
+ 1056 00d0 5400001A 		bne	.L207
+ 1057              	.L154:
+ 1058 00d4 015085E2 		add	r5, r5, #1
+ 1059 00d8 026086E2 		add	r6, r6, #2
+ 1060 00dc 090055E1 		cmp	r5, r9
+ 1061 00e0 5900000A 		beq	.L208
+ 1062              	.L155:
+ 1063 00e4 014056E5 		ldrb	r4, [r6, #-1]	@ zero_extendqisi2
+ 1064 00e8 A433B0E1 		lsrs	r3, r4, #7
+ 1065 00ec E1FFFF0A 		beq	.L143
+ 1066 00f0 0730A0E1 		mov	r3, r7
+ 1067 00f4 0520A0E1 		mov	r2, r5
+ 1068 00f8 0B10A0E1 		mov	r1, fp
+ 1069 00fc 0200A0E3 		mov	r0, #2
+ 1070 0100 FEFFFFEB 		bl	DrawPoint
+ 1071 0104 400014E3 		tst	r4, #64
+ 1072 0108 DCFFFF0A 		beq	.L144
+ 1073              	.L197:
+ 1074 010c 0730A0E1 		mov	r3, r7
+ 1075 0110 0520A0E1 		mov	r2, r5
+ 1076 0114 0A10A0E1 		mov	r1, r10
+ 1077 0118 0200A0E3 		mov	r0, #2
+ 1078 011c FEFFFFEB 		bl	DrawPoint
+ 1079 0120 200014E3 		tst	r4, #32
+ 1080 0124 D7FFFF0A 		beq	.L145
+ 1081              	.L198:
+ 1082 0128 0730A0E1 		mov	r3, r7
+ 1083 012c 0520A0E1 		mov	r2, r5
+ 1084 0130 091048E2 		sub	r1, r8, #9
+ 1085 0134 0200A0E3 		mov	r0, #2
+ 1086 0138 FEFFFFEB 		bl	DrawPoint
+ 1087 013c 100014E3 		tst	r4, #16
+ 1088 0140 D2FFFF0A 		beq	.L146
+ 1089              	.L199:
+ 1090 0144 0730A0E1 		mov	r3, r7
+ 1091 0148 0520A0E1 		mov	r2, r5
+ 1092 014c 081048E2 		sub	r1, r8, #8
+ 1093 0150 0200A0E3 		mov	r0, #2
+ 1094 0154 FEFFFFEB 		bl	DrawPoint
+ 1095 0158 080014E3 		tst	r4, #8
+ 1096 015c CDFFFF0A 		beq	.L147
+ 1097              	.L200:
+ 1098 0160 0730A0E1 		mov	r3, r7
+ 1099 0164 0520A0E1 		mov	r2, r5
+ 1100 0168 071048E2 		sub	r1, r8, #7
+ 1101 016c 0200A0E3 		mov	r0, #2
+ 1102 0170 FEFFFFEB 		bl	DrawPoint
+ 1103 0174 040014E3 		tst	r4, #4
+ 1104 0178 C8FFFF0A 		beq	.L148
+ 1105              	.L201:
+ 1106 017c 0730A0E1 		mov	r3, r7
+ 1107 0180 0520A0E1 		mov	r2, r5
+ 1108 0184 061048E2 		sub	r1, r8, #6
+ 1109 0188 0200A0E3 		mov	r0, #2
+ 1110 018c FEFFFFEB 		bl	DrawPoint
+ 1111 0190 020014E3 		tst	r4, #2
+ 1112 0194 C3FFFF0A 		beq	.L149
+ 1113              	.L202:
+ 1114 0198 0730A0E1 		mov	r3, r7
+ 1115 019c 0520A0E1 		mov	r2, r5
+ 1116 01a0 051048E2 		sub	r1, r8, #5
+ 1117 01a4 0200A0E3 		mov	r0, #2
+ 1118 01a8 FEFFFFEB 		bl	DrawPoint
+ 1119 01ac 010014E3 		tst	r4, #1
+ 1120 01b0 BEFFFF0A 		beq	.L150
+ 1121              	.L203:
+ 1122 01b4 0730A0E1 		mov	r3, r7
+ 1123 01b8 0520A0E1 		mov	r2, r5
+ 1124 01bc 041048E2 		sub	r1, r8, #4
+ 1125 01c0 0200A0E3 		mov	r0, #2
+ 1126 01c4 FEFFFFEB 		bl	DrawPoint
+ 1127 01c8 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+ 1128 01cc A433B0E1 		lsrs	r3, r4, #7
+ 1129 01d0 B9FFFF0A 		beq	.L151
+ 1130              	.L204:
+ 1131 01d4 0730A0E1 		mov	r3, r7
+ 1132 01d8 0520A0E1 		mov	r2, r5
+ 1133 01dc 031048E2 		sub	r1, r8, #3
+ 1134 01e0 0200A0E3 		mov	r0, #2
+ 1135 01e4 FEFFFFEB 		bl	DrawPoint
+ 1136 01e8 400014E3 		tst	r4, #64
+ 1137 01ec B4FFFF0A 		beq	.L152
+ 1138              	.L205:
+ 1139 01f0 0730A0E1 		mov	r3, r7
+ 1140 01f4 0520A0E1 		mov	r2, r5
+ 1141 01f8 021048E2 		sub	r1, r8, #2
+ 1142 01fc 0200A0E3 		mov	r0, #2
+ 1143 0200 FEFFFFEB 		bl	DrawPoint
+ 1144 0204 200014E3 		tst	r4, #32
+ 1145 0208 AFFFFF0A 		beq	.L153
+ 1146              	.L206:
+ 1147 020c 0730A0E1 		mov	r3, r7
+ 1148 0210 0520A0E1 		mov	r2, r5
+ 1149 0214 011048E2 		sub	r1, r8, #1
+ 1150 0218 0200A0E3 		mov	r0, #2
+ 1151 021c FEFFFFEB 		bl	DrawPoint
+ 1152 0220 100014E3 		tst	r4, #16
+ 1153 0224 AAFFFF0A 		beq	.L154
+ 1154              	.L207:
+ 1155 0228 0520A0E1 		mov	r2, r5
+ 1156 022c 0730A0E1 		mov	r3, r7
+ 1157 0230 0810A0E1 		mov	r1, r8
+ 1158 0234 0200A0E3 		mov	r0, #2
+ 1159 0238 015085E2 		add	r5, r5, #1
+ 1160 023c 026086E2 		add	r6, r6, #2
+ 1161 0240 FEFFFFEB 		bl	DrawPoint
+ 1162 0244 090055E1 		cmp	r5, r9
+ 1163 0248 A5FFFF1A 		bne	.L155
+ 1164              	.L208:
+ 1165 024c 00309DE5 		ldr	r3, [sp]
+ 1166 0250 0C8088E2 		add	r8, r8, #12
+ 1167 0254 04209DE5 		ldr	r2, [sp, #4]
+ 1168 0258 020053E1 		cmp	r3, r2
+ 1169 025c 79FFFF1A 		bne	.L156
+ 1170              	.L141:
+ 1171 0260 14D08DE2 		add	sp, sp, #20
+ 1172              		@ sp needed
+ 1173 0264 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 1175              		.section	.text.R_BCD_LcdClearGraphicsBuffer,"ax",%progbits
+ 1176              		.align	2
+ 1177              		.global	R_BCD_LcdClearGraphicsBuffer
+ 1178              		.syntax unified
+ 1179              		.arm
+ 1180              		.fpu neon
+ 1182              	R_BCD_LcdClearGraphicsBuffer:
+ 1183              		@ args = 0, pretend = 0, frame = 0
+ 1184              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1185              		@ link register save eliminated.
+ 1186 0000 003000E3 		movw	r3, #:lower16:.LANCHOR3
+ 1187 0004 002000E3 		movw	r2, #:lower16:.LANCHOR4
+ 1188 0008 003040E3 		movt	r3, #:upper16:.LANCHOR3
+ 1189 000c 002040E3 		movt	r2, #:upper16:.LANCHOR4
+ 1190 0010 003093E5 		ldr	r3, [r3]
+ 1191 0014 0010E0E3 		mvn	r1, #0
+ 1192 0018 000092E5 		ldr	r0, [r2]
+ 1193 001c C32BA0E3 		mov	r2, #199680
+ 1194 0020 000053E3 		cmp	r3, #0
+ 1195 0024 003000E3 		movw	r3, #:lower16:.LANCHOR5
+ 1196 0028 003040E3 		movt	r3, #:upper16:.LANCHOR5
+ 1197 002c 01006012 		rsbne	r0, r0, #1
+ 1198 0030 923020E0 		mla	r0, r2, r0, r3
+ 1199 0034 C32BA0E3 		mov	r2, #199680
+ 1200 0038 FEFFFFEA 		b	memset
+ 1202              		.section	.bss.Layer1_buffer_id,"aw",%nobits
+ 1203              		.align	2
+ 1204              		.set	.LANCHOR1,. + 0
+ 1207              	Layer1_buffer_id:
+ 1208 0000 00000000 		.space	4
+ 1209              		.section	.bss.Req_Layer1_Swap,"aw",%nobits
+ 1210              		.align	2
+ 1211              		.set	.LANCHOR0,. + 0
+ 1214              	Req_Layer1_Swap:
+ 1215 0000 00000000 		.space	4
+ 1216              		.section	.bss.Req_Layer2_Swap,"aw",%nobits
+ 1217              		.align	2
+ 1218              		.set	.LANCHOR3,. + 0
+ 1221              	Req_Layer2_Swap:
+ 1222 0000 00000000 		.space	4
+ 1223              		.section	.bss.layer2_buffer_id,"aw",%nobits
+ 1224              		.align	2
+ 1225              		.set	.LANCHOR4,. + 0
+ 1228              	layer2_buffer_id:
+ 1229 0000 00000000 		.space	4
+ 1230              		.section	.bss.vsync_count,"aw",%nobits
+ 1231              		.align	2
+ 1232              		.set	.LANCHOR6,. + 0
+ 1235              	vsync_count:
+ 1236 0000 00000000 		.space	4
+ 1237              		.section	.rodata.gam_b_gain.71111,"a",%progbits
+ 1238              		.align	3
+ 1239              		.set	.LANCHOR10,. + 0
+ 1242              	gam_b_gain.71111:
+ 1243 0000 0004     		.short	1024
+ 1244 0002 0004     		.short	1024
+ 1245 0004 0004     		.short	1024
+ 1246 0006 0004     		.short	1024
+ 1247 0008 0004     		.short	1024
+ 1248 000a 0004     		.short	1024
+ 1249 000c 0004     		.short	1024
+ 1250 000e 0004     		.short	1024
+ 1251 0010 0004     		.short	1024
+ 1252 0012 0004     		.short	1024
+ 1253 0014 0004     		.short	1024
+ 1254 0016 0004     		.short	1024
+ 1255 0018 0004     		.short	1024
+ 1256 001a 0004     		.short	1024
+ 1257 001c 0004     		.short	1024
+ 1258 001e 0004     		.short	1024
+ 1259 0020 0004     		.short	1024
+ 1260 0022 0004     		.short	1024
+ 1261 0024 0004     		.short	1024
+ 1262 0026 0004     		.short	1024
+ 1263 0028 0004     		.short	1024
+ 1264 002a 0004     		.short	1024
+ 1265 002c 0004     		.short	1024
+ 1266 002e 0004     		.short	1024
+ 1267 0030 0004     		.short	1024
+ 1268 0032 0004     		.short	1024
+ 1269 0034 0004     		.short	1024
+ 1270 0036 0004     		.short	1024
+ 1271 0038 0004     		.short	1024
+ 1272 003a 0004     		.short	1024
+ 1273 003c 0004     		.short	1024
+ 1274 003e 0004     		.short	1024
+ 1275              		.section	.rodata.gam_b_th.71112,"a",%progbits
+ 1276              		.align	3
+ 1277              		.set	.LANCHOR9,. + 0
+ 1280              	gam_b_th.71112:
+ 1281 0000 08       		.byte	8
+ 1282 0001 10       		.byte	16
+ 1283 0002 18       		.byte	24
+ 1284 0003 20       		.byte	32
+ 1285 0004 28       		.byte	40
+ 1286 0005 30       		.byte	48
+ 1287 0006 38       		.byte	56
+ 1288 0007 40       		.byte	64
+ 1289 0008 48       		.byte	72
+ 1290 0009 50       		.byte	80
+ 1291 000a 58       		.byte	88
+ 1292 000b 60       		.byte	96
+ 1293 000c 68       		.byte	104
+ 1294 000d 70       		.byte	112
+ 1295 000e 78       		.byte	120
+ 1296 000f 80       		.byte	-128
+ 1297 0010 88       		.byte	-120
+ 1298 0011 90       		.byte	-112
+ 1299 0012 98       		.byte	-104
+ 1300 0013 A0       		.byte	-96
+ 1301 0014 A8       		.byte	-88
+ 1302 0015 B0       		.byte	-80
+ 1303 0016 B8       		.byte	-72
+ 1304 0017 C0       		.byte	-64
+ 1305 0018 C8       		.byte	-56
+ 1306 0019 D0       		.byte	-48
+ 1307 001a D8       		.byte	-40
+ 1308 001b E0       		.byte	-32
+ 1309 001c E8       		.byte	-24
+ 1310 001d F0       		.byte	-16
+ 1311 001e F8       		.byte	-8
+ 1312              		.section	.rodata.gam_g_gain.71109,"a",%progbits
+ 1313              		.align	3
+ 1314              		.set	.LANCHOR12,. + 0
+ 1317              	gam_g_gain.71109:
+ 1318 0000 0004     		.short	1024
+ 1319 0002 0004     		.short	1024
+ 1320 0004 0004     		.short	1024
+ 1321 0006 0004     		.short	1024
+ 1322 0008 0004     		.short	1024
+ 1323 000a 0004     		.short	1024
+ 1324 000c 0004     		.short	1024
+ 1325 000e 0004     		.short	1024
+ 1326 0010 0004     		.short	1024
+ 1327 0012 0004     		.short	1024
+ 1328 0014 0004     		.short	1024
+ 1329 0016 0004     		.short	1024
+ 1330 0018 0004     		.short	1024
+ 1331 001a 0004     		.short	1024
+ 1332 001c 0004     		.short	1024
+ 1333 001e 0004     		.short	1024
+ 1334 0020 0004     		.short	1024
+ 1335 0022 0004     		.short	1024
+ 1336 0024 0004     		.short	1024
+ 1337 0026 0004     		.short	1024
+ 1338 0028 0004     		.short	1024
+ 1339 002a 0004     		.short	1024
+ 1340 002c 0004     		.short	1024
+ 1341 002e 0004     		.short	1024
+ 1342 0030 0004     		.short	1024
+ 1343 0032 0004     		.short	1024
+ 1344 0034 0004     		.short	1024
+ 1345 0036 0004     		.short	1024
+ 1346 0038 0004     		.short	1024
+ 1347 003a 0004     		.short	1024
+ 1348 003c 0004     		.short	1024
+ 1349 003e 0004     		.short	1024
+ 1350              		.section	.rodata.gam_g_th.71110,"a",%progbits
+ 1351              		.align	3
+ 1352              		.set	.LANCHOR11,. + 0
+ 1355              	gam_g_th.71110:
+ 1356 0000 08       		.byte	8
+ 1357 0001 10       		.byte	16
+ 1358 0002 18       		.byte	24
+ 1359 0003 20       		.byte	32
+ 1360 0004 28       		.byte	40
+ 1361 0005 30       		.byte	48
+ 1362 0006 38       		.byte	56
+ 1363 0007 40       		.byte	64
+ 1364 0008 48       		.byte	72
+ 1365 0009 50       		.byte	80
+ 1366 000a 58       		.byte	88
+ 1367 000b 60       		.byte	96
+ 1368 000c 68       		.byte	104
+ 1369 000d 70       		.byte	112
+ 1370 000e 78       		.byte	120
+ 1371 000f 80       		.byte	-128
+ 1372 0010 88       		.byte	-120
+ 1373 0011 90       		.byte	-112
+ 1374 0012 98       		.byte	-104
+ 1375 0013 A0       		.byte	-96
+ 1376 0014 A8       		.byte	-88
+ 1377 0015 B0       		.byte	-80
+ 1378 0016 B8       		.byte	-72
+ 1379 0017 C0       		.byte	-64
+ 1380 0018 C8       		.byte	-56
+ 1381 0019 D0       		.byte	-48
+ 1382 001a D8       		.byte	-40
+ 1383 001b E0       		.byte	-32
+ 1384 001c E8       		.byte	-24
+ 1385 001d F0       		.byte	-16
+ 1386 001e F8       		.byte	-8
+ 1387              		.section	.rodata.gam_r_gain.71113,"a",%progbits
+ 1388              		.align	3
+ 1389              		.set	.LANCHOR8,. + 0
+ 1392              	gam_r_gain.71113:
+ 1393 0000 0004     		.short	1024
+ 1394 0002 0004     		.short	1024
+ 1395 0004 0004     		.short	1024
+ 1396 0006 0004     		.short	1024
+ 1397 0008 0004     		.short	1024
+ 1398 000a 0004     		.short	1024
+ 1399 000c 0004     		.short	1024
+ 1400 000e 0004     		.short	1024
+ 1401 0010 0004     		.short	1024
+ 1402 0012 0004     		.short	1024
+ 1403 0014 0004     		.short	1024
+ 1404 0016 0004     		.short	1024
+ 1405 0018 0004     		.short	1024
+ 1406 001a 0004     		.short	1024
+ 1407 001c 0004     		.short	1024
+ 1408 001e 0004     		.short	1024
+ 1409 0020 0004     		.short	1024
+ 1410 0022 0004     		.short	1024
+ 1411 0024 0004     		.short	1024
+ 1412 0026 0004     		.short	1024
+ 1413 0028 0004     		.short	1024
+ 1414 002a 0004     		.short	1024
+ 1415 002c 0004     		.short	1024
+ 1416 002e 0004     		.short	1024
+ 1417 0030 0004     		.short	1024
+ 1418 0032 0004     		.short	1024
+ 1419 0034 0004     		.short	1024
+ 1420 0036 0004     		.short	1024
+ 1421 0038 0004     		.short	1024
+ 1422 003a 0004     		.short	1024
+ 1423 003c 0004     		.short	1024
+ 1424 003e 0004     		.short	1024
+ 1425              		.section	.rodata.gam_r_th.71114,"a",%progbits
+ 1426              		.align	3
+ 1427              		.set	.LANCHOR7,. + 0
+ 1430              	gam_r_th.71114:
+ 1431 0000 08       		.byte	8
+ 1432 0001 10       		.byte	16
+ 1433 0002 18       		.byte	24
+ 1434 0003 20       		.byte	32
+ 1435 0004 28       		.byte	40
+ 1436 0005 30       		.byte	48
+ 1437 0006 38       		.byte	56
+ 1438 0007 40       		.byte	64
+ 1439 0008 48       		.byte	72
+ 1440 0009 50       		.byte	80
+ 1441 000a 58       		.byte	88
+ 1442 000b 60       		.byte	96
+ 1443 000c 68       		.byte	104
+ 1444 000d 70       		.byte	112
+ 1445 000e 78       		.byte	120
+ 1446 000f 80       		.byte	-128
+ 1447 0010 88       		.byte	-120
+ 1448 0011 90       		.byte	-112
+ 1449 0012 98       		.byte	-104
+ 1450 0013 A0       		.byte	-96
+ 1451 0014 A8       		.byte	-88
+ 1452 0015 B0       		.byte	-80
+ 1453 0016 B8       		.byte	-72
+ 1454 0017 C0       		.byte	-64
+ 1455 0018 C8       		.byte	-56
+ 1456 0019 D0       		.byte	-48
+ 1457 001a D8       		.byte	-40
+ 1458 001b E0       		.byte	-32
+ 1459 001c E8       		.byte	-24
+ 1460 001d F0       		.byte	-16
+ 1461 001e F8       		.byte	-8
+ 1462              		.section	Uncache_IRAM,"aw",%progbits
+ 1463              		.align	2
+ 1464              		.set	.LANCHOR5,. + 0
+ 1467              	graphics2_buffer:
+ 1468 0000 00000000 		.space	399360
+ 1468      00000000 
+ 1468      00000000 
+ 1468      00000000 
+ 1468      00000000 
+ 1469              		.section	Video_RAM,"aw",%progbits
+ 1470              		.align	2
+ 1471              		.set	.LANCHOR2,. + 0
+ 1474              	video_buffer:
+ 1475 0000 00000000 		.space	2457600
+ 1475      00000000 
+ 1475      00000000 
+ 1475      00000000 
+ 1475      00000000 
+ 1476              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_bcd_lcd.c
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:14     .text.IntCallbackFunc:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:19     .text.IntCallbackFunc:00000000 IntCallbackFunc
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1232   .bss.vsync_count:00000000 .LANCHOR6
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1211   .bss.Req_Layer1_Swap:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1204   .bss.Layer1_buffer_id:00000000 .LANCHOR1
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1471   Video_RAM:00000000 .LANCHOR2
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1218   .bss.Req_Layer2_Swap:00000000 .LANCHOR3
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1225   .bss.layer2_buffer_id:00000000 .LANCHOR4
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1464   Uncache_IRAM:00000000 .LANCHOR5
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:96     .text.IntCallbackFunc:00000104 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:100    .text.R_BCD_LcdGetVramAddress:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:106    .text.R_BCD_LcdGetVramAddress:00000000 R_BCD_LcdGetVramAddress
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:125    .text.R_BCD_LcdGetvisableVramAddress:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:131    .text.R_BCD_LcdGetvisableVramAddress:00000000 R_BCD_LcdGetvisableVramAddress
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:150    .text.R_BCD_LcdGetOLVramAddress:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:156    .text.R_BCD_LcdGetOLVramAddress:00000000 R_BCD_LcdGetOLVramAddress
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:175    .text.R_BCD_LcdInit:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:181    .text.R_BCD_LcdInit:00000000 R_BCD_LcdInit
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1277   .rodata.gam_b_th.71112:00000000 .LANCHOR9
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1239   .rodata.gam_b_gain.71111:00000000 .LANCHOR10
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1352   .rodata.gam_g_th.71110:00000000 .LANCHOR11
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1314   .rodata.gam_g_gain.71109:00000000 .LANCHOR12
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1427   .rodata.gam_r_th.71114:00000000 .LANCHOR7
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1389   .rodata.gam_r_gain.71113:00000000 .LANCHOR8
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:453    .text.R_BCD_LcdInit:00000408 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:475    .text.r_display_init:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:481    .text.r_display_init:00000000 r_display_init
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:549    .text.r_image_quality_adjustment:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:555    .text.r_image_quality_adjustment:00000000 r_image_quality_adjustment
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:610    .text.r_video_quality_adjustment:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:616    .text.r_video_quality_adjustment:00000000 r_video_quality_adjustment
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:681    .text.R_BCD_LcdSwapVideoBuffer:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:687    .text.R_BCD_LcdSwapVideoBuffer:00000000 R_BCD_LcdSwapVideoBuffer
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:698    .text.R_BCD_LcdSwapGraphicsBuffer:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:704    .text.R_BCD_LcdSwapGraphicsBuffer:00000000 R_BCD_LcdSwapGraphicsBuffer
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:715    .text.R_BCD_LcdVSync:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:721    .text.R_BCD_LcdVSync:00000000 R_BCD_LcdVSync
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:785    .text.R_BCD_LcdVSync:000000d4 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:789    .text.R_BCD_LcdWriteLine:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:795    .text.R_BCD_LcdWriteLine:00000000 R_BCD_LcdWriteLine
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:813    .text.R_BCD_LcdWriteChar:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:819    .text.R_BCD_LcdWriteChar:00000000 R_BCD_LcdWriteChar
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:980    .text.R_BCD_LcdWriteChar:00000208 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:983    .text.R_BCD_LcdWriteString:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:989    .text.R_BCD_LcdWriteString:00000000 R_BCD_LcdWriteString
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1176   .text.R_BCD_LcdClearGraphicsBuffer:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1182   .text.R_BCD_LcdClearGraphicsBuffer:00000000 R_BCD_LcdClearGraphicsBuffer
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1203   .bss.Layer1_buffer_id:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1207   .bss.Layer1_buffer_id:00000000 Layer1_buffer_id
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1210   .bss.Req_Layer1_Swap:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1214   .bss.Req_Layer1_Swap:00000000 Req_Layer1_Swap
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1217   .bss.Req_Layer2_Swap:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1221   .bss.Req_Layer2_Swap:00000000 Req_Layer2_Swap
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1224   .bss.layer2_buffer_id:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1228   .bss.layer2_buffer_id:00000000 layer2_buffer_id
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1231   .bss.vsync_count:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1235   .bss.vsync_count:00000000 vsync_count
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1238   .rodata.gam_b_gain.71111:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1242   .rodata.gam_b_gain.71111:00000000 gam_b_gain.71111
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1276   .rodata.gam_b_th.71112:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1280   .rodata.gam_b_th.71112:00000000 gam_b_th.71112
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1313   .rodata.gam_g_gain.71109:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1317   .rodata.gam_g_gain.71109:00000000 gam_g_gain.71109
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1351   .rodata.gam_g_th.71110:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1355   .rodata.gam_g_th.71110:00000000 gam_g_th.71110
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1388   .rodata.gam_r_gain.71113:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1392   .rodata.gam_r_gain.71113:00000000 gam_r_gain.71113
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1426   .rodata.gam_r_th.71114:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1430   .rodata.gam_r_th.71114:00000000 gam_r_th.71114
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1463   Uncache_IRAM:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1467   Uncache_IRAM:00000000 graphics2_buffer
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1470   Video_RAM:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\cc4zqzgz.s:1474   Video_RAM:00000000 video_buffer
+
+UNDEFINED SYMBOLS
+R_RVAPI_GraphChangeSurfaceVDC
+DrawSwapBuffer
+R_RVAPI_InitializeVDC
+DrawInit
+DrawRectFill
+R_RVAPI_DispControlVDC
+R_RVAPI_InterruptEnableVDC
+R_RVAPI_GraphCreateSurfaceVDC
+R_RVAPI_DispCalibrationVDC
+VDC_LcdPortSetting
+R_RVAPI_DispPortSettingVDC
+R_RVAPI_DispGammaVDC
+R_RVAPI_VideoCalibrationVDC
+R_RVAPI_VideoSharpnessLtiVDC
+DrawLine
+DrawPoint
+g_font_array
+strlen
+memset

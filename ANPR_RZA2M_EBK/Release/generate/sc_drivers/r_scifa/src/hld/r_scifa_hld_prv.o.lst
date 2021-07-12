@@ -1,0 +1,1161 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_scifa_hld_prv.c"
+  13              		.section	.text.RXI_handler,"ax",%progbits
+  14              		.align	2
+  15              		.syntax unified
+  16              		.arm
+  17              		.fpu neon
+  19              	RXI_handler:
+  20              		@ args = 0, pretend = 0, frame = 8
+  21              		@ frame_needed = 0, uses_anonymous_args = 0
+  22 0000 F0402DE9 		push	{r4, r5, r6, r7, lr}
+  23 0004 0050A0E3 		mov	r5, #0
+  24 0008 0CD04DE2 		sub	sp, sp, #12
+  25              	.L3:
+  26 000c 7540AFE6 		sxtb	r4, r5
+  27 0010 015085E2 		add	r5, r5, #1
+  28 0014 0400A0E1 		mov	r0, r4
+  29 0018 FEFFFFEB 		bl	R_SCIFA_GetRXIState
+  30 001c 010050E3 		cmp	r0, #1
+  31 0020 0300000A 		beq	.L2
+  32 0024 050055E3 		cmp	r5, #5
+  33 0028 F7FFFF1A 		bne	.L3
+  34 002c 0CD08DE2 		add	sp, sp, #12
+  35              		@ sp needed
+  36 0030 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+  37              	.L2:
+  38 0034 005000E3 		movw	r5, #:lower16:.LANCHOR0
+  39 0038 7810A0E3 		mov	r1, #120
+  40 003c 005040E3 		movt	r5, #:upper16:.LANCHOR0
+  41 0040 0400A0E1 		mov	r0, r4
+  42 0044 915421E0 		mla	r1, r1, r4, r5
+  43 0048 381081E2 		add	r1, r1, #56
+  44 004c FEFFFFEB 		bl	R_SCIFA_CheckRXIError
+  45 0050 000050E3 		cmp	r0, #0
+  46 0054 0F00001A 		bne	.L11
+  47 0058 043264E0 		rsb	r3, r4, r4, lsl #4
+  48 005c 8361A0E1 		lsl	r6, r3, #3
+  49 0060 050000EA 		b	.L5
+  50              	.L8:
+  51 0064 04309DE5 		ldr	r3, [sp, #4]
+  52 0068 000053E3 		cmp	r3, #0
+  53 006c 0900001A 		bne	.L11
+  54 0070 FEFFFFEB 		bl	R_SCIFA_GetByte
+  55 0074 000050E3 		cmp	r0, #0
+  56 0078 0A00000A 		beq	.L18
+  57              	.L5:
+  58 007c 04108DE2 		add	r1, sp, #4
+  59 0080 0400A0E1 		mov	r0, r4
+  60 0084 FEFFFFEB 		bl	R_SCIFA_IsRxFifoEmpty
+  61 0088 000050E3 		cmp	r0, #0
+  62 008c 03108DE2 		add	r1, sp, #3
+  63 0090 0400A0E1 		mov	r0, r4
+  64 0094 F2FFFF0A 		beq	.L8
+  65              	.L11:
+  66 0098 0400A0E1 		mov	r0, r4
+  67 009c FEFFFFEB 		bl	R_SCIFA_ClearRXIFlags
+  68 00a0 0CD08DE2 		add	sp, sp, #12
+  69              		@ sp needed
+  70 00a4 F080BDE8 		pop	{r4, r5, r6, r7, pc}
+  71              	.L18:
+  72 00a8 067085E0 		add	r7, r5, r6
+  73 00ac 4C0097E5 		ldr	r0, [r7, #76]
+  74 00b0 FEFFFFEB 		bl	cbFree
+  75 00b4 000050E3 		cmp	r0, #0
+  76 00b8 030000DA 		ble	.L6
+  77 00bc 4C0097E5 		ldr	r0, [r7, #76]
+  78 00c0 0310DDE5 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+  79 00c4 FEFFFFEB 		bl	cbPut
+  80 00c8 EBFFFFEA 		b	.L5
+  81              	.L6:
+  82 00cc 643097E5 		ldr	r3, [r7, #100]
+  83 00d0 013083E2 		add	r3, r3, #1
+  84 00d4 643087E5 		str	r3, [r7, #100]
+  85 00d8 E7FFFFEA 		b	.L5
+  87              		.section	.text.TXI_handler,"ax",%progbits
+  88              		.align	2
+  89              		.syntax unified
+  90              		.arm
+  91              		.fpu neon
+  93              	TXI_handler:
+  94              		@ args = 0, pretend = 0, frame = 8
+  95              		@ frame_needed = 0, uses_anonymous_args = 0
+  96 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  97 0004 007000E3 		movw	r7, #:lower16:.LANCHOR0
+  98 0008 007040E3 		movt	r7, #:upper16:.LANCHOR0
+  99 000c 08D04DE2 		sub	sp, sp, #8
+ 100 0010 0040A0E3 		mov	r4, #0
+ 101 0014 0760A0E1 		mov	r6, r7
+ 102              	.L21:
+ 103 0018 1930D6E5 		ldrb	r3, [r6, #25]	@ zero_extendqisi2
+ 104 001c 7450AFE6 		sxtb	r5, r4
+ 105 0020 786086E2 		add	r6, r6, #120
+ 106 0024 0500A0E1 		mov	r0, r5
+ 107 0028 030053E3 		cmp	r3, #3
+ 108 002c 0200000A 		beq	.L24
+ 109 0030 FEFFFFEB 		bl	R_SCIFA_GetTXIState
+ 110 0034 010050E3 		cmp	r0, #1
+ 111 0038 0400000A 		beq	.L37
+ 112              	.L24:
+ 113 003c 014084E2 		add	r4, r4, #1
+ 114 0040 050054E3 		cmp	r4, #5
+ 115 0044 F3FFFF1A 		bne	.L21
+ 116              	.L19:
+ 117 0048 08D08DE2 		add	sp, sp, #8
+ 118              		@ sp needed
+ 119 004c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 120              	.L37:
+ 121 0050 0482A0E1 		lsl	r8, r4, #4
+ 122 0054 0500A0E1 		mov	r0, r5
+ 123 0058 046048E0 		sub	r6, r8, r4
+ 124 005c FEFFFFEB 		bl	R_SCIFA_ClearTXIFlags
+ 125 0060 866187E0 		add	r6, r7, r6, lsl #3
+ 126 0064 0B0000EA 		b	.L25
+ 127              	.L26:
+ 128 0068 04309DE5 		ldr	r3, [sp, #4]
+ 129 006c 000053E3 		cmp	r3, #0
+ 130 0070 0D00001A 		bne	.L28
+ 131 0074 500096E5 		ldr	r0, [r6, #80]
+ 132 0078 FEFFFFEB 		bl	cbUsed
+ 133 007c 000050E3 		cmp	r0, #0
+ 134 0080 03108DE2 		add	r1, sp, #3
+ 135 0084 080000DA 		ble	.L28
+ 136 0088 500096E5 		ldr	r0, [r6, #80]
+ 137 008c FEFFFFEB 		bl	cbGet
+ 138 0090 000050E3 		cmp	r0, #0
+ 139 0094 1000001A 		bne	.L38
+ 140              	.L25:
+ 141 0098 04108DE2 		add	r1, sp, #4
+ 142 009c 0500A0E1 		mov	r0, r5
+ 143 00a0 FEFFFFEB 		bl	R_SCIFA_IsTxFifoFull
+ 144 00a4 000050E3 		cmp	r0, #0
+ 145 00a8 EEFFFF0A 		beq	.L26
+ 146              	.L28:
+ 147 00ac 044048E0 		sub	r4, r8, r4
+ 148 00b0 847187E0 		add	r7, r7, r4, lsl #3
+ 149 00b4 500097E5 		ldr	r0, [r7, #80]
+ 150 00b8 FEFFFFEB 		bl	cbUsed
+ 151 00bc 000050E3 		cmp	r0, #0
+ 152 00c0 E0FFFF1A 		bne	.L19
+ 153 00c4 0500A0E1 		mov	r0, r5
+ 154 00c8 FEFFFFEB 		bl	R_SCIFA_StopTXI
+ 155 00cc 0230A0E3 		mov	r3, #2
+ 156 00d0 4830C7E5 		strb	r3, [r7, #72]
+ 157 00d4 08D08DE2 		add	sp, sp, #8
+ 158              		@ sp needed
+ 159 00d8 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 160              	.L38:
+ 161 00dc 0310DDE5 		ldrb	r1, [sp, #3]	@ zero_extendqisi2
+ 162 00e0 0500A0E1 		mov	r0, r5
+ 163 00e4 FEFFFFEB 		bl	R_SCIFA_PutByte
+ 164 00e8 EAFFFFEA 		b	.L25
+ 166              		.section	.text.TXEI_handler,"ax",%progbits
+ 167              		.align	2
+ 168              		.syntax unified
+ 169              		.arm
+ 170              		.fpu neon
+ 172              	TXEI_handler:
+ 173              		@ args = 0, pretend = 0, frame = 0
+ 174              		@ frame_needed = 0, uses_anonymous_args = 0
+ 175 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 176 0004 0040A0E3 		mov	r4, #0
+ 177              	.L41:
+ 178 0008 7450AFE6 		sxtb	r5, r4
+ 179 000c 014084E2 		add	r4, r4, #1
+ 180 0010 0500A0E1 		mov	r0, r5
+ 181 0014 FEFFFFEB 		bl	R_SCIFA_GetTXEIState
+ 182 0018 010050E3 		cmp	r0, #1
+ 183 001c 0200000A 		beq	.L40
+ 184 0020 050054E3 		cmp	r4, #5
+ 185 0024 F7FFFF1A 		bne	.L41
+ 186 0028 7080BDE8 		pop	{r4, r5, r6, pc}
+ 187              	.L40:
+ 188 002c 0500A0E1 		mov	r0, r5
+ 189 0030 7040BDE8 		pop	{r4, r5, r6, lr}
+ 190 0034 FEFFFFEA 		b	R_SCIFA_StopTransmit
+ 192              		.section	.text.start_tx,"ax",%progbits
+ 193              		.align	2
+ 194              		.syntax unified
+ 195              		.arm
+ 196              		.fpu neon
+ 198              	start_tx:
+ 199              		@ args = 0, pretend = 0, frame = 8
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201 0000 0032A0E1 		lsl	r3, r0, #4
+ 202 0004 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 203 0008 0090A0E1 		mov	r9, r0
+ 204 000c 0340A0E1 		mov	r4, r3
+ 205 0010 008000E3 		movw	r8, #:lower16:.LANCHOR0
+ 206 0014 095044E0 		sub	r5, r4, r9
+ 207 0018 008040E3 		movt	r8, #:upper16:.LANCHOR0
+ 208 001c 855188E0 		add	r5, r8, r5, lsl #3
+ 209 0020 0CD04DE2 		sub	sp, sp, #12
+ 210 0024 0270A0E1 		mov	r7, r2
+ 211 0028 04308DE5 		str	r3, [sp, #4]
+ 212 002c 01A0A0E1 		mov	r10, r1
+ 213 0030 FEFFFFEB 		bl	R_SCIFA_DisableTxInterrupt
+ 214 0034 500095E5 		ldr	r0, [r5, #80]
+ 215 0038 FEFFFFEB 		bl	cbFree
+ 216 003c 070050E1 		cmp	r0, r7
+ 217 0040 0040A0B1 		movlt	r4, r0
+ 218 0044 0740A0A1 		movge	r4, r7
+ 219 0048 000054E3 		cmp	r4, #0
+ 220 004c 310000DA 		ble	.L54
+ 221 0050 0AB0A0E1 		mov	fp, r10
+ 222 0054 04608AE0 		add	r6, r10, r4
+ 223              	.L47:
+ 224 0058 0110DBE4 		ldrb	r1, [fp], #1	@ zero_extendqisi2
+ 225 005c 500095E5 		ldr	r0, [r5, #80]
+ 226 0060 FEFFFFEB 		bl	cbPut
+ 227 0064 0B0056E1 		cmp	r6, fp
+ 228 0068 FAFFFF1A 		bne	.L47
+ 229              	.L46:
+ 230 006c 0900A0E1 		mov	r0, r9
+ 231 0070 FEFFFFEB 		bl	R_SCIFA_EnableTxInterrupt
+ 232 0074 0900A0E1 		mov	r0, r9
+ 233 0078 FEFFFFEB 		bl	R_SCIFA_StartTXI
+ 234 007c 04309DE5 		ldr	r3, [sp, #4]
+ 235 0080 09B043E0 		sub	fp, r3, r9
+ 236 0084 8B8188E0 		add	r8, r8, fp, lsl #3
+ 237 0088 3130D8E5 		ldrb	r3, [r8, #49]	@ zero_extendqisi2
+ 238 008c 000053E3 		cmp	r3, #0
+ 239 0090 1800001A 		bne	.L45
+ 240              	.L59:
+ 241 0094 040057E1 		cmp	r7, r4
+ 242 0098 160000DA 		ble	.L45
+ 243              	.L60:
+ 244 009c 0900A0E1 		mov	r0, r9
+ 245 00a0 FEFFFFEB 		bl	R_SCIFA_DisableTxInterrupt
+ 246 00a4 500098E5 		ldr	r0, [r8, #80]
+ 247 00a8 FEFFFFEB 		bl	cbFree
+ 248 00ac 005050E2 		subs	r5, r0, #0
+ 249 00b0 130000DA 		ble	.L49
+ 250 00b4 040057E1 		cmp	r7, r4
+ 251 00b8 080000DA 		ble	.L50
+ 252 00bc 04608AE0 		add	r6, r10, r4
+ 253              	.L51:
+ 254 00c0 014084E2 		add	r4, r4, #1
+ 255 00c4 015045E2 		sub	r5, r5, #1
+ 256 00c8 0110D6E4 		ldrb	r1, [r6], #1	@ zero_extendqisi2
+ 257 00cc 500098E5 		ldr	r0, [r8, #80]
+ 258 00d0 FEFFFFEB 		bl	cbPut
+ 259 00d4 040057E1 		cmp	r7, r4
+ 260 00d8 000055C3 		cmpgt	r5, #0
+ 261 00dc F7FFFFCA 		bgt	.L51
+ 262              	.L50:
+ 263 00e0 0900A0E1 		mov	r0, r9
+ 264 00e4 FEFFFFEB 		bl	R_SCIFA_EnableTxInterrupt
+ 265 00e8 0900A0E1 		mov	r0, r9
+ 266 00ec FEFFFFEB 		bl	R_SCIFA_StartTXI
+ 267 00f0 040057E1 		cmp	r7, r4
+ 268 00f4 E8FFFFCA 		bgt	.L60
+ 269              	.L45:
+ 270 00f8 0400A0E1 		mov	r0, r4
+ 271 00fc 0CD08DE2 		add	sp, sp, #12
+ 272              		@ sp needed
+ 273 0100 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 274              	.L49:
+ 275 0104 0900A0E1 		mov	r0, r9
+ 276 0108 FEFFFFEB 		bl	R_SCIFA_EnableTxInterrupt
+ 277 010c 0500A0E3 		mov	r0, #5
+ 278 0110 FEFFFFEB 		bl	R_OS_TaskSleep
+ 279 0114 DEFFFFEA 		b	.L59
+ 280              	.L54:
+ 281 0118 0040A0E3 		mov	r4, #0
+ 282 011c D2FFFFEA 		b	.L46
+ 284              		.section	.text.r_scifa_hld_prv_open,"ax",%progbits
+ 285              		.align	2
+ 286              		.global	r_scifa_hld_prv_open
+ 287              		.syntax unified
+ 288              		.arm
+ 289              		.fpu neon
+ 291              	r_scifa_hld_prv_open:
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 295 0004 14D04DE2 		sub	sp, sp, #20
+ 296 0008 0190A0E1 		mov	r9, r1
+ 297 000c 0080A0E1 		mov	r8, r0
+ 298 0010 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 299 0014 010070E3 		cmn	r0, #1
+ 300 0018 0040A0E1 		mov	r4, r0
+ 301 001c A100000A 		beq	.L73
+ 302 0020 0072A0E1 		lsl	r7, r0, #4
+ 303 0024 006000E3 		movw	r6, #:lower16:.LANCHOR0
+ 304 0028 006040E3 		movt	r6, #:upper16:.LANCHOR0
+ 305 002c 045047E0 		sub	r5, r7, r4
+ 306 0030 855186E0 		add	r5, r6, r5, lsl #3
+ 307 0034 FEFFFFEB 		bl	R_OS_EnterCritical
+ 308 0038 5C3095E5 		ldr	r3, [r5, #92]
+ 309 003c 000053E3 		cmp	r3, #0
+ 310 0040 6D00000A 		beq	.L100
+ 311              	.L63:
+ 312 0044 045047E0 		sub	r5, r7, r4
+ 313 0048 855186E0 		add	r5, r6, r5, lsl #3
+ 314 004c FEFFFFEB 		bl	R_OS_ExitCritical
+ 315 0050 5C0095E5 		ldr	r0, [r5, #92]
+ 316 0054 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 317 0058 603095E5 		ldr	r3, [r5, #96]
+ 318 005c 000053E3 		cmp	r3, #0
+ 319 0060 0A00000A 		beq	.L101
+ 320 0064 F437D5E1 		ldrsh	r3, [r5, #116]
+ 321 0068 080053E1 		cmp	r3, r8
+ 322 006c 3E00000A 		beq	.L102
+ 323              	.L70:
+ 324 0070 00A0E0E3 		mvn	r10, #0
+ 325              	.L65:
+ 326 0074 044047E0 		sub	r4, r7, r4
+ 327 0078 844186E0 		add	r4, r6, r4, lsl #3
+ 328 007c 5C0094E5 		ldr	r0, [r4, #92]
+ 329 0080 FEFFFFEB 		bl	R_OS_MutexRelease
+ 330              	.L61:
+ 331 0084 0A00A0E1 		mov	r0, r10
+ 332 0088 14D08DE2 		add	sp, sp, #20
+ 333              		@ sp needed
+ 334 008c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 335              	.L101:
+ 336 0090 7430BFE6 		sxth	r3, r4
+ 337 0094 0800A0E1 		mov	r0, r8
+ 338 0098 709085E5 		str	r9, [r5, #112]
+ 339 009c 033263E0 		rsb	r3, r3, r3, lsl #4
+ 340 00a0 83B1A0E1 		lsl	fp, r3, #3
+ 341 00a4 0B1086E0 		add	r1, r6, fp
+ 342 00a8 FEFFFFEB 		bl	R_SCIFA_Open
+ 343 00ac 00A050E2 		subs	r10, r0, #0
+ 344 00b0 EFFFFF1A 		bne	.L65
+ 345 00b4 1900D5E5 		ldrb	r0, [r5, #25]	@ zero_extendqisi2
+ 346 00b8 001000E3 		movw	r1, #:lower16:TXEI_handler
+ 347 00bc 1D20D5E5 		ldrb	r2, [r5, #29]	@ zero_extendqisi2
+ 348 00c0 00C000E3 		movw	ip, #:lower16:RXI_handler
+ 349 00c4 001040E3 		movt	r1, #:upper16:TXEI_handler
+ 350 00c8 00C040E3 		movt	ip, #:upper16:RXI_handler
+ 351 00cc 030050E3 		cmp	r0, #3
+ 352 00d0 000000E3 		movw	r0, #:lower16:TXI_handler
+ 353 00d4 0010A013 		movne	r1, #0
+ 354 00d8 000040E3 		movt	r0, #:upper16:TXI_handler
+ 355 00dc 1C30D5E5 		ldrb	r3, [r5, #28]	@ zero_extendqisi2
+ 356 00e0 03108DE8 		stm	sp, {r0, r1, ip}
+ 357 00e4 0210A0E1 		mov	r1, r2
+ 358 00e8 0400A0E1 		mov	r0, r4
+ 359 00ec FEFFFFEB 		bl	R_SCIFA_SetupInterrupts
+ 360 00f0 00A050E2 		subs	r10, r0, #0
+ 361 00f4 DEFFFF1A 		bne	.L65
+ 362 00f8 FEFFFFEB 		bl	R_OS_MutexCreate
+ 363 00fc 540085E5 		str	r0, [r5, #84]
+ 364 0100 FEFFFFEB 		bl	R_OS_MutexCreate
+ 365 0104 080019E3 		tst	r9, #8
+ 366 0108 580085E5 		str	r0, [r5, #88]
+ 367 010c B487C5E1 		strh	r8, [r5, #116]	@ movhi
+ 368 0110 0200000A 		beq	.L67
+ 369 0114 1980D5E5 		ldrb	r8, [r5, #25]	@ zero_extendqisi2
+ 370 0118 020058E3 		cmp	r8, #2
+ 371 011c 5700000A 		beq	.L103
+ 372              	.L67:
+ 373 0120 040019E3 		tst	r9, #4
+ 374 0124 0400000A 		beq	.L69
+ 375 0128 045047E0 		sub	r5, r7, r4
+ 376 012c 855186E0 		add	r5, r6, r5, lsl #3
+ 377 0130 1A30D5E5 		ldrb	r3, [r5, #26]	@ zero_extendqisi2
+ 378 0134 020053E3 		cmp	r3, #2
+ 379 0138 3200000A 		beq	.L104
+ 380              	.L69:
+ 381 013c 0910A0E1 		mov	r1, r9
+ 382 0140 0400A0E1 		mov	r0, r4
+ 383 0144 FEFFFFEB 		bl	R_SCIFA_Start
+ 384 0148 00A050E2 		subs	r10, r0, #0
+ 385 014c C8FFFF1A 		bne	.L65
+ 386              	.L72:
+ 387 0150 043047E0 		sub	r3, r7, r4
+ 388 0154 00A0A0E3 		mov	r10, #0
+ 389 0158 833186E0 		add	r3, r6, r3, lsl #3
+ 390 015c 602093E5 		ldr	r2, [r3, #96]
+ 391 0160 012082E2 		add	r2, r2, #1
+ 392 0164 602083E5 		str	r2, [r3, #96]
+ 393 0168 C1FFFFEA 		b	.L65
+ 394              	.L102:
+ 395 016c 703095E5 		ldr	r3, [r5, #112]
+ 396 0170 080019E3 		tst	r9, #8
+ 397 0174 093083E1 		orr	r3, r3, r9
+ 398 0178 703085E5 		str	r3, [r5, #112]
+ 399 017c 0200000A 		beq	.L71
+ 400 0180 1980D5E5 		ldrb	r8, [r5, #25]	@ zero_extendqisi2
+ 401 0184 020058E3 		cmp	r8, #2
+ 402 0188 3200000A 		beq	.L105
+ 403              	.L71:
+ 404 018c 040019E3 		tst	r9, #4
+ 405 0190 EEFFFF0A 		beq	.L72
+ 406 0194 045047E0 		sub	r5, r7, r4
+ 407 0198 855186E0 		add	r5, r6, r5, lsl #3
+ 408 019c 1A30D5E5 		ldrb	r3, [r5, #26]	@ zero_extendqisi2
+ 409 01a0 020053E3 		cmp	r3, #2
+ 410 01a4 E9FFFF1A 		bne	.L72
+ 411 01a8 4C3095E5 		ldr	r3, [r5, #76]
+ 412 01ac 000053E3 		cmp	r3, #0
+ 413 01b0 E6FFFF1A 		bne	.L72
+ 414 01b4 B203D5E1 		ldrh	r0, [r5, #50]
+ 415 01b8 FEFFFFEB 		bl	cbCreate
+ 416 01bc 000050E3 		cmp	r0, #0
+ 417 01c0 0080A0E1 		mov	r8, r0
+ 418 01c4 4C0085E5 		str	r0, [r5, #76]
+ 419 01c8 E0FFFF1A 		bne	.L72
+ 420 01cc 7830A0E3 		mov	r3, #120
+ 421 01d0 936425E0 		mla	r5, r3, r4, r6
+ 422 01d4 502095E5 		ldr	r2, [r5, #80]
+ 423 01d8 000052E3 		cmp	r2, #0
+ 424 01dc A3FFFF0A 		beq	.L70
+ 425 01e0 5020A0E3 		mov	r2, #80
+ 426 01e4 00A0E0E3 		mvn	r10, #0
+ 427 01e8 832403E1 		smlabb	r3, r3, r4, r2
+ 428 01ec 030086E0 		add	r0, r6, r3
+ 429 01f0 FEFFFFEB 		bl	cbDestroy
+ 430 01f4 508085E5 		str	r8, [r5, #80]
+ 431 01f8 9DFFFFEA 		b	.L65
+ 432              	.L100:
+ 433 01fc FEFFFFEB 		bl	R_OS_MutexCreate
+ 434 0200 5C0085E5 		str	r0, [r5, #92]
+ 435 0204 8EFFFFEA 		b	.L63
+ 436              	.L104:
+ 437 0208 4C3095E5 		ldr	r3, [r5, #76]
+ 438 020c 000053E3 		cmp	r3, #0
+ 439 0210 C9FFFF1A 		bne	.L69
+ 440 0214 B203D5E1 		ldrh	r0, [r5, #50]
+ 441 0218 FEFFFFEB 		bl	cbCreate
+ 442 021c 000050E3 		cmp	r0, #0
+ 443 0220 0080A0E1 		mov	r8, r0
+ 444 0224 4C0085E5 		str	r0, [r5, #76]
+ 445 0228 C3FFFF1A 		bne	.L69
+ 446 022c 7850A0E3 		mov	r5, #120
+ 447 0230 956425E0 		mla	r5, r5, r4, r6
+ 448 0234 503095E5 		ldr	r3, [r5, #80]
+ 449 0238 000053E3 		cmp	r3, #0
+ 450 023c 8BFFFF0A 		beq	.L70
+ 451 0240 50008BE2 		add	r0, fp, #80
+ 452 0244 00A0E0E3 		mvn	r10, #0
+ 453 0248 000086E0 		add	r0, r6, r0
+ 454 024c FEFFFFEB 		bl	cbDestroy
+ 455 0250 508085E5 		str	r8, [r5, #80]
+ 456 0254 86FFFFEA 		b	.L65
+ 457              	.L105:
+ 458 0258 503095E5 		ldr	r3, [r5, #80]
+ 459 025c 000053E3 		cmp	r3, #0
+ 460 0260 C9FFFF1A 		bne	.L71
+ 461 0264 B403D5E1 		ldrh	r0, [r5, #52]
+ 462 0268 FEFFFFEB 		bl	cbCreate
+ 463 026c 000050E3 		cmp	r0, #0
+ 464 0270 500085E5 		str	r0, [r5, #80]
+ 465 0274 7DFFFF0A 		beq	.L70
+ 466 0278 4880C5E5 		strb	r8, [r5, #72]
+ 467 027c C2FFFFEA 		b	.L71
+ 468              	.L103:
+ 469 0280 503095E5 		ldr	r3, [r5, #80]
+ 470 0284 000053E3 		cmp	r3, #0
+ 471 0288 A4FFFF1A 		bne	.L67
+ 472 028c B403D5E1 		ldrh	r0, [r5, #52]
+ 473 0290 FEFFFFEB 		bl	cbCreate
+ 474 0294 000050E3 		cmp	r0, #0
+ 475 0298 500085E5 		str	r0, [r5, #80]
+ 476 029c 4880C515 		strbne	r8, [r5, #72]
+ 477 02a0 9EFFFF1A 		bne	.L67
+ 478 02a4 71FFFFEA 		b	.L70
+ 479              	.L73:
+ 480 02a8 00A0A0E1 		mov	r10, r0
+ 481 02ac 74FFFFEA 		b	.L61
+ 483              		.section	.text.r_scifa_hld_prv_close,"ax",%progbits
+ 484              		.align	2
+ 485              		.global	r_scifa_hld_prv_close
+ 486              		.syntax unified
+ 487              		.arm
+ 488              		.fpu neon
+ 490              	r_scifa_hld_prv_close:
+ 491              		@ args = 0, pretend = 0, frame = 0
+ 492              		@ frame_needed = 0, uses_anonymous_args = 0
+ 493 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 494 0004 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 495 0008 010070E3 		cmn	r0, #1
+ 496 000c F081BD08 		popeq	{r4, r5, r6, r7, r8, pc}
+ 497 0010 0072A0E1 		lsl	r7, r0, #4
+ 498 0014 004000E3 		movw	r4, #:lower16:.LANCHOR0
+ 499 0018 004040E3 		movt	r4, #:upper16:.LANCHOR0
+ 500 001c 006047E0 		sub	r6, r7, r0
+ 501 0020 0050A0E1 		mov	r5, r0
+ 502 0024 866184E0 		add	r6, r4, r6, lsl #3
+ 503 0028 5C0096E5 		ldr	r0, [r6, #92]
+ 504 002c 000050E3 		cmp	r0, #0
+ 505 0030 F081BD08 		popeq	{r4, r5, r6, r7, r8, pc}
+ 506 0034 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 507 0038 608096E5 		ldr	r8, [r6, #96]
+ 508 003c 018048E2 		sub	r8, r8, #1
+ 509 0040 000058E3 		cmp	r8, #0
+ 510 0044 608086E5 		str	r8, [r6, #96]
+ 511 0048 4200001A 		bne	.L108
+ 512 004c 0500A0E1 		mov	r0, r5
+ 513 0050 FEFFFFEB 		bl	R_SCIFA_Stop
+ 514 0054 0810A0E1 		mov	r1, r8
+ 515 0058 0500A0E1 		mov	r0, r5
+ 516 005c FEFFFFEB 		bl	R_SCIFA_StartModule
+ 517 0060 500096E5 		ldr	r0, [r6, #80]
+ 518 0064 000050E3 		cmp	r0, #0
+ 519 0068 0100000A 		beq	.L109
+ 520 006c FEFFFFEB 		bl	cbDestroy
+ 521 0070 508086E5 		str	r8, [r6, #80]
+ 522              	.L109:
+ 523 0074 056047E0 		sub	r6, r7, r5
+ 524 0078 866184E0 		add	r6, r4, r6, lsl #3
+ 525 007c 4C0096E5 		ldr	r0, [r6, #76]
+ 526 0080 000050E3 		cmp	r0, #0
+ 527 0084 0200000A 		beq	.L110
+ 528 0088 FEFFFFEB 		bl	cbDestroy
+ 529 008c 0030A0E3 		mov	r3, #0
+ 530 0090 4C3086E5 		str	r3, [r6, #76]
+ 531              	.L110:
+ 532 0094 058047E0 		sub	r8, r7, r5
+ 533 0098 7560BFE6 		sxth	r6, r5
+ 534 009c 888184E0 		add	r8, r4, r8, lsl #3
+ 535 00a0 066266E0 		rsb	r6, r6, r6, lsl #4
+ 536 00a4 543098E5 		ldr	r3, [r8, #84]
+ 537 00a8 8661A0E1 		lsl	r6, r6, #3
+ 538 00ac 000053E3 		cmp	r3, #0
+ 539 00b0 0400000A 		beq	.L112
+ 540 00b4 540086E2 		add	r0, r6, #84
+ 541 00b8 000084E0 		add	r0, r4, r0
+ 542 00bc FEFFFFEB 		bl	R_OS_MutexDelete
+ 543 00c0 0030A0E3 		mov	r3, #0
+ 544 00c4 543088E5 		str	r3, [r8, #84]
+ 545              	.L112:
+ 546 00c8 058047E0 		sub	r8, r7, r5
+ 547 00cc 888184E0 		add	r8, r4, r8, lsl #3
+ 548 00d0 583098E5 		ldr	r3, [r8, #88]
+ 549 00d4 000053E3 		cmp	r3, #0
+ 550 00d8 0400000A 		beq	.L113
+ 551 00dc 580086E2 		add	r0, r6, #88
+ 552 00e0 000084E0 		add	r0, r4, r0
+ 553 00e4 FEFFFFEB 		bl	R_OS_MutexDelete
+ 554 00e8 0030A0E3 		mov	r3, #0
+ 555 00ec 583088E5 		str	r3, [r8, #88]
+ 556              	.L113:
+ 557 00f0 058047E0 		sub	r8, r7, r5
+ 558 00f4 888184E0 		add	r8, r4, r8, lsl #3
+ 559 00f8 680098E5 		ldr	r0, [r8, #104]
+ 560 00fc 000050E3 		cmp	r0, #0
+ 561 0100 020000DA 		ble	.L114
+ 562 0104 FEFFFFEB 		bl	close
+ 563 0108 0030E0E3 		mvn	r3, #0
+ 564 010c 683088E5 		str	r3, [r8, #104]
+ 565              	.L114:
+ 566 0110 058047E0 		sub	r8, r7, r5
+ 567 0114 888184E0 		add	r8, r4, r8, lsl #3
+ 568 0118 6C0098E5 		ldr	r0, [r8, #108]
+ 569 011c 000050E3 		cmp	r0, #0
+ 570 0120 020000DA 		ble	.L115
+ 571 0124 FEFFFFEB 		bl	close
+ 572 0128 0030E0E3 		mvn	r3, #0
+ 573 012c 6C3088E5 		str	r3, [r8, #108]
+ 574              	.L115:
+ 575 0130 FEFFFFEB 		bl	R_OS_EnterCritical
+ 576 0134 055047E0 		sub	r5, r7, r5
+ 577 0138 5C0086E2 		add	r0, r6, #92
+ 578 013c 000084E0 		add	r0, r4, r0
+ 579 0140 854184E0 		add	r4, r4, r5, lsl #3
+ 580 0144 FEFFFFEB 		bl	R_OS_MutexDelete
+ 581 0148 0030A0E3 		mov	r3, #0
+ 582 014c 5C3084E5 		str	r3, [r4, #92]
+ 583 0150 F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 584 0154 FEFFFFEA 		b	R_OS_ExitCritical
+ 585              	.L108:
+ 586 0158 5C0096E5 		ldr	r0, [r6, #92]
+ 587 015c F041BDE8 		pop	{r4, r5, r6, r7, r8, lr}
+ 588 0160 FEFFFFEA 		b	R_OS_MutexRelease
+ 590              		.section	.text.r_scifa_hld_dma_read_next,"ax",%progbits
+ 591              		.align	2
+ 592              		.global	r_scifa_hld_dma_read_next
+ 593              		.syntax unified
+ 594              		.arm
+ 595              		.fpu neon
+ 597              	r_scifa_hld_dma_read_next:
+ 598              		@ args = 0, pretend = 0, frame = 0
+ 599              		@ frame_needed = 0, uses_anonymous_args = 0
+ 600              		@ link register save eliminated.
+ 601 0000 0000E0E3 		mvn	r0, #0
+ 602 0004 1EFF2FE1 		bx	lr
+ 604              		.section	.text.r_scifa_hld_prv_read,"ax",%progbits
+ 605              		.align	2
+ 606              		.global	r_scifa_hld_prv_read
+ 607              		.syntax unified
+ 608              		.arm
+ 609              		.fpu neon
+ 611              	r_scifa_hld_prv_read:
+ 612              		@ args = 0, pretend = 0, frame = 16
+ 613              		@ frame_needed = 0, uses_anonymous_args = 0
+ 614 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+ 615 0004 14D04DE2 		sub	sp, sp, #20
+ 616 0008 0190A0E1 		mov	r9, r1
+ 617 000c 0280A0E1 		mov	r8, r2
+ 618 0010 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 619 0014 010070E3 		cmn	r0, #1
+ 620 0018 0060A0E1 		mov	r6, r0
+ 621 001c 5000000A 		beq	.L148
+ 622 0020 0032A0E1 		lsl	r3, r0, #4
+ 623 0024 00A000E3 		movw	r10, #:lower16:.LANCHOR0
+ 624 0028 00A040E3 		movt	r10, #:upper16:.LANCHOR0
+ 625 002c 004043E0 		sub	r4, r3, r0
+ 626 0030 04308DE5 		str	r3, [sp, #4]
+ 627 0034 84418AE0 		add	r4, r10, r4, lsl #3
+ 628              	.L144:
+ 629 0038 580094E5 		ldr	r0, [r4, #88]
+ 630 003c FEFFFFEB 		bl	R_OS_MutexAcquire
+ 631 0040 1A30D4E5 		ldrb	r3, [r4, #26]	@ zero_extendqisi2
+ 632 0044 0600A0E1 		mov	r0, r6
+ 633 0048 030053E3 		cmp	r3, #3
+ 634 004c 3200000A 		beq	.L159
+ 635 0050 FEFFFFEB 		bl	R_SCIFA_DisableRxInterrupt
+ 636 0054 4C0094E5 		ldr	r0, [r4, #76]
+ 637 0058 FEFFFFEB 		bl	cbUsed
+ 638 005c 000050E3 		cmp	r0, #0
+ 639 0060 3D0000DA 		ble	.L151
+ 640 0064 000058E1 		cmp	r8, r0
+ 641 0068 0850A0B1 		movlt	r5, r8
+ 642 006c 0050A0A1 		movge	r5, r0
+ 643 0070 000055E3 		cmp	r5, #0
+ 644 0074 380000DA 		ble	.L151
+ 645 0078 09B0A0E1 		mov	fp, r9
+ 646 007c 057089E0 		add	r7, r9, r5
+ 647              	.L139:
+ 648 0080 0B10A0E1 		mov	r1, fp
+ 649 0084 4C0094E5 		ldr	r0, [r4, #76]
+ 650 0088 01B08BE2 		add	fp, fp, #1
+ 651 008c FEFFFFEB 		bl	cbGet
+ 652 0090 07005BE1 		cmp	fp, r7
+ 653 0094 F9FFFF1A 		bne	.L139
+ 654              	.L138:
+ 655 0098 050058E1 		cmp	r8, r5
+ 656 009c 060000DA 		ble	.L140
+ 657 00a0 057089E0 		add	r7, r9, r5
+ 658              	.L142:
+ 659 00a4 0C108DE2 		add	r1, sp, #12
+ 660 00a8 0600A0E1 		mov	r0, r6
+ 661 00ac FEFFFFEB 		bl	R_SCIFA_IsRxFifoEmpty
+ 662 00b0 0C309DE5 		ldr	r3, [sp, #12]
+ 663 00b4 000053E3 		cmp	r3, #0
+ 664 00b8 0B00000A 		beq	.L160
+ 665              	.L140:
+ 666 00bc 0600A0E1 		mov	r0, r6
+ 667 00c0 FEFFFFEB 		bl	R_SCIFA_EnableRxInterrupt
+ 668 00c4 580094E5 		ldr	r0, [r4, #88]
+ 669 00c8 FEFFFFEB 		bl	R_OS_MutexRelease
+ 670 00cc 1A30D4E5 		ldrb	r3, [r4, #26]	@ zero_extendqisi2
+ 671 00d0 030053E3 		cmp	r3, #3
+ 672 00d4 0100000A 		beq	.L133
+ 673 00d8 000055E3 		cmp	r5, #0
+ 674 00dc 1400000A 		beq	.L143
+ 675              	.L133:
+ 676 00e0 0500A0E1 		mov	r0, r5
+ 677 00e4 14D08DE2 		add	sp, sp, #20
+ 678              		@ sp needed
+ 679 00e8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 680              	.L160:
+ 681 00ec 0B108DE2 		add	r1, sp, #11
+ 682 00f0 0600A0E1 		mov	r0, r6
+ 683 00f4 FEFFFFEB 		bl	R_SCIFA_GetByte
+ 684 00f8 015085E2 		add	r5, r5, #1
+ 685 00fc 0B30DDE5 		ldrb	r3, [sp, #11]	@ zero_extendqisi2
+ 686 0100 050058E1 		cmp	r8, r5
+ 687 0104 0130C7E4 		strb	r3, [r7], #1
+ 688 0108 1700000A 		beq	.L141
+ 689 010c 0C309DE5 		ldr	r3, [sp, #12]
+ 690 0110 000053E3 		cmp	r3, #0
+ 691 0114 E2FFFF0A 		beq	.L142
+ 692 0118 E7FFFFEA 		b	.L140
+ 693              	.L159:
+ 694 011c FEFFFFEB 		bl	R_SCIFA_EnableRxInterrupt
+ 695 0120 580094E5 		ldr	r0, [r4, #88]
+ 696 0124 FEFFFFEB 		bl	R_OS_MutexRelease
+ 697 0128 1A30D4E5 		ldrb	r3, [r4, #26]	@ zero_extendqisi2
+ 698 012c 030053E3 		cmp	r3, #3
+ 699 0130 0200000A 		beq	.L149
+ 700              	.L143:
+ 701 0134 3030D4E5 		ldrb	r3, [r4, #48]	@ zero_extendqisi2
+ 702 0138 000053E3 		cmp	r3, #0
+ 703 013c 0300000A 		beq	.L161
+ 704              	.L149:
+ 705 0140 0050A0E3 		mov	r5, #0
+ 706 0144 0500A0E1 		mov	r0, r5
+ 707 0148 14D08DE2 		add	sp, sp, #20
+ 708              		@ sp needed
+ 709 014c F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 710              	.L161:
+ 711 0150 0100A0E3 		mov	r0, #1
+ 712 0154 FEFFFFEB 		bl	R_OS_TaskSleep
+ 713 0158 B6FFFFEA 		b	.L144
+ 714              	.L151:
+ 715 015c 0050A0E3 		mov	r5, #0
+ 716 0160 CCFFFFEA 		b	.L138
+ 717              	.L148:
+ 718 0164 0050A0E1 		mov	r5, r0
+ 719 0168 DCFFFFEA 		b	.L133
+ 720              	.L141:
+ 721 016c 0600A0E1 		mov	r0, r6
+ 722 0170 FEFFFFEB 		bl	R_SCIFA_EnableRxInterrupt
+ 723 0174 04309DE5 		ldr	r3, [sp, #4]
+ 724 0178 066043E0 		sub	r6, r3, r6
+ 725 017c 86A18AE0 		add	r10, r10, r6, lsl #3
+ 726 0180 58009AE5 		ldr	r0, [r10, #88]
+ 727 0184 FEFFFFEB 		bl	R_OS_MutexRelease
+ 728 0188 D4FFFFEA 		b	.L133
+ 730              		.section	.text.r_scifa_hld_dma_write_next,"ax",%progbits
+ 731              		.align	2
+ 732              		.global	r_scifa_hld_dma_write_next
+ 733              		.syntax unified
+ 734              		.arm
+ 735              		.fpu neon
+ 737              	r_scifa_hld_dma_write_next:
+ 738              		@ args = 0, pretend = 0, frame = 0
+ 739              		@ frame_needed = 0, uses_anonymous_args = 0
+ 740              		@ link register save eliminated.
+ 741 0000 0000E0E3 		mvn	r0, #0
+ 742 0004 1EFF2FE1 		bx	lr
+ 744              		.section	.text.r_scifa_hld_prv_write,"ax",%progbits
+ 745              		.align	2
+ 746              		.global	r_scifa_hld_prv_write
+ 747              		.syntax unified
+ 748              		.arm
+ 749              		.fpu neon
+ 751              	r_scifa_hld_prv_write:
+ 752              		@ args = 0, pretend = 0, frame = 8
+ 753              		@ frame_needed = 0, uses_anonymous_args = 0
+ 754 0000 F0432DE9 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 755 0004 0CD04DE2 		sub	sp, sp, #12
+ 756 0008 0150A0E1 		mov	r5, r1
+ 757 000c 0280A0E1 		mov	r8, r2
+ 758 0010 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 759 0014 010070E3 		cmn	r0, #1
+ 760 0018 0040A0E1 		mov	r4, r0
+ 761 001c 4300000A 		beq	.L175
+ 762 0020 FEFFFFEB 		bl	R_OS_Running
+ 763 0024 000050E3 		cmp	r0, #0
+ 764 0028 1800000A 		beq	.L182
+ 765 002c 0462A0E1 		lsl	r6, r4, #4
+ 766 0030 009000E3 		movw	r9, #:lower16:.LANCHOR0
+ 767 0034 009040E3 		movt	r9, #:upper16:.LANCHOR0
+ 768 0038 047046E0 		sub	r7, r6, r4
+ 769 003c 877189E0 		add	r7, r9, r7, lsl #3
+ 770 0040 540097E5 		ldr	r0, [r7, #84]
+ 771 0044 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 772 0048 1930D7E5 		ldrb	r3, [r7, #25]	@ zero_extendqisi2
+ 773 004c 030053E3 		cmp	r3, #3
+ 774 0050 2000000A 		beq	.L176
+ 775 0054 4830D7E5 		ldrb	r3, [r7, #72]	@ zero_extendqisi2
+ 776 0058 030053E3 		cmp	r3, #3
+ 777 005c 3100000A 		beq	.L172
+ 778 0060 040053E3 		cmp	r3, #4
+ 779 0064 2D00000A 		beq	.L173
+ 780 0068 020053E3 		cmp	r3, #2
+ 781 006c 2300000A 		beq	.L183
+ 782              	.L171:
+ 783 0070 044046E0 		sub	r4, r6, r4
+ 784 0074 0050E0E3 		mvn	r5, #0
+ 785 0078 843189E0 		add	r3, r9, r4, lsl #3
+ 786 007c 540093E5 		ldr	r0, [r3, #84]
+ 787 0080 FEFFFFEB 		bl	R_OS_MutexRelease
+ 788              	.L163:
+ 789 0084 0500A0E1 		mov	r0, r5
+ 790 0088 0CD08DE2 		add	sp, sp, #12
+ 791              		@ sp needed
+ 792 008c F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 793              	.L182:
+ 794 0090 000058E3 		cmp	r8, #0
+ 795 0094 086085C0 		addgt	r6, r5, r8
+ 796 0098 0A0000DA 		ble	.L169
+ 797              	.L167:
+ 798 009c 04108DE2 		add	r1, sp, #4
+ 799 00a0 0400A0E1 		mov	r0, r4
+ 800 00a4 FEFFFFEB 		bl	R_SCIFA_IsTxFifoFull
+ 801 00a8 04309DE5 		ldr	r3, [sp, #4]
+ 802 00ac 000053E3 		cmp	r3, #0
+ 803 00b0 F9FFFF1A 		bne	.L167
+ 804 00b4 0110D5E4 		ldrb	r1, [r5], #1	@ zero_extendqisi2
+ 805 00b8 0400A0E1 		mov	r0, r4
+ 806 00bc FEFFFFEB 		bl	R_SCIFA_PutByte
+ 807 00c0 050056E1 		cmp	r6, r5
+ 808 00c4 F4FFFF1A 		bne	.L167
+ 809              	.L169:
+ 810 00c8 0850A0E1 		mov	r5, r8
+ 811 00cc 0500A0E1 		mov	r0, r5
+ 812 00d0 0CD08DE2 		add	sp, sp, #12
+ 813              		@ sp needed
+ 814 00d4 F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 815              	.L176:
+ 816 00d8 0850A0E1 		mov	r5, r8
+ 817              	.L170:
+ 818 00dc 043046E0 		sub	r3, r6, r4
+ 819 00e0 000055E3 		cmp	r5, #0
+ 820 00e4 833189E0 		add	r3, r9, r3, lsl #3
+ 821 00e8 0850A001 		moveq	r5, r8
+ 822 00ec 540093E5 		ldr	r0, [r3, #84]
+ 823 00f0 FEFFFFEB 		bl	R_OS_MutexRelease
+ 824 00f4 0500A0E1 		mov	r0, r5
+ 825 00f8 0CD08DE2 		add	sp, sp, #12
+ 826              		@ sp needed
+ 827 00fc F083BDE8 		pop	{r4, r5, r6, r7, r8, r9, pc}
+ 828              	.L183:
+ 829 0100 0510A0E1 		mov	r1, r5
+ 830 0104 0330A0E3 		mov	r3, #3
+ 831              	.L180:
+ 832 0108 0820A0E1 		mov	r2, r8
+ 833 010c 4830C7E5 		strb	r3, [r7, #72]
+ 834 0110 0400A0E1 		mov	r0, r4
+ 835 0114 FEFFFFEB 		bl	start_tx
+ 836 0118 0050A0E1 		mov	r5, r0
+ 837 011c EEFFFFEA 		b	.L170
+ 838              	.L173:
+ 839              		.syntax divided
+ 840              	@ 47 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_EBK/generate/compiler/inc/r_compi
+ 841 0120 00F020E3 		nop
+ 842              	@ 0 "" 2
+ 843              		.arm
+ 844              		.syntax unified
+ 845 0124 D1FFFFEA 		b	.L171
+ 846              	.L172:
+ 847 0128 0510A0E1 		mov	r1, r5
+ 848 012c F5FFFFEA 		b	.L180
+ 849              	.L175:
+ 850 0130 0050A0E1 		mov	r5, r0
+ 851 0134 D2FFFFEA 		b	.L163
+ 853              		.section	.text.r_scifa_hld_prv_set_config,"ax",%progbits
+ 854              		.align	2
+ 855              		.global	r_scifa_hld_prv_set_config
+ 856              		.syntax unified
+ 857              		.arm
+ 858              		.fpu neon
+ 860              	r_scifa_hld_prv_set_config:
+ 861              		@ args = 0, pretend = 0, frame = 8
+ 862              		@ frame_needed = 0, uses_anonymous_args = 0
+ 863 0000 F0472DE9 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
+ 864 0004 18D04DE2 		sub	sp, sp, #24
+ 865 0008 0190A0E1 		mov	r9, r1
+ 866 000c FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 867 0010 010070E3 		cmn	r0, #1
+ 868 0014 0040A0E1 		mov	r4, r0
+ 869 0018 7400000A 		beq	.L195
+ 870 001c 0072A0E1 		lsl	r7, r0, #4
+ 871 0020 006000E3 		movw	r6, #:lower16:.LANCHOR0
+ 872 0024 006040E3 		movt	r6, #:upper16:.LANCHOR0
+ 873 0028 005047E0 		sub	r5, r7, r0
+ 874 002c 855186E0 		add	r5, r6, r5, lsl #3
+ 875 0030 5C0095E5 		ldr	r0, [r5, #92]
+ 876 0034 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 877 0038 0400A0E1 		mov	r0, r4
+ 878 003c FEFFFFEB 		bl	R_SCIFA_Stop
+ 879 0040 008050E2 		subs	r8, r0, #0
+ 880 0044 0600000A 		beq	.L213
+ 881              	.L186:
+ 882 0048 044047E0 		sub	r4, r7, r4
+ 883 004c 844186E0 		add	r4, r6, r4, lsl #3
+ 884 0050 5C0094E5 		ldr	r0, [r4, #92]
+ 885 0054 FEFFFFEB 		bl	R_OS_MutexRelease
+ 886              	.L184:
+ 887 0058 0800A0E1 		mov	r0, r8
+ 888 005c 18D08DE2 		add	sp, sp, #24
+ 889              		@ sp needed
+ 890 0060 F087BDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, pc}
+ 891              	.L213:
+ 892 0064 500095E5 		ldr	r0, [r5, #80]
+ 893 0068 000050E3 		cmp	r0, #0
+ 894 006c 0100000A 		beq	.L187
+ 895 0070 FEFFFFEB 		bl	cbDestroy
+ 896 0074 508085E5 		str	r8, [r5, #80]
+ 897              	.L187:
+ 898 0078 045047E0 		sub	r5, r7, r4
+ 899 007c 855186E0 		add	r5, r6, r5, lsl #3
+ 900 0080 4C0095E5 		ldr	r0, [r5, #76]
+ 901 0084 000050E3 		cmp	r0, #0
+ 902 0088 0200000A 		beq	.L188
+ 903 008c FEFFFFEB 		bl	cbDestroy
+ 904 0090 0030A0E3 		mov	r3, #0
+ 905 0094 4C3085E5 		str	r3, [r5, #76]
+ 906              	.L188:
+ 907 0098 045047E0 		sub	r5, r7, r4
+ 908 009c 855186E0 		add	r5, r6, r5, lsl #3
+ 909 00a0 708095E5 		ldr	r8, [r5, #112]
+ 910 00a4 080018E3 		tst	r8, #8
+ 911 00a8 0200000A 		beq	.L189
+ 912 00ac 19A0D9E5 		ldrb	r10, [r9, #25]	@ zero_extendqisi2
+ 913 00b0 02005AE3 		cmp	r10, #2
+ 914 00b4 4200000A 		beq	.L214
+ 915              	.L189:
+ 916 00b8 040018E3 		tst	r8, #4
+ 917 00bc 0200000A 		beq	.L191
+ 918 00c0 1A30D9E5 		ldrb	r3, [r9, #26]	@ zero_extendqisi2
+ 919 00c4 020053E3 		cmp	r3, #2
+ 920 00c8 2700000A 		beq	.L215
+ 921              	.L191:
+ 922 00cc 14208DE2 		add	r2, sp, #20
+ 923 00d0 0910A0E1 		mov	r1, r9
+ 924 00d4 0400A0E1 		mov	r0, r4
+ 925 00d8 FEFFFFEB 		bl	R_SCIFA_ChannelConfigure
+ 926 00dc 008050E2 		subs	r8, r0, #0
+ 927 00e0 D8FFFF1A 		bne	.L186
+ 928 00e4 7400BFE6 		sxth	r0, r4
+ 929 00e8 045047E0 		sub	r5, r7, r4
+ 930 00ec 855186E0 		add	r5, r6, r5, lsl #3
+ 931 00f0 0910A0E1 		mov	r1, r9
+ 932 00f4 000260E0 		rsb	r0, r0, r0, lsl #4
+ 933 00f8 3820A0E3 		mov	r2, #56
+ 934 00fc 800186E0 		add	r0, r6, r0, lsl #3
+ 935 0100 FEFFFFEB 		bl	memcpy
+ 936 0104 19E0D5E5 		ldrb	lr, [r5, #25]	@ zero_extendqisi2
+ 937 0108 001000E3 		movw	r1, #:lower16:TXEI_handler
+ 938 010c 1D20D5E5 		ldrb	r2, [r5, #29]	@ zero_extendqisi2
+ 939 0110 003000E3 		movw	r3, #:lower16:RXI_handler
+ 940 0114 14C09DE5 		ldr	ip, [sp, #20]
+ 941 0118 000000E3 		movw	r0, #:lower16:TXI_handler
+ 942 011c 03005EE3 		cmp	lr, #3
+ 943 0120 001040E3 		movt	r1, #:upper16:TXEI_handler
+ 944 0124 003040E3 		movt	r3, #:upper16:RXI_handler
+ 945 0128 0010A013 		movne	r1, #0
+ 946 012c 000040E3 		movt	r0, #:upper16:TXI_handler
+ 947 0130 08308DE5 		str	r3, [sp, #8]
+ 948 0134 1C30D5E5 		ldrb	r3, [r5, #28]	@ zero_extendqisi2
+ 949 0138 04108DE5 		str	r1, [sp, #4]
+ 950 013c 0210A0E1 		mov	r1, r2
+ 951 0140 00008DE5 		str	r0, [sp]
+ 952 0144 0400A0E1 		mov	r0, r4
+ 953 0148 04C085E5 		str	ip, [r5, #4]
+ 954 014c FEFFFFEB 		bl	R_SCIFA_SetupInterrupts
+ 955 0150 008050E2 		subs	r8, r0, #0
+ 956 0154 BBFFFF1A 		bne	.L186
+ 957 0158 701095E5 		ldr	r1, [r5, #112]
+ 958 015c 0400A0E1 		mov	r0, r4
+ 959 0160 FEFFFFEB 		bl	R_SCIFA_Start
+ 960 0164 0080A0E1 		mov	r8, r0
+ 961 0168 B6FFFFEA 		b	.L186
+ 962              	.L215:
+ 963 016c 045047E0 		sub	r5, r7, r4
+ 964 0170 855186E0 		add	r5, r6, r5, lsl #3
+ 965 0174 4C3095E5 		ldr	r3, [r5, #76]
+ 966 0178 000053E3 		cmp	r3, #0
+ 967 017c D2FFFF1A 		bne	.L191
+ 968 0180 B203D9E1 		ldrh	r0, [r9, #50]
+ 969 0184 FEFFFFEB 		bl	cbCreate
+ 970 0188 000050E3 		cmp	r0, #0
+ 971 018c 00A0A0E1 		mov	r10, r0
+ 972 0190 4C0085E5 		str	r0, [r5, #76]
+ 973 0194 CCFFFF1A 		bne	.L191
+ 974 0198 503095E5 		ldr	r3, [r5, #80]
+ 975 019c 000053E3 		cmp	r3, #0
+ 976 01a0 1000000A 		beq	.L192
+ 977 01a4 5030A0E3 		mov	r3, #80
+ 978 01a8 7800A0E3 		mov	r0, #120
+ 979 01ac 803400E1 		smlabb	r0, r0, r4, r3
+ 980 01b0 0080E0E3 		mvn	r8, #0
+ 981 01b4 000086E0 		add	r0, r6, r0
+ 982 01b8 FEFFFFEB 		bl	cbDestroy
+ 983 01bc 50A085E5 		str	r10, [r5, #80]
+ 984 01c0 A0FFFFEA 		b	.L186
+ 985              	.L214:
+ 986 01c4 503095E5 		ldr	r3, [r5, #80]
+ 987 01c8 000053E3 		cmp	r3, #0
+ 988 01cc B9FFFF1A 		bne	.L189
+ 989 01d0 B403D9E1 		ldrh	r0, [r9, #52]
+ 990 01d4 FEFFFFEB 		bl	cbCreate
+ 991 01d8 000050E3 		cmp	r0, #0
+ 992 01dc 500085E5 		str	r0, [r5, #80]
+ 993 01e0 48A0C515 		strbne	r10, [r5, #72]
+ 994 01e4 B3FFFF1A 		bne	.L189
+ 995              	.L192:
+ 996 01e8 0080E0E3 		mvn	r8, #0
+ 997 01ec 95FFFFEA 		b	.L186
+ 998              	.L195:
+ 999 01f0 0080A0E1 		mov	r8, r0
+ 1000 01f4 97FFFFEA 		b	.L184
+ 1002              		.section	.text.r_scifa_hld_prv_get_config,"ax",%progbits
+ 1003              		.align	2
+ 1004              		.global	r_scifa_hld_prv_get_config
+ 1005              		.syntax unified
+ 1006              		.arm
+ 1007              		.fpu neon
+ 1009              	r_scifa_hld_prv_get_config:
+ 1010              		@ args = 0, pretend = 0, frame = 0
+ 1011              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1012 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+ 1013 0004 0170A0E1 		mov	r7, r1
+ 1014 0008 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 1015 000c 010070E3 		cmn	r0, #1
+ 1016 0010 0040A0E1 		mov	r4, r0
+ 1017 0014 0F00000A 		beq	.L218
+ 1018 0018 005260E0 		rsb	r5, r0, r0, lsl #4
+ 1019 001c 006000E3 		movw	r6, #:lower16:.LANCHOR0
+ 1020 0020 006040E3 		movt	r6, #:upper16:.LANCHOR0
+ 1021 0024 7440BFE6 		sxth	r4, r4
+ 1022 0028 855186E0 		add	r5, r6, r5, lsl #3
+ 1023 002c 044264E0 		rsb	r4, r4, r4, lsl #4
+ 1024 0030 5C0095E5 		ldr	r0, [r5, #92]
+ 1025 0034 FEFFFFEB 		bl	R_OS_MutexAcquire
+ 1026 0038 3820A0E3 		mov	r2, #56
+ 1027 003c 841186E0 		add	r1, r6, r4, lsl #3
+ 1028 0040 0700A0E1 		mov	r0, r7
+ 1029 0044 FEFFFFEB 		bl	memcpy
+ 1030 0048 5C0095E5 		ldr	r0, [r5, #92]
+ 1031 004c FEFFFFEB 		bl	R_OS_MutexRelease
+ 1032 0050 0000A0E3 		mov	r0, #0
+ 1033 0054 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 1034              	.L218:
+ 1035 0058 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 1037              		.section	.text.r_scifa_hld_dma_read_abort,"ax",%progbits
+ 1038              		.align	2
+ 1039              		.global	r_scifa_hld_dma_read_abort
+ 1040              		.syntax unified
+ 1041              		.arm
+ 1042              		.fpu neon
+ 1044              	r_scifa_hld_dma_read_abort:
+ 1045              		@ args = 0, pretend = 0, frame = 0
+ 1046              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1047              		@ link register save eliminated.
+ 1048 0000 0000E0E3 		mvn	r0, #0
+ 1049 0004 1EFF2FE1 		bx	lr
+ 1051              		.section	.text.r_scifa_hld_dma_write_abort,"ax",%progbits
+ 1052              		.align	2
+ 1053              		.global	r_scifa_hld_dma_write_abort
+ 1054              		.syntax unified
+ 1055              		.arm
+ 1056              		.fpu neon
+ 1058              	r_scifa_hld_dma_write_abort:
+ 1059              		@ args = 0, pretend = 0, frame = 0
+ 1060              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1061              		@ link register save eliminated.
+ 1062 0000 0000E0E3 		mvn	r0, #0
+ 1063 0004 1EFF2FE1 		bx	lr
+ 1065              		.section	.text.r_scifa_hld_tx_flush,"ax",%progbits
+ 1066              		.align	2
+ 1067              		.global	r_scifa_hld_tx_flush
+ 1068              		.syntax unified
+ 1069              		.arm
+ 1070              		.fpu neon
+ 1072              	r_scifa_hld_tx_flush:
+ 1073              		@ args = 0, pretend = 0, frame = 0
+ 1074              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1075 0000 70402DE9 		push	{r4, r5, r6, lr}
+ 1076 0004 FEFFFFEB 		bl	R_SCIFA_GetChannel
+ 1077 0008 010070E3 		cmn	r0, #1
+ 1078 000c 0050A0E1 		mov	r5, r0
+ 1079 0010 1100000A 		beq	.L225
+ 1080 0014 003000E3 		movw	r3, #:lower16:.LANCHOR0
+ 1081 0018 006260E0 		rsb	r6, r0, r0, lsl #4
+ 1082 001c 003040E3 		movt	r3, #:upper16:.LANCHOR0
+ 1083 0020 866183E0 		add	r6, r3, r6, lsl #3
+ 1084              	.L224:
+ 1085 0024 0500A0E1 		mov	r0, r5
+ 1086 0028 FEFFFFEB 		bl	R_SCIFA_DisableTxInterrupt
+ 1087 002c 500096E5 		ldr	r0, [r6, #80]
+ 1088 0030 FEFFFFEB 		bl	cbUsed
+ 1089 0034 0040A0E1 		mov	r4, r0
+ 1090 0038 0500A0E1 		mov	r0, r5
+ 1091 003c FEFFFFEB 		bl	R_SCIFA_EnableTxInterrupt
+ 1092 0040 000054E3 		cmp	r4, #0
+ 1093 0044 0100001A 		bne	.L228
+ 1094              	.L222:
+ 1095 0048 0400A0E1 		mov	r0, r4
+ 1096 004c 7080BDE8 		pop	{r4, r5, r6, pc}
+ 1097              	.L228:
+ 1098 0050 0100A0E3 		mov	r0, #1
+ 1099 0054 FEFFFFEB 		bl	R_OS_TaskSleep
+ 1100 0058 F1FFFFEA 		b	.L224
+ 1101              	.L225:
+ 1102 005c 0040A0E1 		mov	r4, r0
+ 1103 0060 F8FFFFEA 		b	.L222
+ 1105              		.section	.bss.gs_ch_ctrl,"aw",%nobits
+ 1106              		.align	2
+ 1107              		.set	.LANCHOR0,. + 0
+ 1110              	gs_ch_ctrl:
+ 1111 0000 00000000 		.space	600
+ 1111      00000000 
+ 1111      00000000 
+ 1111      00000000 
+ 1111      00000000 
+ 1112              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_scifa_hld_prv.c
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:14     .text.RXI_handler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:19     .text.RXI_handler:00000000 RXI_handler
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1107   .bss.gs_ch_ctrl:00000000 .LANCHOR0
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:88     .text.TXI_handler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:93     .text.TXI_handler:00000000 TXI_handler
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:167    .text.TXEI_handler:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:172    .text.TXEI_handler:00000000 TXEI_handler
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:193    .text.start_tx:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:198    .text.start_tx:00000000 start_tx
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:285    .text.r_scifa_hld_prv_open:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:291    .text.r_scifa_hld_prv_open:00000000 r_scifa_hld_prv_open
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:484    .text.r_scifa_hld_prv_close:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:490    .text.r_scifa_hld_prv_close:00000000 r_scifa_hld_prv_close
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:591    .text.r_scifa_hld_dma_read_next:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:597    .text.r_scifa_hld_dma_read_next:00000000 r_scifa_hld_dma_read_next
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:605    .text.r_scifa_hld_prv_read:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:611    .text.r_scifa_hld_prv_read:00000000 r_scifa_hld_prv_read
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:731    .text.r_scifa_hld_dma_write_next:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:737    .text.r_scifa_hld_dma_write_next:00000000 r_scifa_hld_dma_write_next
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:745    .text.r_scifa_hld_prv_write:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:751    .text.r_scifa_hld_prv_write:00000000 r_scifa_hld_prv_write
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:854    .text.r_scifa_hld_prv_set_config:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:860    .text.r_scifa_hld_prv_set_config:00000000 r_scifa_hld_prv_set_config
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1003   .text.r_scifa_hld_prv_get_config:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1009   .text.r_scifa_hld_prv_get_config:00000000 r_scifa_hld_prv_get_config
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1038   .text.r_scifa_hld_dma_read_abort:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1044   .text.r_scifa_hld_dma_read_abort:00000000 r_scifa_hld_dma_read_abort
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1052   .text.r_scifa_hld_dma_write_abort:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1058   .text.r_scifa_hld_dma_write_abort:00000000 r_scifa_hld_dma_write_abort
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1066   .text.r_scifa_hld_tx_flush:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1072   .text.r_scifa_hld_tx_flush:00000000 r_scifa_hld_tx_flush
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1106   .bss.gs_ch_ctrl:00000000 $d
+C:\Users\a5050395\AppData\Local\Temp\ccP8fCGE.s:1110   .bss.gs_ch_ctrl:00000000 gs_ch_ctrl
+
+UNDEFINED SYMBOLS
+R_SCIFA_GetRXIState
+R_SCIFA_CheckRXIError
+R_SCIFA_GetByte
+R_SCIFA_IsRxFifoEmpty
+R_SCIFA_ClearRXIFlags
+cbFree
+cbPut
+R_SCIFA_GetTXIState
+R_SCIFA_ClearTXIFlags
+cbUsed
+cbGet
+R_SCIFA_IsTxFifoFull
+R_SCIFA_StopTXI
+R_SCIFA_PutByte
+R_SCIFA_GetTXEIState
+R_SCIFA_StopTransmit
+R_SCIFA_DisableTxInterrupt
+R_SCIFA_EnableTxInterrupt
+R_SCIFA_StartTXI
+R_OS_TaskSleep
+R_SCIFA_GetChannel
+R_OS_EnterCritical
+R_OS_ExitCritical
+R_OS_MutexAcquire
+R_OS_MutexRelease
+R_SCIFA_Open
+R_SCIFA_SetupInterrupts
+R_OS_MutexCreate
+R_SCIFA_Start
+cbCreate
+cbDestroy
+R_SCIFA_Stop
+R_SCIFA_StartModule
+R_OS_MutexDelete
+close
+R_SCIFA_DisableRxInterrupt
+R_SCIFA_EnableRxInterrupt
+R_OS_Running
+R_SCIFA_ChannelConfigure
+memcpy

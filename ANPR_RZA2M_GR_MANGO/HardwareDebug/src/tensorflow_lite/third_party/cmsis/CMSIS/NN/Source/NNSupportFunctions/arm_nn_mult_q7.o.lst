@@ -1,0 +1,942 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"arm_nn_mult_q7.c"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.arm_nn_mult_q7,"ax",%progbits
+  17              		.align	2
+  18              		.global	arm_nn_mult_q7
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	arm_nn_mult_q7:
+  24              	.LFB122:
+  25              		.file 1 "../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q
+   1:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** /*
+   2:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Copyright (C) 2010-2018 Arm Limited or its affiliates. All rights reserved.
+   3:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+   4:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * SPDX-License-Identifier: Apache-2.0
+   5:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+   6:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Licensed under the Apache License, Version 2.0 (the License); you may
+   7:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * not use this file except in compliance with the License.
+   8:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * You may obtain a copy of the License at
+   9:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  10:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * www.apache.org/licenses/LICENSE-2.0
+  11:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  12:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Unless required by applicable law or agreed to in writing, software
+  13:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+  14:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  15:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * See the License for the specific language governing permissions and
+  16:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * limitations under the License.
+  17:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  */
+  18:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  19:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** /* ----------------------------------------------------------------------
+  20:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Project:      CMSIS NN Library
+  21:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Title:        arm_nn_mult_q7.c
+  22:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Description:  Q7 vector multiplication with variable output shifts
+  23:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  24:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * $Date:        09. October 2020
+  25:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * $Revision:    V.1.0.2
+  26:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  27:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Target Processor:  Cortex-M cores
+  28:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  29:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * -------------------------------------------------------------------- */
+  30:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  31:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** #include "arm_nnsupportfunctions.h"
+  32:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  33:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** /**
+  34:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @ingroup groupSupport
+  35:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  */
+  36:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  37:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** /**
+  38:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @addtogroup NNBasicMath
+  39:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @{
+  40:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  */
+  41:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  42:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** /**
+  43:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @brief           Q7 vector multiplication with variable output shifts
+  44:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @param[in]       *pSrcA        pointer to the first input vector
+  45:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @param[in]       *pSrcB        pointer to the second input vector
+  46:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @param[out]      *pDst         pointer to the output vector
+  47:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @param[in]       out_shift     amount of right-shift for output
+  48:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * @param[in]       blockSize     number of samples in each vector
+  49:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  *
+  50:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * <b>Scaling and Overflow Behavior:</b>
+  51:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * \par
+  52:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * The function uses saturating arithmetic.
+  53:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  * Results outside of the allowable Q7 range [0x80 0x7F] will be saturated.
+  54:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****  */
+  55:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  56:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** void arm_nn_mult_q7(q7_t *pSrcA, q7_t *pSrcB, q7_t *pDst, const uint16_t out_shift, uint32_t blockS
+  57:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** {
+  26              		.loc 1 57 0
+  27              		.cfi_startproc
+  28              		@ args = 4, pretend = 0, frame = 168
+  29              		@ frame_needed = 0, uses_anonymous_args = 0
+  30              	.LVL0:
+  31 0000 F04F2DE9 		push	{r4, r5, r6, r7, r8, r9, r10, fp, lr}
+  32              		.cfi_def_cfa_offset 36
+  33              		.cfi_offset 4, -36
+  34              		.cfi_offset 5, -32
+  35              		.cfi_offset 6, -28
+  36              		.cfi_offset 7, -24
+  37              		.cfi_offset 8, -20
+  38              		.cfi_offset 9, -16
+  39              		.cfi_offset 10, -12
+  40              		.cfi_offset 11, -8
+  41              		.cfi_offset 14, -4
+  42 0004 0160A0E1 		mov	r6, r1
+  43 0008 108B2DED 		vpush.64	{d8, d9, d10, d11, d12, d13, d14, d15}
+  44              		.cfi_def_cfa_offset 100
+  45              		.cfi_offset 80, -100
+  46              		.cfi_offset 81, -96
+  47              		.cfi_offset 82, -92
+  48              		.cfi_offset 83, -88
+  49              		.cfi_offset 84, -84
+  50              		.cfi_offset 85, -80
+  51              		.cfi_offset 86, -76
+  52              		.cfi_offset 87, -72
+  53              		.cfi_offset 88, -68
+  54              		.cfi_offset 89, -64
+  55              		.cfi_offset 90, -60
+  56              		.cfi_offset 91, -56
+  57              		.cfi_offset 92, -52
+  58              		.cfi_offset 93, -48
+  59              		.cfi_offset 94, -44
+  60              		.cfi_offset 95, -40
+  61 000c ACD04DE2 		sub	sp, sp, #172
+  62              		.cfi_def_cfa_offset 272
+  63              		.loc 1 57 0
+  64 0010 00108DE5 		str	r1, [sp]
+  65              	.LVL1:
+  58:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     uint32_t blkCnt; /* loop counters */
+  59:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  60:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** #if defined(ARM_MATH_DSP)
+  61:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  62:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* Run the below code for Cortex-M4 and Cortex-M3 */
+  63:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     q7_t out1, out2, out3, out4; /* Temporary variables to store the product */
+  64:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  65:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* loop Unrolling */
+  66:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     blkCnt = blockSize >> 2U;
+  67:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  68:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* First part of the processing with loop unrolling.  Compute 4 outputs at a time.
+  69:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****      ** a second loop below computes the remaining 1 to 3 samples. */
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     while (blkCnt > 0U)
+  66              		.loc 1 70 0
+  67 0014 10119DE5 		ldr	r1, [sp, #272]
+  68              	.LVL2:
+  69 0018 2111B0E1 		lsrs	r1, r1, #2
+  70              	.LVL3:
+  71 001c 04108DE5 		str	r1, [sp, #4]
+  72 0020 4401000A 		beq	.L2
+  73 0024 40C080E2 		add	ip, r0, #64
+  74 0028 0170A0E1 		mov	r7, r1
+  75 002c 401082E2 		add	r1, r2, #64
+  76              	.LVL4:
+  77 0030 06E082E1 		orr	lr, r2, r6
+  78 0034 010050E1 		cmp	r0, r1
+  79 0038 0C005231 		cmpcc	r2, ip
+  80 003c 0140A0E1 		mov	r4, r1
+  81 0040 01C0A023 		movcs	ip, #1
+  82 0044 401086E2 		add	r1, r6, #64
+  83 0048 00C0A033 		movcc	ip, #0
+  84 004c 0EE080E1 		orr	lr, r0, lr
+  85 0050 0F0057E3 		cmp	r7, #15
+  86 0054 00C0A093 		movls	ip, #0
+  87 0058 01C00C82 		andhi	ip, ip, #1
+  88 005c 040056E1 		cmp	r6, r4
+  89 0060 01005231 		cmpcc	r2, r1
+  90 0064 0110A023 		movcs	r1, #1
+  91 0068 0010A033 		movcc	r1, #0
+  92 006c 0C1001E0 		and	r1, r1, ip
+  93 0070 0F001EE3 		tst	lr, #15
+  94 0074 0010A013 		movne	r1, #0
+  95 0078 01100102 		andeq	r1, r1, #1
+  96 007c 0190A0E3 		mov	r9, #1
+  97 0080 000051E3 		cmp	r1, #0
+  98 0084 1993A0E1 		lsl	r9, r9, r3
+  99 0088 D990EFE7 		ubfx	r9, r9, #1, #16
+ 100 008c 5601000A 		beq	.L3
+ 101 0090 101047E2 		sub	r1, r7, #16
+ 102 0094 903BA0EE 		vdup.32	q8, r3
+ 103 0098 2112A0E1 		lsr	r1, r1, #4
+  71:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+  72:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* C = A * B */
+  73:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* Multiply the inputs and store the results in temporary variables */
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out1 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+  78:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  79:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* Store the results of 4 inputs in the destination buffer in single cycle by packing */
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         *__SIMD32(pDst)++ = __PACKq7(out1, out2, out3, out4);
+ 104              		.loc 1 80 0
+ 105 009c 7FE0C7F2 		vmov.i32	q15, #4294967168  @ v4si
+ 106 00a0 5F80C7F2 		vmov.i32	q12, #127  @ v4si
+ 107 00a4 0640A0E1 		mov	r4, r6
+ 108 00a8 011081E2 		add	r1, r1, #1
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 109              		.loc 1 74 0
+ 110 00ac E0A3F9F3 		vneg.s32	q13, q8
+ 111 00b0 01E2A0E1 		lsl	lr, r1, #4
+ 112 00b4 B09BA0EE 		vdup.16	q8, r9
+ 113 00b8 0050A0E1 		mov	r5, r0
+ 114 00bc 80C082E2 		add	ip, r2, #128
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 115              		.loc 1 70 0
+ 116 00c0 0060A0E3 		mov	r6, #0
+ 117              	.LVL5:
+ 118 00c4 020BCDED 		vstr	d16, [sp, #8]
+ 119 00c8 041BCDED 		vstr	d17, [sp, #16]
+ 120              	.LVL6:
+ 121              	.L4:
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 122              		.loc 1 74 0
+ 123 00cc 207084E2 		add	r7, r4, #32
+ 124 00d0 208085E2 		add	r8, r5, #32
+ 125 00d4 0F0164F4 		vld4.8	{d16, d18, d20, d22}, [r4]
+ 126 00d8 016086E2 		add	r6, r6, #1
+ 127 00dc 00F0DCF5 		pld	[ip]
+ 128 00e0 060051E1 		cmp	r1, r6
+ 129 00e4 10F0DCF5 		pld	[ip, #16]
+ 130 00e8 404084E2 		add	r4, r4, #64
+ 131 00ec 40C08CE2 		add	ip, ip, #64
+ 132 00f0 0F0125F4 		vld4.8	{d0, d2, d4, d6}, [r5]
+ 133 00f4 405085E2 		add	r5, r5, #64
+ 134 00f8 0F1167F4 		vld4.8	{d17, d19, d21, d23}, [r7]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 135              		.loc 1 77 0
+ 136 00fc 28708DE2 		add	r7, sp, #40
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 137              		.loc 1 74 0
+ 138 0100 0F1128F4 		vld4.8	{d1, d3, d5, d7}, [r8]
+ 139 0104 F08120F2 		vmov	q4, q8  @ ti
+ 140 0108 F6E126F2 		vmov	q7, q11  @ ti
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 141              		.loc 1 77 0
+ 142 010c 266CC6F2 		vmull.s8 q11, d6, d22
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 143              		.loc 1 74 0
+ 144 0110 F4C124F2 		vmov	q6, q10  @ ti
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 145              		.loc 1 75 0
+ 146 0114 22CCC2F2 		vmull.s8 q14, d2, d18
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 147              		.loc 1 74 0
+ 148 0118 084CC0F2 		vmull.s8 q10, d0, d8
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 149              		.loc 1 75 0
+ 150 011c 230CC3F2 		vmull.s8 q8, d3, d19
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 151              		.loc 1 74 0
+ 152 0120 F2A122F2 		vmov	q5, q9  @ ti
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 153              		.loc 1 75 0
+ 154 0124 022BDDED 		vldr	d18, [sp, #8]
+ 155 0128 043BDDED 		vldr	d19, [sp, #16]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 156              		.loc 1 77 0
+ 157 012c E26856F2 		vadd.i16	q11, q11, q9
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 158              		.loc 1 75 0
+ 159 0130 E2C85CF2 		vadd.i16	q14, q14, q9
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 160              		.loc 1 74 0
+ 161 0134 E24854F2 		vadd.i16	q10, q10, q9
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 162              		.loc 1 75 0
+ 163 0138 E20850F2 		vadd.i16	q8, q8, q9
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 164              		.loc 1 77 0
+ 165 013c 0F2CC7F2 		vmull.s8 q9, d7, d15
+ 166 0140 108B87EC 		vstmia	r7, {d8-d15}
+ 167 0144 368A90F2 		vmovl.s16 q4, d22
+ 168 0148 376AD0F2 		vmovl.s16 q11, d23
+ 169 014c 02CB9DED 		vldr	d12, [sp, #8]
+ 170 0150 04DB9DED 		vldr	d13, [sp, #16]
+ 171 0154 CC2852F2 		vadd.i16	q9, q9, q6
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 172              		.loc 1 75 0
+ 173 0158 3CAA90F2 		vmovl.s16 q5, d28
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 174              		.loc 1 74 0
+ 175 015c 34CA90F2 		vmovl.s16 q6, d20
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 176              		.loc 1 75 0
+ 177 0160 3DCAD0F2 		vmovl.s16 q14, d29
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 178              		.loc 1 77 0
+ 179 0164 E6646AF2 		vshl.s32	q11, q11, q13
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 180              		.loc 1 75 0
+ 181 0168 ECE42AF2 		vshl.s32	q7, q14, q13
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 182              		.loc 1 74 0
+ 183 016c CCC46AF2 		vshl.s32	q14, q6, q13
+ 184              		.loc 1 80 0
+ 185 0170 EE6666F2 		vmax.s32	q11, q11, q15
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 186              		.loc 1 74 0
+ 187 0174 354AD0F2 		vmovl.s16 q10, d21
+ 188 0178 06CBCDED 		vstr	d28, [sp, #24]
+ 189 017c 08DBCDED 		vstr	d29, [sp, #32]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 190              		.loc 1 77 0
+ 191 0180 C8842AF2 		vshl.s32	q4, q4, q13
+ 192              		.loc 1 80 0
+ 193 0184 1A6BCDED 		vstr	d22, [sp, #104]
+ 194 0188 1C7BCDED 		vstr	d23, [sp, #112]
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 195              		.loc 1 74 0
+ 196 018c E4446AF2 		vshl.s32	q10, q10, q13
+ 197              		.loc 1 80 0
+ 198 0190 066BDDED 		vldr	d22, [sp, #24]
+ 199 0194 087BDDED 		vldr	d23, [sp, #32]
+ 200 0198 6E8628F2 		vmax.s32	q4, q4, q15
+ 201 019c EE6666F2 		vmax.s32	q11, q11, q15
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 202              		.loc 1 74 0
+ 203 01a0 F4C124F2 		vmov	q6, q10  @ v4si
+ 204 01a4 0A4BDDED 		vldr	d20, [sp, #40]
+ 205 01a8 0C5BDDED 		vldr	d21, [sp, #48]
+ 206 01ac 254CC1F2 		vmull.s8 q10, d1, d21
+ 207              		.loc 1 80 0
+ 208 01b0 066BCDED 		vstr	d22, [sp, #24]
+ 209 01b4 087BCDED 		vstr	d23, [sp, #32]
+ 210 01b8 6E666CF2 		vmax.s32	q11, q6, q15
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 211              		.loc 1 76 0
+ 212 01bc 12CB9DED 		vldr	d12, [sp, #72]
+ 213 01c0 14DB9DED 		vldr	d13, [sp, #80]
+ 214 01c4 0D2C85F2 		vmull.s8 q1, d5, d13
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 215              		.loc 1 74 0
+ 216 01c8 02CBDDED 		vldr	d28, [sp, #8]
+ 217 01cc 04DBDDED 		vldr	d29, [sp, #16]
+ 218 01d0 EC4854F2 		vadd.i16	q10, q10, q14
+ 219              	.LVL7:
+ 220              		.loc 1 80 0
+ 221 01d4 226BCDED 		vstr	d22, [sp, #136]
+ 222 01d8 247BCDED 		vstr	d23, [sp, #144]
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 223              		.loc 1 75 0
+ 224 01dc CAA42AF2 		vshl.s32	q5, q5, q13
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 225              		.loc 1 76 0
+ 226 01e0 126BDDED 		vldr	d22, [sp, #72]
+ 227 01e4 147BDDED 		vldr	d23, [sp, #80]
+ 228 01e8 266CC4F2 		vmull.s8 q11, d4, d22
+ 229 01ec 6C2812F2 		vadd.i16	q1, q1, q14
+ 230              	.LVL8:
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 231              		.loc 1 77 0
+ 232 01f0 324A90F2 		vmovl.s16 q2, d18
+ 233 01f4 332AD0F2 		vmovl.s16 q9, d19
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 234              		.loc 1 75 0
+ 235 01f8 306A90F2 		vmovl.s16 q3, d16
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 236              		.loc 1 76 0
+ 237 01fc EC0816F2 		vadd.i16	q0, q11, q14
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 238              		.loc 1 74 0
+ 239 0200 346AD0F2 		vmovl.s16 q11, d20
+ 240 0204 354AD0F2 		vmovl.s16 q10, d21
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 241              		.loc 1 76 0
+ 242 0208 10CAD0F2 		vmovl.s16 q14, d0
+ 243 020c 110A90F2 		vmovl.s16 q0, d1
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 244              		.loc 1 74 0
+ 245 0210 E6646AF2 		vshl.s32	q11, q11, q13
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 246              		.loc 1 76 0
+ 247 0214 C0042AF2 		vshl.s32	q0, q0, q13
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 248              		.loc 1 74 0
+ 249 0218 E4446AF2 		vshl.s32	q10, q10, q13
+ 250              		.loc 1 80 0
+ 251 021c 6E0620F2 		vmax.s32	q0, q0, q15
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 252              		.loc 1 75 0
+ 253 0220 310AD0F2 		vmovl.s16 q8, d17
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 254              		.loc 1 77 0
+ 255 0224 C4442AF2 		vshl.s32	q2, q2, q13
+ 256              		.loc 1 80 0
+ 257 0228 50C120F2 		vmov	q6, q0  @ v4si
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 258              		.loc 1 76 0
+ 259 022c 120A90F2 		vmovl.s16 q0, d2
+ 260 0230 132A90F2 		vmovl.s16 q1, d3
+ 261              		.loc 1 80 0
+ 262 0234 78C62CF2 		vmin.s32	q6, q6, q12
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 263              		.loc 1 76 0
+ 264 0238 C0042AF2 		vshl.s32	q0, q0, q13
+ 265 023c C2242AF2 		vshl.s32	q1, q1, q13
+ 266              		.loc 1 80 0
+ 267 0240 26CB8DED 		vstr	d12, [sp, #152]
+ 268 0244 28DB8DED 		vstr	d13, [sp, #160]
+ 269 0248 6E0620F2 		vmax.s32	q0, q0, q15
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 270              		.loc 1 77 0
+ 271 024c E2246AF2 		vshl.s32	q9, q9, q13
+ 272              		.loc 1 80 0
+ 273 0250 788628F2 		vmin.s32	q4, q4, q12
+ 274 0254 0A0B8DED 		vstr	d0, [sp, #40]
+ 275 0258 0C1B8DED 		vstr	d1, [sp, #48]
+ 276 025c 6E0622F2 		vmax.s32	q0, q1, q15
+ 277 0260 1A2B9DED 		vldr	d2, [sp, #104]
+ 278 0264 1C3B9DED 		vldr	d3, [sp, #112]
+ 279 0268 6EA62AF2 		vmax.s32	q5, q5, q15
+ 280 026c 6EE62EF2 		vmax.s32	q7, q7, q15
+ 281 0270 1E0B8DED 		vstr	d0, [sp, #120]
+ 282 0274 201B8DED 		vstr	d1, [sp, #128]
+ 283 0278 780622F2 		vmin.s32	q0, q1, q12
+ 284 027c 062B9DED 		vldr	d2, [sp, #24]
+ 285 0280 083B9DED 		vldr	d3, [sp, #32]
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 286              		.loc 1 75 0
+ 287 0284 C6642AF2 		vshl.s32	q3, q3, q13
+ 288              		.loc 1 80 0
+ 289 0288 0ACB9DED 		vldr	d12, [sp, #40]
+ 290 028c 0CDB9DED 		vldr	d13, [sp, #48]
+ 291 0290 782622F2 		vmin.s32	q1, q1, q12
+ 292 0294 1A0B8DED 		vstr	d0, [sp, #104]
+ 293 0298 1C1B8DED 		vstr	d1, [sp, #112]
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 294              		.loc 1 75 0
+ 295 029c E0046AF2 		vshl.s32	q8, q8, q13
+ 296              		.loc 1 80 0
+ 297 02a0 1E0B9DED 		vldr	d0, [sp, #120]
+ 298 02a4 201B9DED 		vldr	d1, [sp, #128]
+ 299 02a8 EE6666F2 		vmax.s32	q11, q11, q15
+ 300 02ac 780620F2 		vmin.s32	q0, q0, q12
+ 301 02b0 EE4664F2 		vmax.s32	q10, q10, q15
+ 302 02b4 6E4624F2 		vmax.s32	q2, q2, q15
+ 303 02b8 062B8DED 		vstr	d2, [sp, #24]
+ 304 02bc 083B8DED 		vstr	d3, [sp, #32]
+ 305 02c0 78C62CF2 		vmin.s32	q6, q6, q12
+ 306 02c4 222B9DED 		vldr	d2, [sp, #136]
+ 307 02c8 243B9DED 		vldr	d3, [sp, #144]
+ 308 02cc 5885B8F2 		vshl.i32	q4, q4, #24
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 309              		.loc 1 76 0
+ 310 02d0 ECC46AF2 		vshl.s32	q14, q14, q13
+ 311              		.loc 1 80 0
+ 312 02d4 1E0B8DED 		vstr	d0, [sp, #120]
+ 313 02d8 201B8DED 		vstr	d1, [sp, #128]
+ 314 02dc EE2662F2 		vmax.s32	q9, q9, q15
+ 315 02e0 1A0B9DED 		vldr	d0, [sp, #104]
+ 316 02e4 1C1B9DED 		vldr	d1, [sp, #112]
+ 317 02e8 78A62AF2 		vmin.s32	q5, q5, q12
+ 318 02ec 78E62EF2 		vmin.s32	q7, q7, q12
+ 319 02f0 6E6626F2 		vmax.s32	q3, q3, q15
+ 320 02f4 EE0660F2 		vmax.s32	q8, q8, q15
+ 321 02f8 782622F2 		vmin.s32	q1, q1, q12
+ 322 02fc F86666F2 		vmin.s32	q11, q11, q12
+ 323 0300 F84664F2 		vmin.s32	q10, q10, q12
+ 324 0304 228B8DED 		vstr	d8, [sp, #136]
+ 325 0308 249B8DED 		vstr	d9, [sp, #144]
+ 326 030c 784624F2 		vmin.s32	q2, q2, q12
+ 327 0310 5085B8F2 		vshl.i32	q4, q0, #24
+ 328 0314 5F0087F3 		vmov.i32	q0, #255  @ v4si
+ 329 0318 EEC66CF2 		vmax.s32	q14, q14, q15
+ 330 031c F82662F2 		vmin.s32	q9, q9, q12
+ 331 0320 0ACB8DED 		vstr	d12, [sp, #40]
+ 332 0324 0CDB8DED 		vstr	d13, [sp, #48]
+ 333 0328 502102F2 		vand	q1, q1, q0
+ 334 032c 06CB9DED 		vldr	d12, [sp, #24]
+ 335 0330 08DB9DED 		vldr	d13, [sp, #32]
+ 336 0334 D06146F2 		vand	q11, q11, q0
+ 337 0338 D04144F2 		vand	q10, q10, q0
+ 338 033c 50C10CF2 		vand	q6, q6, q0
+ 339 0340 5AA5A8F2 		vshl.i32	q5, q5, #8
+ 340 0344 5F0C87F3 		vmov.i32	q0, #65535  @ v4si
+ 341 0348 5EE5A8F2 		vshl.i32	q7, q7, #8
+ 342 034c 786626F2 		vmin.s32	q3, q3, q12
+ 343 0350 F80660F2 		vmin.s32	q8, q8, q12
+ 344 0354 50E10EF2 		vand	q7, q7, q0
+ 345 0358 50A10AF2 		vand	q5, q5, q0
+ 346 035c 5445B8F2 		vshl.i32	q2, q2, #24
+ 347 0360 220B9DED 		vldr	d0, [sp, #136]
+ 348 0364 241B9DED 		vldr	d1, [sp, #144]
+ 349 0368 50C12CF2 		vorr	q6, q6, q0
+ 350 036c F8C66CF2 		vmin.s32	q14, q14, q12
+ 351 0370 580122F2 		vorr	q0, q1, q4
+ 352 0374 7225F8F2 		vshl.i32	q9, q9, #24
+ 353 0378 262B9DED 		vldr	d2, [sp, #152]
+ 354 037c 283B9DED 		vldr	d3, [sp, #160]
+ 355 0380 D44126F2 		vorr	q2, q11, q2
+ 356 0384 0A6BDDED 		vldr	d22, [sp, #40]
+ 357 0388 0C7BDDED 		vldr	d23, [sp, #48]
+ 358 038c 5285B0F2 		vshl.i32	q4, q1, #16
+ 359 0390 06EB8DED 		vstr	d14, [sp, #24]
+ 360 0394 08FB8DED 		vstr	d15, [sp, #32]
+ 361 0398 5F2C87F3 		vmov.i32	q1, #65535  @ v4si
+ 362 039c F22164F2 		vorr	q9, q10, q9
+ 363 03a0 5665A8F2 		vshl.i32	q3, q3, #8
+ 364 03a4 7005E8F2 		vshl.i32	q8, q8, #8
+ 365 03a8 1E4BDDED 		vldr	d20, [sp, #120]
+ 366 03ac 205BDDED 		vldr	d21, [sp, #128]
+ 367 03b0 76E5B0F2 		vshl.i32	q7, q11, #16
+ 368 03b4 066BDDED 		vldr	d22, [sp, #24]
+ 369 03b8 087BDDED 		vldr	d23, [sp, #32]
+ 370 03bc 760120F2 		vorr	q0, q0, q11
+ 371 03c0 7CC5F0F2 		vshl.i32	q14, q14, #16
+ 372 03c4 5F64C7F3 		vmov.i32	q11, #16711680  @ v4si
+ 373 03c8 526106F2 		vand	q3, q3, q1
+ 374 03cc D20140F2 		vand	q8, q8, q1
+ 375 03d0 7445F0F2 		vshl.i32	q10, q10, #16
+ 376 03d4 5AA12CF2 		vorr	q5, q6, q5
+ 377 03d8 F6C14CF2 		vand	q14, q14, q11
+ 378 03dc 768108F2 		vand	q4, q4, q11
+ 379 03e0 566124F2 		vorr	q3, q2, q3
+ 380 03e4 F00162F2 		vorr	q8, q9, q8
+ 381 03e8 76E10EF2 		vand	q7, q7, q11
+ 382 03ec F64144F2 		vand	q10, q10, q11
+ 383 03f0 7CA12AF2 		vorr	q5, q5, q14
+ 384 03f4 580120F2 		vorr	q0, q0, q4
+ 385 03f8 5E6126F2 		vorr	q3, q3, q7
+ 386 03fc F40160F2 		vorr	q8, q8, q10
+ 387 0400 30AB0CED 		vstr	d10, [ip, #-192]
+ 388 0404 2EBB0CED 		vstr	d11, [ip, #-184]
+ 389 0408 2C0B0CED 		vstr	d0, [ip, #-176]
+ 390 040c 2A1B0CED 		vstr	d1, [ip, #-168]
+ 391 0410 286B0CED 		vstr	d6, [ip, #-160]
+ 392 0414 267B0CED 		vstr	d7, [ip, #-152]
+ 393 0418 240B4CED 		vstr	d16, [ip, #-144]
+ 394 041c 221B4CED 		vstr	d17, [ip, #-136]
+ 395 0420 29FFFF8A 		bhi	.L4
+ 396 0424 04109DE5 		ldr	r1, [sp, #4]
+ 397 0428 0E81A0E1 		lsl	r8, lr, #2
+ 398 042c 087082E0 		add	r7, r2, r8
+ 399 0430 0E0051E1 		cmp	r1, lr
+ 400 0434 0EB041E0 		sub	fp, r1, lr
+ 401 0438 08B0A001 		moveq	fp, r8
+ 402 043c 3800000A 		beq	.L9
+ 403 0440 00109DE5 		ldr	r1, [sp]
+ 404 0444 048088E2 		add	r8, r8, #4
+ 405 0448 0BB187E0 		add	fp, r7, fp, lsl #2
+ 406 044c 08A080E0 		add	r10, r0, r8
+ 407 0450 7F60E0E3 		mvn	r6, #127
+ 408 0454 088081E0 		add	r8, r1, r8
+ 409              	.L6:
+ 410              	.LVL9:
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 411              		.loc 1 74 0
+ 412 0458 D4C05AE1 		ldrsb	ip, [r10, #-4]
+ 413 045c 048088E2 		add	r8, r8, #4
+ 414              	.LVL10:
+ 415 0460 D84058E1 		ldrsb	r4, [r8, #-8]
+ 416 0464 04A08AE2 		add	r10, r10, #4
+ 417              	.LVL11:
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 418              		.loc 1 77 0
+ 419 0468 D5105AE1 		ldrsb	r1, [r10, #-5]
+ 420 046c D55058E1 		ldrsb	r5, [r8, #-5]
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 421              		.loc 1 75 0
+ 422 0470 D7E058E1 		ldrsb	lr, [r8, #-7]
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 423              		.loc 1 74 0
+ 424 0474 849C04E1 		smlabb	r4, r4, ip, r9
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 425              		.loc 1 75 0
+ 426 0478 D7C05AE1 		ldrsb	ip, [r10, #-7]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 427              		.loc 1 77 0
+ 428 047c 819505E1 		smlabb	r5, r1, r5, r9
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 429              		.loc 1 76 0
+ 430 0480 D61058E1 		ldrsb	r1, [r8, #-6]
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 431              		.loc 1 74 0
+ 432 0484 7440BFE6 		sxth	r4, r4
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 433              		.loc 1 75 0
+ 434 0488 8E9C0EE1 		smlabb	lr, lr, ip, r9
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 435              		.loc 1 76 0
+ 436 048c D6C05AE1 		ldrsb	ip, [r10, #-6]
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 437              		.loc 1 74 0
+ 438 0490 5443A0E1 		asr	r4, r4, r3
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 439              		.loc 1 77 0
+ 440 0494 7550BFE6 		sxth	r5, r5
+ 441              		.loc 1 80 0
+ 442 0498 060054E1 		cmp	r4, r6
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 443              		.loc 1 77 0
+ 444 049c 5553A0E1 		asr	r5, r5, r3
+ 445              		.loc 1 80 0
+ 446 04a0 0640A0B1 		movlt	r4, r6
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 447              		.loc 1 75 0
+ 448 04a4 7EE0BFE6 		sxth	lr, lr
+ 449              		.loc 1 80 0
+ 450 04a8 7F0054E3 		cmp	r4, #127
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 451              		.loc 1 76 0
+ 452 04ac 819C0CE1 		smlabb	ip, r1, ip, r9
+ 453              		.loc 1 80 0
+ 454 04b0 7F40A0A3 		movge	r4, #127
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 455              		.loc 1 75 0
+ 456 04b4 5EE3A0E1 		asr	lr, lr, r3
+ 457              		.loc 1 80 0
+ 458 04b8 060055E1 		cmp	r5, r6
+ 459 04bc 7440EFE6 		uxtb	r4, r4
+ 460 04c0 0650A0B1 		movlt	r5, r6
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 461              		.loc 1 76 0
+ 462 04c4 7CC0BFE6 		sxth	ip, ip
+ 463              		.loc 1 80 0
+ 464 04c8 7F0055E3 		cmp	r5, #127
+ 465 04cc 7F50A0A3 		movge	r5, #127
+ 466 04d0 06005EE1 		cmp	lr, r6
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 467              		.loc 1 76 0
+ 468 04d4 5CC3A0E1 		asr	ip, ip, r3
+ 469              		.loc 1 80 0
+ 470 04d8 06E0A0B1 		movlt	lr, r6
+ 471 04dc 7F005EE3 		cmp	lr, #127
+ 472 04e0 051C84E1 		orr	r1, r4, r5, lsl #24
+ 473 04e4 7FE0A0A3 		movge	lr, #127
+ 474 04e8 06005CE1 		cmp	ip, r6
+ 475 04ec 0EE4A0E1 		lsl	lr, lr, #8
+ 476 04f0 06C0A0B1 		movlt	ip, r6
+ 477 04f4 7F005CE3 		cmp	ip, #127
+ 478 04f8 7EE0FFE6 		uxth	lr, lr
+ 479 04fc 7FC0A0A3 		movge	ip, #127
+ 480 0500 0CC8A0E1 		lsl	ip, ip, #16
+ 481 0504 0EE081E1 		orr	lr, r1, lr
+ 482 0508 FFC80CE2 		and	ip, ip, #16711680
+ 483 050c 0CC08EE1 		orr	ip, lr, ip
+ 484 0510 04C087E4 		str	ip, [r7], #4
+ 485              	.LVL12:
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 486              		.loc 1 70 0
+ 487 0514 07005BE1 		cmp	fp, r7
+ 488 0518 CEFFFF1A 		bne	.L6
+ 489 051c 04109DE5 		ldr	r1, [sp, #4]
+ 490 0520 01B1A0E1 		lsl	fp, r1, #2
+ 491              	.LVL13:
+ 492              	.L9:
+ 493 0524 00109DE5 		ldr	r1, [sp]
+ 494 0528 0B0080E0 		add	r0, r0, fp
+ 495 052c 0B2082E0 		add	r2, r2, fp
+ 496 0530 0B1081E0 		add	r1, r1, fp
+ 497 0534 00108DE5 		str	r1, [sp]
+ 498              	.L2:
+ 499              	.LVL14:
+  81:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  82:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* Decrement the blockSize loop counter */
+  83:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         blkCnt--;
+  84:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     }
+  85:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  86:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* If the blockSize is not a multiple of 4, compute any remaining output samples here.
+  87:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****      ** No loop unrolling is used. */
+  88:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     blkCnt = blockSize % 0x4U;
+  89:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  90:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** #else
+  91:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  92:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* Run the below code for Cortex-M0 */
+  93:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  94:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     /* Initialize blkCnt with number of samples */
+  95:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     blkCnt = blockSize;
+  96:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  97:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** #endif /* #if defined (ARM_MATH_DSP) */
+  98:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     while (blkCnt > 0U)
+ 500              		.loc 1 99 0
+ 501 0538 10119DE5 		ldr	r1, [sp, #272]
+ 502 053c 035011E2 		ands	r5, r1, #3
+ 503              	.LVL15:
+ 504 0540 2600000A 		beq	.L1
+ 100:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 101:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* C = A * B */
+ 102:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* Multiply the inputs and store the result in the destination buffer */
+ 103:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         *pDst++ = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> ou
+ 505              		.loc 1 103 0
+ 506 0544 00709DE5 		ldr	r7, [sp]
+ 507 0548 0110A0E3 		mov	r1, #1
+ 508 054c D060D0E1 		ldrsb	r6, [r0]
+ 509 0550 1113A0E1 		lsl	r1, r1, r3
+ 510 0554 7FE0E0E3 		mvn	lr, #127
+ 511 0558 D0C0D7E1 		ldrsb	ip, [r7]
+ 512 055c D140EFE7 		ubfx	r4, r1, #1, #16
+ 513              	.LVL16:
+ 514 0560 8C460CE1 		smlabb	ip, ip, r6, r4
+ 515 0564 7CC0BFE6 		sxth	ip, ip
+ 516 0568 5CC3A0E1 		asr	ip, ip, r3
+ 517 056c 0E005CE1 		cmp	ip, lr
+ 518 0570 0EC0A0B1 		movlt	ip, lr
+ 519 0574 7F005CE3 		cmp	ip, #127
+ 520 0578 7FC0A0A3 		movge	ip, #127
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 521              		.loc 1 99 0
+ 522 057c 010055E3 		cmp	r5, #1
+ 523              		.loc 1 103 0
+ 524 0580 00C0C2E5 		strb	ip, [r2]
+ 525              	.LVL17:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 526              		.loc 1 99 0
+ 527 0584 1500000A 		beq	.L1
+ 528              	.LVL18:
+ 529              		.loc 1 103 0
+ 530 0588 D1C0D7E1 		ldrsb	ip, [r7, #1]
+ 531 058c D110D0E1 		ldrsb	r1, [r0, #1]
+ 532 0590 8C410CE1 		smlabb	ip, ip, r1, r4
+ 533 0594 7CC0BFE6 		sxth	ip, ip
+ 534 0598 5CC3A0E1 		asr	ip, ip, r3
+ 535 059c 0E005CE1 		cmp	ip, lr
+ 536 05a0 0EC0A0B1 		movlt	ip, lr
+ 537 05a4 7F005CE3 		cmp	ip, #127
+ 538 05a8 7FC0A0A3 		movge	ip, #127
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 539              		.loc 1 99 0
+ 540 05ac 020055E3 		cmp	r5, #2
+ 541              		.loc 1 103 0
+ 542 05b0 01C0C2E5 		strb	ip, [r2, #1]
+ 543              	.LVL19:
+  99:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 544              		.loc 1 99 0
+ 545 05b4 0900000A 		beq	.L1
+ 546              	.LVL20:
+ 547              		.loc 1 103 0
+ 548 05b8 D210D0E1 		ldrsb	r1, [r0, #2]
+ 549 05bc D200D7E1 		ldrsb	r0, [r7, #2]
+ 550              	.LVL21:
+ 551 05c0 814001E1 		smlabb	r1, r1, r0, r4
+ 552 05c4 7110BFE6 		sxth	r1, r1
+ 553 05c8 5133A0E1 		asr	r3, r1, r3
+ 554              	.LVL22:
+ 555 05cc 0E0053E1 		cmp	r3, lr
+ 556 05d0 0E30A0B1 		movlt	r3, lr
+ 557 05d4 7F0053E3 		cmp	r3, #127
+ 558 05d8 7F30A0A3 		movge	r3, #127
+ 559 05dc 0230C2E5 		strb	r3, [r2, #2]
+ 560              	.LVL23:
+ 561              	.L1:
+ 104:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 105:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         /* Decrement the blockSize loop counter */
+ 106:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         blkCnt--;
+ 107:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     }
+ 108:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** }
+ 562              		.loc 1 108 0
+ 563 05e0 ACD08DE2 		add	sp, sp, #172
+ 564              		.cfi_remember_state
+ 565              		.cfi_def_cfa_offset 100
+ 566              		@ sp needed
+ 567 05e4 108BBDEC 		vldm	sp!, {d8-d15}
+ 568              		.cfi_restore 94
+ 569              		.cfi_restore 95
+ 570              		.cfi_restore 92
+ 571              		.cfi_restore 93
+ 572              		.cfi_restore 90
+ 573              		.cfi_restore 91
+ 574              		.cfi_restore 88
+ 575              		.cfi_restore 89
+ 576              		.cfi_restore 86
+ 577              		.cfi_restore 87
+ 578              		.cfi_restore 84
+ 579              		.cfi_restore 85
+ 580              		.cfi_restore 82
+ 581              		.cfi_restore 83
+ 582              		.cfi_restore 80
+ 583              		.cfi_restore 81
+ 584              		.cfi_def_cfa_offset 36
+ 585 05e8 F08FBDE8 		pop	{r4, r5, r6, r7, r8, r9, r10, fp, pc}
+ 586              	.LVL24:
+ 587              	.L3:
+ 588              		.cfi_restore_state
+ 589 05ec 00109DE5 		ldr	r1, [sp]
+ 590 05f0 07B1A0E1 		lsl	fp, r7, #2
+ 591 05f4 048080E2 		add	r8, r0, #4
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 592              		.loc 1 80 0
+ 593 05f8 04008DE5 		str	r0, [sp, #4]
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 594              		.loc 1 70 0
+ 595 05fc 0270A0E1 		mov	r7, r2
+ 596              	.LVL25:
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 597              		.loc 1 80 0
+ 598 0600 7F60E0E3 		mvn	r6, #127
+ 599              	.LVL26:
+ 600 0604 04A081E2 		add	r10, r1, #4
+ 601 0608 0B1082E0 		add	r1, r2, fp
+ 602 060c 0150A0E1 		mov	r5, r1
+ 603              	.LVL27:
+ 604              	.L8:
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 605              		.loc 1 77 0
+ 606 0610 D10058E1 		ldrsb	r0, [r8, #-1]
+ 607 0614 04A08AE2 		add	r10, r10, #4
+ 608              	.LVL28:
+ 609 0618 D5E05AE1 		ldrsb	lr, [r10, #-5]
+ 610 061c 048088E2 		add	r8, r8, #4
+ 611              	.LVL29:
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 612              		.loc 1 74 0
+ 613 0620 D8405AE1 		ldrsb	r4, [r10, #-8]
+ 614 0624 D81058E1 		ldrsb	r1, [r8, #-8]
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 615              		.loc 1 75 0
+ 616 0628 D7C05AE1 		ldrsb	ip, [r10, #-7]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 617              		.loc 1 77 0
+ 618 062c 8E900EE1 		smlabb	lr, lr, r0, r9
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 619              		.loc 1 75 0
+ 620 0630 D70058E1 		ldrsb	r0, [r8, #-7]
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 621              		.loc 1 74 0
+ 622 0634 849101E1 		smlabb	r1, r4, r1, r9
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 623              		.loc 1 76 0
+ 624 0638 D6405AE1 		ldrsb	r4, [r10, #-6]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 625              		.loc 1 77 0
+ 626 063c 7EE0BFE6 		sxth	lr, lr
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 627              		.loc 1 75 0
+ 628 0640 8C900CE1 		smlabb	ip, ip, r0, r9
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 629              		.loc 1 76 0
+ 630 0644 D60058E1 		ldrsb	r0, [r8, #-6]
+  77:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 631              		.loc 1 77 0
+ 632 0648 5EE3A0E1 		asr	lr, lr, r3
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 633              		.loc 1 74 0
+ 634 064c 7110BFE6 		sxth	r1, r1
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 635              		.loc 1 80 0
+ 636 0650 06005EE1 		cmp	lr, r6
+  74:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out2 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 637              		.loc 1 74 0
+ 638 0654 5113A0E1 		asr	r1, r1, r3
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 639              		.loc 1 80 0
+ 640 0658 06E0A0B1 		movlt	lr, r6
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 641              		.loc 1 75 0
+ 642 065c 7CC0BFE6 		sxth	ip, ip
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 643              		.loc 1 80 0
+ 644 0660 7F005EE3 		cmp	lr, #127
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 645              		.loc 1 76 0
+ 646 0664 849000E1 		smlabb	r0, r4, r0, r9
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 647              		.loc 1 80 0
+ 648 0668 7FE0A0A3 		movge	lr, #127
+  75:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out3 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 649              		.loc 1 75 0
+ 650 066c 5CC3A0E1 		asr	ip, ip, r3
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 651              		.loc 1 80 0
+ 652 0670 060051E1 		cmp	r1, r6
+ 653 0674 0610A0B1 		movlt	r1, r6
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 654              		.loc 1 76 0
+ 655 0678 7000BFE6 		sxth	r0, r0
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 656              		.loc 1 80 0
+ 657 067c 7F0051E3 		cmp	r1, #127
+ 658 0680 7F10A0A3 		movge	r1, #127
+ 659 0684 06005CE1 		cmp	ip, r6
+  76:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****         out4 = (q7_t)__SSAT(((q15_t)((q15_t)(*pSrcA++) * (*pSrcB++) + NN_ROUND(out_shift)) >> out_s
+ 660              		.loc 1 76 0
+ 661 0688 5003A0E1 		asr	r0, r0, r3
+  80:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c **** 
+ 662              		.loc 1 80 0
+ 663 068c 06C0A0B1 		movlt	ip, r6
+ 664 0690 7F005CE3 		cmp	ip, #127
+ 665 0694 7110EFE6 		uxtb	r1, r1
+ 666 0698 7FC0A0A3 		movge	ip, #127
+ 667 069c 060050E1 		cmp	r0, r6
+ 668 06a0 0CC4A0E1 		lsl	ip, ip, #8
+ 669 06a4 0600A0B1 		movlt	r0, r6
+ 670 06a8 0E1C81E1 		orr	r1, r1, lr, lsl #24
+ 671 06ac 7F0050E3 		cmp	r0, #127
+ 672 06b0 7CC0FFE6 		uxth	ip, ip
+ 673 06b4 7F00A0A3 		movge	r0, #127
+ 674 06b8 0008A0E1 		lsl	r0, r0, #16
+ 675 06bc 0CE081E1 		orr	lr, r1, ip
+ 676 06c0 FF0800E2 		and	r0, r0, #16711680
+ 677 06c4 00008EE1 		orr	r0, lr, r0
+ 678 06c8 040087E4 		str	r0, [r7], #4
+ 679              	.LVL30:
+  70:../src/tensorflow_lite/third_party/cmsis/CMSIS/NN/Source/NNSupportFunctions/arm_nn_mult_q7.c ****     {
+ 680              		.loc 1 70 0
+ 681 06cc 070055E1 		cmp	r5, r7
+ 682 06d0 CEFFFF1A 		bne	.L8
+ 683 06d4 04009DE5 		ldr	r0, [sp, #4]
+ 684 06d8 91FFFFEA 		b	.L9
+ 685              		.cfi_endproc
+ 686              	.LFE122:
+ 688              		.text
+ 689              	.Letext0:
+ 690              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 691              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 692              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 693              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 694              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+ 695              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 696              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+ 697              		.file 9 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite/
+ 698              		.file 10 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+ 699              		.file 11 "C:/Renesas/e2studio_2021_01_workspace_RZA2M_ANPR/ANPR_RZA2M_GR_MANGO/src/tensorflow_lite
+DEFINED SYMBOLS
+                            *ABS*:00000000 arm_nn_mult_q7.c
+C:\Users\a5050395\AppData\Local\Temp\ccdbfaAL.s:17     .text.arm_nn_mult_q7:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccdbfaAL.s:23     .text.arm_nn_mult_q7:00000000 arm_nn_mult_q7
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.14fc17be114e5a2cba0959c511ea2aaf
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.features.h.33.d97f2d646536517df901beeb5b9993f5
+                           .group:00000000 wm4._default_types.h.15.247e5cd201eca3442cbf5404108c4935
+                           .group:00000000 wm4._intsup.h.10.cce27fed8484c08a33f522034c30d2b5
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.stdint.h.23.d53047a68f4a85177f80b422d52785ed
+                           .group:00000000 wm4.cmsis_gcc.h.26.655f712673b916caa265318637e2486e
+                           .group:00000000 wm4.newlib.h.8.5f2124c7e712be65f83b91ff86a0b1c1
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.9f8fcfa20193763fcf364fb91705c94b
+                           .group:00000000 wm4.stddef.h.39.a38874c8f8a57e66301090908ec2a69f
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.5349cb105733e8777bfb0cf53c4e3f34
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.cdefs.h.47.d73db5548e6cd3f3a18dfe23cae782ff
+                           .group:00000000 wm4.string.h.15.dab3980bf35408a4c507182805e2de3a
+                           .group:00000000 wm4.stddef.h.161.19e15733342b50ead2919490b095303e
+                           .group:00000000 wm4.math.h.13.adb102f7bd7860b1f241e149d6914a1e
+                           .group:00000000 wm4.float.h.29.7c5e49023a42045f22b7df4a7e6b3db2
+                           .group:00000000 wm4.limits.h.2.a76e572559edc4d4305b1cf624158ea8
+                           .group:00000000 wm4.limits.h.60.56a1ae353e2028a24298ec6463b8b593
+                           .group:00000000 wm4.arm_math_types.h.86.d234ffd9523de96a34ed4dd0f785756f
+                           .group:00000000 wm4.arm_math_memory.h.27.15b48442bebd15b7684ae775c0e94421
+                           .group:00000000 wm4.none.h.38.52c167e5c66424d7c1fe8048a5bf9ef2
+                           .group:00000000 wm4.utils.h.27.57524573fe37b04009eecf3582a4c591
+                           .group:00000000 wm4.fast_math_functions.h.44.f0d080ca1ba957380c25e401a97da7cc
+                           .group:00000000 wm4.arm_common_tables.h.115.99deac85cf8f0a38da86d5f757adaa60
+                           .group:00000000 wm4.arm_nnsupportfunctions.h.40.02e2e72066f745a38156ef292fa21e7b
+
+NO UNDEFINED SYMBOLS

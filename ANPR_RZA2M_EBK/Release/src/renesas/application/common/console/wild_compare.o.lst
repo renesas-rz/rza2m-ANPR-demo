@@ -1,0 +1,143 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"wild_compare.c"
+  13              		.section	.text.wild_compare,"ax",%progbits
+  14              		.align	2
+  15              		.global	wild_compare
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	wild_compare:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 F0412DE9 		push	{r4, r5, r6, r7, r8, lr}
+  24 0004 0060A0E1 		mov	r6, r0
+  25 0008 0180A0E1 		mov	r8, r1
+  26 000c FEFFFFEB 		bl	strlen
+  27 0010 2A10A0E3 		mov	r1, #42
+  28 0014 0020A0E1 		mov	r2, r0
+  29 0018 0600A0E1 		mov	r0, r6
+  30 001c FEFFFFEB 		bl	memchr
+  31 0020 000050E3 		cmp	r0, #0
+  32 0024 01804802 		subeq	r8, r8, #1
+  33 0028 4100000A 		beq	.L3
+  34 002c 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+  35 0030 0000D8E5 		ldrb	r0, [r8]	@ zero_extendqisi2
+  36 0034 000054E3 		cmp	r4, #0
+  37 0038 1600001A 		bne	.L43
+  38 003c 4F0000EA 		b	.L5
+  39              	.L13:
+  40 0040 FEFFFFEB 		bl	__locale_ctype_ptr
+  41 0044 040080E0 		add	r0, r0, r4
+  42 0048 0050D8E5 		ldrb	r5, [r8]	@ zero_extendqisi2
+  43 004c 0130D0E5 		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  44 0050 033003E2 		and	r3, r3, #3
+  45 0054 010053E3 		cmp	r3, #1
+  46 0058 20408402 		addeq	r4, r4, #32
+  47 005c FEFFFFEB 		bl	__locale_ctype_ptr
+  48 0060 050080E0 		add	r0, r0, r5
+  49 0064 0130D0E5 		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  50 0068 033003E2 		and	r3, r3, #3
+  51 006c 010053E3 		cmp	r3, #1
+  52 0070 20508502 		addeq	r5, r5, #32
+  53 0074 050054E1 		cmp	r4, r5
+  54 0078 2800001A 		bne	.L19
+  55 007c 0870A0E1 		mov	r7, r8
+  56              	.L22:
+  57 0080 0140D6E5 		ldrb	r4, [r6, #1]	@ zero_extendqisi2
+  58 0084 018087E2 		add	r8, r7, #1
+  59 0088 016086E2 		add	r6, r6, #1
+  60 008c 0100D7E5 		ldrb	r0, [r7, #1]	@ zero_extendqisi2
+  61 0090 000054E3 		cmp	r4, #0
+  62 0094 3900000A 		beq	.L5
+  63              	.L43:
+  64 0098 000050E3 		cmp	r0, #0
+  65 009c 3700000A 		beq	.L5
+  66 00a0 2A0054E3 		cmp	r4, #42
+  67 00a4 E5FFFF1A 		bne	.L13
+  68              	.L15:
+  69 00a8 0140F6E5 		ldrb	r4, [r6, #1]!	@ zero_extendqisi2
+  70 00ac 2A0054E3 		cmp	r4, #42
+  71 00b0 FCFFFF0A 		beq	.L15
+  72 00b4 000054E3 		cmp	r4, #0
+  73 00b8 3400000A 		beq	.L16
+  74 00bc FEFFFFEB 		bl	__locale_ctype_ptr
+  75 00c0 040080E0 		add	r0, r0, r4
+  76 00c4 0130D0E5 		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+  77 00c8 033003E2 		and	r3, r3, #3
+  78 00cc 010053E3 		cmp	r3, #1
+  79 00d0 20508402 		addeq	r5, r4, #32
+  80 00d4 0450A011 		movne	r5, r4
+  81 00d8 0040D8E5 		ldrb	r4, [r8]	@ zero_extendqisi2
+  82 00dc 7550EFE6 		uxtb	r5, r5
+  83 00e0 000054E3 		cmp	r4, #0
+  84 00e4 0D00000A 		beq	.L19
+  85 00e8 0870A0E1 		mov	r7, r8
+  86              	.L23:
+  87 00ec FEFFFFEB 		bl	__locale_ctype_ptr
+  88 00f0 040080E0 		add	r0, r0, r4
+  89 00f4 0430A0E1 		mov	r3, r4
+  90 00f8 0120D0E5 		ldrb	r2, [r0, #1]	@ zero_extendqisi2
+  91 00fc 032002E2 		and	r2, r2, #3
+  92 0100 010052E3 		cmp	r2, #1
+  93 0104 20308402 		addeq	r3, r4, #32
+  94 0108 7330EFE6 		uxtb	r3, r3
+  95 010c 030055E1 		cmp	r5, r3
+  96 0110 DAFFFF0A 		beq	.L22
+  97 0114 0140F7E5 		ldrb	r4, [r7, #1]!	@ zero_extendqisi2
+  98 0118 000054E3 		cmp	r4, #0
+  99 011c F2FFFF1A 		bne	.L23
+ 100              	.L19:
+ 101 0120 0000A0E3 		mov	r0, #0
+ 102 0124 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 103              	.L12:
+ 104 0128 0130D6E4 		ldrb	r3, [r6], #1	@ zero_extendqisi2
+ 105 012c 000053E3 		cmp	r3, #0
+ 106 0130 1600000A 		beq	.L16
+ 107              	.L3:
+ 108 0134 0040D6E5 		ldrb	r4, [r6]	@ zero_extendqisi2
+ 109 0138 FEFFFFEB 		bl	__locale_ctype_ptr
+ 110 013c 040080E0 		add	r0, r0, r4
+ 111 0140 0450A0E1 		mov	r5, r4
+ 112 0144 0130D0E5 		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 113 0148 033003E2 		and	r3, r3, #3
+ 114 014c 010053E3 		cmp	r3, #1
+ 115 0150 20508402 		addeq	r5, r4, #32
+ 116 0154 0140F8E5 		ldrb	r4, [r8, #1]!	@ zero_extendqisi2
+ 117 0158 FEFFFFEB 		bl	__locale_ctype_ptr
+ 118 015c 040080E0 		add	r0, r0, r4
+ 119 0160 0420A0E1 		mov	r2, r4
+ 120 0164 0130D0E5 		ldrb	r3, [r0, #1]	@ zero_extendqisi2
+ 121 0168 033003E2 		and	r3, r3, #3
+ 122 016c 010053E3 		cmp	r3, #1
+ 123 0170 20208402 		addeq	r2, r4, #32
+ 124 0174 020055E1 		cmp	r5, r2
+ 125 0178 EAFFFF0A 		beq	.L12
+ 126 017c E7FFFFEA 		b	.L19
+ 127              	.L5:
+ 128 0180 000044E0 		sub	r0, r4, r0
+ 129 0184 100F6FE1 		clz	r0, r0
+ 130 0188 A002A0E1 		lsr	r0, r0, #5
+ 131 018c F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 132              	.L16:
+ 133 0190 0100A0E3 		mov	r0, #1
+ 134 0194 F081BDE8 		pop	{r4, r5, r6, r7, r8, pc}
+ 136              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 wild_compare.c
+C:\Users\a5050395\AppData\Local\Temp\cch9bjss.s:14     .text.wild_compare:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\cch9bjss.s:20     .text.wild_compare:00000000 wild_compare
+
+UNDEFINED SYMBOLS
+strlen
+memchr
+__locale_ctype_ptr

@@ -1,0 +1,104 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"r_intc_lld_rza2m_handler.c"
+  13              		.section	.text.INTC_Handler_Interrupt,"ax",%progbits
+  14              		.align	2
+  15              		.global	INTC_Handler_Interrupt
+  16              		.syntax unified
+  17              		.arm
+  18              		.fpu neon
+  20              	INTC_Handler_Interrupt:
+  21              		@ args = 0, pretend = 0, frame = 0
+  22              		@ frame_needed = 0, uses_anonymous_args = 0
+  23 0000 70402DE9 		push	{r4, r5, r6, lr}
+  24 0004 7040FFE6 		uxth	r4, r0
+  25 0008 5450E9E7 		ubfx	r5, r4, #0, #10
+  26 000c 020C55E3 		cmp	r5, #512
+  27 0010 1800002A 		bcs	.L7
+  28 0014 FEFFFFEB 		bl	__enable_irq
+  29 0018 072BA0E3 		mov	r2, #7168
+  30 001c 2532A0E1 		lsr	r3, r5, #4
+  31 0020 22284EE3 		movt	r2, 59426
+  32 0024 033192E7 		ldr	r3, [r2, r3, lsl #2]
+  33 0028 0F4004E2 		and	r4, r4, #15
+  34 002c 8440A0E1 		lsl	r4, r4, #1
+  35 0030 0120A0E3 		mov	r2, #1
+  36 0034 0500A0E1 		mov	r0, r5
+  37 0038 024084E0 		add	r4, r4, r2
+  38 003c 123413E0 		ands	r3, r3, r2, lsl r4
+  39 0040 0240A011 		movne	r4, r2
+  40 0044 0040A003 		moveq	r4, #0
+  41 0048 FEFFFFEB 		bl	Userdef_INTC_Pre_Interrupt
+  42 004c 003000E3 		movw	r3, #:lower16:g_intc_func_table
+  43 0050 003040E3 		movt	r3, #:upper16:g_intc_func_table
+  44 0054 053193E7 		ldr	r3, [r3, r5, lsl #2]
+  45 0058 000053E3 		cmp	r3, #0
+  46 005c 0800000A 		beq	.L3
+  47 0060 0400A0E1 		mov	r0, r4
+  48 0064 33FF2FE1 		blx	r3
+  49              	.L4:
+  50 0068 0500A0E1 		mov	r0, r5
+  51 006c FEFFFFEB 		bl	Userdef_INTC_Post_Interrupt
+  52 0070 7040BDE8 		pop	{r4, r5, r6, lr}
+  53 0074 FEFFFFEA 		b	__disable_irq
+  54              	.L7:
+  55 0078 0500A0E1 		mov	r0, r5
+  56 007c 7040BDE8 		pop	{r4, r5, r6, lr}
+  57 0080 FEFFFFEA 		b	Userdef_INTC_UndefId
+  58              	.L3:
+  59 0084 0500A0E1 		mov	r0, r5
+  60 0088 FEFFFFEB 		bl	Userdef_INTC_UnregisteredID
+  61 008c F5FFFFEA 		b	.L4
+  63              		.section	.text.NMI_Handler_Interrupt,"ax",%progbits
+  64              		.align	2
+  65              		.global	NMI_Handler_Interrupt
+  66              		.syntax unified
+  67              		.arm
+  68              		.fpu neon
+  70              	NMI_Handler_Interrupt:
+  71              		@ args = 0, pretend = 0, frame = 0
+  72              		@ frame_needed = 0, uses_anonymous_args = 0
+  73 0000 003000E3 		movw	r3, #:lower16:g_intc_func_table
+  74 0004 10402DE9 		push	{r4, lr}
+  75 0008 003040E3 		movt	r3, #:upper16:g_intc_func_table
+  76 000c 003893E5 		ldr	r3, [r3, #2048]
+  77 0010 000053E3 		cmp	r3, #0
+  78 0014 0700000A 		beq	.L9
+  79 0018 0100A0E3 		mov	r0, #1
+  80 001c 33FF2FE1 		blx	r3
+  81              	.L10:
+  82 0020 3E2BA0E3 		mov	r2, #63488
+  83 0024 FE2C4FE3 		movt	r2, 64766
+  84 0028 B030D2E1 		ldrh	r3, [r2]
+  85 002c 9F30C1E7 		bfc	r3, #1, #1
+  86 0030 B030C2E1 		strh	r3, [r2]	@ movhi
+  87 0034 1080BDE8 		pop	{r4, pc}
+  88              	.L9:
+  89 0038 020CA0E3 		mov	r0, #512
+  90 003c FEFFFFEB 		bl	Userdef_INTC_UnregisteredID
+  91 0040 F6FFFFEA 		b	.L10
+  93              		.ident	"GCC: (GNU Tools for ARM Embedded Processors 6-2017-q2-update) 6.3.1 20170620 (release) [AR
+DEFINED SYMBOLS
+                            *ABS*:00000000 r_intc_lld_rza2m_handler.c
+C:\Users\a5050395\AppData\Local\Temp\ccsrY7XC.s:14     .text.INTC_Handler_Interrupt:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrY7XC.s:20     .text.INTC_Handler_Interrupt:00000000 INTC_Handler_Interrupt
+C:\Users\a5050395\AppData\Local\Temp\ccsrY7XC.s:64     .text.NMI_Handler_Interrupt:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccsrY7XC.s:70     .text.NMI_Handler_Interrupt:00000000 NMI_Handler_Interrupt
+
+UNDEFINED SYMBOLS
+__enable_irq
+Userdef_INTC_Pre_Interrupt
+g_intc_func_table
+Userdef_INTC_Post_Interrupt
+__disable_irq
+Userdef_INTC_UndefId
+Userdef_INTC_UnregisteredID

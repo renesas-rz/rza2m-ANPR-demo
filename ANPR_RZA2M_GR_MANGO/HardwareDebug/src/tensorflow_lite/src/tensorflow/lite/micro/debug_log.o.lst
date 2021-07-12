@@ -1,0 +1,136 @@
+   1              		.cpu cortex-a9
+   2              		.eabi_attribute 28, 1
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 2
+  10              		.eabi_attribute 34, 0
+  11              		.eabi_attribute 18, 4
+  12              		.file	"debug_log.cpp"
+  13              		.text
+  14              	.Ltext0:
+  15              		.cfi_sections	.debug_frame
+  16              		.section	.text.DebugLog,"ax",%progbits
+  17              		.align	2
+  18              		.global	DebugLog
+  19              		.syntax unified
+  20              		.arm
+  21              		.fpu neon
+  23              	DebugLog:
+  24              		.fnstart
+  25              	.LFB1:
+  26              		.file 1 "../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp"
+   1:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** /* Copyright 2020 The TensorFlow Authors. All Rights Reserved.
+   2:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+   3:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** Licensed under the Apache License, Version 2.0 (the "License");
+   4:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** you may not use this file except in compliance with the License.
+   5:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** You may obtain a copy of the License at
+   6:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+   7:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp ****     http://www.apache.org/licenses/LICENSE-2.0
+   8:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+   9:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** Unless required by applicable law or agreed to in writing, software
+  10:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** distributed under the License is distributed on an "AS IS" BASIS,
+  11:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  12:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** See the License for the specific language governing permissions and
+  13:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** limitations under the License.
+  14:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** ==============================================================================*/
+  15:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+  16:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // Reference implementation of the DebugLog() function that's required for a
+  17:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // platform to support the TensorFlow Lite for Microcontrollers library. This is
+  18:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // the only function that's absolutely required to be available on a target
+  19:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // device, since it's used for communicating test results back to the host so
+  20:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // that we can verify the implementation is working correctly.
+  21:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // It's designed to be as easy as possible to supply an implementation though.
+  22:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // On platforms that have a POSIX stack or C library, it can be written as a
+  23:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // single call to `fprintf(stderr, "%s", s)` to output a string to the error
+  24:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // stream of the console, but if there's no OS or C library available, there's
+  25:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // almost always an equivalent way to write out a string to some serial
+  26:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // interface that can be used instead. For example on Arm M-series MCUs, calling
+  27:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // the `bkpt #0xAB` assembler instruction will output the string in r1 to
+  28:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // whatever debug serial connection is available. If you're running mbed, you
+  29:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // can do the same by creating `Serial pc(USBTX, USBRX)` and then calling
+  30:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // `pc.printf("%s", s)`.
+  31:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // To add an equivalent function for your own platform, create your own
+  32:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // implementation file, and place it in a subfolder with named after the OS
+  33:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // you're targeting. For example, see the Cortex M bare metal version in
+  34:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // tensorflow/lite/micro/bluepill/debug_log.cc or the mbed one on
+  35:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** // tensorflow/lite/micro/mbed/debug_log.cc.
+  36:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+  37:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** #include "tensorflow/lite/micro/debug_log.h"
+  38:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+  39:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+  40:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** #include <cstdio>
+  41:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** #endif
+  42:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** 
+  43:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** extern "C" void DebugLog(const char* s) {
+  27              		.loc 1 43 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32              	.LVL0:
+  44:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp **** #ifndef TF_LITE_STRIP_ERROR_STRINGS
+  45:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp ****   // Reusing TF_LITE_STRIP_ERROR_STRINGS to disable DebugLog completely to get
+  46:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp ****   // maximum reduction in binary size. This is because we have DebugLog calls
+  47:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp ****   // via TF_LITE_CHECK that are not stubbed out by TF_LITE_REPORT_ERROR.
+  48:../src/tensorflow_lite/src/tensorflow/lite/micro/debug_log.cpp ****   fprintf(stderr, "%s", s);
+  33              		.loc 1 48 0
+  34 0000 003000E3 		movw	r3, #:lower16:_impure_ptr
+  35 0004 003040E3 		movt	r3, #:upper16:_impure_ptr
+  36 0008 003093E5 		ldr	r3, [r3]
+  37 000c 0C1093E5 		ldr	r1, [r3, #12]
+  38 0010 FEFFFFEA 		b	fputs
+  39              	.LVL1:
+  40              		.cfi_endproc
+  41              	.LFE1:
+  42              		.cantunwind
+  43              		.fnend
+  45              		.text
+  46              	.Letext0:
+  47              		.file 2 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  48              		.file 3 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  49              		.file 4 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\lib\\gcc\\arm-none-eab
+  50              		.file 5 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  51              		.file 6 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  52              		.file 7 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  53              		.file 8 "c:\\program files (x86)\\gnu tools arm embedded\\6 2017-q2-update\\arm-none-eabi\\include
+  54              		.file 9 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 debug_log.cpp
+C:\Users\a5050395\AppData\Local\Temp\ccrcuytV.s:17     .text.DebugLog:00000000 $a
+C:\Users\a5050395\AppData\Local\Temp\ccrcuytV.s:23     .text.DebugLog:00000000 DebugLog
+         .ARM.exidx.text.DebugLog:00000000 $d
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.0.3e1481985cce1e923928453d8be0a65b
+                           .group:00000000 wm4.cconfig.h.31.1472b8c7bd4952a63a52f3f4f718f872
+                           .group:00000000 wm4.cpu_defines.h.31.54d44f9d3e7c42875c5a7fd49795eb93
+                           .group:00000000 wm4.cconfig.h.515.5e729db314ae74226e291b4ae081e353
+                           .group:00000000 wm4._newlib_version.h.4.3572908597b70d672d181fc7fc501c19
+                           .group:00000000 wm4.newlib.h.21.59901f4bf241ab46c63694665baa7297
+                           .group:00000000 wm4.features.h.22.37852b648068a281464730a5a4cc748e
+                           .group:00000000 wm4.config.h.219.65a553ab5bef5482f0d7880b0d33015e
+                           .group:00000000 wm4._ansi.h.23.1ee1144430bedaab1a14c7b57a6c8384
+                           .group:00000000 wm4.stdio.h.31.7c0e28c411445f3f9c5b11accf882760
+                           .group:00000000 wm4._default_types.h.6.959254cf5f09734ea7516c89e8bb21bd
+                           .group:00000000 wm4.stddef.h.187.422da5f95ac1285e95faf42258f23242
+                           .group:00000000 wm4.cdefs.h.47.9bc8274c84fddbf05edd550eb0bf48cd
+                           .group:00000000 wm4.stddef.h.39.f3921369feb94d56be5cea128eb7b96e
+                           .group:00000000 wm4.stdarg.h.34.3a23a216c0c293b3d2ea2e89281481e6
+                           .group:00000000 wm4.lock.h.2.1461d1fff82dffe8bfddc23307f6484f
+                           .group:00000000 wm4._types.h.125.5cf8a495f1f7ef36777ad868a1e32068
+                           .group:00000000 wm4.stddef.h.161.7e98c9c86da0ed2d27af2ef92af7d013
+                           .group:00000000 wm4._types.h.183.c226d164ceca1f2ecb9ae9360c54a098
+                           .group:00000000 wm4.reent.h.17.23b059516345f8f5abfa01ddc379570f
+                           .group:00000000 wm4.types.h.40.e8c16e7ec36ba55f133d0616070e25fc
+                           .group:00000000 wm4._stdint.h.10.c24fa3af3bc1706662bb5593a907e841
+                           .group:00000000 wm4.types.h.114.fb65732f4f5f288a036a25898de2c91f
+                           .group:00000000 wm4.stdio.h.2.4aa87247282eca6c8f36f9de33d8df1a
+                           .group:00000000 wm4.stdio.h.81.7ccf35811a8d906c9cfd8de381f5758a
+                           .group:00000000 wm4.cstdio.45.ba8d321feb18bfc8923454067605c368
+
+UNDEFINED SYMBOLS
+_impure_ptr
+fputs
