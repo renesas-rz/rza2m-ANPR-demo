@@ -1639,7 +1639,7 @@ void sample_main(void)
 
 					// for power measurements only
 					// (continuously repeats the inference of the first potential character)
-					while (1) {
+					while (0) {
 						fprintf(stdout," NOP \n");
 						fflush(stdout);
 						for (x2 = 0; x2 < 10; x2 ++)
